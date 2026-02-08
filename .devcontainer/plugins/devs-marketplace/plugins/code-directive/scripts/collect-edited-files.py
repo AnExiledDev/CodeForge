@@ -30,12 +30,14 @@ def main():
     if not os.path.isfile(file_path):
         sys.exit(0)
 
-    tmp_path = f"/tmp/claude-edited-files-{session_id}"
-    try:
-        with open(tmp_path, "a") as f:
-            f.write(file_path + "\n")
-    except OSError:
-        pass  # non-critical, don't block Claude
+    # Write to both formatter and linter temp files (independent pipelines)
+    for prefix in ("claude-edited-files", "claude-lint-files"):
+        tmp_path = f"/tmp/{prefix}-{session_id}"
+        try:
+            with open(tmp_path, "a") as f:
+                f.write(file_path + "\n")
+        except OSError:
+            pass  # non-critical, don't block Claude
 
     sys.exit(0)
 

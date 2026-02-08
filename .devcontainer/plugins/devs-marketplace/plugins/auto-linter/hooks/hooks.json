@@ -1,15 +1,14 @@
 {
-  "description": "Auto-lint files after editing",
+  "description": "Batch-lint collected files when Claude stops responding",
   "hooks": {
-    "PostToolUse": [
+    "Stop": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lint-file.py",
-            "timeout": 15,
-            "async": true
+            "timeout": 30
           }
         ]
       }

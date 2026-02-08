@@ -1,5 +1,31 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.7.1] - 2026-02-08
+
+### Added
+
+- **Automatic Git & NPM auth on container start** — new `setup-auth.sh` script reads tokens from `.devcontainer/.secrets` (or environment variables) and configures GitHub CLI, git user identity, and NPM registry auth automatically
+- **`.secrets.example` template** — committed template showing required variables (`GH_TOKEN`, `GH_USERNAME`, `GH_EMAIL`, `NPM_TOKEN`)
+- **`.env.example` template** — committed template for environment configuration (`.env` itself remains gitignored)
+- **`SETUP_AUTH` env var** — controls whether auth setup runs on container start (default: `true`)
+- **`AGENT-REDIRECTION.md`** — guide on how the PreToolUse hook system works, how built-in agents are swapped to custom ones, and what else is possible (prompt injection, model overrides, conditional routing, external service chaining)
+
+### Changed
+
+- **README split by audience** — root `README.md` is now the npm/GitHub landing page (install, prerequisites, what's included, quick start); `.devcontainer/README.md` is now the usage guide (auth, tools, config, agents, keybindings, gotchas). No duplicated content between the two
+- **Auto-linter moved to Stop hook** — was PostToolUse (ran pyright per-edit, caused agent re-reads); now batch-lints all edited Python files when Claude stops, matching auto-formatter's pattern. Uses its own temp file (`claude-lint-files-{session_id}`) independent of the formatter pipeline
+- **`collect-edited-files.py`** — now writes to both `claude-edited-files-*` (formatter) and `claude-lint-files-*` (linter) temp files, keeping the two Stop hook pipelines independent
+- **`.devcontainer/.gitignore`** — added `.secrets` explicit ignore and negation patterns (`!.env.example`, `!.secrets.example`, `!.gitignore`) to override root `.*` rule for files that should be tracked
+- **`setup.sh` orchestration** — `setup-auth.sh` runs early (after symlink, before config/plugins) so NPM auth is available for plugin installation
+- **`PLUGIN_BLACKLIST`** — cleared (was `"workflow-enhancer,planning-reminder"`)
+
+### Removed
+
+- **`workflow-enhancer` plugin** — deleted entirely (was scaffolding only, never active)
+- **`planning-reminder` plugin** — deleted entirely (redundant with Claude Code v2.1+ auto plan mode)
+
+---
+
 ## [v1.7.0] - 2026-02-08
 
 ### Added

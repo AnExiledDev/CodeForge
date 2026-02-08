@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Auto-lint files after editing.
+Batch linter — runs as a Stop hook.
 
-Reads tool input from stdin, detects file type by extension,
-runs appropriate linter if available.
+Reads file paths collected by collect-edited-files.py during the
+conversation turn, deduplicates them, and lints each based on
+extension:
+  .py / .pyi  → Pyright
+
 Outputs JSON with additionalContext containing lint warnings.
-Non-blocking: exit 0 regardless of lint result.
+Always cleans up the temp file. Always exits 0.
 """
 
 import json
@@ -14,23 +17,17 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Linter configuration: extension -> (command, args, name, parser)
 PYTHON_EXTENSIONS = {".py", ".pyi"}
 
 
-def lint_python(file_path: str) -> tuple[bool, str]:
-    """Run pyright on a Python file.
-
-    Returns:
-        (success, message)
-    """
+def lint_python(file_path: str) -> str:
+    """Run pyright on a Python file. Returns diagnostic message or empty string."""
     pyright_cmd = "pyright"
 
-    # Check if pyright is available
     try:
         subprocess.run(["which", pyright_cmd], capture_output=True, check=True)
     except subprocess.CalledProcessError:
-        return True, ""  # Pyright not available
+        return ""
 
     try:
         result = subprocess.run(
@@ -40,94 +37,99 @@ def lint_python(file_path: str) -> tuple[bool, str]:
             timeout=10,
         )
 
-        # Parse pyright JSON output
         try:
             output = json.loads(result.stdout)
             diagnostics = output.get("generalDiagnostics", [])
 
             if not diagnostics:
-                return True, "[Auto-linter] Pyright: No issues found"
+                return ""
 
-            # Format diagnostics
             issues = []
-            for diag in diagnostics[:5]:  # Limit to first 5 issues
+            for diag in diagnostics[:5]:
                 severity = diag.get("severity", "info")
                 message = diag.get("message", "")
                 line = diag.get("range", {}).get("start", {}).get("line", 0) + 1
 
                 if severity == "error":
-                    icon = "✗"
+                    icon = "\u2717"
                 elif severity == "warning":
                     icon = "!"
                 else:
-                    icon = "•"
+                    icon = "\u2022"
 
                 issues.append(f"  {icon} Line {line}: {message}")
 
             total = len(diagnostics)
             shown = min(5, total)
-            header = f"[Auto-linter] Pyright: {total} issue(s)"
+            filename = Path(file_path).name
+            header = f"  {filename}: {total} issue(s)"
             if total > shown:
                 header += f" (showing first {shown})"
 
-            return True, header + "\n" + "\n".join(issues)
+            return header + "\n" + "\n".join(issues)
 
         except json.JSONDecodeError:
-            # Pyright output not JSON, might be an error
-            if result.stderr:
-                return (
-                    True,
-                    f"[Auto-linter] Pyright error: {result.stderr.strip()[:100]}",
-                )
-            return True, ""
+            return ""
 
     except subprocess.TimeoutExpired:
-        return True, "[Auto-linter] Pyright timed out"
-    except Exception as e:
-        return True, f"[Auto-linter] Error: {e}"
-
-
-def lint_file(file_path: str) -> tuple[bool, str]:
-    """Run appropriate linter for file.
-
-    Returns:
-        (success, message)
-    """
-    ext = Path(file_path).suffix.lower()
-
-    if ext in PYTHON_EXTENSIONS:
-        return lint_python(file_path)
-
-    # No linter available for this file type
-    return True, ""
+        return f"  {Path(file_path).name}: pyright timed out"
+    except Exception:
+        return ""
 
 
 def main():
     try:
         input_data = json.load(sys.stdin)
-        tool_input = input_data.get("tool_input", {})
-        file_path = tool_input.get("file_path", "")
-
-        if not file_path:
-            sys.exit(0)
-
-        # Check if file exists
-        if not os.path.exists(file_path):
-            sys.exit(0)
-
-        _, message = lint_file(file_path)
-
-        if message:
-            # Output context for Claude
-            print(json.dumps({"additionalContext": message}))
-
+    except (json.JSONDecodeError, ValueError):
         sys.exit(0)
 
-    except json.JSONDecodeError:
+    if input_data.get("stop_hook_active"):
         sys.exit(0)
-    except Exception as e:
-        print(f"Hook error: {e}", file=sys.stderr)
+
+    session_id = input_data.get("session_id", "")
+    if not session_id:
         sys.exit(0)
+
+    tmp_path = f"/tmp/claude-lint-files-{session_id}"
+
+    try:
+        with open(tmp_path) as f:
+            raw_paths = f.read().splitlines()
+    except FileNotFoundError:
+        sys.exit(0)
+    except OSError:
+        sys.exit(0)
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    # Deduplicate, filter to existing Python files
+    seen: set[str] = set()
+    paths: list[str] = []
+    for p in raw_paths:
+        p = p.strip()
+        if p and p not in seen and os.path.isfile(p):
+            ext = Path(p).suffix.lower()
+            if ext in PYTHON_EXTENSIONS:
+                seen.add(p)
+                paths.append(p)
+
+    if not paths:
+        sys.exit(0)
+
+    results = []
+    for path in paths:
+        msg = lint_python(path)
+        if msg:
+            results.append(msg)
+
+    if results:
+        output = "[Auto-linter] Pyright results:\n" + "\n".join(results)
+        print(json.dumps({"additionalContext": output}))
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":

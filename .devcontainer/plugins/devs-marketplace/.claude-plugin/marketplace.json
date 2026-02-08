@@ -61,13 +61,6 @@
       "category": "productivity"
     },
     {
-      "name": "planning-reminder",
-      "description": "Encourages plan-before-implement workflow",
-      "version": "1.0.0",
-      "source": "./plugins/planning-reminder",
-      "category": "workflow"
-    },
-    {
       "name": "dangerous-command-blocker",
       "description": "Blocks dangerous bash commands (rm -rf, sudo rm, chmod 777, force push)",
       "version": "1.0.0",

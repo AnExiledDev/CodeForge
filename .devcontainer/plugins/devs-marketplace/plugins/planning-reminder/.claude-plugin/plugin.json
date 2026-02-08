@@ -1,7 +1,0 @@
-{
-  "name": "planning-reminder",
-  "description": "Injects planning-first workflow reminder on every prompt",
-  "author": {
-    "name": "AnExiledDev"
-  }
-}

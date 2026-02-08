@@ -1,34 +1,21 @@
-# CodeForge DevContainer
+# CodeForge Usage Guide
 
-[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![npm version](https://img.shields.io/npm/v/codeforge-dev.svg)](https://www.npmjs.com/package/codeforge-dev)
-
-A curated development environment optimized for AI-powered coding with Claude Code. CodeForge comes pre-configured with language servers, code intelligence tools, and official Anthropic plugins to streamline your development workflow.
-
-## Prerequisites
-
-- **Docker Desktop** (or compatible container runtime like Podman)
-- **VS Code** with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), or **GitHub Codespaces**
-- **Claude Code authentication** - see [Authentication](#authentication) section
+Everything you need to know once you're inside the devcontainer.
 
 ## Quick Start
 
-1. **Open in Container**
-   - VS Code: Open the folder, then select "Reopen in Container" from the command palette
-   - Codespaces: Create a new codespace from this repository
-
-2. **Authenticate** (first time only)
+1. **Authenticate** (first time only)
    ```bash
    claude
    ```
    Follow the prompts to authenticate via browser or API key.
 
-3. **Start Claude Code**
+2. **Start Claude Code**
    ```bash
    cc
    ```
 
-## Authentication
+## Claude Code Authentication
 
 Claude Code supports multiple authentication methods. On first run, you'll be prompted to choose:
 
@@ -57,11 +44,39 @@ Authentication credentials are stored in `/workspaces/.claude/` and persist acro
 
 For more options, see the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
 
-## GitHub CLI Authentication
+## GitHub & NPM Authentication
+
+### Automatic Auth via `.secrets` (Recommended)
+
+CodeForge can automatically configure GitHub CLI, git identity, and NPM auth on every container start. Copy the template and fill in your tokens:
+
+```bash
+cp .devcontainer/.secrets.example .devcontainer/.secrets
+```
+
+Edit `.devcontainer/.secrets`:
+
+```bash
+GH_TOKEN=ghp_your_token_here
+GH_USERNAME=your-github-username
+GH_EMAIL=your-email@example.com
+NPM_TOKEN=npm_your_token_here
+```
+
+On the next container start (or rebuild), `setup-auth.sh` will:
+- Authenticate `gh` CLI and configure git credential helper
+- Set `git config --global user.name` and `user.email`
+- Set NPM registry auth token
+
+The `.secrets` file is gitignored at two levels (root `.*` + `.devcontainer/.gitignore`) and will never be committed.
+
+**Environment variable fallback**: For Codespaces or CI, set `GH_TOKEN`, `GH_USERNAME`, `GH_EMAIL`, and/or `NPM_TOKEN` as environment variables (e.g., via Codespaces secrets or `localEnv` in `devcontainer.json`). Environment variables take precedence over `.secrets` file values.
+
+Disable automatic auth by setting `SETUP_AUTH=false` in `.devcontainer/.env`.
+
+### Interactive Login (Alternative)
 
 GitHub CLI (`gh`) is pre-installed for repository operations like pushing code, creating pull requests, and accessing private repositories.
-
-### Interactive Login (Recommended)
 
 ```bash
 gh auth login
@@ -98,7 +113,28 @@ Expected output shows your authenticated account and token scopes.
 
 GitHub CLI credentials are automatically persisted across container rebuilds. The container is configured to store credentials in `/workspaces/.gh/` (via `GH_CONFIG_DIR`), which is part of the bind-mounted workspace.
 
-**You only need to authenticate once.** After running `gh auth login`, your credentials will survive container rebuilds and be available in future sessions.
+**You only need to authenticate once.** After running `gh auth login` or configuring `.secrets`, your credentials will survive container rebuilds and be available in future sessions.
+
+## Using Claude Code
+
+### The `cc` Command
+
+The `cc` command is an alias that launches Claude Code with the project's system prompt and plan-mode permissions. For Agent Teams split-pane support, use the **"Claude Teams (tmux)"** terminal profile in VS Code (dropdown next to the `+` button) or connect via `connect-external-terminal.sh`.
+
+```bash
+cc                    # Start Claude Code in current directory
+cc "explain this"     # Start with an initial prompt
+```
+
+### Direct CLI
+
+For more control, use the `claude` command directly:
+
+```bash
+claude                        # Basic invocation
+claude --help                 # View all options
+claude --resume               # Resume previous session
+```
 
 ## Available Tools
 
@@ -147,32 +183,11 @@ GitHub CLI credentials are automatically persisted across container rebuilds. Th
 | `ccstatusline` | 6-line powerline status display (v1.1.0) |
 | `claude-monitor` | Real-time usage tracking |
 
-## Using Claude Code
-
-### The `cc` Command
-
-The `cc` command is an alias that launches Claude Code with the project's system prompt and plan-mode permissions. For Agent Teams split-pane support, use the **"Claude Teams (tmux)"** terminal profile in VS Code (dropdown next to the `+` button) or connect via `connect-external-terminal.sh`.
-
-```bash
-cc                    # Start Claude Code in current directory
-cc "explain this"     # Start with an initial prompt
-```
-
-### Direct CLI
-
-For more control, use the `claude` command directly:
-
-```bash
-claude                        # Basic invocation
-claude --help                 # View all options
-claude --resume               # Resume previous session
-```
-
 ## Configuration
 
 ### Environment Variables
 
-Edit `.devcontainer/.env` to customize behavior:
+Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -180,11 +195,13 @@ Edit `.devcontainer/.env` to customize behavior:
 | `SETUP_CONFIG` | `true` | Copy config files during setup |
 | `OVERWRITE_CONFIG` | `true` | Overwrite existing configs |
 | `SETUP_ALIASES` | `true` | Add `cc` alias to shell |
+| `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` |
 | `SETUP_PLUGINS` | `true` | Install official plugins |
+| `SETUP_UPDATE_CLAUDE` | `true` | Auto-update Claude Code on container start |
 
 ### Claude Code Settings
 
-Default settings are in `.devcontainer/config/settings.json`. These are copied to `/workspaces/.claude/settings.json` on first run.
+Default settings are in `.devcontainer/config/settings.json`. These are copied to `/workspaces/.claude/settings.json` on container start (when `OVERWRITE_CONFIG=true`).
 
 Key defaults:
 - **Model**: Claude Opus 4-6
@@ -274,8 +291,8 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 - **Authentication required**: Run `claude` once to authenticate before using `cc`
 - **Plan mode default**: The container starts in "plan" mode, which prompts for approval before making changes
-- **Project-local config**: Config files are auto-copied to `.claude/` on container start via `setup-config.sh`
-- **GitHub auth persists**: Run `gh auth login` once; credentials survive container rebuilds (stored in `/workspaces/.gh/`)
+- **Config is ephemeral**: `OVERWRITE_CONFIG=true` (default) means `.claude/settings.json` is rebuilt every container start — persistent changes go in `.devcontainer/config/settings.json`
+- **GitHub auth persists**: Run `gh auth login` once or configure `.secrets`; credentials survive container rebuilds
 - **Agent Teams needs tmux**: Split panes only work inside tmux. Use the "Claude Teams (tmux)" VS Code terminal profile or `connect-external-terminal.sh` from WezTerm/iTerm2
 
 ## Further Reading

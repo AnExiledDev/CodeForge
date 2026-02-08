@@ -1,1 +1,8 @@
+# Explicitly ignored (safety net on top of root .* rule)
 .review
+.secrets
+
+# Un-ignore dotfiles that should be tracked (overrides root .* pattern)
+!.env.example
+!.secrets.example
+!.gitignore
