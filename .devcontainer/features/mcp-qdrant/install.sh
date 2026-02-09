@@ -4,6 +4,14 @@ set -euo pipefail
 # Import options from devcontainer-feature.json
 # NOTE: DevContainer converts camelCase options to UPPERCASE without underscores
 # Example: "qdrantUrl" becomes $QDRANTURL (not $QDRANT_URL)
+VERSION="${VERSION:-latest}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[mcp-qdrant] Skipping installation (version=none)"
+    exit 0
+fi
+
 QDRANT_URL="${QDRANTURL:-}"
 QDRANT_API_KEY="${QDRANTAPIKEY:-}"
 QDRANT_LOCAL_PATH="${QDRANTLOCALPATH:-/workspaces/.qdrant/storage}"
@@ -76,7 +84,7 @@ pip uninstall hf-xet -y 2>/dev/null || true
 # Pre-download the embedding model from GCS (more reliable than HuggingFace Hub in containers)
 # This is critical to avoid network timeouts from huggingface_hub
 echo "[mcp-qdrant] Pre-downloading embedding model from GCS..."
-FASTEMBED_CACHE="/tmp/fastembed_cache"
+FASTEMBED_CACHE="/workspaces/.qdrant/fastembed_cache"
 mkdir -p "${FASTEMBED_CACHE}"
 
 # Map embedding model names to GCS URLs and legacy cache directory names
@@ -117,8 +125,7 @@ if [ -n "${MODEL_URL}" ]; then
             # Remove macOS extended attribute files
             find "${FASTEMBED_CACHE}" -name "._*" -delete 2>/dev/null || true
             rm -f "${TEMP_TAR}"
-            # Make cache world-readable/writable since it's in /tmp
-            chmod -R 777 "${FASTEMBED_CACHE}" 2>/dev/null || true
+            chmod -R 755 "${FASTEMBED_CACHE}" 2>/dev/null || true
             echo "[mcp-qdrant] ✓ Embedding model pre-downloaded to ${FASTEMBED_CACHE}/${MODEL_DIR}"
         else
             echo "[mcp-qdrant] WARNING: Failed to download model from GCS"
@@ -208,7 +215,7 @@ if [ -n "$QDRANT_URL" ]; then
             args: ["mcp-server-qdrant"],
             env: {
                 HF_HUB_OFFLINE: "1",
-                FASTEMBED_CACHE_PATH: "/tmp/fastembed_cache",
+                FASTEMBED_CACHE_PATH: "/workspaces/.qdrant/fastembed_cache",
                 QDRANT_URL: $url,
                 QDRANT_API_KEY: $key,
                 COLLECTION_NAME: $collection
@@ -224,7 +231,7 @@ else
             args: ["mcp-server-qdrant"],
             env: {
                 HF_HUB_OFFLINE: "1",
-                FASTEMBED_CACHE_PATH: "/tmp/fastembed_cache",
+                FASTEMBED_CACHE_PATH: "/workspaces/.qdrant/fastembed_cache",
                 QDRANT_LOCAL_PATH: $path,
                 COLLECTION_NAME: $collection
             }
@@ -250,7 +257,7 @@ fi
 
 # Set proper permissions
 chmod 644 "$SETTINGS_FILE"
-chown vscode:vscode "$SETTINGS_FILE" 2>/dev/null || true
+chown "$(id -un):$(id -gn)" "$SETTINGS_FILE" 2>/dev/null || true
 
 echo "[mcp-qdrant] ✓ Configuration complete"
 HOOK_EOF

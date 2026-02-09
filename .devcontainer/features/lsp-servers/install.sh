@@ -4,11 +4,18 @@
 
 set -euo pipefail
 
+VERSION="${VERSION:-latest}"
 PYRIGHT_VERSION="${PYRIGHTVERSION:-latest}"
 TSLSP_VERSION="${TYPESCRIPTLSPVERSION:-latest}"
 TS_VERSION="${TYPESCRIPTVERSION:-latest}"
 GOPLS_VERSION="${GOPLSVERSION:-latest}"
 USERNAME="${USERNAME:-automatic}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[lsp-servers] Skipping installation (version=none)"
+    exit 0
+fi
 
 echo "[lsp-servers] Starting installation..."
 echo "[lsp-servers] Pyright version: ${PYRIGHT_VERSION}"

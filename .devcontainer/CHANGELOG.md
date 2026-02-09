@@ -1,5 +1,109 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.8.0] - 2026-02-09
+
+### Added
+
+#### Config System: Declarative File Manifest
+- **`config/file-manifest.json`** — new declarative manifest controlling which config files are copied and how. Replaces hardcoded `copy_file` calls with per-file `overwrite` modes: `"if-changed"` (sha256-based, default), `"always"`, or `"never"`
+- **`config/defaults/`** — config files relocated from `config/` to `config/defaults/` (settings.json, keybindings.json, main-system-prompt.md)
+- **`setup-config.sh` rewritten** — reads file-manifest.json, supports variable expansion (`${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`), sha256-based change detection, and legacy fallback if manifest is missing
+
+#### Features
+- **ruff feature** — Python formatter/linter via `uv tool install ruff`; replaces Black as primary Python formatter (Black kept as fallback)
+- **shfmt feature** — Shell script formatter via direct binary download from GitHub releases; supports `.sh`, `.bash`, `.zsh`, `.mksh`, `.bats`
+- **dprint feature** — Pluggable formatter for Markdown, YAML, TOML, and Dockerfile via GitHub releases binary; ships global config at `/usr/local/share/dprint/dprint.json` with four plugins (markdown, yaml, toml, dockerfile)
+- **shellcheck feature** — Shell script linter via `apt-get install`; JSON output parsing for structured diagnostics
+- **hadolint feature** — Dockerfile linter via direct binary download from GitHub releases; JSON output parsing
+
+#### Formatter Coverage (format-on-stop.py)
+- **Ruff formatter** — `.py`/`.pyi` files now formatted with Ruff (falls back to Black if Ruff not installed)
+- **Biome expanded** — added `.css`, `.json`, `.jsonc`, `.graphql`, `.gql`, `.html`, `.vue`, `.svelte`, `.astro` (was JS/TS only; now 18 extensions total)
+- **shfmt integration** — `.sh`, `.bash`, `.zsh`, `.mksh`, `.bats` files auto-formatted on Stop
+- **dprint integration** — `.md`, `.markdown`, `.yaml`, `.yml`, `.toml` files and `Dockerfile`/`.dockerfile` auto-formatted on Stop
+- **rustfmt integration** — `.rs` files auto-formatted if `rustfmt` is in PATH (conditional, zero overhead when unused)
+
+#### Linter Coverage (lint-file.py)
+- **Ruff linter** — Python files now checked by both Pyright (type checking) and Ruff (style/correctness); complementary, not redundant
+- **Biome lint** — JS/TS/CSS/GraphQL files linted via `biome lint --reporter=json`; surfaces unsafe diagnostics not auto-fixed by formatter
+- **ShellCheck** — shell scripts linted via `shellcheck --format=json`; structured severity/line/message output
+- **go vet** — `.go` files linted via `go vet`; stderr parsed for diagnostics
+- **hadolint** — `Dockerfile`/`.dockerfile` files linted via `hadolint --format json`
+- **clippy** — `.rs` files linted via `cargo clippy` if cargo is in PATH (conditional)
+
+#### version:none Support
+- **All 20 local features** now support `"version": "none"` in devcontainer.json to skip installation entirely
+- Added `version` option to 7 features that previously lacked it: ccstatusline, notify-hook, shellcheck, mcp-qdrant, mcp-reasoner, splitrail, lsp-servers
+- Added skip guard (`if [ "${VERSION}" = "none" ]; then exit 0; fi`) to all 20 install.sh files
+
+#### Advisory Hooks (code-directive plugin)
+- **advisory-test-runner.py** `[Stop]` — runs project test suite on Stop, injects pass/fail results as `additionalContext`. Never blocks (always exit 0). Detects pytest, vitest, jest, mocha, go test, cargo test. 60s timeout, truncates to last 30 lines
+- **git-state-injector.py** `[SessionStart]` — injects branch, status summary, recent commits, and diff stats as `additionalContext` on every session start. 5s per git command, total output capped at 2000 chars
+- **ticket-linker.py** `[UserPromptSubmit]` — auto-fetches GitHub issues/PRs when prompt contains `#123` or full GitHub URLs. Up to 3 refs per prompt, body capped at 1500 chars each
+- **commit-reminder.py** `[Stop]` — checks for uncommitted changes (staged/unstaged counts) and injects advisory reminder as `additionalContext`. Checks `stop_hook_active`
+- **todo-harvester.py** `[SessionStart]` — greps for TODO/FIXME/HACK/XXX across 13 source extensions, injects count + top 10 items. Excludes noise dirs, output capped at 800 chars
+
+#### New Skills (code-directive plugin — 5 new, 21 total)
+- **api-design** — REST conventions, error handling patterns, OpenAPI/Swagger guidance
+- **ast-grep-patterns** — structural code search patterns across languages
+- **dependency-management** — ecosystem-specific audit commands, license compliance
+- **documentation-patterns** — docstring formats, API doc templates
+- **migration-patterns** — Python and JavaScript framework migration guides
+
+#### Commands & Scripts
+- **`cc-tools`** — new shell function listing all installed CodeForge tools with version info
+- **`check-setup`** — new health check script (`check-setup.sh`) verifying container setup is working correctly; aliased in shell rc files
+
+#### Workspace
+- **`CLAUDE.md`** — workspace-level project instructions (workspace scoping rules)
+- **`test-project/`** — minimal test project directory
+
+### Changed
+
+#### NPM Package (setup.js)
+- **`--force` is now non-destructive** — selectively syncs files instead of rm+copy. Framework files (scripts, features, plugins) are overwritten; user config files (settings, keybindings, system prompt, file-manifest) are preserved with `.codeforge-new` versions saved for diffing
+- **`--reset` flag** — new option for complete fresh install (deletes and re-copies everything)
+- **`.codeforge-preserve`** — user-customizable file listing additional paths to preserve during `--force` updates
+- **devcontainer.json handling** — user's version backed up as `.bak` during `--force`, then overwritten with package version
+- **`.npmignore`** — excludes `.codeforge-new`, `.bak`, and `.codeforge-preserve` artifacts from npm package
+
+#### Setup System
+- **setup.sh** — removed `set -e` (individual script failures no longer abort the entire setup); structured pass/fail/skip reporting with elapsed time summary
+- **setup-aliases.sh** — backs up `.bashrc`/`.zshrc` before modifying (keeps last 3 backups); cleans up old cc-tools/check-setup definitions; adds `cc-tools` function and `check-setup` alias
+- **OVERWRITE_CONFIG deprecated** — replaced by per-file `overwrite` in `config/file-manifest.json`. Legacy env var triggers a deprecation warning
+
+#### Code-Directive Plugin
+- **hooks.json** — expanded from 3 to 6 hook events (added Stop, SessionStart, updated UserPromptSubmit with ticket-linker)
+- **Agent definitions** — architect gains documentation outputs section + api-design skill link; multiple agents updated with refined instructions
+- **skill-suggester.py** — added keyword mappings for 5 new skills (api-design, ast-grep-patterns, dependency-management, documentation-patterns, migration-patterns)
+- **specification-writing skill** — expanded with additional templates and patterns
+- **code-directive plugin.json** — description updated to "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion"
+
+#### Other
+- **format-on-stop.py** — rewritten with expanded dispatch: 7 formatters covering 31 file extensions (was 3 formatters, 12 extensions)
+- **lint-file.py** — rewritten as multi-language dispatcher: 7 linters across Python, JS/TS/CSS, Shell, Go, Dockerfile, Rust (was Pyright-only for Python)
+- **auto-linter hook timeout** — increased from 30s to 60s (each individual linter subprocess still capped at 10s)
+- **auto-formatter plugin.json** — description updated to reflect all 7 formatters
+- **auto-linter plugin.json** — description updated to reflect all 7 linters
+- **marketplace.json** — descriptions updated for auto-formatter, auto-linter, and code-directive plugins
+- **devcontainer.json** — 5 new features registered in `overrideFeatureInstallOrder` and `features` object; added install order documentation comments
+- **.env.example** — removed `OVERWRITE_CONFIG`, added `SETUP_PROJECTS`, updated descriptions
+- **.gitignore** — updated with additional exclusions
+
+### Removed
+
+- **`features/claude-code/`** — entire local feature deleted (Claude Code now installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1`, the official Anthropic feature)
+- **`config/settings.json`**, **`config/keybindings.json`**, **`config/main-system-prompt.md`** — moved to `config/defaults/` subdirectory
+- **`OVERWRITE_CONFIG` env var** — deprecated in favor of `config/file-manifest.json` per-file overwrite modes
+
+### Documentation
+
+- **New `docs/` directory** with 5 focused guides: configuration-reference, keybindings, optional-features, plugins, troubleshooting
+- **CLAUDE.md** — rewritten for new config system (file-manifest.json, config/defaults/), added cc-tools/check-setup commands, added version:none section, updated plugin descriptions
+- **README.md** — added new tools (ruff, shfmt, dprint, shellcheck, hadolint, Bun), updated config system docs, added SETUP_PROJECTS and PLUGIN_BLACKLIST env vars, updated ccstatusline description
+
+---
+
 ## [v1.7.1] - 2026-02-08
 
 ### Added

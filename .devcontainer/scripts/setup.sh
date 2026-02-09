@@ -1,8 +1,6 @@
 #!/bin/bash
 # Master setup script for CodeForge devcontainer
 
-set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVCONTAINER_DIR="$(dirname "$SCRIPT_DIR")"
 ENV_FILE="$DEVCONTAINER_DIR/.env"
@@ -19,14 +17,15 @@ fi
 : "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"
 : "${SETUP_CONFIG:=true}"
 : "${SETUP_ALIASES:=true}"
-: "${OVERWRITE_CONFIG:=false}"
 : "${SETUP_AUTH:=true}"
 : "${SETUP_PLUGINS:=true}"
 : "${SETUP_UPDATE_CLAUDE:=true}"
 : "${SETUP_PROJECTS:=true}"
 
-export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES OVERWRITE_CONFIG SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS
+export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS
 
+SETUP_START=$(date +%s)
+SETUP_RESULTS=()
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  CodeForge Setup"
@@ -36,18 +35,26 @@ echo ""
 run_script() {
     local script="$1"
     local enabled="$2"
-    local name="$(basename $script .sh)"
+    local name
+    name="$(basename "$script" .sh)"
 
     if [ "$enabled" = "true" ]; then
         if [ -f "$script" ]; then
-            echo "Running $name..."
-            bash "$script"
-            echo ""
+            printf "  %-30s" "$name..."
+            if bash "$script" 2>&1; then
+                echo "done"
+                SETUP_RESULTS+=("$name:ok")
+            else
+                echo "FAILED (exit $?)"
+                SETUP_RESULTS+=("$name:failed")
+            fi
         else
-            echo "WARNING: $script not found, skipping"
+            echo "  $name... not found, skipping"
+            SETUP_RESULTS+=("$name:missing")
         fi
     else
-        echo "Skipping $name (disabled)"
+        echo "  $name... skipped (disabled)"
+        SETUP_RESULTS+=("$name:disabled")
     fi
 }
 
@@ -61,14 +68,38 @@ run_script "$SCRIPT_DIR/setup-projects.sh" "$SETUP_PROJECTS"
 # Non-blocking: check for Claude Code updates in background
 if [ "$SETUP_UPDATE_CLAUDE" = "true" ]; then
     if [ -f "$SCRIPT_DIR/setup-update-claude.sh" ]; then
-        echo "Running setup-update-claude (background)..."
+        echo "  Claude Code update checking in background..."
+        echo "  (If 'claude' fails, wait a moment and retry)"
         bash "$SCRIPT_DIR/setup-update-claude.sh" &
         disown
+        SETUP_RESULTS+=("setup-update-claude:ok")
+    else
+        SETUP_RESULTS+=("setup-update-claude:missing")
     fi
 else
-    echo "Skipping setup-update-claude (disabled)"
+    echo "  setup-update-claude... skipped (disabled)"
+    SETUP_RESULTS+=("setup-update-claude:disabled")
 fi
 
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  Setup Complete"
+echo "  Setup Summary"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+FAILURES=0
+for result in "${SETUP_RESULTS[@]}"; do
+    name="${result%%:*}"
+    status="${result##*:}"
+    case "$status" in
+        ok)       printf "  ✓ %s\n" "$name" ;;
+        failed)   printf "  ✗ %s (FAILED)\n" "$name"; FAILURES=$((FAILURES + 1)) ;;
+        disabled) printf "  - %s (disabled)\n" "$name" ;;
+        missing)  printf "  ? %s (not found)\n" "$name" ;;
+    esac
+done
+ELAPSED=$(( $(date +%s) - SETUP_START ))
+echo ""
+if [ $FAILURES -gt 0 ]; then
+    echo "  $FAILURES step(s) failed. Check output above for details."
+fi
+echo "  Completed in ${ELAPSED}s"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

@@ -13,6 +13,8 @@ model: opus
 color: magenta
 memory:
   scope: project
+skills:
+  - api-design
 hooks:
   PreToolUse:
     - matcher: Bash
@@ -89,6 +91,16 @@ Based on your exploration:
 6. **Flag performance-sensitive paths** — Even for non-performance requests, surface changes that touch hot paths, introduce N+1 queries, add blocking I/O, or change algorithmic complexity. Note measurement strategy if relevant.
 7. **Assess risks** — What could go wrong? What are the edge cases? What dependencies could break?
 8. **Define verification** — How will we know each step worked?
+9. **Specify documentation outputs** — Identify which docs this work should produce
+   or update. Distinguish:
+   - **Roadmap entry**: one-line description of what the version delivers (no
+     implementation detail — that belongs in specs)
+   - **Feature spec**: ≤200 line file following the standard template (Version,
+     Status, Intent, Acceptance Criteria, Key Files, Schema, API, Dependencies)
+   - **As-built update**: if modifying an existing feature, identify which spec
+     to update post-implementation
+   Plans that mix roadmap-level and spec-level detail produce artifacts too
+   detailed for strategy and too shallow for implementation.
 
 ### Phase 4: Structure the Plan
 
@@ -149,6 +161,11 @@ List the 3-7 files most critical for implementing this plan:
 - `/path/to/file.py` — Brief reason (e.g., "Core logic to modify")
 - `/path/to/models.py` — Brief reason (e.g., "Data model to extend")
 - `/path/to/test_file.py` — Brief reason (e.g., "Test patterns to follow")
+
+### Documentation Outputs
+- New spec: `.specs/vX.Y.0/feature-name.md` (≤200 lines)
+- Updated spec: `.specs/vX.Y.0/existing-feature.md` — changes: [list]
+- Roadmap update: `.specs/roadmap.md` — add `[ ] feature` to vX.Y.0
 
 ### Risks & Mitigations
 

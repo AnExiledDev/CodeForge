@@ -145,6 +145,7 @@ claude --resume               # Resume previous session
 | Node.js LTS | JavaScript runtime |
 | TypeScript | Via Node.js |
 | Go | Latest stable via devcontainer feature |
+| Bun | Fast JavaScript runtime and toolkit |
 
 ### Package Managers
 | Tool | Description |
@@ -162,7 +163,12 @@ claude --resume               # Resume previous session
 | `jq` | JSON processor |
 | `curl` | HTTP client |
 | `tmux` | Terminal multiplexer for Agent Teams split-pane sessions |
-| `biome` | Fast JS/TS/JSON/CSS formatter |
+| `biome` | Fast JS/TS/JSON/CSS formatter and linter |
+| `ruff` | Fast Python linter and formatter (replaces Black + Flake8) |
+| `shfmt` | Shell script formatter |
+| `dprint` | Pluggable formatter for Markdown, YAML, TOML, Dockerfile |
+| `shellcheck` | Static analysis tool for shell scripts |
+| `hadolint` | Dockerfile linter |
 | `agent-browser` | Headless browser automation for AI agents |
 
 ### Code Intelligence
@@ -180,7 +186,7 @@ claude --resume               # Resume previous session
 | `cc` | Wrapper with auto-configuration |
 | `ccusage` | Token usage analyzer |
 | `ccburn` | Visual token burn rate tracker with pace indicators |
-| `ccstatusline` | 6-line powerline status display (v1.1.0) |
+| `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `claude-monitor` | Real-time usage tracking |
 
 ## Configuration
@@ -192,16 +198,26 @@ Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` | Claude configuration directory |
-| `SETUP_CONFIG` | `true` | Copy config files during setup |
-| `OVERWRITE_CONFIG` | `true` | Overwrite existing configs |
-| `SETUP_ALIASES` | `true` | Add `cc` alias to shell |
+| `SETUP_CONFIG` | `true` | Copy config files during setup (per `file-manifest.json`) |
+| `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw` aliases to shell |
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` |
-| `SETUP_PLUGINS` | `true` | Install official plugins |
+| `SETUP_PLUGINS` | `true` | Install official plugins + register marketplace |
 | `SETUP_UPDATE_CLAUDE` | `true` | Auto-update Claude Code on container start |
+| `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
+| `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip |
 
 ### Claude Code Settings
 
-Default settings are in `.devcontainer/config/settings.json`. These are copied to `/workspaces/.claude/settings.json` on container start (when `OVERWRITE_CONFIG=true`).
+Default settings are in `.devcontainer/config/defaults/settings.json`. File copying is controlled by `config/file-manifest.json`, which specifies per-file overwrite behavior (`"if-changed"`, `"always"`, or `"never"`).
+
+To add a custom config file, append an entry to `file-manifest.json`:
+```json
+{
+  "src": "my-config.json",
+  "dest": "${WORKSPACE_ROOT}",
+  "overwrite": "if-changed"
+}
+```
 
 Key defaults:
 - **Model**: Claude Opus 4-6
@@ -210,7 +226,7 @@ Key defaults:
 
 ### Keybindings
 
-Default keybindings are in `.devcontainer/config/keybindings.json` (empty by default — Claude Code defaults apply). Customize by adding entries to the `bindings` array.
+Default keybindings are in `.devcontainer/config/defaults/keybindings.json` (empty by default — Claude Code defaults apply). Customize by adding entries to the `bindings` array.
 
 **VS Code Terminal Passthrough**: `Ctrl+P` and `Ctrl+F` are configured to pass through to the terminal (via `terminal.integrated.commandsToSkipShell`) so Claude Code receives them. Other VS Code shortcuts that conflict with Claude Code:
 
@@ -227,7 +243,7 @@ For conflicting shortcuts, use Meta (Alt) variants or add custom keybindings.
 
 ### System Prompt
 
-The default system prompt is in `.devcontainer/config/main-system-prompt.md`. Override it by creating a `.claude/system-prompt.md` in your project directory.
+The default system prompt is in `.devcontainer/config/defaults/main-system-prompt.md`. Override it by creating a `.claude/system-prompt.md` in your project directory.
 
 ## Custom Features
 
@@ -240,7 +256,7 @@ CodeForge includes several custom devcontainer features:
 | `claude-monitor` | Real-time token usage monitoring with ML predictions |
 | `ccusage` | Usage analytics CLI |
 | `ccburn` | Visual token burn rate tracker with pace indicators |
-| `ccstatusline` | 6-line powerline status display (v1.1.0) |
+| `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `ast-grep` | Structural code search using AST patterns |
 | `tree-sitter` | Parser with JS/TS/Python grammars |
 | `lsp-servers` | Pyright and TypeScript language servers |
@@ -291,12 +307,34 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 - **Authentication required**: Run `claude` once to authenticate before using `cc`
 - **Plan mode default**: The container starts in "plan" mode, which prompts for approval before making changes
-- **Config is ephemeral**: `OVERWRITE_CONFIG=true` (default) means `.claude/settings.json` is rebuilt every container start — persistent changes go in `.devcontainer/config/settings.json`
+- **Config is managed by manifest**: `config/file-manifest.json` controls which files are copied and when — default `overwrite: "if-changed"` uses sha256 comparison. Persistent changes go in `.devcontainer/config/defaults/settings.json`
 - **GitHub auth persists**: Run `gh auth login` once or configure `.secrets`; credentials survive container rebuilds
 - **Agent Teams needs tmux**: Split panes only work inside tmux. Use the "Claude Teams (tmux)" VS Code terminal profile or `connect-external-terminal.sh` from WezTerm/iTerm2
 
+## Troubleshooting
+
+Common issues and solutions. For detailed troubleshooting, see [docs/troubleshooting.md](docs/troubleshooting.md).
+
+| Problem | Solution |
+|---------|----------|
+| `cc: command not found` | Run `source ~/.bashrc` or open a new terminal |
+| `claude` fails during startup | Background update may be in progress — wait 10s and retry |
+| GitHub push fails | Run `gh auth status` to check authentication |
+| Plugin not loading | Check `enabledPlugins` in `config/defaults/settings.json` |
+| Feature not installed | Check `devcontainer.json` for `"version": "none"` |
+| Tool version/status | Run `cc-tools` to list all tools with version info |
+| Full health check | Run `check-setup` to verify setup status |
+
 ## Further Reading
 
+**CodeForge Documentation**:
+- [Configuration Reference](docs/configuration-reference.md) — all env vars and config options
+- [Plugin System](docs/plugins.md) — plugin architecture and per-plugin docs
+- [Optional Features](docs/optional-features.md) — mcp-qdrant, mcp-reasoner, splitrail
+- [Keybinding Customization](docs/keybindings.md) — resolving VS Code conflicts
+- [Troubleshooting](docs/troubleshooting.md) — common issues and solutions
+
+**External**:
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [Dev Containers Specification](https://containers.dev/)
 - [GitHub CLI Manual](https://cli.github.com/manual/)

@@ -1,6 +1,6 @@
 {
   "name": "auto-formatter",
-  "description": "Batch-formats edited files at Stop (Black for Python, gofmt for Go, Biome for JS/TS/CSS)",
+  "description": "Batch-formats edited files at Stop (Ruff for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)",
   "author": {
     "name": "AnExiledDev"
   }

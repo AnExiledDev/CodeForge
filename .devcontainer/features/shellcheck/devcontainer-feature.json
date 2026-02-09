@@ -1,0 +1,13 @@
+{
+  "id": "shellcheck",
+  "version": "1.0.0",
+  "name": "ShellCheck",
+  "description": "Static analysis tool for shell scripts",
+  "options": {
+    "version": {
+      "type": "string",
+      "description": "Version to install (or 'none' to skip installation)",
+      "default": "latest"
+    }
+  }
+}

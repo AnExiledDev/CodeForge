@@ -4,7 +4,14 @@ set -euo pipefail
 # No cleanup needed - using CLI instead of temp files
 
 # Import options
+VERSION="${VERSION:-latest}"
 USERNAME="${USERNAME:-automatic}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[mcp-reasoner] Skipping installation (version=none)"
+    exit 0
+fi
 
 echo "[mcp-reasoner] Starting MCP Reasoner installation..."
 
@@ -145,7 +152,7 @@ fi
 
 # Set proper permissions
 chmod 644 "$SETTINGS_FILE"
-chown vscode:vscode "$SETTINGS_FILE" 2>/dev/null || true
+chown "$(id -un):$(id -gn)" "$SETTINGS_FILE" 2>/dev/null || true
 
 echo "[mcp-reasoner] ✓ Configuration complete"
 HOOK_EOF

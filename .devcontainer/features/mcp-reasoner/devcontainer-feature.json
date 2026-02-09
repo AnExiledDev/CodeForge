@@ -6,6 +6,11 @@
   "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/Jacck/mcp-reasoner",
   "options": {
+    "version": {
+      "type": "string",
+      "description": "Version to install (or 'none' to skip installation)",
+      "default": "latest"
+    },
     "username": {
       "type": "string",
       "description": "Container user to install for",

@@ -9,7 +9,14 @@ trap cleanup EXIT
 
 # Import options from devcontainer-feature.json
 # NOTE: DevContainer converts camelCase options to UPPERCASE without underscores
+VERSION="${VERSION:-latest}"
 USERNAME="${USERNAME:-automatic}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[ccstatusline] Skipping installation (version=none)"
+    exit 0
+fi
 
 echo "[ccstatusline] Starting installation..."
 

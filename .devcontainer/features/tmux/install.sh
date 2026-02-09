@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+VERSION="${VERSION:-latest}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[tmux] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "Installing tmux for Claude Code Agent Teams..."
 
 # Install tmux via apt

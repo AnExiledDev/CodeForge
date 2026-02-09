@@ -9,9 +9,16 @@ trap cleanup EXIT
 
 # Import options
 # NOTE: DevContainer converts camelCase to UPPERCASE without underscores
+VERSION="${VERSION:-latest}"
 REPO_URL="${REPOURL:-https://github.com/Piebald-AI/splitrail.git}"
 BRANCH="${BRANCH:-main}"
 USERNAME="${USERNAME:-automatic}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[splitrail] Skipping installation (version=none)"
+    exit 0
+fi
 
 echo "[splitrail] Starting Splitrail installation..."
 

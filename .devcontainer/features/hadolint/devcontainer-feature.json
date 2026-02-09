@@ -1,0 +1,13 @@
+{
+  "id": "hadolint",
+  "version": "1.0.0",
+  "name": "hadolint",
+  "description": "Dockerfile linter that validates best practices",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "v2.14.0",
+      "description": "hadolint version to install. Set 'latest' to always get newest."
+    }
+  }
+}

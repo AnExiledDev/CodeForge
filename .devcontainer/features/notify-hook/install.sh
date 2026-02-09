@@ -1,8 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
+VERSION="${VERSION:-latest}"
 ENABLEBELL="${ENABLEBELL:-true}"
 ENABLEOSC="${ENABLEOSC:-true}"
+
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[notify-hook] Skipping installation (version=none)"
+    exit 0
+fi
 
 echo "[notify-hook] Starting installation..."
 echo "[notify-hook] Bell enabled: ${ENABLEBELL}"

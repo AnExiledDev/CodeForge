@@ -4,6 +4,12 @@ set -euo pipefail
 VERSION="${VERSION:-latest}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[ast-grep] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[ast-grep] Starting installation..."
 echo "[ast-grep] Version: ${VERSION}"
 

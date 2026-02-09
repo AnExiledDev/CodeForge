@@ -1,0 +1,18 @@
+{
+  "id": "dprint",
+  "version": "1.0.0",
+  "name": "dprint",
+  "description": "Pluggable code formatter for Markdown, YAML, TOML, and Dockerfile",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "0.51.1",
+      "description": "dprint version to install. Set 'latest' to always get newest."
+    },
+    "username": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Container user to install for"
+    }
+  }
+}

@@ -76,7 +76,12 @@ Surface assumptions early. If the task has incomplete requirements, state what y
    - *Medium risk* (function logic, new endpoint): run related unit tests
    - *High risk* (data model, public API, shared utility): run full test suite, check for import/usage breakage
    - If no automated verification is available, state what manual checks the caller should perform.
-6. **Report** — Summarize what was changed, which files were modified, and how to verify.
+6. **Flag spec status** — Check if a feature spec exists for the area you changed
+   (Glob `.specs/**/*.md`, Grep for the feature name). If a spec exists and
+   your changes affect its acceptance criteria or documented behavior, note in your
+   report: which spec, what changed, and whether it needs an as-built update. The
+   orchestrator handles spec updates — do not modify spec files yourself.
+7. **Report** — Summarize what was changed, which files were modified, and how to verify.
 
 ### For Multi-Step Tasks
 
@@ -95,6 +100,10 @@ Surface assumptions early. If the task has incomplete requirements, state what y
 - **Failure or uncertainty**: Report what happened, what you tried, and what the caller could do next. Do not silently skip steps. For partial completion, explicitly list which steps succeeded and which remain.
 - **Silent failure risk** (build passes but behavior may be wrong): When the change affects runtime behavior that automated tests don't cover, note this gap and suggest how the caller can manually verify correctness.
 - **Tests exist for the area being changed**: Run them after your changes. Report results.
+- **Feature implementation complete**: Check `.specs/` for a related spec.
+  If found, include in your report whether acceptance criteria were met and whether
+  the spec needs an as-built update. Stale specs that say "planned" after code ships
+  cause the next AI session to re-plan already-done work.
 
 ## Output Format
 

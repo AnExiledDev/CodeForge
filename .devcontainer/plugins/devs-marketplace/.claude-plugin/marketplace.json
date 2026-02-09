@@ -76,21 +76,21 @@
     },
     {
       "name": "auto-formatter",
-      "description": "Auto-formats files after editing (black for Python, gofmt for Go)",
+      "description": "Batch-formats edited files at Stop (Ruff for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)",
       "version": "1.0.0",
       "source": "./plugins/auto-formatter",
       "category": "development"
     },
     {
       "name": "auto-linter",
-      "description": "Auto-lints files after editing (pyright for Python)",
+      "description": "Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)",
       "version": "1.0.0",
       "source": "./plugins/auto-linter",
       "category": "development"
     },
     {
       "name": "code-directive",
-      "description": "Coding standards and skills for the CodeDirective project",
+      "description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
       "version": "1.0.0",
       "source": "./plugins/code-directive",
       "category": "development"

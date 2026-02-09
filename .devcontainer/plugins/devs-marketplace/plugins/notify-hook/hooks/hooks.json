@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/local/bin/claude-notify",
+            "command": "claude-notify",
             "timeout": 5
           }
         ]

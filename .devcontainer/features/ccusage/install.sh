@@ -15,6 +15,12 @@ CCUSAGE_VERSION="${VERSION:-latest}"
 SHELLS="${SHELLS:-both}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${CCUSAGE_VERSION}" = "none" ]; then
+    echo "[ccusage] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[ccusage] Starting ccusage installation..."
 
 # === SOURCE NVM ===

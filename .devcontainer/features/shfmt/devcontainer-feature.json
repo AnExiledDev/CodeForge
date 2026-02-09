@@ -1,0 +1,13 @@
+{
+  "id": "shfmt",
+  "version": "1.0.0",
+  "name": "shfmt",
+  "description": "Shell script formatter supporting bash, mksh, and POSIX sh",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "v3.12.0",
+      "description": "shfmt version to install. Set 'latest' to always get newest."
+    }
+  }
+}

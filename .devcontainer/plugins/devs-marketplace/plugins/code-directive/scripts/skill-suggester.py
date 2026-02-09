@@ -235,6 +235,67 @@ SKILLS = {
             "throughput",
         ],
     },
+    "api-design": {
+        "phrases": [
+            "api design",
+            "rest api design",
+            "design an api",
+            "design a rest",
+            "api convention",
+            "endpoint design",
+            "api versioning",
+            "pagination pattern",
+            "error response format",
+        ],
+        "terms": ["openapi", "swagger", "rfc7807"],
+    },
+    "ast-grep-patterns": {
+        "phrases": [
+            "ast-grep",
+            "ast grep",
+            "structural search",
+            "structural code search",
+            "syntax-aware search",
+            "tree-sitter",
+        ],
+        "terms": ["sg run", "ast-grep", "tree-sitter"],
+    },
+    "dependency-management": {
+        "phrases": [
+            "check dependencies",
+            "audit dependencies",
+            "outdated packages",
+            "dependency health",
+            "license check",
+            "unused dependencies",
+            "vulnerability scan",
+        ],
+        "terms": ["pip-audit", "npm audit", "cargo audit", "govulncheck"],
+    },
+    "documentation-patterns": {
+        "phrases": [
+            "write a readme",
+            "write documentation",
+            "add docstrings",
+            "add jsdoc",
+            "document the api",
+            "documentation template",
+            "update the docs",
+        ],
+        "terms": ["docstring", "jsdoc", "tsdoc", "godoc", "rustdoc"],
+    },
+    "migration-patterns": {
+        "phrases": [
+            "migrate from",
+            "upgrade to",
+            "version upgrade",
+            "framework migration",
+            "bump python",
+            "upgrade pydantic",
+            "migrate express",
+        ],
+        "terms": ["migrate", "migration", "upgrade"],
+    },
 }
 
 # Pre-compile term patterns for whole-word matching

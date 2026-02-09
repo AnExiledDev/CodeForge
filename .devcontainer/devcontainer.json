@@ -12,6 +12,11 @@
     "TMPDIR": "/workspaces/.tmp"
   },
 
+  // Feature install order: external runtimes first (Node, uv, Go, Bun),
+  // then Claude Code (needs Node), then custom features.
+  // npm-dependent features (agent-browser, ccusage, ccburn, biome, lsp-servers)
+  // must come after Node. uv-dependent features (ruff, claude-monitor) must
+  // come after uv. notify-hook is last (lightweight, no dependencies).
   "overrideFeatureInstallOrder": [
     "ghcr.io/devcontainers/features/node",
     "ghcr.io/devcontainers/features/github-cli",
@@ -29,6 +34,11 @@
     "./features/ast-grep",
     "./features/tree-sitter",
     "./features/lsp-servers",
+    "./features/ruff",
+    "./features/shfmt",
+    "./features/dprint",
+    "./features/shellcheck",
+    "./features/hadolint",
     "./features/biome",
     "./features/notify-hook"
   ],
@@ -69,6 +79,16 @@
     "./features/tree-sitter": {},
     "./features/lsp-servers": {},
     "./features/agent-browser": {},
+    "./features/ruff": {
+      "version": "latest",
+      "username": "automatic"
+    },
+    "./features/shfmt": {},
+    "./features/dprint": {
+      "username": "automatic"
+    },
+    "./features/shellcheck": {},
+    "./features/hadolint": {},
     "./features/biome": {},
     "./features/notify-hook": {
       "enableBell": true,

@@ -7,6 +7,8 @@ description: >-
 tools: Bash, Read, Glob, Grep
 model: sonnet
 color: red
+skills:
+  - debugging
 ---
 
 # Debug Logs Agent

@@ -183,6 +183,9 @@ go test -v ./path/to/package/...
 - **Ambiguous scope**: If the user says "test this" without specifying what, check if they have a file open or recently discussed a specific module. If unclear, ask which module or file to target.
 - **No test framework found**: Report this explicitly, recommend a framework based on the project's language, and ask the user how to proceed before writing anything.
 - If you cannot determine expected behavior for a function (no docs, no examples, unclear logic), state this explicitly in your output and write tests for the behavior you *can* verify, noting the gaps.
+- **Spec-linked testing**: When specs exist in `.specs/`, check if acceptance
+  criteria are defined for the area being tested. Report which criteria your tests
+  cover and which remain untested, so the orchestrator can update spec status.
 - **Always report** what you tested, what you discovered, and any bugs found in the source code.
 
 ## Output Format

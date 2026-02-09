@@ -13,6 +13,12 @@ CCBURN_VERSION="${VERSION:-latest}"
 SHELLS="${SHELLS:-both}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${CCBURN_VERSION}" = "none" ]; then
+    echo "[ccburn] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[ccburn] Starting ccburn installation..."
 
 # === SOURCE NVM ===

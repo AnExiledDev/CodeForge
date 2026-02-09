@@ -6,6 +6,11 @@
   "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/qdrant/mcp-server-qdrant",
   "options": {
+    "version": {
+      "type": "string",
+      "description": "Version to install (or 'none' to skip installation)",
+      "default": "latest"
+    },
     "qdrantUrl": {
       "type": "string",
       "description": "Qdrant instance URL (e.g., https://xyz.cloud.qdrant.io:6333). Leave empty for local instance.",

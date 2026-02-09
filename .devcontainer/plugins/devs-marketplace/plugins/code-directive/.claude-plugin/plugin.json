@@ -1,6 +1,6 @@
 {
   "name": "code-directive",
-  "description": "Coding standards and skills for the CodeDirective project",
+  "description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
   "version": "1.0.0",
   "author": {
     "name": "AnExiledDev"

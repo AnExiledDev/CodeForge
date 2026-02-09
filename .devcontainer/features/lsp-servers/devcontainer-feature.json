@@ -6,6 +6,11 @@
   "maintainer": "AnExiledDev",
   "documentationURL": "https://code.claude.com/docs/en/discover-plugins#code-intelligence",
   "options": {
+    "version": {
+      "type": "string",
+      "description": "Set to 'none' to skip installation of all LSP servers",
+      "default": "latest"
+    },
     "pyrightVersion": {
       "type": "string",
       "description": "Pyright npm package version (e.g., 'latest', '1.1.350')",

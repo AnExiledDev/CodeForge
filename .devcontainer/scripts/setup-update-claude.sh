@@ -8,10 +8,18 @@ echo "[update-claude] Checking for Claude Code updates..."
 # === TMPDIR ===
 _TMPDIR="${TMPDIR:-/tmp}"
 
+# === LOCK FILE (prevent concurrent updates) ===
+LOCK_FILE="${_TMPDIR}/claude-update.lock"
+if ! mkdir "$LOCK_FILE" 2>/dev/null; then
+    echo "[update-claude] Another update is already running, skipping"
+    exit 0
+fi
+
 # === CLEANUP TRAP ===
 cleanup() {
     rm -f "${_TMPDIR}/claude-update" 2>/dev/null || true
     rm -f "${_TMPDIR}/claude-update-manifest.json" 2>/dev/null || true
+    rm -rf "$LOCK_FILE" 2>/dev/null || true
 }
 trap cleanup EXIT
 

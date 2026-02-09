@@ -4,6 +4,12 @@ set -euo pipefail
 VERSION="${VERSION:-latest}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[agent-browser] Skipping installation (version=none)"
+    exit 0
+fi
+
 # Set headless as default for containers (bundled Chromium, no display needed)
 export AGENT_BROWSER_HEADLESS=true
 

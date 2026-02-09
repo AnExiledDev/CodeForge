@@ -74,6 +74,7 @@ devforge/
 simple-review/
 devs-utilities/
 devs-notes/
+equicord-autobump/
 
 # Unfinished plugins
 .devcontainer/plugins/devs-marketplace/plugins/workflow-enhancer/

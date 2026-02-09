@@ -3,6 +3,12 @@ set -euo pipefail
 
 VERSION="${VERSION:-latest}"
 
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[biome] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[biome] Starting installation..."
 echo "[biome] Version: ${VERSION}"
 

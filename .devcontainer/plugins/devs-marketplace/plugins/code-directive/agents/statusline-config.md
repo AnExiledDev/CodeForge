@@ -127,11 +127,11 @@ For longer commands, save a script to `~/.claude/statusline-command.sh`:
 }
 ```
 
-## Project-Specific Awareness
+## Existing Status Line Detection
 
-This workspace uses a custom status line feature (`ccstatusline`) with a wrapper at `/usr/local/bin/ccstatusline-wrapper`. If the user wants to modify the existing status line, check:
+If a custom status line feature (`ccstatusline`) is installed, check for a wrapper script. To find it:
 1. Current settings: Read `~/.claude/settings.json` for the active `statusLine` configuration
-2. Wrapper script: Read `/usr/local/bin/ccstatusline-wrapper` if it exists
+2. Wrapper script: Run `which ccstatusline-wrapper` to locate it, then read it if found
 3. Feature config: Check `.devcontainer/features/ccstatusline/` for the feature definition
 
 ## Workflow

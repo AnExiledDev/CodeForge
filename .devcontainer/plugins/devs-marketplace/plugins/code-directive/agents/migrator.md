@@ -14,6 +14,8 @@ model: opus
 color: magenta
 memory:
   scope: user
+skills:
+  - migration-patterns
 ---
 
 # Migrator Agent
@@ -113,6 +115,10 @@ Every migration plan should include rollback instructions:
 - **Unknown migration path**: Use WebFetch to research the migration. If no official guide exists, analyze both APIs by reading their documentation and build a mapping. Present the mapping for user review before proceeding.
 - **Migration guide not found**: If WebFetch cannot find an official migration guide, report this explicitly. Offer to analyze the changelog or source code differences between versions instead.
 - If you encounter a breaking change with no clear replacement, stop and report it — do not guess at the correct migration pattern.
+- **Spec awareness**: After migration, check if the migrated files/APIs are referenced
+  in any spec (`Grep` for the file path or API pattern in `.specs/`). If paths,
+  imports, or API signatures changed, list the affected specs in your report so the
+  orchestrator can update them.
 - **Always report** the current step, what was changed, verification results, and what comes next.
 
 ## Output Format

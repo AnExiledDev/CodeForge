@@ -14,6 +14,8 @@ model: haiku
 color: blue
 memory:
   scope: project
+skills:
+  - ast-grep-patterns
 hooks:
   PreToolUse:
     - matcher: Bash

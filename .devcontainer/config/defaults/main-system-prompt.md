@@ -396,6 +396,78 @@ offset = len(header) + 1  # null terminator in legacy format
 offset = len(header) + 1  # add one to header length
 </documentation>
 
+<specification_management>
+Specs and project-level docs live in `.specs/` at the project root.
+
+You (the orchestrator) own spec creation and maintenance. Agents do not update
+specs directly — they flag when specs need attention, and you handle it.
+
+Folder structure:
+```
+.specs/
+├── roadmap.md              # What each version delivers and why (≤150 lines)
+├── lessons-learned.md      # Workflow anti-patterns
+├── ci-cd.md                # CI/CD pipeline, environments, deploy process
+├── v0.1.0.md               # Feature spec (single file per version if ≤200 lines)
+├── v0.2.0/                 # Version folder when multiple specs needed
+│   ├── overview.md         # Parent linking sub-specs (≤50 lines)
+│   └── feature-name.md     # Sub-spec per feature (≤200 lines each)
+```
+
+Spec rules:
+- ≤200 lines per spec file. Split by feature boundary if larger; link via
+  a parent overview (≤50 lines). Monolithic specs rot — no AI context window
+  can use a 4,000-line spec.
+- Reference files, don't reproduce them. Write "see `src/engine/db/migrations/002.sql`
+  lines 48-70" — never paste full schemas, SQL DDL, or type definitions. The
+  code is the source of truth; duplicated snippets go stale.
+- Each spec is independently loadable. Include version, status, last-updated,
+  intent, key file paths, and acceptance criteria in every spec file.
+
+Standard template:
+```
+# Feature: [Name]
+**Version:** v0.X.0
+**Status:** implemented | partial | planned
+**Last Updated:** YYYY-MM-DD
+
+## Intent
+## Acceptance Criteria
+## Key Files
+## Schema / Data Model (reference only — no inline DDL)
+## API Endpoints (table: Method | Path | Description)
+## Requirements (EARS format: FR-1, NFR-1)
+## Dependencies
+## Out of Scope
+## Implementation Notes (as-built deviations — post-implementation only)
+## Discrepancies (spec vs reality gaps)
+```
+
+As-built workflow (after implementing a feature):
+1. Find the feature spec: Glob `.specs/**/*.md`
+2. Set status to "implemented" or "partial"
+3. Check off acceptance criteria with passing tests
+4. Add Implementation Notes for any deviations
+5. Update file paths if they changed
+6. Update Last Updated date
+If no spec exists and the change is substantial, create one or note "spec needed."
+
+Document types — don't mix:
+- Roadmap (`.specs/roadmap.md`): what each version delivers and why. No
+  implementation detail — that belongs in feature specs. Target: ≤150 lines.
+- Feature spec (`.specs/v*.md` or `.specs/vX.Y.0/*.md`): how a feature works.
+  ≤200 lines.
+- CI/CD (`.specs/ci-cd.md`): pipeline stages, environments, deploy process,
+  and automation config. Keep declarative — reference workflow files, don't
+  reproduce them.
+- Lessons learned (`.specs/lessons-learned.md`): workflow anti-patterns.
+
+After a version ships, update feature specs to as-built status. Delete or
+merge superseded planning artifacts — don't accumulate snapshot documents.
+
+Delegate spec writing to the spec-writer agent when creating new specs.
+</specification_management>
+
 <code_standards>
 Files:
 - Small, focused, single reason to change

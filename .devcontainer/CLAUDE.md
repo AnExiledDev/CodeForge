@@ -10,15 +10,17 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 │   ├── devcontainer.json    # Main container definition
 │   ├── .env                 # Environment variables
 │   ├── config/              # Default configurations
-│   │   ├── settings.json    # Claude Code settings
-│   │   ├── keybindings.json # Claude Code keybindings
-│   │   └── main-system-prompt.md
+│   │   ├── file-manifest.json # Declarative file-copy manifest
+│   │   └── defaults/        # Files copied per manifest
+│   │       ├── settings.json    # Claude Code settings
+│   │       ├── keybindings.json # Claude Code keybindings
+│   │       └── main-system-prompt.md
 │   ├── features/            # Custom devcontainer features
 │   ├── plugins/             # Local plugin marketplace
 │   │   └── devs-marketplace/
 │   └── scripts/             # Setup scripts
 ├── .claude/                 # Runtime Claude config (created on first run)
-│   ├── settings.json        # Active settings (OVERWRITE_CONFIG=true → rebuilt each start)
+│   ├── settings.json        # Active settings (managed by file-manifest.json)
 │   ├── keybindings.json     # Active keybindings
 │   └── system-prompt.md     # Active system prompt
 └── .gh/                     # GitHub CLI config (persists across rebuilds)
@@ -31,11 +33,12 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 |------|---------|
 | `devcontainer.json` | Container definition: base image, features, mounts, environment |
 | `.env` | Environment variables controlling setup behavior |
-| `config/settings.json` | Claude Code defaults: model, tokens, permissions, plugins |
-| `config/keybindings.json` | Claude Code keybindings (empty by default — customizable) |
-| `config/main-system-prompt.md` | Default system prompt defining assistant behavior |
+| `config/file-manifest.json` | Declarative manifest controlling which config files are copied and how |
+| `config/defaults/settings.json` | Claude Code defaults: model, tokens, permissions, plugins |
+| `config/defaults/keybindings.json` | Claude Code keybindings (empty by default — customizable) |
+| `config/defaults/main-system-prompt.md` | Default system prompt defining assistant behavior |
 
-> **Note**: `OVERWRITE_CONFIG=true` (default) means `.claude/settings.json` is overwritten on every container start. All persistent changes must go in `.devcontainer/config/settings.json`.
+> **Note**: Config file copying is controlled by `config/file-manifest.json`. Each entry specifies `overwrite`: `"if-changed"` (default, sha256-based), `"always"`, or `"never"`. Persistent changes go in `.devcontainer/config/defaults/settings.json`.
 
 ## Commands
 
@@ -48,6 +51,8 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `gh` | GitHub CLI for repo operations |
 | `uv` | Fast Python package manager |
 | `ast-grep` | Structural code search |
+| `cc-tools` | List all installed tools with version info |
+| `check-setup` | Verify CodeForge setup health |
 
 ## Feature Development
 
@@ -68,7 +73,38 @@ To test a feature locally, reference it in `devcontainer.json`:
 }
 ```
 
-> **Note**: The old `./features/claude-code` local feature is no longer used. Claude Code is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1` (Anthropic's official feature). The local `features/claude-code/` directory contains only a fallback config for the feature's install script.
+> **Note**: Claude Code is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1` (Anthropic's official feature).
+
+### Disabling Features with `version: "none"`
+
+Every local feature supports `"version": "none"` to skip installation entirely. This is useful for trimming build time or disabling tools you don't need without removing them from `devcontainer.json`.
+
+```json
+"features": {
+  "./features/ruff": { "version": "none" },
+  "./features/biome": {},
+  "./features/hadolint": { "version": "none" }
+}
+```
+
+When `version` is set to `"none"`, the feature's `install.sh` exits immediately with a skip message. The feature entry stays in `devcontainer.json` so re-enabling is a one-word change.
+
+**All local features support this pattern:**
+ast-grep, biome, ccstatusline, claude-monitor, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
+
+**External features with `version: "none"` support:**
+`ghcr.io/devcontainers/features/node`, `ghcr.io/devcontainers/features/github-cli`, `ghcr.io/devcontainers/features/docker-outside-of-docker`, `ghcr.io/devcontainers/features/go` (all official Microsoft features)
+
+**External features without `version: "none"` support:**
+`ghcr.io/devcontainers-extra/features/uv`, `ghcr.io/anthropics/devcontainer-features/claude-code`, `ghcr.io/nickmccurdy/bun`
+
+> **Convention**: Every new local feature must include a `version` option (default `"latest"`) in its `devcontainer-feature.json` and a skip guard at the top of `install.sh`:
+> ```bash
+> if [ "${VERSION}" = "none" ]; then
+>     echo "[feature-name] Skipping installation (version=none)"
+>     exit 0
+> fi
+> ```
 
 ## Setup Scripts
 
@@ -77,7 +113,7 @@ Scripts in `./scripts/` run via `postStartCommand`:
 | Script | Purpose |
 |--------|---------|
 | `setup.sh` | Main orchestrator |
-| `setup-config.sh` | Copies config files (settings, keybindings, system prompt) to `/workspaces/.claude/` |
+| `setup-config.sh` | Copies config files per `config/file-manifest.json` to destinations |
 | `setup-aliases.sh` | Creates `cc`/`claude`/`ccraw` shell aliases |
 | `setup-plugins.sh` | Registers local marketplace + installs official Anthropic plugins |
 | `setup-update-claude.sh` | Background auto-update of Claude Code binary |
@@ -86,7 +122,7 @@ Scripts in `./scripts/` run via `postStartCommand`:
 
 ## Installed Plugins
 
-Plugins are declared in `config/settings.json` under `enabledPlugins` and auto-activated on container start:
+Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` and auto-activated on container start:
 
 ### Official (Anthropic)
 - `frontend-design@claude-code-plugins` — UI/frontend design skill
@@ -97,8 +133,8 @@ Plugins are declared in `config/settings.json` under `enabledPlugins` and auto-a
 - `notify-hook@devs-marketplace` — Desktop notifications on completion
 - `dangerous-command-blocker@devs-marketplace` — Blocks destructive bash commands
 - `protected-files-guard@devs-marketplace` — Blocks edits to secrets/lock files
-- `auto-formatter@devs-marketplace` — Auto-formats Python/Go/JS/TS on stop
-- `auto-linter@devs-marketplace` — Auto-lints Python files via Pyright
+- `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff/Black for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)
+- `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)
 - `code-directive@devs-marketplace` — 17 custom agents, 16 skills, syntax validation, skill suggestions, agent redirect hook
 
 ### Local Marketplace
@@ -144,7 +180,7 @@ Claude Code runs inside VS Code's integrated terminal. VS Code intercepts some s
 | `Ctrl+P` | Quick Open | `chat:modelPicker` |
 | `Ctrl+R` | Open Recent | `history:search` |
 
-`Ctrl+P` and `Ctrl+F` are configured to pass through to the terminal via `terminal.integrated.commandsToSkipShell` in `devcontainer.json`. For other conflicts, use Meta (Alt) variants or customize via `config/keybindings.json`.
+`Ctrl+P` and `Ctrl+F` are configured to pass through to the terminal via `terminal.integrated.commandsToSkipShell` in `devcontainer.json`. For other conflicts, use Meta (Alt) variants or customize via `config/defaults/keybindings.json`.
 
 ## Environment Variables
 
@@ -160,8 +196,9 @@ Key environment variables set in the container:
 
 ## Modifying Behavior
 
-1. **Change default model**: Edit `config/settings.json`, update `"model"` field
-2. **Change system prompt**: Edit `config/main-system-prompt.md`
-3. **Change keybindings**: Edit `config/keybindings.json`
-4. **Add features**: Add to `"features"` in `devcontainer.json`
-5. **Disable auto-setup**: Set variables to `false` in `.env`
+1. **Change default model**: Edit `config/defaults/settings.json`, update `"model"` field
+2. **Change system prompt**: Edit `config/defaults/main-system-prompt.md`
+3. **Change keybindings**: Edit `config/defaults/keybindings.json`
+4. **Add a custom config file**: Add an entry to `config/file-manifest.json` with `src`, `dest`, and optional `overwrite`/`destFilename`
+5. **Add features**: Add to `"features"` in `devcontainer.json`
+6. **Disable auto-setup**: Set variables to `false` in `.env`

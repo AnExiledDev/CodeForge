@@ -15,6 +15,9 @@ model: haiku
 color: cyan
 memory:
   scope: user
+skills:
+  - claude-code-headless
+  - claude-agent-sdk
 ---
 
 # Claude Guide Agent
@@ -60,31 +63,19 @@ Direct model interaction via the Claude API (formerly Anthropic API). Covers Mes
 ### Local Context Locations
 
 ```
-# Project-level configuration
-/workspaces/.claude/settings.json        # Active settings
-/workspaces/.claude/keybindings.json     # Active keybindings
-/workspaces/.claude/system-prompt.md     # Active system prompt
-/workspaces/CLAUDE.md                    # Project instructions
+# Project-level configuration (relative to workspace root)
+.claude/settings.json        # Active settings
+.claude/keybindings.json     # Active keybindings
+.claude/system-prompt.md     # Active system prompt
+CLAUDE.md                    # Project instructions
 
 # DevContainer configuration
-/workspaces/.devcontainer/config/settings.json          # Default settings
-/workspaces/.devcontainer/config/main-system-prompt.md   # Default system prompt
+.devcontainer/config/defaults/settings.json          # Default settings
+.devcontainer/config/defaults/main-system-prompt.md   # Default system prompt
 
 # Plugin directory
-/workspaces/.devcontainer/plugins/devs-marketplace/plugins/  # All plugins
+.devcontainer/plugins/devs-marketplace/plugins/  # All plugins
 ```
-
-### Claude-Research Reference Library
-
-The workspace includes a claude-research project at `/workspaces/claude-research/` containing:
-- Built-in agent definitions: `/workspaces/claude-research/built-in-agents/v2.1.27/`
-- Feature flags documentation: `/workspaces/claude-research/misc/claude-code-feature-flags-definitive-guide.md`
-- Environment variables: `/workspaces/claude-research/misc/claude-code-env-vars-2.1.33.md`
-- CLI flags reference: `/workspaces/claude-research/misc/claude-code-cli-flags-reference.md`
-- Memory system analysis: `/workspaces/claude-research/misc/claude-code-memory-system-2.1.33.md`
-- SDK documentation: `/workspaces/claude-research/sdk-typescript/` and `/workspaces/claude-research/sdk-python/`
-
-Use these as supplementary references when official docs are insufficient or when answering questions about internals.
 
 ## Behavioral Rules
 
@@ -147,9 +138,9 @@ If the question involves configuration or SDK usage, provide a complete, runnabl
 **User prompt**: "What environment variables does Claude Code support?"
 
 **Agent approach**:
-1. Read `/workspaces/claude-research/misc/claude-code-env-vars-2.1.33.md` for comprehensive reference
-2. Read local `.devcontainer/config/settings.json` to show which are currently configured
+1. WebFetch the Claude Code documentation for environment variable reference
+2. Read local `.devcontainer/config/defaults/settings.json` to show which are currently configured
 3. Summarize the most important variables with their effects
 
-**Output includes**: Answer with a categorized list of environment variables (model selection, behavior, performance, experimental features), Documentation References to both the local research file and official docs, Related Features noting the `settings.json` `env` field as an alternative to shell environment variables.
+**Output includes**: Answer with a categorized list of environment variables (model selection, behavior, performance, experimental features), Documentation References to the official docs, Related Features noting the `settings.json` `env` field as an alternative to shell environment variables.
 </example>

@@ -10,6 +10,12 @@ MONITOR_VERSION="${VERSION:-latest}"
 INSTALLER="${INSTALLER:-uv}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${MONITOR_VERSION}" = "none" ]; then
+    echo "[claude-monitor] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[claude-monitor] Starting installation..."
 
 # ---------- USER ----------

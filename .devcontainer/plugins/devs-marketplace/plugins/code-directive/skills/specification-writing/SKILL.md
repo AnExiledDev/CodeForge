@@ -30,6 +30,18 @@ Write specifications with a hostile reader in mind -- someone who will interpret
 
 ---
 
+## Spec Sizing & AI Context Rules
+
+Specifications are loaded into AI context windows with limited capacity. Design for consumption.
+
+**Hard limit:** ≤200 lines per spec file. If a feature needs more, split into sub-specs (one per sub-feature) with a ≤50 line overview linking them.
+
+**Reference, don't reproduce:** Never inline source code, SQL DDL, Pydantic models, or TypeScript interfaces. Reference the file path and line range instead. The code is the source of truth — duplicated snippets go stale silently.
+
+**Structure for independent loading:** Each spec file must be useful on its own. Include: version, status, last-updated date, intent, key file paths, and acceptance criteria in every spec.
+
+---
+
 ## EARS Requirement Formats
 
 EARS (Easy Approach to Requirements Syntax) provides five templates that eliminate the most common ambiguities in natural-language requirements. Each template has a specific trigger pattern.
@@ -160,6 +172,17 @@ For requirements with multiple input/output combinations:
 
 A complete specification follows this structure. Not every section is needed for every feature -- scale the document to the complexity.
 
+Every spec file starts with metadata:
+
+```
+# Feature: [Name]
+**Version:** v0.X.0
+**Status:** implemented | partial | planned
+**Last Updated:** YYYY-MM-DD
+```
+
+Status tells you whether to trust it, version tells you where it belongs, last-updated tells you when it was last verified.
+
 ### 1. Problem Statement
 What problem does this feature solve? Who has this problem? What's the cost of not solving it? (2-3 sentences)
 
@@ -225,6 +248,15 @@ The cases nobody thinks about until they happen:
 
 ### 7. Out of Scope
 Explicit non-goals to prevent scope creep (can reference the Scope section or expand here).
+
+### 8. Key Files
+Source files most relevant to this feature — paths an implementer should read.
+
+### 9. Implementation Notes
+Post-implementation only. Capture deviations from the original spec — what changed and why.
+
+### 10. Discrepancies
+Gaps between spec intent and actual build. Prevents the next session from re-planning decided work.
 
 ---
 

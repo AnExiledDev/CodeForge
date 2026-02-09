@@ -14,6 +14,8 @@ model: haiku
 color: blue
 memory:
   scope: project
+skills:
+  - dependency-management
 hooks:
   PreToolUse:
     - matcher: Bash

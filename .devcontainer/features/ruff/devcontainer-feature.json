@@ -1,0 +1,21 @@
+{
+  "id": "ruff",
+  "version": "1.0.0",
+  "name": "Ruff",
+  "description": "Fast Python linter and formatter (replaces Black + Flake8)",
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "latest",
+      "description": "Ruff version to install"
+    },
+    "username": {
+      "type": "string",
+      "default": "automatic",
+      "description": "Container user to install for"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers-extra/features/uv"
+  ]
+}

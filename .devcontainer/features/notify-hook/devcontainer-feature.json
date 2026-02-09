@@ -5,6 +5,11 @@
   "description": "Desktop notifications and audio chime when Claude finishes responding",
   "documentationURL": "https://github.com/AnExiledDev/CodeForge",
   "options": {
+    "version": {
+      "type": "string",
+      "description": "Version to install (or 'none' to skip installation)",
+      "default": "latest"
+    },
     "enableBell": {
       "type": "boolean",
       "description": "Enable terminal bell (audio chime) on completion",

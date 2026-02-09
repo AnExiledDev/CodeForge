@@ -9,6 +9,12 @@ INSTALL_CLI="${INSTALLCLI:-true}"
 GRAMMARS="${GRAMMARS:-}"
 USERNAME="${USERNAME:-automatic}"
 
+# Skip installation if version is "none"
+if [ "${VERSION}" = "none" ]; then
+    echo "[tree-sitter] Skipping installation (version=none)"
+    exit 0
+fi
+
 echo "[tree-sitter] Starting tree-sitter installation..."
 echo "[tree-sitter] Options: version=${VERSION}, bindings=${BINDINGS}, cli=${INSTALL_CLI}"
 

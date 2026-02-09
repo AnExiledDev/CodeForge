@@ -6,6 +6,11 @@
   "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/Piebald-AI/splitrail",
   "options": {
+    "version": {
+      "type": "string",
+      "description": "Version to install (or 'none' to skip installation)",
+      "default": "latest"
+    },
     "repoUrl": {
       "type": "string",
       "description": "Git repository URL for splitrail",

@@ -37,6 +37,11 @@ Thumbs.db
 .env
 .env.*
 
+# User config artifacts (generated during --force update)
+.devcontainer/**/*.codeforge-new
+.devcontainer/**/*.bak
+.devcontainer/.codeforge-preserve
+
 # Local development
 .claude-trace/
 aeris-memory/

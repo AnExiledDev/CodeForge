@@ -139,6 +139,10 @@ If the code you need to refactor has no test coverage:
 - **Ambiguous request** (e.g., "Improve this"): Read the code, identify the most impactful smell, and propose a specific transformation. Confirm with the user before proceeding.
 - **Tests fail on baseline**: Stop immediately. Report the failing tests. Do not attempt to refactor against a red baseline — the safety mechanism is broken.
 - If you cannot determine whether a piece of code is truly unused (dynamic dispatch, reflection, or plugin systems make this ambiguous), report it as "potentially unused — manual verification recommended" rather than deleting it.
+- **Spec awareness**: After refactoring, check if the changed files are referenced
+  in any spec (`Grep` for the file path in `.specs/`). If file paths changed
+  (renames, extractions), note the stale references in your report so the
+  orchestrator can update the spec's Key Files section.
 - **Always report** what smells were found, what transformations were applied, and the before/after metrics.
 
 ## Output Format
