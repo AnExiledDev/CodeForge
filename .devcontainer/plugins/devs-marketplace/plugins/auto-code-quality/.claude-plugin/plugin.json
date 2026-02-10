@@ -1,0 +1,7 @@
+{
+	"name": "auto-code-quality",
+	"description": "Self-contained code quality plugin: collects edited files, batch-formats at Stop (Ruff/Black for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust), batch-lints at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust), and validates JSON/JSONC/YAML/TOML syntax on edit",
+	"author": {
+		"name": "AnExiledDev"
+	}
+}

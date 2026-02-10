@@ -125,7 +125,7 @@ Scripts in `./scripts/` run via `postStartCommand`:
 Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` and auto-activated on container start:
 
 ### Official (Anthropic)
-- `frontend-design@claude-code-plugins` — UI/frontend design skill
+- `frontend-design@claude-plugins-official` — UI/frontend design skill
 
 ### Local Marketplace (devs-marketplace)
 - `codeforge-lsp@devs-marketplace` — LSP for Python + TypeScript/JavaScript

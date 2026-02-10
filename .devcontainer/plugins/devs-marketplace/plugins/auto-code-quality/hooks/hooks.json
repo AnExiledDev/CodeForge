@@ -1,0 +1,39 @@
+{
+	"description": "Self-contained code quality: file collection on edit, syntax validation, batch formatting + linting at stop",
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/collect-edited-files.py",
+						"timeout": 3
+					},
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/syntax-validator.py",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/format-on-stop.py",
+						"timeout": 15
+					},
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lint-file.py",
+						"timeout": 60
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,5 +1,56 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.9.0] - 2026-02-10
+
+### Added
+
+#### Agent Context Inheritance (code-directive plugin)
+- **Project Context Discovery** — all 14 project-interacting agents now read `.claude/rules/*.md` and CLAUDE.md files before starting work. Agents walk up the directory tree from their working directory to the workspace root, applying conventions from each level (deeper files take precedence)
+- **Execution Discipline** — 7 agents (generalist, refactorer, migrator, test-writer, doc-writer, architect, researcher) gain structured pre/post-work verification: read before writing, verify after writing, no silent deviations, failure diagnosis before retry
+- **Code Standards** — 5 agents (generalist full; refactorer, migrator, test-writer, architect compact) gain SOLID, DRY/KISS/YAGNI, function size limits, error handling rules, and forbidden patterns (god classes, magic numbers, dead code)
+- **Professional Objectivity** — 10 agents gain explicit instruction to prioritize technical accuracy over agreement, present evidence when it conflicts with assumptions
+- **Communication Standards** — all 14 agents gain response brevity rules: substance-first responses, no preamble, explicit uncertainty marking, file:line references
+- **Documentation Convention** — 2 write agents (generalist, migrator) gain inline comment guidance (explain "why", not "what")
+- **Context Management** — generalist gains instruction to continue working normally when context runs low
+- **Testing Guidance** — generalist gains testing standards (verify behavior not implementation, max 3 mocks per test)
+- **Scope Discipline** — refactorer gains explicit constraint: never expand scope beyond the requested refactoring
+- **Tiered approach**: Tier 1 (generalist, 139→268 lines, all blocks), Tier 2 (4 write agents, full blocks), Tier 3 (9 read-only agents, compact blocks). 3 agents skipped (bash-exec, claude-guide, statusline-config — no project context needed)
+
+#### Specification Workflow System (code-directive plugin — 4 new skills, 25 total)
+- **`/spec-new`** — creates a new spec from the standard template in `.specs/`
+- **`/spec-update`** — performs as-built spec update after implementation (checks off criteria, adds implementation notes, updates paths)
+- **`/spec-check`** — audits spec health: stale specs, missing coverage, orphaned files
+- **`/spec-init`** — bootstraps `.specs/` directory structure for projects that don't have one
+- **`spec-reminder.py`** `[Stop]` — new advisory hook reminds about spec updates when implementation work is detected
+- **Spec skills assigned to agents** — generalist and spec-writer agents gain spec skill access in frontmatter
+
+#### Default Rules Distribution
+- **`config/defaults/rules/`** — new directory containing default `.claude/rules/` files distributed to all projects via file-manifest
+- **`spec-workflow.md`** — rule enforcing spec-before-implementation workflow, ≤200 line spec limit, `.specs/` directory convention, as-built update requirement
+- **`workspace-scope.md`** — rule restricting file operations to the current project directory
+
+#### New Plugin: auto-code-quality
+- **Self-contained code quality plugin** — combines auto-formatter + auto-linter into a single drop-in plugin with independent temp file namespace (`claude-cq-*`). Includes all 7 formatters (Ruff, Biome, gofmt, shfmt, dprint, rustfmt, Black fallback) and 7 linters (Pyright, Ruff, Biome, ShellCheck, go vet, hadolint, clippy) plus syntax validation. Designed for use outside the CodeForge devcontainer where auto-formatter and auto-linter aren't available separately
+
+### Changed
+
+#### Config System
+- **`file-manifest.json`** — added 2 new entries for default rules files (`defaults/rules/spec-workflow.md`, `defaults/rules/workspace-scope.md`) targeting `${CLAUDE_CONFIG_DIR}/rules`
+- **`setup-config.sh` bug fix** — fixed bash field-collapse bug where empty `destFilename` caused subsequent fields to shift. Uses `__NONE__` sentinel in jq output to prevent `read` from collapsing consecutive tab delimiters
+
+#### Plugin References
+- **`frontend-design` plugin name corrected** — fixed `frontend-design@claude-code-plugins` → `frontend-design@claude-plugins-official` in both `settings.json` and `CLAUDE.md`
+
+#### Code-Directive Plugin
+- **`hooks.json`** — added `spec-reminder.py` to Stop hooks (now 3 Stop hooks: advisory-test-runner, commit-reminder, spec-reminder)
+- **`marketplace.json`** — added `auto-code-quality` plugin entry (10 plugins total, was 9)
+- **Agent definitions** — 14 of 17 agents updated with orchestrator-mirrored instructions (see Agent Context Inheritance above)
+
+#### Formatting
+- **Whitespace normalization** — `settings.json`, `file-manifest.json`, `marketplace.json`, `hooks.json`, `package.json`, `setup-config.sh` reformatted to consistent tab indentation
+
+---
+
 ## [v1.8.0] - 2026-02-09
 
 ### Added

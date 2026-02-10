@@ -1,44 +1,44 @@
 {
-  "name": "codeforge-dev",
-  "version": "1.8.0",
-  "description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
-  "main": "setup.js",
-  "bin": {
-    "codeforge": "setup.js"
-  },
-  "scripts": {
-    "test": "node test.js"
-  },
-  "keywords": [
-    "devcontainer",
-    "claude",
-    "claude-code",
-    "mcp",
-    "mcp-server",
-    "ai",
-    "development-environment",
-    "vscode",
-    "container",
-    "qdrant",
-    "reasoner",
-    "ai-development"
-  ],
-  "author": "AnExiledDev",
-  "license": "GPL-3.0",
-  "files": [
-    ".devcontainer/**/*",
-    "setup.js",
-    "README.md"
-  ],
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AnExiledDev/CodeForge.git"
-  },
-  "homepage": "https://github.com/AnExiledDev/CodeForge#readme",
-  "bugs": {
-    "url": "https://github.com/AnExiledDev/CodeForge/issues"
-  }
+	"name": "codeforge-dev",
+	"version": "1.9.0",
+	"description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
+	"main": "setup.js",
+	"bin": {
+		"codeforge": "setup.js"
+	},
+	"scripts": {
+		"test": "node test.js"
+	},
+	"keywords": [
+		"devcontainer",
+		"claude",
+		"claude-code",
+		"mcp",
+		"mcp-server",
+		"ai",
+		"development-environment",
+		"vscode",
+		"container",
+		"qdrant",
+		"reasoner",
+		"ai-development"
+	],
+	"author": "AnExiledDev",
+	"license": "GPL-3.0",
+	"files": [
+		".devcontainer/**/*",
+		"setup.js",
+		"README.md"
+	],
+	"engines": {
+		"node": ">=14.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AnExiledDev/CodeForge.git"
+	},
+	"homepage": "https://github.com/AnExiledDev/CodeForge#readme",
+	"bugs": {
+		"url": "https://github.com/AnExiledDev/CodeForge/issues"
+	}
 }

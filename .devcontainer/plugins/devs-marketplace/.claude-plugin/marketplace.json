@@ -1,99 +1,106 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "devs-marketplace",
-  "description": "CodeForge plugin marketplace for development tools",
-  "owner": {
-    "name": "AnExiledDev"
-  },
-  "plugins": [
-    {
-      "name": "codeforge-lsp",
-      "description": "LSP servers for CodeForge (Python, TypeScript, Go)",
-      "version": "1.0.0",
-      "source": "./plugins/codeforge-lsp",
-      "category": "development",
-      "lspServers": {
-        "pyright": {
-          "command": "pyright-langserver",
-          "args": ["--stdio"],
-          "extensionToLanguage": {
-            ".py": "python",
-            ".pyi": "python"
-          }
-        },
-        "typescript": {
-          "command": "typescript-language-server",
-          "args": ["--stdio"],
-          "extensionToLanguage": {
-            ".ts": "typescript",
-            ".tsx": "typescriptreact",
-            ".js": "javascript",
-            ".jsx": "javascriptreact",
-            ".mts": "typescript",
-            ".cts": "typescript",
-            ".mjs": "javascript",
-            ".cjs": "javascript"
-          }
-        },
-        "gopls": {
-          "command": "gopls",
-          "args": ["serve"],
-          "extensionToLanguage": {
-            ".go": "go",
-            ".mod": "go.mod",
-            ".sum": "go.sum"
-          }
-        }
-      }
-    },
-    {
-      "name": "ticket-workflow",
-      "description": "EARS-based ticket workflow with GitHub integration",
-      "version": "1.0.0",
-      "source": "./plugins/ticket-workflow",
-      "category": "workflow"
-    },
-    {
-      "name": "notify-hook",
-      "description": "Desktop notifications and audio chime when Claude finishes responding",
-      "version": "1.0.0",
-      "source": "./plugins/notify-hook",
-      "category": "productivity"
-    },
-    {
-      "name": "dangerous-command-blocker",
-      "description": "Blocks dangerous bash commands (rm -rf, sudo rm, chmod 777, force push)",
-      "version": "1.0.0",
-      "source": "./plugins/dangerous-command-blocker",
-      "category": "safety"
-    },
-    {
-      "name": "protected-files-guard",
-      "description": "Blocks modifications to .env, lock files, .git/, and credentials",
-      "version": "1.0.0",
-      "source": "./plugins/protected-files-guard",
-      "category": "safety"
-    },
-    {
-      "name": "auto-formatter",
-      "description": "Batch-formats edited files at Stop (Ruff for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)",
-      "version": "1.0.0",
-      "source": "./plugins/auto-formatter",
-      "category": "development"
-    },
-    {
-      "name": "auto-linter",
-      "description": "Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)",
-      "version": "1.0.0",
-      "source": "./plugins/auto-linter",
-      "category": "development"
-    },
-    {
-      "name": "code-directive",
-      "description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
-      "version": "1.0.0",
-      "source": "./plugins/code-directive",
-      "category": "development"
-    }
-  ]
+	"$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+	"name": "devs-marketplace",
+	"description": "CodeForge plugin marketplace for development tools",
+	"owner": {
+		"name": "AnExiledDev"
+	},
+	"plugins": [
+		{
+			"name": "codeforge-lsp",
+			"description": "LSP servers for CodeForge (Python, TypeScript, Go)",
+			"version": "1.0.0",
+			"source": "./plugins/codeforge-lsp",
+			"category": "development",
+			"lspServers": {
+				"pyright": {
+					"command": "pyright-langserver",
+					"args": ["--stdio"],
+					"extensionToLanguage": {
+						".py": "python",
+						".pyi": "python"
+					}
+				},
+				"typescript": {
+					"command": "typescript-language-server",
+					"args": ["--stdio"],
+					"extensionToLanguage": {
+						".ts": "typescript",
+						".tsx": "typescriptreact",
+						".js": "javascript",
+						".jsx": "javascriptreact",
+						".mts": "typescript",
+						".cts": "typescript",
+						".mjs": "javascript",
+						".cjs": "javascript"
+					}
+				},
+				"gopls": {
+					"command": "gopls",
+					"args": ["serve"],
+					"extensionToLanguage": {
+						".go": "go",
+						".mod": "go.mod",
+						".sum": "go.sum"
+					}
+				}
+			}
+		},
+		{
+			"name": "ticket-workflow",
+			"description": "EARS-based ticket workflow with GitHub integration",
+			"version": "1.0.0",
+			"source": "./plugins/ticket-workflow",
+			"category": "workflow"
+		},
+		{
+			"name": "notify-hook",
+			"description": "Desktop notifications and audio chime when Claude finishes responding",
+			"version": "1.0.0",
+			"source": "./plugins/notify-hook",
+			"category": "productivity"
+		},
+		{
+			"name": "dangerous-command-blocker",
+			"description": "Blocks dangerous bash commands (rm -rf, sudo rm, chmod 777, force push)",
+			"version": "1.0.0",
+			"source": "./plugins/dangerous-command-blocker",
+			"category": "safety"
+		},
+		{
+			"name": "protected-files-guard",
+			"description": "Blocks modifications to .env, lock files, .git/, and credentials",
+			"version": "1.0.0",
+			"source": "./plugins/protected-files-guard",
+			"category": "safety"
+		},
+		{
+			"name": "auto-formatter",
+			"description": "Batch-formats edited files at Stop (Ruff for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)",
+			"version": "1.0.0",
+			"source": "./plugins/auto-formatter",
+			"category": "development"
+		},
+		{
+			"name": "auto-linter",
+			"description": "Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)",
+			"version": "1.0.0",
+			"source": "./plugins/auto-linter",
+			"category": "development"
+		},
+		{
+			"name": "code-directive",
+			"description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
+			"version": "1.0.0",
+			"source": "./plugins/code-directive",
+			"category": "development"
+		},
+		{
+			"name": "auto-code-quality",
+			"description": "Self-contained code quality: auto-format + auto-lint edited files (Ruff/Black, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
+			"version": "1.0.0",
+			"source": "./plugins/auto-code-quality",
+			"category": "development"
+		}
+	]
 }

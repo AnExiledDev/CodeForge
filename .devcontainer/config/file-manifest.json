@@ -1,20 +1,32 @@
 [
-  {
-    "src": "defaults/settings.json",
-    "dest": "${CLAUDE_CONFIG_DIR}",
-    "enabled": true,
-    "overwrite": "if-changed"
-  },
-  {
-    "src": "defaults/keybindings.json",
-    "dest": "${CLAUDE_CONFIG_DIR}",
-    "enabled": true,
-    "overwrite": "if-changed"
-  },
-  {
-    "src": "defaults/main-system-prompt.md",
-    "dest": "${CLAUDE_CONFIG_DIR}",
-    "enabled": true,
-    "overwrite": "if-changed"
-  }
+	{
+		"src": "defaults/settings.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/keybindings.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/main-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/rules/spec-workflow.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/rules/workspace-scope.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	}
 ]
