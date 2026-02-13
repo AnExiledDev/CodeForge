@@ -73,12 +73,10 @@ Next steps:
 
 ---
 
-## Hard Constraints
+## Constraints
 
 - **Never overwrite** an existing `.specs/` directory or its contents.
-- **ROADMAP.md** must stay under 30 lines (it's a summary, not a plan document).
-- **BACKLOG.md** must stay under 15 lines (it grows as items are added).
-- Templates are starting points — the user will extend them.
+- Templates are starting points — the user will extend them as the project grows.
 
 ---
 

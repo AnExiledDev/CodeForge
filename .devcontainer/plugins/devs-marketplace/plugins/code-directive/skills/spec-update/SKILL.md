@@ -72,6 +72,8 @@ Verify paths exist before listing them. Use absolute project-relative paths.
 
 - Set `**Last Updated:**` to today's date (YYYY-MM-DD)
 - Verify `**Version:**` is correct
+- Preserve the `**Approval:**` status — do NOT downgrade `user-approved` to `draft`
+- If the as-built update introduces new decisions not in the original spec, add them to `## Resolved Questions` if the user confirmed them, or `## Open Questions` if they were assumed during implementation
 
 ---
 
@@ -109,7 +111,9 @@ Before finishing the update:
 - [ ] Implementation Notes document deviations from original spec
 - [ ] File paths in Key Files are accurate and verified
 - [ ] Last Updated date is today
-- [ ] Spec is still ≤200 lines
+- [ ] `**Approval:**` status is preserved (not downgraded)
+- [ ] New implementation decisions are tracked in Resolved Questions or Open Questions
+- [ ] If the spec has grown past ~200 lines, note it and suggest splitting in a future pass
 - [ ] No source code was pasted inline (references only)
 
 ---

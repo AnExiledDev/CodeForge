@@ -12,6 +12,7 @@ Standard template for all feature specifications. Copy this structure when creat
 **Version:** v0.X.0
 **Status:** planned
 **Last Updated:** YYYY-MM-DD
+**Approval:** draft
 
 ## Intent
 
@@ -56,14 +57,14 @@ Standard template for all feature specifications. Copy this structure when creat
 
 ### Functional Requirements
 
-- FR-1: [EARS format requirement — see specification-writing skill for templates]
-- FR-2: When [event], the system shall [action].
-- FR-3: If [unwanted condition], then the system shall [action].
+- FR-1 [assumed]: [EARS format requirement — see specification-writing skill for templates]
+- FR-2 [assumed]: When [event], the system shall [action].
+- FR-3 [assumed]: If [unwanted condition], then the system shall [action].
 
 ### Non-Functional Requirements
 
-- NFR-1: The system shall respond to [endpoint] within [N]ms at the [percentile] percentile.
-- NFR-2: [Security, accessibility, scalability requirement]
+- NFR-1 [assumed]: The system shall respond to [endpoint] within [N]ms at the [percentile] percentile.
+- NFR-2 [assumed]: [Security, accessibility, scalability requirement]
 
 ## Dependencies
 
@@ -74,6 +75,10 @@ Standard template for all feature specifications. Copy this structure when creat
 
 - [Explicit non-goal 1 — prevents scope creep]
 - [Explicit non-goal 2]
+
+## Resolved Questions
+
+[Decisions explicitly approved by the user via `/spec-refine`. Each entry: decision topic, chosen option, date, brief rationale.]
 
 ## Implementation Notes
 

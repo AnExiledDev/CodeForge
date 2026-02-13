@@ -30,11 +30,11 @@ Write specifications with a hostile reader in mind -- someone who will interpret
 
 ---
 
-## Spec Sizing & AI Context Rules
+## Spec Sizing Guidelines
 
 Specifications are loaded into AI context windows with limited capacity. Design for consumption.
 
-**Hard limit:** ≤200 lines per spec file. If a feature needs more, split into sub-specs (one per sub-feature) with a ≤50 line overview linking them.
+**Recommended target:** ~200 lines per spec file. When a spec grows beyond that, consider splitting into sub-specs (one per sub-feature) with a concise overview linking them. Complex features may justify longer specs — completeness matters more than hitting a number.
 
 **Reference, don't reproduce:** Never inline source code, SQL DDL, Pydantic models, or TypeScript interfaces. Reference the file path and line range instead. The code is the source of truth — duplicated snippets go stale silently.
 
@@ -179,9 +179,10 @@ Every spec file starts with metadata:
 **Version:** v0.X.0
 **Status:** implemented | partial | planned
 **Last Updated:** YYYY-MM-DD
+**Approval:** draft | user-approved
 ```
 
-Status tells you whether to trust it, version tells you where it belongs, last-updated tells you when it was last verified.
+Status tells you whether to trust it, version tells you where it belongs, last-updated tells you when it was last verified. Approval tells you whether decisions in the spec have been explicitly validated by the user (`user-approved`) or are AI-generated hypotheses (`draft`).
 
 ### 1. Problem Statement
 What problem does this feature solve? Who has this problem? What's the cost of not solving it? (2-3 sentences)
@@ -218,20 +219,22 @@ so that [I can detect suspicious reset patterns].
 Use EARS format. Number each requirement for traceability:
 
 ```markdown
-- FR-1: When a user requests a password reset, the system shall send a reset email
+- FR-1 [assumed]: When a user requests a password reset, the system shall send a reset email
   to the registered email address within 60 seconds.
-- FR-2: The reset link shall contain a cryptographically random token (min 32 bytes).
-- FR-3: If the reset token is expired or already used, then the system shall display
+- FR-2 [assumed]: The reset link shall contain a cryptographically random token (min 32 bytes).
+- FR-3 [assumed]: If the reset token is expired or already used, then the system shall display
   an error message and offer to send a new reset email.
+
+Tag each requirement `[assumed]` when first written. Requirements become `[user-approved]` only after explicit user validation via `/spec-refine`.
 ```
 
 ### 5. Non-Functional Requirements
 Performance, security, scalability, accessibility:
 
 ```markdown
-- NFR-1: The password reset endpoint shall respond within 200ms (p95).
-- NFR-2: Reset tokens shall be stored as bcrypt hashes, not plaintext.
-- NFR-3: The reset flow shall be accessible with screen readers (WCAG 2.1 AA).
+- NFR-1 [assumed]: The password reset endpoint shall respond within 200ms (p95).
+- NFR-2 [assumed]: Reset tokens shall be stored as bcrypt hashes, not plaintext.
+- NFR-3 [assumed]: The reset flow shall be accessible with screen readers (WCAG 2.1 AA).
 ```
 
 ### 6. Edge Cases
@@ -249,13 +252,16 @@ The cases nobody thinks about until they happen:
 ### 7. Out of Scope
 Explicit non-goals to prevent scope creep (can reference the Scope section or expand here).
 
-### 8. Key Files
+### 8. Resolved Questions
+Decisions explicitly approved by the user via `/spec-refine`. Each entry: decision topic, chosen option, options considered, date, brief rationale. This section starts empty and is populated during the refinement process.
+
+### 9. Key Files
 Source files most relevant to this feature — paths an implementer should read.
 
-### 9. Implementation Notes
+### 10. Implementation Notes
 Post-implementation only. Capture deviations from the original spec — what changed and why.
 
-### 10. Discrepancies
+### 11. Discrepancies
 Gaps between spec intent and actual build. Prevents the next session from re-planning decided work.
 
 ---
@@ -309,6 +315,7 @@ These defaults apply when the user does not specify a preference. State the assu
 - **Edge cases:** Always include at least: empty input, maximum input, concurrent access, and external service failure.
 - **Out of scope:** Always include an out-of-scope section, even if brief, to establish boundaries.
 - **Numbering:** Number all requirements (FR-1, NFR-1) for traceability in code reviews and tests.
+- **Approval markers:** All requirements start as `[assumed]`. Only `/spec-refine` with explicit user validation upgrades them to `[user-approved]`. Spec-level `**Approval:**` starts as `draft` and becomes `user-approved` only when all requirements are `[user-approved]`.
 
 ---
 

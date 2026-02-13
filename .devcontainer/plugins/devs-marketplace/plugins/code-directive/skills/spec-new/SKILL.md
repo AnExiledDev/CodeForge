@@ -30,6 +30,8 @@ If arguments are missing, ask the user for:
 1. Feature name (what is being built)
 2. Target version (which release this belongs to)
 
+**Note:** Features should be pulled from the project's backlog (`BACKLOG.md`) into a version before creating a spec. If the feature isn't in the backlog yet, add it first, then assign it to a version.
+
 ### Step 2: Determine File Path
 
 - **Multi-feature version** (directory already exists or multiple features planned):
@@ -49,6 +51,7 @@ Pre-fill:
 - **Version**: from arguments
 - **Status**: `planned`
 - **Last Updated**: today's date (YYYY-MM-DD)
+- **Approval**: `draft`
 - **Feature name**: from arguments
 
 Leave all other sections as placeholders for the user to fill.
@@ -62,24 +65,28 @@ After creating the file, guide the user through filling it out:
 3. **Key Files** — Glob the codebase to identify existing files relevant to this feature
 4. **Schema / Data Model** — Reference file paths only, never inline schemas
 5. **API Endpoints** — Table format: Method | Path | Description
-6. **Requirements** — EARS format, numbered FR-1, FR-2, NFR-1, etc.
+6. **Requirements** — EARS format, numbered FR-1, FR-2, NFR-1, etc. Tag all requirements `[assumed]` at creation time — they become `[user-approved]` only after explicit user validation via `/spec-refine`.
 7. **Dependencies** — What this feature depends on
 8. **Out of Scope** — Explicit non-goals to prevent scope creep
+9. **Resolved Questions** — Leave empty at creation; populated by `/spec-refine`
 
 ### Step 5: Validate
 
 Before finishing:
-- [ ] File is ≤200 lines
+- [ ] If the file exceeds ~200 lines, consider splitting into sub-specs
 - [ ] No source code, SQL, or type definitions reproduced inline
-- [ ] Status is `planned`
+- [ ] Status is `planned` and Approval is `draft`
 - [ ] All required sections present (even if some are "N/A" or "TBD")
 - [ ] Acceptance criteria are testable
+- [ ] All requirements are tagged `[assumed]`
+
+After validation, inform the user: **"This spec MUST go through `/spec-refine` before implementation begins.** All requirements are marked `[assumed]` until explicitly validated."
 
 ---
 
-## Hard Constraints
+## Sizing Guidelines
 
-- **≤200 lines per spec.** If a feature needs more, split into sub-specs with a parent `_overview.md` (≤50 lines) linking them.
+- **Aim for ~200 lines per spec.** If a feature needs more, consider splitting into sub-specs with a parent `_overview.md` linking them.
 - **Reference, don't reproduce.** Write `see src/engine/db/migrations/002.sql lines 48-70` — never paste the SQL.
 - **Independently loadable.** Each spec file must be useful without loading any other file.
 - **EARS format for requirements.** Use the `specification-writing` skill for templates and examples.

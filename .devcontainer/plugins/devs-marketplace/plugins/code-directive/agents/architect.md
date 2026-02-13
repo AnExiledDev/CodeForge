@@ -171,8 +171,9 @@ Based on your exploration:
    or update. Distinguish:
    - **Roadmap entry**: one-line description of what the version delivers (no
      implementation detail — that belongs in specs)
-   - **Feature spec**: ≤200 line file following the standard template (Version,
-     Status, Intent, Acceptance Criteria, Key Files, Schema, API, Dependencies)
+   - **Feature spec**: file following the standard template (Version,
+     Status, Intent, Acceptance Criteria, Key Files, Schema, API, Dependencies).
+     Aim for ~200 lines; split into sub-specs if significantly longer.
    - **As-built update**: if modifying an existing feature, identify which spec
      to update post-implementation
    Plans that mix roadmap-level and spec-level detail produce artifacts too
@@ -239,7 +240,7 @@ List the 3-7 files most critical for implementing this plan:
 - `/path/to/test_file.py` — Brief reason (e.g., "Test patterns to follow")
 
 ### Documentation Outputs
-- New spec: `.specs/vX.Y.0/feature-name.md` (≤200 lines)
+- New spec: `.specs/vX.Y.0/feature-name.md`
 - Updated spec: `.specs/vX.Y.0/existing-feature.md` — changes: [list]
 - Roadmap update: `.specs/roadmap.md` — add `[ ] feature` to vX.Y.0
 

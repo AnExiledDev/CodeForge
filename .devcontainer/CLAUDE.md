@@ -44,10 +44,12 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 
 | Command | Purpose |
 |---------|---------|
-| `claude` | Run Claude Code with auto-configuration (creates local `.claude/` if needed) |
+| `claude` | Run Claude Code with auto-configuration (prefers native binary at `~/.local/bin/claude`) |
 | `cc` | Shorthand for `claude` with config |
 | `ccraw` | Vanilla Claude Code without any config (bypasses function override) |
 | `ccusage` | Analyze token usage history |
+| `ccburn` | Real-time token burn rate visualization |
+| `agent-browser` | Headless Chromium for browser automation (Playwright-based) |
 | `gh` | GitHub CLI for repo operations |
 | `uv` | Fast Python package manager |
 | `ast-grep` | Structural code search |
@@ -89,6 +91,17 @@ Every local feature supports `"version": "none"` to skip installation entirely. 
 
 When `version` is set to `"none"`, the feature's `install.sh` exits immediately with a skip message. The feature entry stays in `devcontainer.json` so re-enabling is a one-word change.
 
+**Currently disabled features** (not needed for Python/JS/TS workflow):
+
+| Feature | Handles | Reason |
+|---------|---------|--------|
+| `shfmt` | Shell formatting | Not needed — Python/JS/TS only |
+| `shellcheck` | Shell linting | Not needed — Python/JS/TS only |
+| `hadolint` | Dockerfile linting | Not needed — Python/JS/TS only |
+| `dprint` | Markdown/YAML/TOML/Dockerfile formatting | Not needed — Python/JS/TS only |
+
+The auto-formatter and auto-linter plugins gracefully skip missing tools at runtime.
+
 **All local features support this pattern:**
 ast-grep, biome, ccstatusline, claude-monitor, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
 
@@ -114,11 +127,19 @@ Scripts in `./scripts/` run via `postStartCommand`:
 |--------|---------|
 | `setup.sh` | Main orchestrator |
 | `setup-config.sh` | Copies config files per `config/file-manifest.json` to destinations |
-| `setup-aliases.sh` | Creates `cc`/`claude`/`ccraw` shell aliases |
+| `setup-aliases.sh` | Creates `cc`/`claude`/`ccraw` shell aliases (prefers native binary at `~/.local/bin/claude` via `_CLAUDE_BIN`) |
 | `setup-plugins.sh` | Registers local marketplace + installs official Anthropic plugins |
-| `setup-update-claude.sh` | Background auto-update of Claude Code binary |
+| `setup-update-claude.sh` | Installs native Claude Code binary on first run; background auto-updates on subsequent starts |
+| `setup-terminal.sh` | Configures VS Code Shift+Enter keybinding for Claude Code multi-line input |
 | `setup-projects.sh` | Auto-detects projects for VS Code Project Manager |
 | `setup-symlink-claude.sh` | Symlinks ~/.claude for third-party tool compatibility |
+
+### External Terminal
+
+`connect-external-terminal.sh` connects to the running devcontainer from an external terminal with tmux support for Claude Code Agent Teams split-pane workflows. Run from the host:
+```bash
+.devcontainer/connect-external-terminal.sh
+```
 
 ## Installed Plugins
 
@@ -133,9 +154,9 @@ Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` a
 - `notify-hook@devs-marketplace` — Desktop notifications on completion
 - `dangerous-command-blocker@devs-marketplace` — Blocks destructive bash commands
 - `protected-files-guard@devs-marketplace` — Blocks edits to secrets/lock files
-- `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff/Black for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)
-- `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)
-- `code-directive@devs-marketplace` — 17 custom agents, 16 skills, syntax validation, skill suggestions, agent redirect hook
+- `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff for Python, Biome for JS/TS/CSS/JSON/GraphQL/HTML; also supports shfmt, dprint, gofmt, rustfmt when installed)
+- `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL; also supports ShellCheck, hadolint, go vet, clippy when installed)
+- `code-directive@devs-marketplace` — 17 custom agents, 17 skills, syntax validation, skill suggestions, agent redirect hook
 
 ### Local Marketplace
 
@@ -156,7 +177,7 @@ plugins/devs-marketplace/
 
 ## Agents & Skills
 
-The `code-directive` plugin includes 17 custom agent definitions and 16 coding reference skills.
+The `code-directive` plugin includes 17 custom agent definitions and 17 coding reference skills.
 
 **Agents** (`plugins/devs-marketplace/plugins/code-directive/agents/`):
 architect, bash-exec, claude-guide, debug-logs, dependency-analyst, doc-writer, explorer, generalist, git-archaeologist, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, statusline-config, test-writer
@@ -164,7 +185,7 @@ architect, bash-exec, claude-guide, debug-logs, dependency-analyst, doc-writer, 
 The `redirect-builtin-agents.py` hook (PreToolUse/Task) transparently swaps built-in agent types to these custom agents (e.g., Explore→explorer, Plan→architect).
 
 **Skills** (`plugins/devs-marketplace/plugins/code-directive/skills/`):
-claude-agent-sdk, claude-code-headless, debugging, docker, docker-py, fastapi, git-forensics, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, specification-writing, sqlite, svelte5, testing
+claude-agent-sdk, claude-code-headless, debugging, docker, docker-py, fastapi, git-forensics, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, spec-refine, specification-writing, sqlite, svelte5, testing
 
 ## VS Code Keybinding Conflicts
 

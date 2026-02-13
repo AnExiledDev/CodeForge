@@ -30,15 +30,15 @@ echo "Searching for running devcontainer..."
 CONTAINER_ID=$(docker ps --filter "label=$CONTAINER_LABEL" --format "{{.ID}}" | head -n1)
 
 if [ -z "$CONTAINER_ID" ]; then
-    echo ""
-    echo "ERROR: No running devcontainer found."
-    echo ""
-    echo "Make sure your devcontainer is running:"
-    echo "  1. Open VS Code"
-    echo "  2. Open the folder containing .devcontainer/"
-    echo "  3. Use 'Dev Containers: Reopen in Container'"
-    echo ""
-    exit 1
+	echo ""
+	echo "ERROR: No running devcontainer found."
+	echo ""
+	echo "Make sure your devcontainer is running:"
+	echo "  1. Open VS Code"
+	echo "  2. Open the folder containing .devcontainer/"
+	echo "  3. Use 'Dev Containers: Reopen in Container'"
+	echo ""
+	exit 1
 fi
 
 # Get container name for display
@@ -47,10 +47,10 @@ echo "Found container: $CONTAINER_NAME ($CONTAINER_ID)"
 echo ""
 
 # Check if tmux is available in the container
-if ! docker exec "$CONTAINER_ID" which tmux > /dev/null 2>&1; then
-    echo "ERROR: tmux is not installed in the container."
-    echo "Rebuild the devcontainer to install the tmux feature."
-    exit 1
+if ! docker exec "$CONTAINER_ID" which tmux >/dev/null 2>&1; then
+	echo "ERROR: tmux is not installed in the container."
+	echo "Rebuild the devcontainer to install the tmux feature."
+	exit 1
 fi
 
 echo "Connecting to tmux session '$TMUX_SESSION'..."
@@ -68,14 +68,14 @@ echo ""
 # Pass UTF-8 locale so tmux renders Unicode correctly (not as underscores)
 # Use tmux -u to force UTF-8 mode as a belt-and-suspenders measure
 exec docker exec -it \
-  -e LANG=en_US.UTF-8 \
-  -e LC_ALL=en_US.UTF-8 \
-  --user vscode "$CONTAINER_ID" bash -c "
+	-e LANG=en_US.UTF-8 \
+	-e LC_ALL=en_US.UTF-8 \
+	--user vscode "$CONTAINER_ID" bash -c "
   export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
   if tmux has-session -t '$TMUX_SESSION' 2>/dev/null; then
     tmux -u attach-session -t '$TMUX_SESSION'
   else
-    tmux -u new-session -d -s '$TMUX_SESSION' -c /workspaces
+    tmux -u new-session -d -s '$TMUX_SESSION' -c \"\${WORKSPACE_ROOT:-/workspaces}\"
     sleep 0.5
     tmux send-keys -t '$TMUX_SESSION' 'cc' Enter
     tmux -u attach-session -t '$TMUX_SESSION'

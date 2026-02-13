@@ -160,9 +160,9 @@ For large codebases, focus on the public API surface rather than trying to docum
 
 Produce documentation that serves the target audience. Different doc types have different readers.
 
-**Sizing rule:** Documentation files consumed by AI (CLAUDE.md, specs, architecture docs)
-should be ≤200 lines each. Split large documents by concern. Each file should be
-independently useful without requiring other docs in the same context window.
+**Sizing guideline:** Documentation files consumed by AI (CLAUDE.md, specs, architecture docs)
+should aim for ~200 lines each. Split large documents by concern when practical. Each file
+should be independently useful without requiring other docs in the same context window.
 
 ## Documentation Types
 

@@ -1,5 +1,51 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.10.0] - 2026-02-13
+
+### Added
+
+#### New Skill: spec-refine (code-directive plugin — 26 skills total)
+- **`/spec-refine`** — iterative 6-phase spec refinement: assumption mining, requirement validation (`[assumed]` → `[user-approved]`), acceptance criteria review, scope audit, and final approval gate
+
+#### setup-terminal.sh
+- New setup script configures VS Code Shift+Enter keybinding for Claude Code multi-line terminal input (idempotent, merges into existing keybindings.json)
+
+### Changed
+
+#### Native Binary Preference
+- **setup-aliases.sh** — introduces `_CLAUDE_BIN` variable resolution: prefers `~/.local/bin/claude` (official `claude install` location), falls back to `/usr/local/bin/claude`, then PATH. All aliases (`cc`, `claude`, `ccraw`) use `"$_CLAUDE_BIN"`
+- **setup-update-claude.sh** — complete rewrite: delegates to `claude install` (first run) and `claude update` (subsequent starts) instead of manual binary download/checksum/swap. Logs to `/tmp/claude-update.log`
+
+#### Smart Test Selection
+- **advisory-test-runner.py** — rewritten to run only affected tests based on edited files. Maps source files to test files (pytest directory mirroring, vitest `--related`, jest `--findRelatedTests`, Go package mapping). Timeout reduced from 60s to 15s. Skips entirely if no files edited
+- **hooks.json** — advisory-test-runner timeout reduced from 65s to 20s
+
+#### Two-Level Project Detection
+- **setup-projects.sh** — two-pass scanning: depth-1 directories with project markers registered directly; directories without markers treated as containers and children scanned. Recursive inotifywait with noise exclusion. Clean process group shutdown
+
+#### Spec Approval Workflow
+- **spec-writer agent** — adds `**Approval:** draft` field, requires `[assumed]` tagging on all requirements, adds `## Resolved Questions` section, references `/spec-refine` before implementation
+- **spec-new skill** — pre-fills `**Approval:** draft`, notes features should come from backlog
+- **spec-check skill** — adds Unapproved (high) and Assumed Requirements (medium) issue checks, Approval column in health table, approval summary
+- **spec-update skill** — minor alignment with approval workflow
+- **spec-init templates** — backlog template expanded with P0–P3 priority grades + Infrastructure section; roadmap template rewritten with pull-from-backlog workflow
+- **specification-writing skill** — updated with approval field and requirement tagging guidance
+
+#### Documentation Sizing
+- **Relaxed 200-line hard cap** to "aim for ~200 lines" across architect agent, doc-writer agent, documentation-patterns skill, and spec-check skill
+
+#### Other
+- **setup.sh** — added `SETUP_TERMINAL` flag, normalized update-claude invocation via `run_script` helper
+- **check-setup.sh** — removed checks for disabled features (shfmt, shellcheck, hadolint, dprint); checks RC files for alias instead of `type cc`
+- **connect-external-terminal.sh** — uses `${WORKSPACE_ROOT:-/workspaces}` instead of hardcoded path
+- **devcontainer.json** — formatting normalization
+- **main-system-prompt.md** — updates for spec approval workflow and requirement tagging
+
+### Removed
+- **test-project/README.md** — deleted (no longer needed)
+
+---
+
 ## [v1.9.0] - 2026-02-10
 
 ### Added

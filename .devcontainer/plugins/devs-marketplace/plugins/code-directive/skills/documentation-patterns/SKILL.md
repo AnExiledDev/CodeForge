@@ -65,7 +65,7 @@ Development setup, how to run tests, how to submit changes. Link to CONTRIBUTING
 
 ## Sizing Rules
 
-Documentation files consumed by AI tools (CLAUDE.md, specs, architecture docs) should be **≤200 lines** each. Split large documents by concern. Each file should be independently useful.
+Documentation files consumed by AI tools (CLAUDE.md, specs, architecture docs) should aim for **~200 lines** each. Split large documents by concern when practical. Each file should be independently useful.
 
 For human-facing docs (README, API reference), there is no hard limit, but prefer shorter docs that link to detailed sub-pages over monolithic documents.
 

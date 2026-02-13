@@ -293,11 +293,11 @@ Agent definitions in `plugins/devs-marketplace/plugins/code-directive/agents/` p
 | `statusline-config` | ccstatusline configuration |
 | `test-writer` | Test authoring with pass verification |
 
-### Skills (16)
+### Skills (17)
 
 Skills in `plugins/devs-marketplace/plugins/code-directive/skills/` provide domain-specific coding references:
 
-`claude-agent-sdk` · `claude-code-headless` · `debugging` · `docker` · `docker-py` · `fastapi` · `git-forensics` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `specification-writing` · `sqlite` · `svelte5` · `testing`
+`claude-agent-sdk` · `claude-code-headless` · `debugging` · `docker` · `docker-py` · `fastapi` · `git-forensics` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `spec-refine` · `specification-writing` · `sqlite` · `svelte5` · `testing`
 
 ## Project Manager
 

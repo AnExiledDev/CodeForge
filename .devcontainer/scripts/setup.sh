@@ -21,8 +21,9 @@ fi
 : "${SETUP_PLUGINS:=true}"
 : "${SETUP_UPDATE_CLAUDE:=true}"
 : "${SETUP_PROJECTS:=true}"
+: "${SETUP_TERMINAL:=true}"
 
-export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS
+export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL
 
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()
@@ -64,22 +65,8 @@ run_script "$SCRIPT_DIR/setup-config.sh" "$SETUP_CONFIG"
 run_script "$SCRIPT_DIR/setup-aliases.sh" "$SETUP_ALIASES"
 run_script "$SCRIPT_DIR/setup-plugins.sh" "$SETUP_PLUGINS"
 run_script "$SCRIPT_DIR/setup-projects.sh" "$SETUP_PROJECTS"
-
-# Non-blocking: check for Claude Code updates in background
-if [ "$SETUP_UPDATE_CLAUDE" = "true" ]; then
-    if [ -f "$SCRIPT_DIR/setup-update-claude.sh" ]; then
-        echo "  Claude Code update checking in background..."
-        echo "  (If 'claude' fails, wait a moment and retry)"
-        bash "$SCRIPT_DIR/setup-update-claude.sh" &
-        disown
-        SETUP_RESULTS+=("setup-update-claude:ok")
-    else
-        SETUP_RESULTS+=("setup-update-claude:missing")
-    fi
-else
-    echo "  setup-update-claude... skipped (disabled)"
-    SETUP_RESULTS+=("setup-update-claude:disabled")
-fi
+run_script "$SCRIPT_DIR/setup-terminal.sh" "$SETUP_TERMINAL"
+run_script "$SCRIPT_DIR/setup-update-claude.sh" "$SETUP_UPDATE_CLAUDE"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

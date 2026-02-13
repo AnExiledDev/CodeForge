@@ -1,144 +1,143 @@
 {
-  "name": "CodeForge - ${localWorkspaceFolderBasename}",
-  "image": "mcr.microsoft.com/devcontainers/python:3.14",
+	"name": "CodeForge - ${localWorkspaceFolderBasename}",
+	"image": "mcr.microsoft.com/devcontainers/python:3.14",
 
-  "workspaceFolder": "/workspaces",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
+	"workspaceFolder": "/workspaces",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
 
-  "remoteEnv": {
-    "WORKSPACE_ROOT": "/workspaces",
-    "CLAUDE_CONFIG_DIR": "/workspaces/.claude",
-    "GH_CONFIG_DIR": "/workspaces/.gh",
-    "TMPDIR": "/workspaces/.tmp"
-  },
+	"remoteEnv": {
+		"WORKSPACE_ROOT": "/workspaces",
+		"CLAUDE_CONFIG_DIR": "/workspaces/.claude",
+		"GH_CONFIG_DIR": "/workspaces/.gh",
+		"TMPDIR": "/workspaces/.tmp"
+	},
 
-  // Feature install order: external runtimes first (Node, uv, Go, Bun),
-  // then Claude Code (needs Node), then custom features.
-  // npm-dependent features (agent-browser, ccusage, ccburn, biome, lsp-servers)
-  // must come after Node. uv-dependent features (ruff, claude-monitor) must
-  // come after uv. notify-hook is last (lightweight, no dependencies).
-  "overrideFeatureInstallOrder": [
-    "ghcr.io/devcontainers/features/node",
-    "ghcr.io/devcontainers/features/github-cli",
-    "ghcr.io/devcontainers/features/docker-outside-of-docker",
-    "ghcr.io/devcontainers-extra/features/uv",
-    "ghcr.io/devcontainers/features/go",
-    "ghcr.io/rails/devcontainer/features/bun",
-    "ghcr.io/anthropics/devcontainer-features/claude-code",
-    "./features/tmux",
-    "./features/agent-browser",
-    "./features/claude-monitor",
-    "./features/ccusage",
-    "./features/ccburn",
-    "./features/ccstatusline",
-    "./features/ast-grep",
-    "./features/tree-sitter",
-    "./features/lsp-servers",
-    "./features/ruff",
-    "./features/shfmt",
-    "./features/dprint",
-    "./features/shellcheck",
-    "./features/hadolint",
-    "./features/biome",
-    "./features/notify-hook"
-  ],
+	// Feature install order: external runtimes first (Node, uv, Go, Bun),
+	// then Claude Code (needs Node), then custom features.
+	// npm-dependent features (agent-browser, ccusage, ccburn, biome, lsp-servers)
+	// must come after Node. uv-dependent features (ruff, claude-monitor) must
+	// come after uv. notify-hook is last (lightweight, no dependencies).
+	"overrideFeatureInstallOrder": [
+		"ghcr.io/devcontainers/features/node",
+		"ghcr.io/devcontainers/features/github-cli",
+		"ghcr.io/devcontainers/features/docker-outside-of-docker",
+		"ghcr.io/devcontainers-extra/features/uv",
+		"ghcr.io/rails/devcontainer/features/bun",
+		"ghcr.io/anthropics/devcontainer-features/claude-code",
+		"./features/tmux",
+		"./features/agent-browser",
+		"./features/claude-monitor",
+		"./features/ccusage",
+		"./features/ccburn",
+		"./features/ccstatusline",
+		"./features/ast-grep",
+		"./features/tree-sitter",
+		"./features/lsp-servers",
+		"./features/ruff",
+		"./features/shfmt",
+		"./features/dprint",
+		"./features/shellcheck",
+		"./features/hadolint",
+		"./features/biome",
+		"./features/notify-hook"
+	],
 
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "lts",
-      "nodeGypDependencies": true
-    },
-    "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": 
-    {
-      "moby": false
-    },
-    "ghcr.io/devcontainers-extra/features/uv:1": {},
-    "ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
-    "./features/tmux": {},
-    "./features/ccusage": {
-      "version": "latest",
-      "shells": "both",
-      "username": "automatic"
-    },
-    "./features/claude-monitor": {
-      "version": "latest",
-      "installer": "uv",
-      "username": "automatic"
-    },
-    "./features/ccburn": {
-      "version": "latest",
-      "shells": "both",
-      "username": "automatic"
-    },
-    "./features/ccstatusline": {
-      "username": "automatic"
-    },
-    "./features/ast-grep": {},
-    "./features/tree-sitter": {},
-    "./features/lsp-servers": {},
-    "./features/agent-browser": {},
-    "./features/ruff": {
-      "version": "latest",
-      "username": "automatic"
-    },
-    "./features/shfmt": {},
-    "./features/dprint": {
-      "username": "automatic"
-    },
-    "./features/shellcheck": {},
-    "./features/hadolint": {},
-    "./features/biome": {},
-    "./features/notify-hook": {
-      "enableBell": true,
-      "enableOsc": true
-    }
-  },
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts",
+			"nodeGypDependencies": true
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": false
+		},
+		"ghcr.io/devcontainers-extra/features/uv:1": {},
+		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		"./features/tmux": {},
+		"./features/ccusage": {
+			"version": "latest",
+			"shells": "both",
+			"username": "automatic"
+		},
+		"./features/claude-monitor": {
+			"version": "latest",
+			"installer": "uv",
+			"username": "automatic"
+		},
+		"./features/ccburn": {
+			"version": "latest",
+			"shells": "both",
+			"username": "automatic"
+		},
+		"./features/ccstatusline": {
+			"username": "automatic"
+		},
+		"./features/ast-grep": {},
+		"./features/tree-sitter": {},
+		"./features/lsp-servers": {},
+		"./features/agent-browser": {},
+		"./features/ruff": {
+			"version": "latest",
+			"username": "automatic"
+		},
+		"./features/shfmt": { "version": "none" },
+		"./features/dprint": {
+			"version": "none",
+			"username": "automatic"
+		},
+		"./features/shellcheck": { "version": "none" },
+		"./features/hadolint": { "version": "none" },
+		"./features/biome": {},
+		"./features/notify-hook": {
+			"enableBell": true,
+			"enableOsc": true
+		}
+	},
 
-  "postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/setup.sh",
+	"postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/setup.sh",
 
-  "remoteUser": "vscode",
-  "containerUser": "vscode",
+	"remoteUser": "vscode",
+	"containerUser": "vscode",
 
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "bash"
-          },
-          "Claude Teams (tmux)": {
-            "path": "bash",
-            "args": ["-c", "if tmux has-session -t claude-teams 2>/dev/null; then exec tmux -u new-session -t claude-teams; else exec tmux -u new-session -s claude-teams; fi"]
-          }
-        },
-        "terminal.integrated.defaultProfile.linux": "bash",
-        "terminal.integrated.enableBell": true,
-        "terminal.integrated.commandsToSkipShell": [
-          "-workbench.action.quickOpen",
-          "-workbench.action.terminal.focusFind"
-        ],
-        "remote.extensionKind": {
-          "wenbopan.vscode-terminal-osc-notifier": ["ui"]
-        },
-        "projectManager.git.baseFolders": ["/workspaces"],
-        "projectManager.git.maxDepthRecursion": 1,
-        "projectManager.showProjectNameInStatusBar": true,
-        "projectManager.openInNewWindowWhenClickingInStatusBar": false,
-        "projectManager.projectsLocation": "/workspaces/.config/project-manager"
-      },
-      "extensions": [
-        "wenbopan.vscode-terminal-osc-notifier",
-        "GitHub.vscode-github-actions",
-        "fabiospampinato.vscode-todo-plus",
-        "alefragnani.project-manager"
-      ]
-    }
-  },
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash"
+					},
+					"Claude Teams (tmux)": {
+						"path": "bash",
+						"args": [
+							"-c",
+							"if tmux has-session -t claude-teams 2>/dev/null; then exec tmux -u new-session -t claude-teams; else exec tmux -u new-session -s claude-teams; fi"
+						]
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.enableBell": true,
+				"terminal.integrated.commandsToSkipShell": [
+					"-workbench.action.quickOpen",
+					"-workbench.action.terminal.focusFind"
+				],
+				"remote.extensionKind": {
+					"wenbopan.vscode-terminal-osc-notifier": ["ui"]
+				},
+				"projectManager.git.baseFolders": ["/workspaces"],
+				"projectManager.git.maxDepthRecursion": 2,
+				"projectManager.showProjectNameInStatusBar": true,
+				"projectManager.openInNewWindowWhenClickingInStatusBar": false,
+				"projectManager.projectsLocation": "/workspaces/.config/project-manager"
+			},
+			"extensions": [
+				"wenbopan.vscode-terminal-osc-notifier",
+				"GitHub.vscode-github-actions",
+				"fabiospampinato.vscode-todo-plus",
+				"alefragnani.project-manager"
+			]
+		}
+	},
 
-  "runArgs": [
-    "--memory=4g",
-    "--memory-swap=8g"
-  ]
+	"runArgs": ["--memory=6g", "--memory-swap=12g"]
 }

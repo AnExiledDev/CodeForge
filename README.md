@@ -65,9 +65,9 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, notify-hook, mcp-qdrant, mcp-reasoner, splitrail
 
-### Agents (17) & Skills (16)
+### Agents (17) & Skills (17)
 
-The `code-directive` plugin includes specialized agents (architect, explorer, test-writer, security-auditor, etc.) and domain-specific coding reference skills (fastapi, svelte5, docker, testing, etc.).
+The `code-directive` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.) and 17 domain-specific coding reference skills (fastapi, svelte5, docker, testing, spec-refine, etc.).
 
 ## Quick Start
 
