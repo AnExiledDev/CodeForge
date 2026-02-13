@@ -8,14 +8,20 @@ Every project uses `.specs/` as the specification directory. These rules are man
    Use `/spec-new` to create one from the standard template.
 2. Every implementation MUST end with an as-built spec update.
    Use `/spec-update` to perform the update.
-3. Specs MUST be ≤200 lines. Split by feature boundary if larger;
-   link via a parent overview (≤50 lines).
+3. Specs should aim for ~200 lines. Split by feature boundary when
+   significantly longer; link via a parent overview (~50 lines).
+   Completeness matters more than hitting a number.
 4. Specs MUST reference file paths, never reproduce source code,
    schemas, or type definitions inline. The code is the source of truth.
 5. Each spec file MUST be independently loadable — include version,
    status, last-updated, intent, key files, and acceptance criteria.
 6. Before starting a new version, MUST run `/spec-check` to audit spec health.
 7. To bootstrap `.specs/` for a project that doesn't have one, use `/spec-init`.
+8. New specs start with `**Approval:** draft` and all requirements tagged
+   `[assumed]`. Use `/spec-refine` to validate assumptions with the user
+   and upgrade to `[user-approved]` before implementation begins.
+9. A spec-reminder advisory hook fires at Stop when code was modified but
+   specs weren't updated. Use `/spec-update` to close the loop.
 
 ## Directory Convention
 
@@ -41,6 +47,7 @@ Every spec follows this structure:
 **Version:** v0.X.0
 **Status:** implemented | partial | planned
 **Last Updated:** YYYY-MM-DD
+**Approval:** draft
 
 ## Intent
 ## Acceptance Criteria
@@ -50,6 +57,7 @@ Every spec follows this structure:
 ## Requirements (EARS format: FR-1, NFR-1)
 ## Dependencies
 ## Out of Scope
+## Resolved Questions
 ## Implementation Notes (post-implementation only)
 ## Discrepancies (spec vs reality gaps)
 ```

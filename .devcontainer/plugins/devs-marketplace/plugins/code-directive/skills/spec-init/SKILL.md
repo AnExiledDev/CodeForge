@@ -67,7 +67,11 @@ Created:
 - `.specs/BACKLOG.md` — deferred items list
 
 Next steps:
-- Use `/spec-new <feature-name> <version>` to create your first feature spec
+- Add features to `BACKLOG.md` with priority grades (P0–P3)
+- Pull features into a version in `ROADMAP.md` when ready to scope
+- Use `/spec-new <feature-name> <version>` to create a spec
+- Use `/spec-refine <feature-name>` to validate before implementation
+- After implementing, use `/spec-update` to close the loop
 - Use `/spec-check` to audit spec health at any time
 ```
 

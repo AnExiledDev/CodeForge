@@ -18,6 +18,16 @@ This is not optional. Every implementation ends with a spec update.
 
 ---
 
+## Approval Gate
+
+Before performing an as-built update, check the spec's `**Approval:**` status:
+- If `user-approved` → proceed with the update
+- If `draft` → warn the user: "This spec is still `draft`. It should have gone through `/spec-refine` before implementation. Run `/spec-refine` now to validate, or proceed with the as-built update if the user confirms."
+
+This is a warning, not a blocker — the user decides whether to refine first or update as-is.
+
+---
+
 ## The 6-Step Workflow
 
 ### Step 1: Find the Spec
@@ -114,6 +124,7 @@ Before finishing the update:
 - [ ] `**Approval:**` status is preserved (not downgraded)
 - [ ] New implementation decisions are tracked in Resolved Questions or Open Questions
 - [ ] If the spec has grown past ~200 lines, note it and suggest splitting in a future pass
+- [ ] If `**Approval:**` is still `draft`, user was warned and confirmed proceeding
 - [ ] No source code was pasted inline (references only)
 
 ---
@@ -126,3 +137,6 @@ Before finishing the update:
   requirements to match what was built.
 - If acceptance criteria are ambiguous about whether they're met, note the
   ambiguity in Discrepancies rather than checking them off optimistically.
+- A spec-reminder advisory hook fires at Stop when code was modified but
+  specs weren't updated. If you see "[Spec Reminder]" in context, that's
+  the trigger — use this skill to resolve it.

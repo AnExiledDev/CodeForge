@@ -60,6 +60,8 @@ For each spec, check these conditions:
 | **Open discrepancies** | Discrepancies section has content | Medium |
 | **Missing as-built** | Status is `implemented` but Implementation Notes is empty | Medium |
 | **Stale paths** | Key Files references paths that don't exist | Low |
+| **Draft + implemented** | Status is `implemented` but Approval is `draft` — approval gate was bypassed | High |
+| **Inconsistent approval** | Approval is `user-approved` but spec has `[assumed]` requirements | High |
 
 ### Step 4: Report
 

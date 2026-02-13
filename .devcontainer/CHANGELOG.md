@@ -31,8 +31,18 @@
 - **spec-init templates** — backlog template expanded with P0–P3 priority grades + Infrastructure section; roadmap template rewritten with pull-from-backlog workflow
 - **specification-writing skill** — updated with approval field and requirement tagging guidance
 
+#### Spec Workflow Completeness
+- **spec-workflow.md (global rule)** — softened 200-line hard cap to "aim for ~200"; added approval workflow rules (spec-refine gate, requirement tags, spec-reminder hook); added `**Approval:**` and `## Resolved Questions` to standard template
+- **main-system-prompt.md** — softened 4× hard "≤200 lines" references to "~200 lines"
+- **spec-new skill** — fixed "capped at 200" internal contradiction; added explanation of what `/spec-refine` does and why
+- **spec-new template** — added Approval Workflow section explaining `[assumed]`/`[user-approved]` tags and `draft`/`user-approved` status
+- **spec-update skill** — added approval gate warning for draft specs; added spec-reminder hook documentation; added approval validation to checklist
+- **spec-check skill** — added `implemented + draft` (High) and `inconsistent approval` (High) checks
+- **spec-init skill** — expanded next-steps with full lifecycle (backlog → roadmap → spec → refine → implement → update → check)
+- **spec-reminder.py** — added `/spec-refine` mention in advisory message for draft specs
+
 #### Documentation Sizing
-- **Relaxed 200-line hard cap** to "aim for ~200 lines" across architect agent, doc-writer agent, documentation-patterns skill, and spec-check skill
+- **Relaxed 200-line hard cap** to "aim for ~200 lines" across global rule, system prompt, spec-new skill, architect agent, doc-writer agent, documentation-patterns skill, and spec-check skill
 
 #### Other
 - **setup.sh** — added `SETUP_TERMINAL` flag, normalized update-claude invocation via `run_script` helper

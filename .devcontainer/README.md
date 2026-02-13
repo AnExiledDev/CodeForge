@@ -299,6 +299,65 @@ Skills in `plugins/devs-marketplace/plugins/code-directive/skills/` provide doma
 
 `claude-agent-sdk` · `claude-code-headless` · `debugging` · `docker` · `docker-py` · `fastapi` · `git-forensics` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `spec-refine` · `specification-writing` · `sqlite` · `svelte5` · `testing`
 
+## Specification Workflow
+
+CodeForge includes a specification-driven development workflow. Every non-trivial feature gets a spec before implementation begins.
+
+### Quick Start
+
+```bash
+/spec-init                       # Bootstrap .specs/ directory (first time only)
+/spec-new auth-flow v0.2.0       # Create a feature spec
+/spec-refine auth-flow           # Validate assumptions with user
+# ... implement the feature ...
+/spec-update auth-flow           # As-built update after implementation
+/spec-check                      # Audit all specs for health
+```
+
+### The Lifecycle
+
+1. **Backlog** — features live in `.specs/BACKLOG.md` with priority grades (P0–P3)
+2. **Roadmap** — when starting a version, pull features from backlog into `.specs/ROADMAP.md`
+3. **Spec** — `/spec-new` creates a spec from the standard template with all requirements tagged `[assumed]`
+4. **Refine** — `/spec-refine` walks through every assumption with the user, converting `[assumed]` → `[user-approved]`. The spec's approval status moves from `draft` → `user-approved`. **No implementation begins until approved.**
+5. **Implement** — build the feature using the spec's acceptance criteria as the definition of done
+6. **Update** — `/spec-update` performs the as-built update: sets status, checks off criteria, adds implementation notes
+7. **Health check** — `/spec-check` audits all specs for staleness, missing sections, unapproved status, and other issues
+
+### Approval Workflow
+
+Specs use a two-level approval system:
+
+- **Requirement-level:** each requirement starts as `[assumed]` (AI hypothesis) and becomes `[user-approved]` after explicit user validation via `/spec-refine`
+- **Spec-level:** the `**Approval:**` field starts as `draft` and becomes `user-approved` when all requirements pass review
+
+A spec-reminder advisory hook fires at Stop when code was modified but specs weren't updated.
+
+### Skills Reference
+
+| Skill | Purpose |
+|-------|---------|
+| `/spec-init` | Bootstrap `.specs/` directory with ROADMAP and BACKLOG |
+| `/spec-new` | Create a feature spec from the standard template |
+| `/spec-refine` | Validate assumptions and get user approval (required before implementation) |
+| `/spec-update` | As-built update after implementation |
+| `/spec-check` | Audit all specs for health issues |
+| `/specification-writing` | EARS format templates and acceptance criteria patterns |
+
+### Directory Structure
+
+```
+.specs/
+├── ROADMAP.md        # Current version scope
+├── BACKLOG.md        # Priority-graded feature backlog
+├── v0.1.0.md         # Single-file spec (small versions)
+└── v0.2.0/           # Multi-feature version
+    ├── _overview.md   # Parent linking sub-specs
+    └── feature.md     # Individual feature spec
+```
+
+Specs aim for ~200 lines each. Split by feature boundary when longer; link via a parent overview.
+
 ## Project Manager
 
 The `setup-projects.sh` script auto-detects projects under `/workspaces/` and maintains a `projects.json` file for the [Project Manager](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager) VS Code extension. It watches for new projects via `inotifywait` and updates the project list automatically.

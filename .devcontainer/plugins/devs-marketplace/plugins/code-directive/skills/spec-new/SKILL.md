@@ -14,7 +14,7 @@ version: 0.1.0
 
 A specification is a contract between the person requesting a feature and the person building it. Writing the spec BEFORE implementation forces you to think through edge cases, acceptance criteria, and scope boundaries while changes are cheap — before any code exists.
 
-Every project uses `.specs/` as the specification directory. Specs are version-organized, independently loadable, and capped at 200 lines.
+Every project uses `.specs/` as the specification directory. Specs are version-organized, independently loadable, and should aim for ~200 lines.
 
 ---
 
@@ -81,6 +81,8 @@ Before finishing:
 - [ ] All requirements are tagged `[assumed]`
 
 After validation, inform the user: **"This spec MUST go through `/spec-refine` before implementation begins.** All requirements are marked `[assumed]` until explicitly validated."
+
+The `/spec-refine` skill walks through every `[assumed]` requirement with the user, validates tech decisions and scope boundaries, and upgrades approved items to `[user-approved]`. The spec's `**Approval:**` becomes `user-approved` only after all requirements pass review.
 
 ---
 

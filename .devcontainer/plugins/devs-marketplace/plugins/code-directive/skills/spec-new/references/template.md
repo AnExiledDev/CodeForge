@@ -113,3 +113,17 @@ Standard template for all feature specifications. Copy this structure when creat
 | `planned` | Spec written, implementation not started |
 | `partial` | Some acceptance criteria implemented, work ongoing |
 | `implemented` | All acceptance criteria met, as-built notes complete |
+
+## Approval Workflow
+
+| Tag | Meaning |
+|-----|---------|
+| `[assumed]` | Requirement was drafted by AI or inferred — treated as a hypothesis |
+| `[user-approved]` | Requirement was explicitly reviewed and approved by the user via `/spec-refine` |
+
+| Approval Status | Meaning |
+|-----------------|---------|
+| `draft` | Spec has unvalidated assumptions — NOT approved for implementation |
+| `user-approved` | All requirements are `[user-approved]` — ready for implementation |
+
+**Workflow:** `/spec-new` creates → `/spec-refine` validates → implementation begins → `/spec-update` closes the loop.

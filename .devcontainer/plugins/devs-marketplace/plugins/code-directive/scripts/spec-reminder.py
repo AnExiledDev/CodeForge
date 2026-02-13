@@ -110,7 +110,8 @@ def main():
         f"[Spec Reminder] Code was modified in {dirs_str} "
         "but no specs were updated. "
         "Use /spec-update to update the relevant spec, "
-        "or /spec-new if no spec exists for this feature."
+        "/spec-new if no spec exists for this feature, "
+        "or /spec-refine if the spec is still in draft status."
     )
 
     json.dump({"additionalContext": message}, sys.stdout)

@@ -452,16 +452,16 @@ Folder structure:
 .specs/
 ├── ROADMAP.md              # Current version + versioning workflow (≤150 lines)
 ├── BACKLOG.md              # Priority-graded feature backlog
-├── v0.1.0.md               # Feature spec (single file per version if ≤200 lines)
+├── v0.1.0.md               # Feature spec (single file per version if ~200 lines)
 ├── v0.2.0/                 # Version folder when multiple specs needed
 │   ├── _overview.md        # Parent linking sub-specs (≤50 lines)
-│   └── feature-name.md     # Sub-spec per feature (≤200 lines each)
+│   └── feature-name.md     # Sub-spec per feature (~200 lines each)
 ```
 
 Spec rules:
-- ≤200 lines per spec file. Split by feature boundary if larger; link via
-  a parent overview (≤50 lines). Monolithic specs rot — no AI context window
-  can use a 4,000-line spec.
+- Aim for ~200 lines per spec file. Split by feature boundary when
+  significantly longer; link via a parent overview (~50 lines). Monolithic
+  specs rot — no AI context window can use a 4,000-line spec.
 - Reference files, don't reproduce them. Write "see `src/engine/db/migrations/002.sql`
   lines 48-70" — never paste full schemas, SQL DDL, or type definitions. The
   code is the source of truth; duplicated snippets go stale.
@@ -502,7 +502,7 @@ Document types — don't mix:
 - Backlog (`.specs/BACKLOG.md`): priority-graded feature list. Features are
   pulled from here into versions when ready to scope.
 - Feature spec (`.specs/v*.md` or `.specs/vX.Y.0/*.md`): how a feature works.
-  ≤200 lines.
+  ~200 lines.
 
 After a version ships, update feature specs to as-built status. Delete or
 merge superseded planning artifacts — don't accumulate snapshot documents.
