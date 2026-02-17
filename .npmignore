@@ -42,6 +42,10 @@ Thumbs.db
 .devcontainer/**/*.bak
 .devcontainer/.codeforge-preserve
 
+# Python bytecode
+**/__pycache__/
+*.pyc
+
 # Local development
 .claude-trace/
 aeris-memory/
