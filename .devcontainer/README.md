@@ -243,7 +243,7 @@ For conflicting shortcuts, use Meta (Alt) variants or add custom keybindings.
 
 ### System Prompt
 
-The default system prompt is in `.devcontainer/config/defaults/main-system-prompt.md`. Override it by creating a `.claude/system-prompt.md` in your project directory.
+The default system prompt is in `.devcontainer/config/defaults/main-system-prompt.md`. Override it by creating a `.claude/main-system-prompt.md` in your project directory.
 
 ## Custom Features
 
@@ -264,6 +264,14 @@ CodeForge includes several custom devcontainer features:
 | `notify-hook` | Desktop notifications on Claude completion |
 | `mcp-qdrant` | Qdrant vector database MCP server (optional) |
 | `mcp-reasoner` | Enhanced AI reasoning MCP server (optional) |
+
+## Safety Plugins
+
+| Plugin | Description |
+|--------|-------------|
+| `dangerous-command-blocker` | Blocks destructive bash commands (rm -rf, sudo rm, chmod 777, force push) |
+| `protected-files-guard` | Blocks modifications to .env, lock files, .git/, and credentials |
+| `workspace-scope-guard` | Enforces working directory scope — blocks writes and warns on reads outside the project |
 
 ## Agents & Skills
 
@@ -307,7 +315,7 @@ CodeForge includes a specification-driven development workflow. Every non-trivia
 
 ```bash
 /spec-init                       # Bootstrap .specs/ directory (first time only)
-/spec-new auth-flow v0.2.0       # Create a feature spec
+/spec-new auth-flow              # Create a feature spec (domain is inferred)
 /spec-refine auth-flow           # Validate assumptions with user
 # ... implement the feature ...
 /spec-update auth-flow           # As-built update after implementation
@@ -317,7 +325,7 @@ CodeForge includes a specification-driven development workflow. Every non-trivia
 ### The Lifecycle
 
 1. **Backlog** — features live in `.specs/BACKLOG.md` with priority grades (P0–P3)
-2. **Roadmap** — when starting a version, pull features from backlog into `.specs/ROADMAP.md`
+2. **Milestone** — when starting a milestone, pull features from backlog into `.specs/MILESTONES.md`
 3. **Spec** — `/spec-new` creates a spec from the standard template with all requirements tagged `[assumed]`
 4. **Refine** — `/spec-refine` walks through every assumption with the user, converting `[assumed]` → `[user-approved]`. The spec's approval status moves from `draft` → `user-approved`. **No implementation begins until approved.**
 5. **Implement** — build the feature using the spec's acceptance criteria as the definition of done
@@ -337,26 +345,29 @@ A spec-reminder advisory hook fires at Stop when code was modified but specs wer
 
 | Skill | Purpose |
 |-------|---------|
-| `/spec-init` | Bootstrap `.specs/` directory with ROADMAP and BACKLOG |
+| `/spec-init` | Bootstrap `.specs/` directory with MILESTONES and BACKLOG |
 | `/spec-new` | Create a feature spec from the standard template |
 | `/spec-refine` | Validate assumptions and get user approval (required before implementation) |
 | `/spec-update` | As-built update after implementation |
 | `/spec-check` | Audit all specs for health issues |
+| `/spec-build` | Orchestrate full implementation from an approved spec (plan, build, review, close) |
+| `/spec-review` | Standalone deep implementation review against a spec |
 | `/specification-writing` | EARS format templates and acceptance criteria patterns |
 
 ### Directory Structure
 
 ```
 .specs/
-├── ROADMAP.md        # Current version scope
-├── BACKLOG.md        # Priority-graded feature backlog
-├── v0.1.0.md         # Single-file spec (small versions)
-└── v0.2.0/           # Multi-feature version
-    ├── _overview.md   # Parent linking sub-specs
-    └── feature.md     # Individual feature spec
+├── MILESTONES.md      # Milestone tracker linking to feature specs
+├── BACKLOG.md         # Priority-graded feature backlog
+├── auth/              # Domain folder
+│   ├── login-flow.md  # Feature spec
+│   └── oauth.md       # Feature spec
+└── search/            # Domain folder
+    └── full-text.md   # Feature spec
 ```
 
-Specs aim for ~200 lines each. Split by feature boundary when longer; link via a parent overview.
+All specs live in domain subfolders. Specs aim for ~200 lines each; split into separate specs in the domain folder when longer.
 
 ## Project Manager
 

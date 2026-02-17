@@ -12,17 +12,19 @@
 		"TMPDIR": "/workspaces/.tmp"
 	},
 
-	// Feature install order: external runtimes first (Node, uv, Go, Bun),
+	// Feature install order: external runtimes first (Node, uv, Rust, Bun),
 	// then Claude Code (needs Node), then custom features.
 	// npm-dependent features (agent-browser, ccusage, ccburn, biome, lsp-servers)
 	// must come after Node. uv-dependent features (ruff, claude-monitor) must
-	// come after uv. notify-hook is last (lightweight, no dependencies).
+	// come after uv. cargo-dependent features (ccms) must come after Rust.
+	// notify-hook is last (lightweight, no dependencies).
 	"overrideFeatureInstallOrder": [
 		"ghcr.io/devcontainers/features/node",
 		"ghcr.io/devcontainers/features/github-cli",
 		"ghcr.io/devcontainers/features/docker-outside-of-docker",
 		"ghcr.io/devcontainers-extra/features/uv",
 		"ghcr.io/rails/devcontainer/features/bun",
+		"ghcr.io/devcontainers/features/rust",
 		"ghcr.io/anthropics/devcontainer-features/claude-code",
 		"./features/tmux",
 		"./features/agent-browser",
@@ -30,6 +32,7 @@
 		"./features/ccusage",
 		"./features/ccburn",
 		"./features/ccstatusline",
+		"./features/ccms",
 		"./features/ast-grep",
 		"./features/tree-sitter",
 		"./features/lsp-servers",
@@ -53,6 +56,9 @@
 		},
 		"ghcr.io/devcontainers-extra/features/uv:1": {},
 		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
+		"ghcr.io/devcontainers/features/rust:1": {
+			"version": "latest"
+		},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
@@ -73,6 +79,7 @@
 		"./features/ccstatusline": {
 			"username": "automatic"
 		},
+		"./features/ccms": {},
 		"./features/ast-grep": {},
 		"./features/tree-sitter": {},
 		"./features/lsp-servers": {},

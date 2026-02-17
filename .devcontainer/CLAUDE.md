@@ -14,7 +14,8 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 │   │   └── defaults/        # Files copied per manifest
 │   │       ├── settings.json    # Claude Code settings
 │   │       ├── keybindings.json # Claude Code keybindings
-│   │       └── main-system-prompt.md
+│   │       ├── main-system-prompt.md
+│   │       └── writing-system-prompt.md
 │   ├── features/            # Custom devcontainer features
 │   ├── plugins/             # Local plugin marketplace
 │   │   └── devs-marketplace/
@@ -22,7 +23,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 ├── .claude/                 # Runtime Claude config (created on first run)
 │   ├── settings.json        # Active settings (managed by file-manifest.json)
 │   ├── keybindings.json     # Active keybindings
-│   └── system-prompt.md     # Active system prompt
+│   └── main-system-prompt.md # Active system prompt
 └── .gh/                     # GitHub CLI config (persists across rebuilds)
     └── hosts.yml            # Authenticated hosts
 ```
@@ -37,6 +38,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `config/defaults/settings.json` | Claude Code defaults: model, tokens, permissions, plugins |
 | `config/defaults/keybindings.json` | Claude Code keybindings (empty by default — customizable) |
 | `config/defaults/main-system-prompt.md` | Default system prompt defining assistant behavior |
+| `config/defaults/writing-system-prompt.md` | Creative-writing system prompt used by `ccw` alias |
 
 > **Note**: Config file copying is controlled by `config/file-manifest.json`. Each entry specifies `overwrite`: `"if-changed"` (default, sha256-based), `"always"`, or `"never"`. Persistent changes go in `.devcontainer/config/defaults/settings.json`.
 
@@ -47,12 +49,14 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `claude` | Run Claude Code with auto-configuration (prefers native binary at `~/.local/bin/claude`) |
 | `cc` | Shorthand for `claude` with config |
 | `ccraw` | Vanilla Claude Code without any config (bypasses function override) |
+| `ccw` | Shorthand for `claude` with writing system prompt |
 | `ccusage` | Analyze token usage history |
 | `ccburn` | Real-time token burn rate visualization |
 | `agent-browser` | Headless Chromium for browser automation (Playwright-based) |
 | `gh` | GitHub CLI for repo operations |
 | `uv` | Fast Python package manager |
 | `ast-grep` | Structural code search |
+| `ccms` | Search Claude Code session history (project-scoped) |
 | `cc-tools` | List all installed tools with version info |
 | `check-setup` | Verify CodeForge setup health |
 
@@ -103,13 +107,16 @@ When `version` is set to `"none"`, the feature's `install.sh` exits immediately 
 The auto-formatter and auto-linter plugins gracefully skip missing tools at runtime.
 
 **All local features support this pattern:**
-ast-grep, biome, ccstatusline, claude-monitor, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
+ast-grep, biome, ccms, ccstatusline, claude-monitor, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
 
 **External features with `version: "none"` support:**
 `ghcr.io/devcontainers/features/node`, `ghcr.io/devcontainers/features/github-cli`, `ghcr.io/devcontainers/features/docker-outside-of-docker`, `ghcr.io/devcontainers/features/go` (all official Microsoft features)
 
 **External features without `version: "none"` support:**
 `ghcr.io/devcontainers-extra/features/uv`, `ghcr.io/anthropics/devcontainer-features/claude-code`, `ghcr.io/nickmccurdy/bun`
+
+**External features with `version: "none"` support (Rust):**
+`ghcr.io/devcontainers/features/rust` (official Microsoft feature)
 
 > **Convention**: Every new local feature must include a `version` option (default `"latest"`) in its `devcontainer-feature.json` and a skip guard at the top of `install.sh`:
 > ```bash
@@ -127,7 +134,7 @@ Scripts in `./scripts/` run via `postStartCommand`:
 |--------|---------|
 | `setup.sh` | Main orchestrator |
 | `setup-config.sh` | Copies config files per `config/file-manifest.json` to destinations |
-| `setup-aliases.sh` | Creates `cc`/`claude`/`ccraw` shell aliases (prefers native binary at `~/.local/bin/claude` via `_CLAUDE_BIN`) |
+| `setup-aliases.sh` | Creates `cc`/`claude`/`ccraw`/`ccw` shell aliases (prefers native binary at `~/.local/bin/claude` via `_CLAUDE_BIN`) |
 | `setup-plugins.sh` | Registers local marketplace + installs official Anthropic plugins |
 | `setup-update-claude.sh` | Installs native Claude Code binary on first run; background auto-updates on subsequent starts |
 | `setup-terminal.sh` | Configures VS Code Shift+Enter keybinding for Claude Code multi-line input |
@@ -157,6 +164,7 @@ Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` a
 - `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff for Python, Biome for JS/TS/CSS/JSON/GraphQL/HTML; also supports shfmt, dprint, gofmt, rustfmt when installed)
 - `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL; also supports ShellCheck, hadolint, go vet, clippy when installed)
 - `code-directive@devs-marketplace` — 17 custom agents, 17 skills, syntax validation, skill suggestions, agent redirect hook
+- `workspace-scope-guard@devs-marketplace` — Blocks writes and warns on reads outside the working directory
 
 ### Local Marketplace
 
@@ -172,12 +180,13 @@ plugins/devs-marketplace/
     ├── auto-formatter/       # Batch formatter (Stop hook)
     ├── auto-linter/          # Pyright linter
     ├── code-directive/       # Agents, skills + hooks
+    ├── workspace-scope-guard/ # Workspace scope enforcement
     └── ...
 ```
 
 ## Agents & Skills
 
-The `code-directive` plugin includes 17 custom agent definitions and 17 coding reference skills.
+The `code-directive` plugin includes 17 custom agent definitions and 28 coding reference skills.
 
 **Agents** (`plugins/devs-marketplace/plugins/code-directive/agents/`):
 architect, bash-exec, claude-guide, debug-logs, dependency-analyst, doc-writer, explorer, generalist, git-archaeologist, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, statusline-config, test-writer
@@ -185,7 +194,7 @@ architect, bash-exec, claude-guide, debug-logs, dependency-analyst, doc-writer, 
 The `redirect-builtin-agents.py` hook (PreToolUse/Task) transparently swaps built-in agent types to these custom agents (e.g., Explore→explorer, Plan→architect).
 
 **Skills** (`plugins/devs-marketplace/plugins/code-directive/skills/`):
-claude-agent-sdk, claude-code-headless, debugging, docker, docker-py, fastapi, git-forensics, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, spec-refine, specification-writing, sqlite, svelte5, testing
+api-design, ast-grep-patterns, claude-agent-sdk, claude-code-headless, debugging, dependency-management, docker, docker-py, documentation-patterns, fastapi, git-forensics, migration-patterns, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, spec-build, spec-check, spec-init, spec-new, spec-refine, spec-review, spec-update, specification-writing, sqlite, svelte5, testing
 
 ## VS Code Keybinding Conflicts
 

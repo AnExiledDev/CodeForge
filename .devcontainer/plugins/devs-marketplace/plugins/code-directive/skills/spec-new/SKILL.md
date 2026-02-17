@@ -5,7 +5,7 @@ description: >-
   "new feature spec", "write a spec for", "spec this feature",
   "start a new spec", "plan a feature", or needs to create a new
   specification file from the standard template.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Create New Feature Specification
@@ -14,7 +14,7 @@ version: 0.1.0
 
 A specification is a contract between the person requesting a feature and the person building it. Writing the spec BEFORE implementation forces you to think through edge cases, acceptance criteria, and scope boundaries while changes are cheap — before any code exists.
 
-Every project uses `.specs/` as the specification directory. Specs are version-organized, independently loadable, and should aim for ~200 lines.
+Every project uses `.specs/` as the specification directory. Specs are domain-organized, independently loadable, and should aim for ~200 lines.
 
 ---
 
@@ -22,33 +22,32 @@ Every project uses `.specs/` as the specification directory. Specs are version-o
 
 ### Step 1: Parse Arguments
 
-Extract the feature name and version from `$ARGUMENTS`:
+Extract the feature name from `$ARGUMENTS`:
 - **Feature name**: kebab-case identifier (e.g., `session-history`, `auth-flow`)
-- **Version**: semver string (e.g., `v0.3.0`)
 
-If arguments are missing, ask the user for:
-1. Feature name (what is being built)
-2. Target version (which release this belongs to)
+If the feature name is missing, ask the user what they want to spec.
 
-**Note:** Features should be pulled from the project's backlog (`BACKLOG.md`) into a version before creating a spec. If the feature isn't in the backlog yet, add it first, then assign it to a version.
+**Note:** Features should be pulled from the project's backlog (`BACKLOG.md`) into a milestone before creating a spec. If the feature isn't in the backlog yet, add it first, then assign it to a milestone.
 
-### Step 2: Determine File Path
+### Step 2: Determine Domain and File Path
 
-- **Multi-feature version** (directory already exists or multiple features planned):
-  `.specs/{version}/{feature-name}.md`
-- **Single-feature version** (one spec covers the whole version):
-  `.specs/{version}.md`
+Analyze the feature name and description to infer an appropriate domain folder:
+- Look at existing domain folders in `.specs/` for a natural fit
+- Consider the feature's area: `auth`, `search`, `ui`, `api`, `onboarding`, etc.
+- Present the inferred domain to the user for confirmation or override
+
+The file path is always: `.specs/{domain}/{feature-name}.md`
 
 If `.specs/` does not exist at the project root, create it.
 
-If `.specs/{version}/` does not exist and you're using the directory form, create it.
+If `.specs/{domain}/` does not exist, create it.
 
 ### Step 3: Create the Spec File
 
 Write the file using the standard template from `references/template.md`.
 
 Pre-fill:
-- **Version**: from arguments
+- **Domain**: from the inferred/confirmed domain
 - **Status**: `planned`
 - **Last Updated**: today's date (YYYY-MM-DD)
 - **Approval**: `draft`
@@ -73,7 +72,7 @@ After creating the file, guide the user through filling it out:
 ### Step 5: Validate
 
 Before finishing:
-- [ ] If the file exceeds ~200 lines, consider splitting into sub-specs
+- [ ] If the file exceeds ~200 lines, consider splitting into separate specs in the domain folder
 - [ ] No source code, SQL, or type definitions reproduced inline
 - [ ] Status is `planned` and Approval is `draft`
 - [ ] All required sections present (even if some are "N/A" or "TBD")
@@ -88,7 +87,7 @@ The `/spec-refine` skill walks through every `[assumed]` requirement with the us
 
 ## Sizing Guidelines
 
-- **Aim for ~200 lines per spec.** If a feature needs more, consider splitting into sub-specs with a parent `_overview.md` linking them.
+- **Aim for ~200 lines per spec.** If a feature needs more, consider splitting into separate specs in the domain folder.
 - **Reference, don't reproduce.** Write `see src/engine/db/migrations/002.sql lines 48-70` — never paste the SQL.
 - **Independently loadable.** Each spec file must be useful without loading any other file.
 - **EARS format for requirements.** Use the `specification-writing` skill for templates and examples.
@@ -97,7 +96,7 @@ The `/spec-refine` skill walks through every `[assumed]` requirement with the us
 
 ## Ambiguity Policy
 
-- If the user doesn't specify a version, ask — do not assume.
+- If the user doesn't specify a domain, infer one from the feature name and existing `.specs/` structure, then confirm with the user.
 - If the feature scope is unclear, write a minimal spec with `## Open Questions` listing what needs clarification.
 - If a spec already exists for this feature, inform the user and suggest `/spec-update` instead.
 

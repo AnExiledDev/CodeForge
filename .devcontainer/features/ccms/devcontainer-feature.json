@@ -1,0 +1,21 @@
+{
+	"id": "ccms",
+	"version": "1.0.0",
+	"name": "ccms - Claude Code Message Searcher",
+	"description": "Installs ccms CLI for searching Claude Code session JSONL files with boolean queries, role filtering, and JSON output",
+	"maintainer": "AnExiledDev",
+	"documentationURL": "https://github.com/mkusaka/ccms",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "ccms version to install ('latest' builds from main, 'none' skips installation, or a git ref/commit hash)",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/rust:1"]
+}

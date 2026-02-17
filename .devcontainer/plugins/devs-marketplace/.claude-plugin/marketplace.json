@@ -90,7 +90,7 @@
 		},
 		{
 			"name": "code-directive",
-			"description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
+			"description": "17 custom agents, 28 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
 			"version": "1.0.0",
 			"source": "./plugins/code-directive",
 			"category": "development"
@@ -101,6 +101,13 @@
 			"version": "1.0.0",
 			"source": "./plugins/auto-code-quality",
 			"category": "development"
+		},
+		{
+			"name": "workspace-scope-guard",
+			"description": "Enforces working directory scope — blocks writes and warns on reads outside the project",
+			"version": "1.0.0",
+			"source": "./plugins/workspace-scope-guard",
+			"category": "safety"
 		}
 	]
 }

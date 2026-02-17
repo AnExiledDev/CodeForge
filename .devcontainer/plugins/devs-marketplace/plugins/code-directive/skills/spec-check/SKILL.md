@@ -25,23 +25,22 @@ Glob: .specs/**/*.md
 If `.specs/` does not exist, report: "No specification directory found. Use `/spec-new` to create your first spec."
 
 Exclude non-spec files:
-- `ROADMAP.md`
+- `MILESTONES.md`
 - `BACKLOG.md`
 - `LESSONS_LEARNED.md`
 - Files in `archive/`
-- `_overview.md` files (report them separately as parent specs)
 
 ### Step 2: Read Each Spec
 
 For each spec file, extract:
 - **Feature name** from the `# Feature: [Name]` header
-- **Version** from the `**Version:**` field
+- **Domain** from the `**Domain:**` field
 - **Status** from the `**Status:**` field
 - **Last Updated** from the `**Last Updated:**` field
 - **Approval** from the `**Approval:**` field (default `draft` if missing)
 - **Line count** (wc -l)
 - **Sections present** — check for each required section header
-- **Acceptance criteria** — count total, count checked `[x]`
+- **Acceptance criteria** — count total, count checked `[x]`, count in-progress `[~]`
 - **Requirements** — count total, count `[assumed]`, count `[user-approved]`
 - **Discrepancies** — check if section has content
 
@@ -62,6 +61,7 @@ For each spec, check these conditions:
 | **Stale paths** | Key Files references paths that don't exist | Low |
 | **Draft + implemented** | Status is `implemented` but Approval is `draft` — approval gate was bypassed | High |
 | **Inconsistent approval** | Approval is `user-approved` but spec has `[assumed]` requirements | High |
+| **In-progress criteria** | Has acceptance criteria marked `[~]` (implemented, not yet verified) | Info |
 
 ### Step 4: Report
 
@@ -70,24 +70,25 @@ Output a summary table:
 ```
 ## Spec Health Report
 
-| Feature | Version | Status | Approval | Updated | Lines | Issues |
-|---------|---------|--------|----------|---------|-------|--------|
-| Session History | v0.2.0 | implemented | user-approved | 2026-02-08 | 74 | None |
-| Auth Flow | v0.3.0 | planned | draft | 2026-01-15 | 45 | Unapproved, Stale (26 days) |
-| Settings Page | v0.2.0 | partial | draft | 2026-02-05 | 210 | Unapproved, Long spec |
+| Feature | Domain | Status | Approval | Updated | Lines | Issues |
+|---------|--------|--------|----------|---------|-------|--------|
+| Session History | sessions | implemented | user-approved | 2026-02-08 | 74 | None |
+| Auth Flow | auth | planned | draft | 2026-01-15 | 45 | Unapproved, Stale (26 days) |
+| Settings Page | ui | partial | draft | 2026-02-05 | 210 | Unapproved, Long spec |
 
 ## Issues Found
 
 ### High Priority
-- **Auth Flow** (`.specs/v0.3.0/auth-flow.md`): Status is `planned` but last updated 26 days ago. Either implementation is stalled or the spec needs an as-built update.
+- **Auth Flow** (`.specs/auth/auth-flow.md`): Status is `planned` but last updated 26 days ago. Either implementation is stalled or the spec needs an as-built update.
 
 ### Medium Priority
-- **Settings Page** (`.specs/v0.2.0/settings-page.md`): 210 lines — consider splitting into sub-specs for easier consumption.
+- **Settings Page** (`.specs/ui/settings-page.md`): 210 lines — consider splitting into separate specs in the domain folder.
 
 ### Suggested Actions
 1. Run `/spec-refine auth-flow` to validate assumptions and get user approval
-2. Run `/spec-update auth-flow` to update the auth flow spec
-3. Split settings-page.md into sub-specs
+2. Run `/spec-review auth-flow` to verify implementation against the spec
+3. Run `/spec-update auth-flow` to update the auth flow spec
+4. Split settings-page.md into sub-specs
 
 ### Approval Summary
 - **User-approved:** 1 spec
@@ -95,4 +96,4 @@ Output a summary table:
 - **Assumed requirements across all specs:** 8
 ```
 
-If no issues are found, report: "All specs healthy. N specs across M versions. All user-approved."
+If no issues are found, report: "All specs healthy. N specs across M domains. All user-approved."

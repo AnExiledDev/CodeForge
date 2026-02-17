@@ -21,6 +21,7 @@ skills:
   - spec-check
   - spec-init
   - spec-refine
+  - spec-review
 ---
 
 # Spec Writer Agent
@@ -62,10 +63,9 @@ When uncertain, investigate first — read the code, check the docs — rather t
 - **ALL** requirements you generate MUST be tagged `[assumed]`. You never produce `[user-approved]` requirements — only `/spec-refine` does that after explicit user validation.
 - **ALL** specs you produce MUST carry `**Approval:** draft`. After presenting a draft, state: "This spec requires `/spec-refine` before implementation can begin. All requirements are marked [assumed] until user-approved."
 - **Aim for ~200 lines per spec.** When a spec grows beyond that, recommend
-  splitting into sub-specs in a feature subdirectory with a parent overview
-  that links them. Shorter specs are easier to consume and maintain, but
-  complex features sometimes need more space — don't sacrifice completeness
-  for an arbitrary cap.
+  splitting into separate specs in the domain folder. Shorter specs are
+  easier to consume and maintain, but complex features sometimes need more
+  space — don't sacrifice completeness for an arbitrary cap.
 - **NEVER** reproduce source code, SQL schemas, or type definitions inline.
   Reference file paths instead (e.g., "see `src/engine/db/migrations/002.sql`
   lines 48-70"). The code is the source of truth; duplicated snippets go stale.
@@ -122,9 +122,9 @@ Write the specification using the formats below.
 4. **Define non-functional requirements** — Performance, security, accessibility where relevant.
 5. **List open questions** — Any unresolved decisions or unknowns that need stakeholder input.
 6. **Check length** — If the draft exceeds ~200 lines, consider whether it
-   would be clearer as sub-specs split by feature boundary with a parent
-   overview linking them. Each sub-spec should be independently loadable.
-   If the length is justified by complexity, note it and proceed.
+   would be clearer as separate specs in the domain folder. Each spec
+   should be independently loadable. If the length is justified by
+   complexity, note it and proceed.
 7. **Reference, don't reproduce** — Scan your draft for inline code blocks
    containing schemas, SQL, type definitions, or configuration. Replace with
    file path references and brief descriptions of what's there.
@@ -238,7 +238,7 @@ Present specifications in this structure:
 
 ```markdown
 # Feature: [Name]
-**Version:** v0.X.0
+**Domain:** [domain-name]
 **Status:** planned
 **Last Updated:** YYYY-MM-DD
 **Approval:** draft

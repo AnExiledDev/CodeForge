@@ -5,14 +5,14 @@ description: >-
   "set up specs", "bootstrap specs", "start using specs", "create spec
   directory", "init specs for this project", or needs to set up the
   .specs/ directory structure for a project that doesn't have one yet.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Initialize Specification Directory
 
 ## Mental Model
 
-Before any spec can be created, the project needs a `.specs/` directory with its supporting files: a ROADMAP (what each version delivers) and a BACKLOG (deferred items). This skill bootstraps that structure so `/spec-new` has a home.
+Before any spec can be created, the project needs a `.specs/` directory with its supporting files: a MILESTONES tracker (what each milestone delivers) and a BACKLOG (deferred items). This skill bootstraps that structure so `/spec-new` has a home.
 
 ---
 
@@ -25,7 +25,7 @@ Glob: .specs/**/*.md
 ```
 
 **If `.specs/` already exists:**
-- Report current state: how many specs, versions, whether ROADMAP.md and BACKLOG.md exist
+- Report current state: how many specs, domains, whether MILESTONES.md and BACKLOG.md exist
 - Suggest `/spec-check` to audit health instead
 - Do NOT recreate or overwrite anything
 - Stop here
@@ -36,9 +36,9 @@ Glob: .specs/**/*.md
 
 Create the `.specs/` directory at the project root.
 
-### Step 3: Create ROADMAP.md
+### Step 3: Create MILESTONES.md
 
-Write `.specs/ROADMAP.md` using the template from `references/roadmap-template.md`.
+Write `.specs/MILESTONES.md` using the template from `references/milestones-template.md`.
 
 ### Step 4: Create BACKLOG.md
 
@@ -63,15 +63,16 @@ Summarize what was created:
 
 Created:
 - `.specs/` directory
-- `.specs/ROADMAP.md` — version tracking table
+- `.specs/MILESTONES.md` — milestone tracker
 - `.specs/BACKLOG.md` — deferred items list
 
 Next steps:
 - Add features to `BACKLOG.md` with priority grades (P0–P3)
-- Pull features into a version in `ROADMAP.md` when ready to scope
-- Use `/spec-new <feature-name> <version>` to create a spec
+- Pull features into a milestone in `MILESTONES.md` when ready to scope
+- Use `/spec-new <feature-name>` to create a spec (domain is inferred)
 - Use `/spec-refine <feature-name>` to validate before implementation
-- After implementing, use `/spec-update` to close the loop
+- After implementing, use `/spec-review <feature-name>` to verify against the spec
+- Then use `/spec-update` to close the loop
 - Use `/spec-check` to audit spec health at any time
 ```
 
@@ -87,7 +88,7 @@ Next steps:
 ## Ambiguity Policy
 
 - If the user runs this in a workspace root with multiple projects, ask which project to initialize.
-- If `.specs/` exists but is missing ROADMAP.md or BACKLOG.md, offer to create only the missing files.
+- If `.specs/` exists but is missing MILESTONES.md or BACKLOG.md, offer to create only the missing files.
 
 ---
 
@@ -95,5 +96,5 @@ Next steps:
 
 | File | Contents |
 |------|----------|
-| `references/roadmap-template.md` | Starter ROADMAP with version table format |
+| `references/milestones-template.md` | Starter MILESTONES with milestone table format |
 | `references/backlog-template.md` | Starter BACKLOG with item format |

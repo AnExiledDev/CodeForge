@@ -61,7 +61,8 @@
 		"protected-files-guard@devs-marketplace": true,
 		"auto-formatter@devs-marketplace": true,
 		"auto-linter@devs-marketplace": true,
-		"code-directive@devs-marketplace": true
+		"code-directive@devs-marketplace": true,
+		"workspace-scope-guard@devs-marketplace": true
 	},
 	"autoUpdatesChannel": "latest"
 }

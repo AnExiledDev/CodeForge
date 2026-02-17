@@ -66,7 +66,7 @@ Direct model interaction via the Claude API (formerly Anthropic API). Covers Mes
 # Project-level configuration (relative to workspace root)
 .claude/settings.json        # Active settings
 .claude/keybindings.json     # Active keybindings
-.claude/system-prompt.md     # Active system prompt
+.claude/main-system-prompt.md # Active system prompt
 CLAUDE.md                    # Project instructions
 
 # DevContainer configuration

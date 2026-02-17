@@ -176,7 +176,7 @@ Every spec file starts with metadata:
 
 ```
 # Feature: [Name]
-**Version:** v0.X.0
+**Domain:** [domain-name]
 **Status:** implemented | partial | planned
 **Last Updated:** YYYY-MM-DD
 **Approval:** draft | user-approved

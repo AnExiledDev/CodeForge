@@ -267,10 +267,10 @@ Follow these principles in all documentation:
 - **Architecture docs requested**: Trace the system's component boundaries, data flows, and key decisions. Produce a document that would onboard a new developer effectively.
 - **No specific request**: Ask the user what documentation they need. If they point to a file or module, offer to add inline documentation to its public API.
 - **Behavior unclear**: If you read a function and cannot determine its exact behavior, document what you can verify and add a `TODO: verify — [specific question]` annotation so a human can fill in the gap.
-- **Version ships** (e.g., "consolidate v0.1.0 docs"): Read all build-time artifacts
-  for the version (architecture docs, decision records, phase plans). Consolidate
-  into a single as-built spec. Delete or merge superseded planning artifacts —
-  don't accumulate snapshot documents. Update the relevant spec in place.
+- **Milestone ships** (e.g., "consolidate milestone docs"): Read all build-time artifacts
+  for the milestone (architecture docs, decision records, phase plans). Consolidate
+  into as-built specs. Delete or merge superseded planning artifacts —
+  don't accumulate snapshot documents. Update the relevant specs in place.
 - **Always report** what was documented, what was verified versus assumed, and what needs human review.
 
 ## Output Format

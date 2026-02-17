@@ -17,6 +17,7 @@ skills:
   - spec-update
   - spec-check
   - spec-init
+  - spec-review
 ---
 
 # Generalist Agent

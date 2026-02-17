@@ -1,0 +1,17 @@
+{
+	"description": "Enforce workspace scope for file operations",
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Read|Write|Edit|NotebookEdit|Glob|Grep",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/guard-workspace-scope.py",
+						"timeout": 5
+					}
+				]
+			}
+		]
+	}
+}

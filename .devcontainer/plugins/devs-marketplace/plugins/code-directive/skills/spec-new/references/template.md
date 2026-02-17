@@ -9,7 +9,7 @@ Standard template for all feature specifications. Copy this structure when creat
 ```markdown
 # Feature: [Name]
 
-**Version:** v0.X.0
+**Domain:** [domain-name]
 **Status:** planned
 **Last Updated:** YYYY-MM-DD
 **Approval:** draft
@@ -21,6 +21,8 @@ Standard template for all feature specifications. Copy this structure when creat
 ## Acceptance Criteria
 
 [Testable criteria. Use Given/When/Then for complex flows, checklists for simple features, or tables for business rules. Every criterion must be verifiable.]
+
+[Markers: `[ ]` = not started, `[~]` = implemented but not yet verified, `[x]` = verified (tests pass). During `/spec-build`, criteria progress from `[ ]` to `[~]` during implementation, then to `[x]` after review.]
 
 - [ ] [Criterion 1]
 - [ ] [Criterion 2]
@@ -126,4 +128,12 @@ Standard template for all feature specifications. Copy this structure when creat
 | `draft` | Spec has unvalidated assumptions — NOT approved for implementation |
 | `user-approved` | All requirements are `[user-approved]` — ready for implementation |
 
-**Workflow:** `/spec-new` creates → `/spec-refine` validates → implementation begins → `/spec-update` closes the loop.
+## Acceptance Criteria Markers
+
+| Marker | Meaning |
+|--------|---------|
+| `[ ]` | Not started |
+| `[~]` | Implemented, not yet verified — code written, tests not confirmed |
+| `[x]` | Verified — tests pass, behavior confirmed |
+
+**Workflow:** `/spec-new` creates → `/spec-refine` validates → `/spec-build` implements + closes the loop (or implement manually → `/spec-review` verifies → `/spec-update` closes the loop).

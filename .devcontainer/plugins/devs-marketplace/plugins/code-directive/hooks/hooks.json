@@ -40,6 +40,16 @@
 						"timeout": 3
 					}
 				]
+			},
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-cwd.py",
+						"timeout": 3
+					}
+				]
 			}
 		],
 		"Stop": [

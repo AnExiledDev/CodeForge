@@ -1,5 +1,74 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.11.0] - 2026-02-17
+
+### Added
+
+#### New Feature: ccms (Session History Search)
+- **`ccms` devcontainer feature** — Rust-based CLI for searching Claude Code session JSONL files. Installed via `cargo install`. Supports boolean queries, role filtering, time scoping, project isolation, and JSON output
+- **`session-search.md` rule** — global rule requiring project-scoped `ccms` usage and documenting CLI flags/query syntax
+- **Rust runtime** — added `ghcr.io/devcontainers/features/rust:1` as a devcontainer feature (required by ccms)
+- **System prompt `<session_search>` section** — inline reference for ccms usage with key flags and examples
+- **Context management updated** — `<context_management>` now references ccms as the primary recovery tool for compacted sessions (three-source recovery: session history → source files → plan/requirement files)
+
+#### New Feature: ccw (Writing Mode)
+- **`ccw` alias** — launches Claude with `writing-system-prompt.md` for creative-writing tasks
+- **`writing-system-prompt.md`** — dedicated system prompt for writing mode, distributed via file-manifest
+
+#### New Plugin: workspace-scope-guard
+- **`workspace-scope-guard`** — safety plugin that blocks writes and warns on reads outside the working directory. Registered in marketplace.json and enabled by default in settings.json
+
+#### New Skills: spec-build, spec-review (code-directive plugin — 28 skills total)
+- **`/spec-build`** — orchestrates the full implementation lifecycle from an approved spec: plan, build, review, and close in one pass. 5-phase workflow with acceptance criteria markers (`[ ]` → `[~]` → `[x]`)
+- **`/spec-review`** — standalone deep implementation review against a spec. Reads code, verifies requirements and acceptance criteria, recommends `/spec-update` when done
+
+#### New Hook: inject-cwd.py
+- **`inject-cwd.py`** (PostToolUse, all tools) — injects current working directory into every tool response via `additionalContext`
+
+#### Status Line: CWD Widget
+- **`ccstatusline-cwd`** — new custom-command widget showing the basename of Claude Code's working directory. Layout expanded from 7 to 8 lines (16 → 17 widgets)
+
+### Changed
+
+#### setup-aliases.sh Idempotency Fix
+- **Block-marker strategy** — replaced cleanup+guard approach (which left aliases missing on re-run) with a delete-and-rewrite strategy using `START`/`END` block markers. The managed block is removed wholesale by sed range match, then always re-written fresh — no guard/`continue` needed
+- **Legacy cleanup expanded** — added removal of v1.10.0 orphaned aliases/exports/`_CLAUDE_BIN`/`cc-tools()` that existed outside block markers, in addition to pre-v1.10.0 function forms
+- **cc-tools expanded** — added `ccw`, `ccms`, `cargo` to the tool listing
+
+#### Spec Workflow: Version-Based → Domain-Based Organization
+- **Directory structure** — specs now live in domain subfolders (`.specs/{domain}/{feature}.md`) instead of version directories (`.specs/v0.1.0/feature.md`)
+- **ROADMAP.md → MILESTONES.md** — version tracker renamed to milestone tracker throughout all skills, templates, and system prompt
+- **`**Version:**` → `**Domain:**`** — spec template metadata field renamed across spec-new template, spec-writer agent, specification-writing skill, spec-update, spec-check
+- **`roadmap-template.md` → `milestones-template.md`** — reference template replaced
+- **Acceptance criteria markers** — three-state progress tracking: `[ ]` (not started), `[~]` (implemented, not yet verified), `[x]` (verified). Used by `/spec-build` phases and recognized by `/spec-check` and `/spec-update`
+- **Spec lifecycle expanded** — `/spec-review` inserted before `/spec-update` in the recommended post-implementation workflow. `spec-reminder.py` advisory message updated accordingly
+- **Agent skill lists** — architect, generalist, and spec-writer agents gained `/spec-review` access
+
+#### LSP Plugin: Declarative Server Configuration
+- **`codeforge-lsp/plugin.json`** — added `lspServers` block with pyright (Python), typescript-language-server (JS/TS), and gopls (Go) declarative configurations replacing implicit setup
+
+#### git-state-injector.py Enhancements
+- **Working directory injection** — always outputs cwd with scope restriction message, even outside git repos
+- **cwd from hook input** — reads `cwd` from Claude Code's hook JSON input (falls back to `os.getcwd()`)
+
+#### System Prompt Formatting
+- **Line unwrapping** — long wrapped lines consolidated to single lines throughout (no content changes, only formatting)
+
+#### Documentation
+- **CLAUDE.md** — added `ccw`, `ccms` commands; added `writing-system-prompt.md` to directory tree and config table; added workspace-scope-guard to plugin list; skill count 17 → 28; added Rust to `version: "none"` support; updated setup-aliases.sh description
+- **README.md** — added Safety Plugins section; updated spec workflow commands/lifecycle/structure for domain-based organization; added `/spec-build` and `/spec-review` to skill table; fixed system prompt override path (`system-prompt.md` → `main-system-prompt.md`)
+- **claude-guide agent** — fixed system prompt path reference (`system-prompt.md` → `main-system-prompt.md`)
+- **doc-writer agent** — "Version ships" → "Milestone ships" terminology
+- **marketplace.json** — skill count updated (16 → 28); workspace-scope-guard added
+- **skill-suggester.py** — added keyword mappings for `spec-build` and `spec-review`
+- **spec-workflow.md rule** — added `/spec-build` and `/spec-review` rules (#10, #11); added acceptance criteria markers section; updated directory convention to domain-based
+
+### Removed
+
+- **`spec-init/references/roadmap-template.md`** — replaced by `milestones-template.md`
+
+---
+
 ## [v1.10.0] - 2026-02-13
 
 ### Added

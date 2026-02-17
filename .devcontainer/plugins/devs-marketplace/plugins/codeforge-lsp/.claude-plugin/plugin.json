@@ -1,7 +1,40 @@
 {
-  "name": "codeforge-lsp",
-  "description": "LSP servers for CodeForge (Python, TypeScript, Go)",
-  "author": {
-    "name": "AnExiledDev"
-  }
+	"name": "codeforge-lsp",
+	"description": "LSP servers for CodeForge (Python, TypeScript, Go)",
+	"author": {
+		"name": "AnExiledDev"
+	},
+	"lspServers": {
+		"pyright": {
+			"command": "pyright-langserver",
+			"args": ["--stdio"],
+			"extensionToLanguage": {
+				".py": "python",
+				".pyi": "python"
+			}
+		},
+		"typescript": {
+			"command": "typescript-language-server",
+			"args": ["--stdio"],
+			"extensionToLanguage": {
+				".ts": "typescript",
+				".tsx": "typescriptreact",
+				".js": "javascript",
+				".jsx": "javascriptreact",
+				".mts": "typescript",
+				".cts": "typescript",
+				".mjs": "javascript",
+				".cjs": "javascript"
+			}
+		},
+		"gopls": {
+			"command": "gopls",
+			"args": ["serve"],
+			"extensionToLanguage": {
+				".go": "go",
+				".mod": "go.mod",
+				".sum": "go.sum"
+			}
+		}
+	}
 }

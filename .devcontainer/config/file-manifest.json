@@ -28,5 +28,17 @@
 		"dest": "${CLAUDE_CONFIG_DIR}/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/rules/session-search.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/writing-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
 	}
 ]

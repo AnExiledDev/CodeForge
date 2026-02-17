@@ -43,6 +43,10 @@ coverage/
 
 logs
 dev-debug.log
+# Python bytecode
+__pycache__/
+*.pyc
+
 # Dependency directories
 node_modules/
 # Environment variables

@@ -1,0 +1,7 @@
+{
+	"name": "workspace-scope-guard",
+	"description": "Enforces working directory scope — blocks writes and warns on reads outside the project",
+	"author": {
+		"name": "AnExiledDev"
+	}
+}

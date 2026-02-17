@@ -296,6 +296,30 @@ SKILLS = {
         ],
         "terms": ["migrate", "migration", "upgrade"],
     },
+    "spec-build": {
+        "phrases": [
+            "implement the spec",
+            "build from spec",
+            "start building",
+            "spec-build",
+            "implement this feature from the spec",
+            "build what the spec describes",
+            "implement from the spec",
+            "build the feature",
+        ],
+        "terms": ["spec-build"],
+    },
+    "spec-review": {
+        "phrases": [
+            "review the spec",
+            "check spec adherence",
+            "verify implementation",
+            "spec-review",
+            "does code match spec",
+            "audit implementation",
+        ],
+        "terms": ["spec-review"],
+    },
 }
 
 # Pre-compile term patterns for whole-word matching

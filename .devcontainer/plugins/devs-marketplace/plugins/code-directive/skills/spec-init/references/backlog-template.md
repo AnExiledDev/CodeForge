@@ -1,6 +1,6 @@
 # Backlog
 
-Priority-graded feature and infrastructure backlog. Items are pulled into versions when ready to scope and spec. See `ROADMAP.md` for the versioning workflow.
+Priority-graded feature and infrastructure backlog. Items are pulled into milestones when ready to scope and spec. See `MILESTONES.md` for the milestone workflow.
 
 ## P0 — High Priority
 

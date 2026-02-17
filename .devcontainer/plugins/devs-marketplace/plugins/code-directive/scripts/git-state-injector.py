@@ -47,20 +47,31 @@ def _cap_lines(text: str, limit: int) -> str:
 
 
 def main():
+    # Parse hook input to get cwd from Claude Code (falls back to os.getcwd())
+    cwd = os.getcwd()
     try:
-        json.load(sys.stdin)
+        input_data = json.load(sys.stdin)
+        cwd = input_data.get("cwd", cwd)
     except (json.JSONDecodeError, ValueError):
         pass
-
-    cwd = os.getcwd()
 
     # Check if we're in a git repo at all
     branch = _run_git(["branch", "--show-current"], cwd)
     if branch is None:
-        # Not a git repo or git not available
+        # Not a git repo or git not available — still inject working directory
+        output = (
+            f"[Git State]\n"
+            f"Working Directory: {cwd} — restrict all file operations to this "
+            f"directory unless explicitly instructed otherwise."
+        )
+        json.dump({"additionalContext": output}, sys.stdout)
         sys.exit(0)
 
     sections = []
+    sections.append(
+        f"Working Directory: {cwd} — restrict all file operations to this "
+        f"directory unless explicitly instructed otherwise."
+    )
     sections.append(f"Branch: {branch or '(detached HEAD)'}")
 
     # Git status

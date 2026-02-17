@@ -26,6 +26,8 @@ Before performing an as-built update, check the spec's `**Approval:**` status:
 
 This is a warning, not a blocker — the user decides whether to refine first or update as-is.
 
+For manually-implemented features (not using `/spec-build`), consider running `/spec-review` first to verify implementation adherence before updating the spec.
+
 ---
 
 ## The 6-Step Workflow
@@ -56,6 +58,7 @@ Review each acceptance criterion in the spec:
 - Mark as `[x]` if the criterion is met and verified (tests pass, behavior confirmed)
 - Leave as `[ ]` if not yet implemented
 - Add a note next to deferred criteria explaining why
+- If a criterion is marked `[~]` (implemented but not yet verified from a `/spec-build` run), treat it as `[ ]` — verify it now and upgrade to `[x]` if confirmed, or leave as `[ ]` if unverifiable
 
 If criteria were met through different means than originally planned, note the deviation.
 
@@ -81,7 +84,7 @@ Verify paths exist before listing them. Use absolute project-relative paths.
 ### Step 6: Update Metadata
 
 - Set `**Last Updated:**` to today's date (YYYY-MM-DD)
-- Verify `**Version:**` is correct
+- Verify `**Domain:**` is correct
 - Preserve the `**Approval:**` status — do NOT downgrade `user-approved` to `draft`
 - If the as-built update introduces new decisions not in the original spec, add them to `## Resolved Questions` if the user confirmed them, or `## Open Questions` if they were assumed during implementation
 
@@ -121,9 +124,10 @@ Before finishing the update:
 - [ ] Implementation Notes document deviations from original spec
 - [ ] File paths in Key Files are accurate and verified
 - [ ] Last Updated date is today
+- [ ] `**Domain:**` is correct for the spec's location
 - [ ] `**Approval:**` status is preserved (not downgraded)
 - [ ] New implementation decisions are tracked in Resolved Questions or Open Questions
-- [ ] If the spec has grown past ~200 lines, note it and suggest splitting in a future pass
+- [ ] If the spec has grown past ~200 lines, note it and suggest splitting into separate specs in the domain folder
 - [ ] If `**Approval:**` is still `draft`, user was warned and confirmed proceeding
 - [ ] No source code was pasted inline (references only)
 

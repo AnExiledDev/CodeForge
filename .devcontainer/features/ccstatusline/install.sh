@@ -101,6 +101,9 @@ CONFIG_JSON=$(jq -n '{
             {id: "cc-resume-session", type: "custom-command", commandPath: "/usr/local/bin/ccstatusline-session-resume", timeout: 500, preserveColors: false, maxWidth: 50, color: "cyan", backgroundColor: "bgBrightBlack"}
         ],
         [
+            {id: "cc-cwd", type: "custom-command", commandPath: "/usr/local/bin/ccstatusline-cwd", timeout: 500, preserveColors: false, maxWidth: 40, color: "brightWhite", backgroundColor: "bgBrightBlack"}
+        ],
+        [
             {id: "ccburn-compact", type: "custom-command", commandPath: "/usr/local/bin/ccburn-statusline", timeout: 8000, preserveColors: true, maxWidth: 80, color: "green", backgroundColor: "bgBlack"}
         ]
     ],
@@ -180,6 +183,24 @@ SESSION_EOF
 
 chmod +x /usr/local/bin/ccstatusline-session-resume
 echo "[ccstatusline] ✓ Session resume helper installed at /usr/local/bin/ccstatusline-session-resume"
+
+# Create CWD helper script for custom-command widget
+# Reads Claude Code JSON from stdin, outputs the last path segment of cwd
+echo "[ccstatusline] Creating CWD helper..."
+cat > /usr/local/bin/ccstatusline-cwd <<'CWD_EOF'
+#!/bin/bash
+# Reads Claude Code JSON from stdin, outputs basename of cwd
+# Used by ccstatusline custom-command widget
+CWD=$(jq -r '.cwd // empty' 2>/dev/null)
+if [ -n "$CWD" ]; then
+    basename "$CWD"
+else
+    echo "..."
+fi
+CWD_EOF
+
+chmod +x /usr/local/bin/ccstatusline-cwd
+echo "[ccstatusline] ✓ CWD helper installed at /usr/local/bin/ccstatusline-cwd"
 
 # Create wrapper script to protect configuration
 echo "[ccstatusline] Creating wrapper script..."
@@ -302,7 +323,7 @@ echo ""
 echo "Configuration:"
 echo "  • Config file: ${CONFIG_FILE}"
 echo "  • User: ${USERNAME}"
-echo "  • Theme: Powerline (7 lines, 16 widgets, ANSI colors)"
+echo "  • Theme: Powerline (8 lines, 17 widgets, ANSI colors)"
 echo "  • Protected by: /usr/local/bin/ccstatusline-wrapper"
 echo ""
 echo "Display:"
@@ -312,7 +333,8 @@ echo "  Line 3: Git Branch | Git Changes | Git Worktree"
 echo "  Line 4: Session Clock | Session Cost | Block Timer"
 echo "  Line 5: Tokens Total | Version"
 echo "  Line 6: Session ID"
-echo "  Line 7: Burn Rate (ccburn compact)"
+echo "  Line 7: Working Directory"
+echo "  Line 8: Burn Rate (ccburn compact)"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Next Steps"

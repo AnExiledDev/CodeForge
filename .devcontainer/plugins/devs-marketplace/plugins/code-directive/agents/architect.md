@@ -18,6 +18,7 @@ skills:
   - spec-new
   - spec-update
   - spec-init
+  - spec-review
 hooks:
   PreToolUse:
     - matcher: Bash
