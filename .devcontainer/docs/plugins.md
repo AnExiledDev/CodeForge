@@ -16,7 +16,8 @@ plugins/devs-marketplace/
     ├── protected-files-guard/ # Safety: protect sensitive files
     ├── auto-formatter/        # Batch formatter (Stop hook)
     ├── auto-linter/           # Batch linter (Stop hook)
-    └── code-directive/        # Agents, skills, hooks
+    ├── code-directive/        # Agents, skills, hooks
+    └── workspace-scope-guard/ # Workspace scope enforcement
 ```
 
 Each plugin has a `.claude-plugin/plugin.json` manifest defining its name, description, and capabilities.
@@ -146,9 +147,15 @@ Runs as a PreToolUse hook on Write and Edit operations.
 
 **Components**:
 - **17 custom agents** — Specialized agent definitions for different task types (architect, test-writer, refactorer, etc.)
-- **16 coding skills** — Domain-specific reference materials (FastAPI, Docker, testing patterns, etc.)
+- **28 coding skills** — Domain-specific reference materials (FastAPI, Docker, testing patterns, spec workflow, etc.)
 - **Agent redirection hook** — Transparently swaps built-in agent types to custom agents (e.g., `Explore` → `explorer`, `Plan` → `architect`)
 - **Syntax validation hook** — Validates code syntax before commits
 - **Skill auto-suggestion hook** — Suggests relevant skills based on conversation context
 
 For detailed agent and skill documentation, see the agent markdown files in `plugins/devs-marketplace/plugins/code-directive/agents/` and skill files in `plugins/devs-marketplace/plugins/code-directive/skills/`.
+
+### workspace-scope-guard
+
+**Purpose**: Enforces workspace scope by blocking writes outside the working directory and warning on out-of-scope reads.
+
+Runs as a PreToolUse hook on Write, Edit, and Read operations. Compares file paths against the current working directory and rejects modifications to files outside the project scope. Read operations outside scope produce a warning but are not blocked. Resolves symlinks and worktree paths correctly via `os.path.realpath()`.

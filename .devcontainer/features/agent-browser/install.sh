@@ -64,13 +64,6 @@ agent-browser install --with-deps 2>/dev/null || {
     agent-browser install 2>/dev/null || true
 }
 
-# Install Playwright Chromium only (not all browsers)
-echo "[agent-browser] Installing Playwright Chromium..."
-npx playwright install chromium --with-deps 2>/dev/null || {
-    echo "[agent-browser] WARNING: Playwright chromium install with deps failed, trying without --with-deps"
-    npx playwright install chromium 2>/dev/null || true
-}
-
 echo "[agent-browser] Installed: $(agent-browser --version 2>/dev/null || echo 'unknown')"
 echo "[agent-browser] Installation complete"
 echo ""

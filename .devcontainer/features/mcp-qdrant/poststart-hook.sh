@@ -35,7 +35,8 @@ if [ -n "${MODEL_URL}" ] && [ ! -d "${FASTEMBED_CACHE}/${MODEL_DIR}" ]; then
         tar -xzf "${TEMP_TAR}" -C "${FASTEMBED_CACHE}/" 2>/dev/null || true
         find "${FASTEMBED_CACHE}" -name "._*" -delete 2>/dev/null || true
         rm -f "${TEMP_TAR}"
-        chmod -R 777 "${FASTEMBED_CACHE}" 2>/dev/null || true
+        chown -R "vscode:vscode" "${FASTEMBED_CACHE}" 2>/dev/null || true
+        chmod -R 755 "${FASTEMBED_CACHE}" 2>/dev/null || true
         echo "[mcp-qdrant] ✓ Embedding model downloaded to ${FASTEMBED_CACHE}/${MODEL_DIR}"
     else
         echo "[mcp-qdrant] WARNING: Failed to download embedding model"

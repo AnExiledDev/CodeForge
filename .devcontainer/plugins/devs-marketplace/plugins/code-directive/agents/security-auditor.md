@@ -10,7 +10,7 @@ description: >-
   Reports findings with severity ratings and remediation guidance without
   modifying any files.
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: red
 memory:
   scope: user

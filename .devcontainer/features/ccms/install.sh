@@ -52,24 +52,41 @@ fi
 
 echo "[ccms] Installing for user: ${USERNAME}"
 
+# === BUILD CACHE ===
+CACHE_DIR="/workspaces/.devcontainer/.build-cache/bin"
+
 # === INSTALL ===
 REPO_URL="https://github.com/mkusaka/ccms"
 
-if [ "${CCMS_VERSION}" = "latest" ]; then
-    echo "[ccms] Building from main branch..."
-    cargo install --git "${REPO_URL}" 2>&1 | tail -5
+if [ -x "${CACHE_DIR}/ccms" ]; then
+    echo "[ccms] Using cached binary from ${CACHE_DIR}/ccms"
+    cp "${CACHE_DIR}/ccms" /usr/local/bin/ccms
+    chmod +x /usr/local/bin/ccms
 else
-    echo "[ccms] Building from ref: ${CCMS_VERSION}..."
-    cargo install --git "${REPO_URL}" --rev "${CCMS_VERSION}" 2>&1 | tail -5
-fi
+    if [ "${CCMS_VERSION}" = "latest" ]; then
+        echo "[ccms] Building from main branch..."
+        cargo install --git "${REPO_URL}" --rev f90d259a4476 2>&1 | tail -5
+    else
+        echo "[ccms] Building from ref: ${CCMS_VERSION}..."
+        cargo install --git "${REPO_URL}" --rev "${CCMS_VERSION}" 2>&1 | tail -5
+    fi
 
-# === ENSURE BINARY IS ON PATH ===
-# cargo install puts binaries in $CARGO_HOME/bin or ~/.cargo/bin
-# Symlink to /usr/local/bin so it's available to all users
-CARGO_BIN="${CARGO_HOME:-$HOME/.cargo}/bin/ccms"
-if [ -f "${CARGO_BIN}" ] && [ ! -f /usr/local/bin/ccms ]; then
-    ln -s "${CARGO_BIN}" /usr/local/bin/ccms
-    echo "[ccms] Symlinked ${CARGO_BIN} → /usr/local/bin/ccms"
+    # === ENSURE BINARY IS ON PATH ===
+    # cargo install puts binaries in $CARGO_HOME/bin or ~/.cargo/bin
+    # Symlink to /usr/local/bin so it's available to all users
+    CARGO_BIN="${CARGO_HOME:-$HOME/.cargo}/bin/ccms"
+    if [ -f "${CARGO_BIN}" ] && [ ! -f /usr/local/bin/ccms ]; then
+        ln -s "${CARGO_BIN}" /usr/local/bin/ccms
+        echo "[ccms] Symlinked ${CARGO_BIN} → /usr/local/bin/ccms"
+    fi
+
+    # Cache the binary for future rebuilds
+    mkdir -p "${CACHE_DIR}"
+    CARGO_BIN="${CARGO_HOME:-$HOME/.cargo}/bin/ccms"
+    if [ -f "${CARGO_BIN}" ]; then
+        cp "${CARGO_BIN}" "${CACHE_DIR}/ccms"
+        echo "[ccms] Cached binary to ${CACHE_DIR}/ccms"
+    fi
 fi
 
 # === VERIFICATION ===

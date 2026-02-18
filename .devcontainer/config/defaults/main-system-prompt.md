@@ -330,6 +330,34 @@ Prior approval does not transfer. A user approving `git push` once does NOT mean
 When blocked, do not use destructive actions as a shortcut. Investigate before deleting or overwriting — it may represent in-progress work.
 </action_safety>
 
+<git_worktrees>
+Git worktrees allow checking out multiple branches simultaneously, each in its own directory.
+
+Layout convention:
+- Worktrees go in a `.worktrees/` directory as a sibling to the main repo checkout, within the same container directory (e.g., `projects/.worktrees/feature-name`)
+- The main repo has a `.git` directory; worktrees have a `.git` file containing `gitdir:` pointing to the main repo's worktree metadata
+
+Creating worktrees:
+```bash
+# Always create inside .worktrees/
+mkdir -p /workspaces/projects/.worktrees
+git worktree add /workspaces/projects/.worktrees/<branch-name> <branch>
+```
+
+Managing worktrees:
+- `git worktree list` — show all active worktrees
+- `git worktree remove <path>` — remove a worktree (confirm with user first — destructive)
+- `git worktree prune` — clean up stale worktree references (confirm with user first — destructive)
+
+Project detection:
+- Worktrees in `.worktrees/` are auto-detected by `setup-projects.sh` and tagged with both `"git"` and `"worktree"` in Project Manager
+- Each worktree is an independent working directory — workspace-scope-guard treats them as separate project directories
+
+Safety:
+- `git worktree remove` and `git worktree prune` are destructive — require user confirmation before executing
+- `git worktree add` is externally visible (creates new working directory) — confirm with user
+</git_worktrees>
+
 <assumption_surfacing>
 HARD RULE: Never assume what you can ask.
 

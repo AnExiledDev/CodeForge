@@ -49,7 +49,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `claude` | Run Claude Code with auto-configuration (prefers native binary at `~/.local/bin/claude`) |
 | `cc` | Shorthand for `claude` with config |
 | `ccraw` | Vanilla Claude Code without any config (bypasses function override) |
-| `ccw` | Shorthand for `claude` with writing system prompt |
+| `ccw` | Claude Code with the writing system prompt — uses `writing-system-prompt.md` instead of `main-system-prompt.md`, optimized for creative and technical writing tasks |
 | `ccusage` | Analyze token usage history |
 | `ccburn` | Real-time token burn rate visualization |
 | `agent-browser` | Headless Chromium for browser automation (Playwright-based) |
@@ -113,7 +113,7 @@ ast-grep, biome, ccms, ccstatusline, claude-monitor, dprint, hadolint, lsp-serve
 `ghcr.io/devcontainers/features/node`, `ghcr.io/devcontainers/features/github-cli`, `ghcr.io/devcontainers/features/docker-outside-of-docker`, `ghcr.io/devcontainers/features/go` (all official Microsoft features)
 
 **External features without `version: "none"` support:**
-`ghcr.io/devcontainers-extra/features/uv`, `ghcr.io/anthropics/devcontainer-features/claude-code`, `ghcr.io/nickmccurdy/bun`
+`ghcr.io/devcontainers-extra/features/uv`, `ghcr.io/anthropics/devcontainer-features/claude-code`, `ghcr.io/rails/devcontainer/features/bun`
 
 **External features with `version: "none"` support (Rust):**
 `ghcr.io/devcontainers/features/rust` (official Microsoft feature)
@@ -139,6 +139,8 @@ Scripts in `./scripts/` run via `postStartCommand`:
 | `setup-update-claude.sh` | Installs native Claude Code binary on first run; background auto-updates on subsequent starts |
 | `setup-terminal.sh` | Configures VS Code Shift+Enter keybinding for Claude Code multi-line input |
 | `setup-projects.sh` | Auto-detects projects for VS Code Project Manager |
+| `setup-auth.sh` | Configures Git and NPM auth from `.secrets` file or environment variables |
+| `check-setup.sh` | Verifies CodeForge setup health (binary paths, config files, features) |
 | `setup-symlink-claude.sh` | Symlinks ~/.claude for third-party tool compatibility |
 
 ### External Terminal
@@ -147,6 +149,8 @@ Scripts in `./scripts/` run via `postStartCommand`:
 ```bash
 .devcontainer/connect-external-terminal.sh
 ```
+
+On Windows, use `connect-external-terminal.ps1` (PowerShell equivalent).
 
 ## Installed Plugins
 
@@ -163,7 +167,7 @@ Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` a
 - `protected-files-guard@devs-marketplace` — Blocks edits to secrets/lock files
 - `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff for Python, Biome for JS/TS/CSS/JSON/GraphQL/HTML; also supports shfmt, dprint, gofmt, rustfmt when installed)
 - `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL; also supports ShellCheck, hadolint, go vet, clippy when installed)
-- `code-directive@devs-marketplace` — 17 custom agents, 17 skills, syntax validation, skill suggestions, agent redirect hook
+- `code-directive@devs-marketplace` — 17 custom agents, 28 skills, syntax validation, skill suggestions, agent redirect hook
 - `workspace-scope-guard@devs-marketplace` — Blocks writes and warns on reads outside the working directory
 
 ### Local Marketplace
@@ -223,6 +227,64 @@ Key environment variables set in the container:
 | `GH_CONFIG_DIR` | `/workspaces/.gh` |
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` |
 | `TMPDIR` | `/workspaces/.tmp` |
+| `CLAUDECODE` | `null` (unset) |
+
+Setting `"CLAUDECODE": null` in `remoteEnv` unsets this variable inside the container, which allows nested Claude Code sessions (claude-in-claude) that would otherwise be blocked by the outer session's detection flag.
+
+All setup steps are controlled by boolean flags in `.devcontainer/.env`. Set any to `false` to disable:
+`SETUP_CONFIG`, `SETUP_ALIASES`, `SETUP_AUTH`, `SETUP_PLUGINS`, `SETUP_UPDATE_CLAUDE`, `SETUP_TERMINAL`, `SETUP_PROJECTS`, `SETUP_POSTSTART`.
+
+### Experimental Environment Variables
+
+These are set in `config/defaults/settings.json` under `env` and control Claude Code experimental features:
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `1` | Enables Agent Teams (multi-agent orchestration) |
+| `CLAUDE_CODE_EFFORT_LEVEL` | `high` | Sets reasoning effort level |
+| `CLAUDE_CODE_ENABLE_TASKS` | `true` | Enables the task/todo system |
+| `CLAUDE_CODE_PLAN_MODE_INTERVIEW_PHASE` | `true` | Enables interview phase before plan execution |
+| `CLAUDE_CODE_PLAN_V2_AGENT_COUNT` | `3` | Number of agents in Plan V2 orchestration |
+| `CLAUDE_CODE_PLAN_MODE_REQUIRED` | `true` | Forces plan mode for teammate agents |
+| `ENABLE_CLAUDE_CODE_SM_COMPACT` | `1` | Enables smart compaction for context management |
+| `CLAUDE_CODE_FORCE_GLOBAL_CACHE` | `1` | Forces global prompt caching |
+| `FORCE_AUTOUPDATE_PLUGINS` | `1` | Auto-updates plugins on every session start |
+
+## Git Worktrees
+
+CodeForge supports git worktrees for working on multiple branches simultaneously.
+
+### Layout
+
+Worktrees live in a `.worktrees/` directory alongside the main repo:
+
+```
+/workspaces/projects/
+├── CodeForge/           # main repo (.git directory)
+└── .worktrees/          # worktree container
+    ├── feature-a/       # worktree checkout (.git file)
+    └── bugfix-b/        # worktree checkout (.git file)
+```
+
+### Creating Compatible Worktrees
+
+```bash
+cd /workspaces/projects/CodeForge
+mkdir -p /workspaces/projects/.worktrees
+git worktree add /workspaces/projects/.worktrees/my-branch my-branch
+```
+
+### Project Detection
+
+- `setup-projects.sh` scans `.worktrees/` directories at depth 3 (inside container dirs like `projects/`)
+- Worktrees are detected by their `.git` file (containing `gitdir:`) and tagged with both `"git"` and `"worktree"` in Project Manager
+- Each worktree appears as an independent project in VS Code Project Manager
+
+### Compatibility
+
+- `workspace-scope-guard` resolves worktree paths correctly via `os.path.realpath()`
+- `protected-files-guard` protects both `.git/` directories and `.git` files (worktree pointers)
+- Read-only agents (e.g., git-archaeologist) can use `git worktree list` but cannot add/remove worktrees
 
 ## Modifying Behavior
 
@@ -232,3 +294,11 @@ Key environment variables set in the container:
 4. **Add a custom config file**: Add an entry to `config/file-manifest.json` with `src`, `dest`, and optional `overwrite`/`destFilename`
 5. **Add features**: Add to `"features"` in `devcontainer.json`
 6. **Disable auto-setup**: Set variables to `false` in `.env`
+
+## Rules System
+
+Rules live in `config/defaults/rules/` and are copied to `.claude/rules/` by the file manifest (`config/file-manifest.json`) on every container start. Unlike CLAUDE.md (which loads on demand when entering a project), rules load automatically on every Claude Code session.
+
+**Current rules**: `spec-workflow.md`, `workspace-scope.md`, `session-search.md`
+
+**Adding custom rules**: Create a `.md` file in `config/defaults/rules/`, then add a manifest entry in `config/file-manifest.json` pointing to `${CLAUDE_CONFIG_DIR}/rules` as the destination. The rule will be deployed on the next container start.

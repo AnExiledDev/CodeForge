@@ -34,7 +34,7 @@ warn_check() {
 echo ""
 echo "Core:"
 check "Claude Code installed" "command -v claude"
-warn_check "Claude native binary" "[ -x /usr/local/bin/claude ]"
+warn_check "Claude native binary" "[ -x ~/.local/bin/claude ] || [ -x /usr/local/bin/claude ]"
 check "cc alias configured" "grep -q 'alias cc=' ~/.bashrc 2>/dev/null || grep -q 'alias cc=' ~/.zshrc 2>/dev/null"
 check "Config directory exists" "[ -d '${CLAUDE_CONFIG_DIR:-/workspaces/.claude}' ]"
 check "Settings file exists" "[ -f '${CLAUDE_CONFIG_DIR:-/workspaces/.claude}/settings.json' ]"

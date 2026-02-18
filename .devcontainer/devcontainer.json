@@ -9,7 +9,25 @@
 		"WORKSPACE_ROOT": "/workspaces",
 		"CLAUDE_CONFIG_DIR": "/workspaces/.claude",
 		"GH_CONFIG_DIR": "/workspaces/.gh",
-		"TMPDIR": "/workspaces/.tmp"
+		"TMPDIR": "/workspaces/.tmp",
+		"CLAUDECODE": null
+	},
+
+	"secrets": {
+		"GH_TOKEN": {
+			"description": "GitHub Personal Access Token (optional - for git auth)",
+			"documentationUrl": "https://github.com/settings/tokens"
+		},
+		"NPM_TOKEN": {
+			"description": "NPM auth token (optional - for npm registry)",
+			"documentationUrl": "https://www.npmjs.com/settings/~/tokens"
+		},
+		"GH_USERNAME": {
+			"description": "GitHub username for git config (optional)"
+		},
+		"GH_EMAIL": {
+			"description": "GitHub email for git config (optional)"
+		}
 	},
 
 	// Feature install order: external runtimes first (Node, uv, Rust, Bun),
@@ -46,20 +64,22 @@
 	],
 
 	"features": {
-		"ghcr.io/devcontainers/features/node:1": {
+		"ghcr.io/devcontainers/features/node:1.6": {
 			"version": "lts",
 			"nodeGypDependencies": true
 		},
-		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+		"ghcr.io/devcontainers/features/github-cli:1.0": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1.7": {
 			"moby": false
 		},
-		"ghcr.io/devcontainers-extra/features/uv:1": {},
+		"ghcr.io/devcontainers-extra/features/uv:1.0": {},
 		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
-		"ghcr.io/devcontainers/features/rust:1": {
+		"ghcr.io/devcontainers/features/rust:1.4": {
 			"version": "latest"
 		},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		// Uncomment to add Go runtime (not installed by default):
+		// "ghcr.io/devcontainers/features/go:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.1": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
@@ -111,18 +131,21 @@
 		"vscode": {
 			"settings": {
 				"terminal.integrated.profiles.linux": {
+					"zsh": {
+						"path": "zsh"
+					},
 					"bash": {
 						"path": "bash"
 					},
 					"Claude Teams (tmux)": {
-						"path": "bash",
+						"path": "zsh",
 						"args": [
 							"-c",
 							"if tmux has-session -t claude-teams 2>/dev/null; then exec tmux -u new-session -t claude-teams; else exec tmux -u new-session -s claude-teams; fi"
 						]
 					}
 				},
-				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.defaultProfile.linux": "zsh",
 				"terminal.integrated.enableBell": true,
 				"terminal.integrated.commandsToSkipShell": [
 					"-workbench.action.quickOpen",

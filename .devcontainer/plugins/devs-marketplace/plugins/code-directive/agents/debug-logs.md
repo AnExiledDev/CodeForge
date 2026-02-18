@@ -5,7 +5,7 @@ description: >-
   application frameworks, and system services to identify errors, crashes,
   and performance issues. Reports structured findings with root cause assessment.
 tools: Bash, Read, Glob, Grep
-model: sonnet
+model: opus
 color: red
 skills:
   - debugging

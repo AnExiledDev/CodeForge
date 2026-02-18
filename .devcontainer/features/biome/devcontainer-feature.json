@@ -1,16 +1,14 @@
 {
-  "id": "biome",
-  "version": "1.0.0",
-  "name": "Biome",
-  "description": "Fast JS/TS/JSON/CSS formatter and linter",
-  "options": {
-    "version": {
-      "type": "string",
-      "default": "latest",
-      "description": "Biome version to install"
-    }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/node"
-  ]
+	"id": "biome",
+	"version": "1.0.0",
+	"name": "Biome",
+	"description": "Fast JS/TS/JSON/CSS formatter and linter",
+	"options": {
+		"version": {
+			"type": "string",
+			"default": "2.4.2",
+			"description": "Biome version to install"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node"]
 }

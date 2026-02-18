@@ -2,6 +2,11 @@
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![npm version](https://img.shields.io/npm/v/codeforge-dev.svg)](https://www.npmjs.com/package/codeforge-dev)
+[![Changelog](https://img.shields.io/badge/changelog-view-blue)](.devcontainer/CHANGELOG.md)
+[![GitHub last commit](https://img.shields.io/github/last-commit/AnExiledDev/CodeForge)](https://github.com/AnExiledDev/CodeForge/commits)
+[![npm downloads](https://img.shields.io/npm/dm/codeforge-dev)](https://www.npmjs.com/package/codeforge-dev)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org/)
+[![GitHub issues](https://img.shields.io/github/issues/AnExiledDev/CodeForge)](https://github.com/AnExiledDev/CodeForge/issues)
 
 A curated development environment optimized for AI-powered coding with Claude Code. CodeForge comes pre-configured with language servers, code intelligence tools, and official Anthropic plugins to streamline your development workflow.
 
@@ -43,15 +48,15 @@ npx codeforge-dev@1.2.3
 
 ### Languages & Runtimes
 
-Python 3.14, Node.js LTS, TypeScript, Go
+Python 3.14, Node.js LTS, TypeScript, Rust, Bun, Go (optional)
 
 ### Package Managers
 
-`uv`, `npm`, `pip` / `pipx`
+`uv`, `npm`, `bun`, `pip` / `pipx`
 
 ### Development Tools
 
-`gh` (GitHub CLI), `docker`, `git`, `jq`, `curl`, `tmux`, `biome`, `agent-browser`
+`gh` (GitHub CLI), `docker`, `git`, `jq`, `curl`, `tmux`, `biome`, `ruff`, `ccms`, `agent-browser`
 
 ### Code Intelligence
 
@@ -59,15 +64,15 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 ### Claude Code Tools
 
-`claude`, `cc` (wrapper), `ccusage`, `ccburn`, `ccstatusline`, `claude-monitor`
+`claude`, `cc` (wrapper), `ccw` (writing mode wrapper), `ccusage`, `ccburn`, `ccstatusline`, `claude-monitor`
 
-### Custom Features (14)
+### Custom Features (18)
 
-tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, notify-hook, mcp-qdrant, mcp-reasoner, splitrail
+tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant
 
-### Agents (17) & Skills (17)
+### Agents (17) & Skills (28)
 
-The `code-directive` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.) and 17 domain-specific coding reference skills (fastapi, svelte5, docker, testing, spec-refine, etc.).
+The `code-directive` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.) and 28 domain-specific coding reference skills (fastapi, svelte5, docker, testing, spec-workflow, security-checklist, etc.).
 
 ## Quick Start
 
@@ -94,6 +99,10 @@ npm test
 # Bump version in package.json, then:
 npm publish
 ```
+
+## Changelog
+
+See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **1.12.0** (2026-02-18).
 
 ## Further Reading
 

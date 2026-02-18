@@ -11,7 +11,7 @@ description: >-
   spawning a new instance, check if there is already a running or recently
   completed claude-guide agent that you can resume using the "resume" parameter.
 tools: Glob, Grep, Read, WebFetch, WebSearch
-model: haiku
+model: sonnet
 color: cyan
 memory:
   scope: user

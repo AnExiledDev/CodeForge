@@ -9,7 +9,7 @@ description: >-
   technology comparison, or technical deep-dives. Reports structured findings
   with citations without modifying any files.
 tools: Read, Glob, Grep, WebSearch, WebFetch, Bash
-model: sonnet
+model: opus
 color: cyan
 memory:
   scope: user

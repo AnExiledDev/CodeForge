@@ -1,24 +1,24 @@
 {
-  "id": "ast-grep",
-  "version": "1.0.0",
-  "name": "ast-grep",
-  "description": "Installs ast-grep CLI for structural code search, lint, and rewriting using AST matching",
-  "maintainer": "AnExiledDev",
-  "documentationURL": "https://ast-grep.github.io/",
-  "options": {
-    "version": {
-      "type": "string",
-      "description": "@ast-grep/cli npm package version (e.g., 'latest', '0.31.1')",
-      "default": "latest"
-    },
-    "username": {
-      "type": "string",
-      "description": "Container user to install for",
-      "default": "automatic"
-    }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils:2",
-    "ghcr.io/devcontainers/features/node:1"
-  ]
+	"id": "ast-grep",
+	"version": "1.0.0",
+	"name": "ast-grep",
+	"description": "Installs ast-grep CLI for structural code search, lint, and rewriting using AST matching",
+	"maintainer": "AnExiledDev",
+	"documentationURL": "https://ast-grep.github.io/",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "@ast-grep/cli npm package version (e.g., 'latest', '0.31.1')",
+			"default": "0.40.5"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/common-utils:2",
+		"ghcr.io/devcontainers/features/node:1"
+	]
 }

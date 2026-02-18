@@ -10,7 +10,7 @@ description: >-
   very thorough. Reports findings with absolute file paths and never
   modifies any files.
 tools: Read, Glob, Grep, Bash
-model: haiku
+model: sonnet
 color: blue
 memory:
   scope: project

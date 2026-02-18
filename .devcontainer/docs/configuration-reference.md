@@ -30,7 +30,9 @@ These control what `setup.sh` does on each container start. Copy `.env.example` 
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |
 | `SETUP_PLUGINS` | `true` | Install Anthropic plugins + register local marketplace |
 | `SETUP_UPDATE_CLAUDE` | `true` | Background-update Claude Code CLI binary |
+| `SETUP_TERMINAL` | `true` | Configure VS Code Shift+Enter keybinding for Claude Code terminal |
 | `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
+| `SETUP_POSTSTART` | `true` | Run post-start hooks from `/usr/local/devcontainer-poststart.d/` |
 | `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip during installation |
 
 ## `devcontainer.json` `remoteEnv` (Container Runtime)
@@ -43,6 +45,7 @@ These environment variables are set in every terminal session inside the contain
 | `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` | Claude Code config directory |
 | `GH_CONFIG_DIR` | `/workspaces/.gh` | GitHub CLI config directory |
 | `TMPDIR` | `/workspaces/.tmp` | Temporary files directory |
+| `CLAUDECODE` | `null` (unset) | Unsets the variable to allow nested Claude Code sessions (claude-in-claude) |
 
 ## `config/file-manifest.json` (File Copy Rules)
 

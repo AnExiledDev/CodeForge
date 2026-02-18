@@ -29,7 +29,7 @@ is_excluded() {
 
 has_project_markers() {
 	local dir="$1"
-	[ -d "$dir/.git" ] || [ -f "$dir/package.json" ] || [ -f "$dir/pyproject.toml" ] ||
+	[ -d "$dir/.git" ] || [ -f "$dir/.git" ] || [ -f "$dir/package.json" ] || [ -f "$dir/pyproject.toml" ] ||
 		[ -f "$dir/Cargo.toml" ] || [ -f "$dir/go.mod" ] || [ -f "$dir/deno.json" ] ||
 		[ -f "$dir/Makefile" ] || [ -f "$dir/CLAUDE.md" ]
 }
@@ -38,7 +38,11 @@ detect_tags() {
 	local dir="$1"
 	local tags=()
 
-	[ -d "$dir/.git" ] && tags+=("git")
+	if [ -f "$dir/.git" ] && grep -q "gitdir:" "$dir/.git" 2>/dev/null; then
+		tags+=("git" "worktree")
+	elif [ -d "$dir/.git" ]; then
+		tags+=("git")
+	fi
 	[ -f "$dir/package.json" ] && tags+=("node")
 	[ -f "$dir/pyproject.toml" ] && tags+=("python")
 	[ -f "$dir/Cargo.toml" ] && tags+=("rust")
@@ -95,6 +99,19 @@ scan_and_update() {
 				is_excluded "$subname" && continue
 				new_projects=$(register_project "$new_projects" "$subname" "$subdir")
 			done
+
+			# Depth 3: .worktrees/ is hidden (not matched by */) — scan explicitly
+			local wtcontainer="${dir%/}/.worktrees"
+			if [ -d "$wtcontainer" ]; then
+				for wtdir in "${wtcontainer%/}"/*/; do
+					[ -d "$wtdir" ] || continue
+					local wtname
+					wtname=$(basename "$wtdir")
+					if has_project_markers "$wtdir"; then
+						new_projects=$(register_project "$new_projects" "$wtname" "$wtdir")
+					fi
+				done
+			fi
 		fi
 	done
 
@@ -158,20 +175,10 @@ start_watcher() {
 		stop_watcher
 	fi
 
-	# Check if inotifywait is available
+	# Check if inotifywait is available (installed by tmux feature at build time)
 	if ! command -v inotifywait &>/dev/null; then
-		echo "$LOG_PREFIX Installing inotify-tools..."
-		if command -v sudo &>/dev/null; then
-			sudo apt-get update -qq && sudo apt-get install -y -qq inotify-tools >/dev/null 2>&1
-		else
-			apt-get update -qq && apt-get install -y -qq inotify-tools >/dev/null 2>&1
-		fi
-
-		if ! command -v inotifywait &>/dev/null; then
-			echo "$LOG_PREFIX WARNING: Could not install inotify-tools, watcher disabled"
-			return 1
-		fi
-		echo "$LOG_PREFIX inotify-tools installed"
+		echo "$LOG_PREFIX WARNING: inotify-tools not installed, watcher disabled"
+		return 1
 	fi
 
 	# Fork background watcher in its own process group for clean shutdown
@@ -181,7 +188,7 @@ start_watcher() {
 		# -r watches subdirectories (catches events inside container dirs like projects/)
 		# --exclude filters noisy dirs that generate frequent irrelevant events
 		inotifywait -m -r -q -e create,delete,moved_to,moved_from \
-			--exclude '(node_modules|\.git/|\.tmp|__pycache__|\.venv)' \
+			--exclude '(node_modules|\.git|\.tmp|__pycache__|\.venv)' \
 			--format '%w%f %e' "$WORKSPACE_ROOT" 2>/dev/null |
 			while read -r _path event; do
 				# Small delay to let filesystem settle (e.g., move operations)

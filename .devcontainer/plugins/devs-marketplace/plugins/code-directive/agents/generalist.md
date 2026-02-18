@@ -8,7 +8,7 @@ description: >-
   any complex task that doesn't fit a specialist agent's domain. Has access
   to all tools and can both read and write files.
 tools: "*"
-model: inherit
+model: opus
 color: green
 memory:
   scope: project

@@ -10,16 +10,20 @@ This directory contains DevContainer Features for AI coding agent environments. 
 | `agent-browser` | Headless browser automation for AI agents | ✅ |
 | `claude-monitor` | Real-time token usage monitoring | ✅ |
 | `ccusage` | Token usage analytics CLI | ✅ |
-| `ccburn` | Visual token burn rate tracker with pace indicators | ✅ New |
+| `ccburn` | Visual token burn rate tracker with pace indicators | ✅ |
 | `ccstatusline` | 6-line powerline status display (v1.1.0) | ✅ |
 | `ast-grep` | Structural code search using AST patterns | ✅ |
 | `tree-sitter` | Parser with JS/TS/Python grammars | ✅ |
 | `lsp-servers` | Pyright and TypeScript language servers | ✅ |
 | `biome` | Fast JS/TS/JSON/CSS formatter | ✅ |
+| `ruff` | Fast Python linter and formatter | ✅ |
+| `shfmt` | Shell script formatter | ✅ (disabled by default) |
+| `shellcheck` | Static analysis for shell scripts | ✅ (disabled by default) |
+| `hadolint` | Dockerfile linter | ✅ (disabled by default) |
+| `dprint` | Pluggable formatter for Markdown/YAML/TOML | ✅ (disabled by default) |
+| `ccms` | Claude Code session history search | ✅ |
 | `notify-hook` | Desktop notifications on Claude completion | ✅ |
-| `splitrail` | Git worktree management for parallel branches | ✅ |
 | `mcp-qdrant` | Qdrant vector database MCP server | ✅ (optional) |
-| `mcp-reasoner` | Enhanced AI reasoning MCP server | ✅ (optional) |
 | `claude-code` | Fallback config for Anthropic's official Claude Code feature | ✅ (config only) |
 
 > **Note**: Claude Code itself is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1` (Anthropic's official feature). The local `claude-code/` directory provides only fallback configuration.
@@ -99,16 +103,11 @@ ghcr.io/yourorg/codeforge-features/feature-name:1
 
 ## Migration from Modules
 
-CodeForge modules are being converted to DevContainer Features:
+CodeForge modules have been converted to DevContainer Features:
 
 | Old Module | New Feature | Status |
 |-----------|-------------|---------|
 | mcp_qdrant | mcp-qdrant | ✅ Complete |
-| mcp_reasoner | mcp-reasoner | ✅ Complete |
-| mcp_browser | mcp-browser | 🔜 Planned |
-| mcp_sourcerer | mcp-sourcerer | 🔜 Planned |
-| mcp_obsidian | mcp-obsidian | 🔜 Planned |
-| mcp_code_runner | mcp-code-runner | 🔜 Planned |
 
 ## Resources
 

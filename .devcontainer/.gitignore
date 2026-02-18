@@ -1,6 +1,7 @@
 # Explicitly ignored (safety net on top of root .* rule)
 .review
 .secrets
+.build-cache/
 
 # Un-ignore dotfiles that should be tracked (overrides root .* pattern)
 !.env.example

@@ -6,7 +6,7 @@ Common issues and solutions for the CodeForge devcontainer.
 
 **Problem**: Container fails to build during feature installation.
 
-- Check Docker has sufficient memory (4GB+ recommended). CodeForge sets `--memory=4g` by default.
+- Check Docker has sufficient memory (6GB+ recommended). CodeForge sets `--memory=6g` by default.
 - If a specific feature fails, disable it temporarily by setting `"version": "none"` in `devcontainer.json`.
 - Check internet connectivity — most features download binaries from GitHub releases.
 - If hitting GitHub API rate limits during build, set `GH_TOKEN` or `GITHUB_TOKEN` as an environment variable.
@@ -107,7 +107,7 @@ Common issues and solutions for the CodeForge devcontainer.
 
 **Problem**: Container is slow or running out of memory.
 
-- CodeForge defaults to 4GB RAM / 8GB swap. Increase in `devcontainer.json` `runArgs`.
+- CodeForge defaults to 6GB RAM / 12GB swap. Increase in `devcontainer.json` `runArgs`.
 - Disable features you don't need with `"version": "none"`.
 - The background Claude Code update runs once on startup — it's not persistent.
 

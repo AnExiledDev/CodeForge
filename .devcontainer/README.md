@@ -144,7 +144,8 @@ claude --resume               # Resume previous session
 | Python 3.14 | Base language runtime |
 | Node.js LTS | JavaScript runtime |
 | TypeScript | Via Node.js |
-| Go | Latest stable via devcontainer feature |
+| Go | Optional — uncomment Go feature in `devcontainer.json` to enable |
+| Rust | Latest stable via devcontainer feature |
 | Bun | Fast JavaScript runtime and toolkit |
 
 ### Package Managers
@@ -203,7 +204,9 @@ Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` |
 | `SETUP_PLUGINS` | `true` | Install official plugins + register marketplace |
 | `SETUP_UPDATE_CLAUDE` | `true` | Auto-update Claude Code on container start |
+| `SETUP_TERMINAL` | `true` | Configure VS Code Shift+Enter keybinding for Claude Code terminal |
 | `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
+| `SETUP_POSTSTART` | `true` | Run post-start hooks from `/usr/local/devcontainer-poststart.d/` |
 | `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip |
 
 ### Claude Code Settings
@@ -247,7 +250,7 @@ The default system prompt is in `.devcontainer/config/defaults/main-system-promp
 
 ## Custom Features
 
-CodeForge includes several custom devcontainer features:
+CodeForge includes custom devcontainer features. Any feature can be disabled by setting `"version": "none"` in `devcontainer.json` — the entry stays in place for easy re-enabling. Each feature's README documents its options and dependencies.
 
 | Feature | Description |
 |---------|-------------|
@@ -261,9 +264,14 @@ CodeForge includes several custom devcontainer features:
 | `tree-sitter` | Parser with JS/TS/Python grammars |
 | `lsp-servers` | Pyright and TypeScript language servers |
 | `biome` | Fast JS/TS/JSON/CSS formatter (global install) |
+| `ruff` | Fast Python linter and formatter |
+| `shfmt` | Shell script formatter (disabled by default) |
+| `shellcheck` | Static analysis for shell scripts (disabled by default) |
+| `hadolint` | Dockerfile linter (disabled by default) |
+| `dprint` | Pluggable formatter for Markdown/YAML/TOML (disabled by default) |
+| `ccms` | Claude Code session history search |
 | `notify-hook` | Desktop notifications on Claude completion |
 | `mcp-qdrant` | Qdrant vector database MCP server (optional) |
-| `mcp-reasoner` | Enhanced AI reasoning MCP server (optional) |
 
 ## Safety Plugins
 
@@ -273,9 +281,27 @@ CodeForge includes several custom devcontainer features:
 | `protected-files-guard` | Blocks modifications to .env, lock files, .git/, and credentials |
 | `workspace-scope-guard` | Enforces working directory scope — blocks writes and warns on reads outside the project |
 
+### auto-code-quality (Not Active by Default)
+
+A self-contained combined auto-formatter and auto-linter plugin available in the marketplace at `plugins/devs-marketplace/plugins/auto-code-quality/`. It bundles formatting and linting into a single plugin with a three-phase pipeline: collect edited files (PostToolUse), batch format (Stop), and batch lint (Stop). Supports the same languages as auto-formatter + auto-linter. **Do not enable alongside auto-formatter or auto-linter** — they overlap in functionality.
+
+## Alias Management
+
+Features create shell aliases during container build (e.g., `ccusage`, `ccburn`). Separately, `setup-aliases.sh` creates a managed block in `~/.bashrc` and `~/.zshrc` on every container start for `cc`, `claude`, `ccraw`, `ccw`, and `cc-tools`. Both coexist without conflict — feature aliases are installed at build time while setup aliases are refreshed at start time.
+
+## Credential Management
+
+Three methods for providing GitHub/NPM credentials, in order of precedence:
+
+1. **Environment variables** — Set `GH_TOKEN`, `GH_USERNAME`, `GH_EMAIL`, `NPM_TOKEN` as environment variables (e.g., via Codespaces secrets or `localEnv` in `devcontainer.json`)
+2. **`.secrets` file** — Create `.devcontainer/.secrets` with token values (see template at `.secrets.example`). Auto-configured by `setup-auth.sh` on container start
+3. **Interactive login** — Run `gh auth login` for GitHub CLI, then set git identity manually
+
+All methods persist across container rebuilds via the bind-mounted `/workspaces/.gh/` directory.
+
 ## Agents & Skills
 
-The `code-directive` plugin includes specialized agent definitions and coding reference skills.
+The `code-directive` plugin includes 17 custom agent definitions and 28 coding reference skills.
 
 ### Custom Agents (17)
 
@@ -301,11 +327,11 @@ Agent definitions in `plugins/devs-marketplace/plugins/code-directive/agents/` p
 | `statusline-config` | ccstatusline configuration |
 | `test-writer` | Test authoring with pass verification |
 
-### Skills (17)
+### Skills (28)
 
 Skills in `plugins/devs-marketplace/plugins/code-directive/skills/` provide domain-specific coding references:
 
-`claude-agent-sdk` · `claude-code-headless` · `debugging` · `docker` · `docker-py` · `fastapi` · `git-forensics` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `spec-refine` · `specification-writing` · `sqlite` · `svelte5` · `testing`
+`api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `spec-build` · `spec-check` · `spec-init` · `spec-new` · `spec-refine` · `spec-review` · `spec-update` · `specification-writing` · `sqlite` · `svelte5` · `testing`
 
 ## Specification Workflow
 
@@ -400,7 +426,7 @@ Common issues and solutions. For detailed troubleshooting, see [docs/troubleshoo
 **CodeForge Documentation**:
 - [Configuration Reference](docs/configuration-reference.md) — all env vars and config options
 - [Plugin System](docs/plugins.md) — plugin architecture and per-plugin docs
-- [Optional Features](docs/optional-features.md) — mcp-qdrant, mcp-reasoner, splitrail
+- [Optional Features](docs/optional-features.md) — mcp-qdrant and other optional components
 - [Keybinding Customization](docs/keybindings.md) — resolving VS Code conflicts
 - [Troubleshooting](docs/troubleshooting.md) — common issues and solutions
 

@@ -9,7 +9,7 @@ description: >-
   of this file", "who contributed to this module", "recover lost commit",
   "trace this function's evolution", or needs any git history forensics.
 tools: Read, Grep, Bash
-model: haiku
+model: sonnet
 color: blue
 memory:
   scope: project
@@ -52,7 +52,7 @@ Before starting work, read project-specific instructions:
 - **NEVER** change the working tree — no `git checkout`, `git reset`, `git restore`, `git clean`, or `git switch`. Changing the working tree could discard the user's uncommitted work.
 - **NEVER** modify refs — no `git tag`, `git branch -d`, `git branch -m`, or `git update-ref`.
 - **NEVER** modify configuration — no `git config` writes.
-- Your Bash usage is **git-read-only guarded**. Only these git subcommands are permitted: `log`, `blame`, `show`, `diff`, `bisect` (view mode only), `reflog`, `shortlog`, `rev-list`, `rev-parse`, `ls-files`, `ls-tree`, `cat-file`, `name-rev`, `describe`, `merge-base`, `branch -a` / `branch --list`, `remote -v`, `stash list`.
+- Your Bash usage is **git-read-only guarded**. Only these git subcommands are permitted: `log`, `blame`, `show`, `diff`, `bisect` (view mode only), `reflog`, `shortlog`, `rev-list`, `rev-parse`, `ls-files`, `ls-tree`, `cat-file`, `name-rev`, `describe`, `merge-base`, `branch -a` / `branch --list`, `remote -v`, `stash list`, `worktree list`.
 - You may also use `Read`, `Grep`, and non-git Bash commands that are read-only (`wc`, `sort`, `head`, `uniq`).
 
 ## Investigation Workflow

@@ -10,7 +10,7 @@ description: >-
   dependency analysis across Node.js, Python, Rust, or Go ecosystems.
   Reports findings without modifying any files.
 tools: Read, Bash, Glob, Grep
-model: haiku
+model: sonnet
 color: blue
 memory:
   scope: project

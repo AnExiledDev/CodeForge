@@ -22,8 +22,9 @@ fi
 : "${SETUP_UPDATE_CLAUDE:=true}"
 : "${SETUP_PROJECTS:=true}"
 : "${SETUP_TERMINAL:=true}"
+: "${SETUP_POSTSTART:=true}"
 
-export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL
+export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
 
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()
@@ -42,12 +43,16 @@ run_script() {
     if [ "$enabled" = "true" ]; then
         if [ -f "$script" ]; then
             printf "  %-30s" "$name..."
-            if bash "$script" 2>&1; then
+            local output
+            if output=$(bash "$script" 2>&1); then
                 echo "done"
                 SETUP_RESULTS+=("$name:ok")
             else
-                echo "FAILED (exit $?)"
+                local exit_code=$?
+                echo "FAILED (exit $exit_code)"
                 SETUP_RESULTS+=("$name:failed")
+                # Show output on failure for diagnostics
+                echo "$output" | sed 's/^/    /'
             fi
         else
             echo "  $name... not found, skipping"
@@ -59,6 +64,30 @@ run_script() {
     fi
 }
 
+run_poststart_hooks() {
+    local hook_dir="/usr/local/devcontainer-poststart.d"
+    if [ ! -d "$hook_dir" ]; then
+        return 0
+    fi
+    local count=0
+    for hook in "$hook_dir"/*.sh; do
+        [ -f "$hook" ] || continue
+        [ -x "$hook" ] || continue
+        local name
+        name="$(basename "$hook")"
+        printf "  %-30s" "$name..."
+        if bash "$hook" 2>&1; then
+            echo "done"
+            count=$((count + 1))
+        else
+            echo "FAILED (exit $?)"
+        fi
+    done
+    if [ $count -gt 0 ]; then
+        SETUP_RESULTS+=("poststart-hooks:ok ($count)")
+    fi
+}
+
 run_script "$SCRIPT_DIR/setup-symlink-claude.sh" "true"
 run_script "$SCRIPT_DIR/setup-auth.sh" "$SETUP_AUTH"
 run_script "$SCRIPT_DIR/setup-config.sh" "$SETUP_CONFIG"
@@ -66,7 +95,20 @@ run_script "$SCRIPT_DIR/setup-aliases.sh" "$SETUP_ALIASES"
 run_script "$SCRIPT_DIR/setup-plugins.sh" "$SETUP_PLUGINS"
 run_script "$SCRIPT_DIR/setup-projects.sh" "$SETUP_PROJECTS"
 run_script "$SCRIPT_DIR/setup-terminal.sh" "$SETUP_TERMINAL"
-run_script "$SCRIPT_DIR/setup-update-claude.sh" "$SETUP_UPDATE_CLAUDE"
+
+# Background the update to avoid blocking container start
+if [ "$SETUP_UPDATE_CLAUDE" = "true" ] && [ -f "$SCRIPT_DIR/setup-update-claude.sh" ]; then
+    bash "$SCRIPT_DIR/setup-update-claude.sh" &>/dev/null &
+    disown
+    SETUP_RESULTS+=("setup-update-claude:background")
+else
+    SETUP_RESULTS+=("setup-update-claude:disabled")
+fi
+
+# Run post-start hooks
+if [ "$SETUP_POSTSTART" = "true" ]; then
+    run_poststart_hooks
+fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -77,10 +119,11 @@ for result in "${SETUP_RESULTS[@]}"; do
     name="${result%%:*}"
     status="${result##*:}"
     case "$status" in
-        ok)       printf "  ✓ %s\n" "$name" ;;
+        ok*)      printf "  ✓ %s\n" "$name" ;;
         failed)   printf "  ✗ %s (FAILED)\n" "$name"; FAILURES=$((FAILURES + 1)) ;;
         disabled) printf "  - %s (disabled)\n" "$name" ;;
         missing)  printf "  ? %s (not found)\n" "$name" ;;
+        background) printf "  ⇢ %s (background)\n" "$name" ;;
     esac
 done
 ELAPSED=$(( $(date +%s) - SETUP_START ))

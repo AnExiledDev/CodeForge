@@ -82,7 +82,7 @@ docker exec -it `
   if tmux has-session -t '$TMUX_SESSION' 2>/dev/null; then
     tmux -u attach-session -t '$TMUX_SESSION'
   else
-    tmux -u new-session -d -s '$TMUX_SESSION' -c /workspaces
+    tmux -u new-session -d -s '$TMUX_SESSION' -c \`\"\\\${WORKSPACE_ROOT:-/workspaces}\`\"
     sleep 0.5
     tmux send-keys -t '$TMUX_SESSION' 'cc' Enter
     tmux -u attach-session -t '$TMUX_SESSION'

@@ -11,9 +11,9 @@ fi
 
 echo "Installing tmux for Claude Code Agent Teams..."
 
-# Install tmux via apt
+# Install tmux and inotify-tools via apt
 apt-get update
-apt-get install -y tmux
+apt-get install -y tmux inotify-tools
 
 # Install Catppuccin theme (shallow clone for fast builds)
 CATPPUCCIN_DIR="/usr/share/tmux/plugins/catppuccin"

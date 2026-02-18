@@ -1,23 +1,23 @@
 {
-  "id": "agent-browser",
-  "version": "1.0.0",
-  "name": "agent-browser",
-  "description": "Headless browser automation CLI for AI agents (Vercel Labs)",
-  "documentationURL": "https://github.com/vercel-labs/agent-browser",
-  "options": {
-    "version": {
-      "type": "string",
-      "description": "agent-browser npm package version",
-      "default": "latest"
-    },
-    "username": {
-      "type": "string",
-      "description": "Container user to install for",
-      "default": "automatic"
-    }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils:2",
-    "ghcr.io/devcontainers/features/node:1"
-  ]
+	"id": "agent-browser",
+	"version": "1.0.0",
+	"name": "agent-browser",
+	"description": "Headless browser automation CLI for AI agents (Vercel Labs)",
+	"documentationURL": "https://github.com/vercel-labs/agent-browser",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "agent-browser npm package version",
+			"default": "0.11.1"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/common-utils:2",
+		"ghcr.io/devcontainers/features/node:1"
+	]
 }

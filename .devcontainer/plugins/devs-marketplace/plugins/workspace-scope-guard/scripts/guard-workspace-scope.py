@@ -21,7 +21,7 @@ ALLOWED_PREFIXES = [
     "/workspaces/.tmp/",
     "/workspaces/.devcontainer/",
     "/tmp/",
-    "/home/",
+    "/home/vscode/",
 ]
 
 WRITE_TOOLS = {"Write", "Edit", "NotebookEdit"}

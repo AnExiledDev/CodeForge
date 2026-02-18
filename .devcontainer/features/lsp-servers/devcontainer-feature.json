@@ -1,45 +1,45 @@
 {
-  "id": "lsp-servers",
-  "version": "1.0.0",
-  "name": "LSP Servers for Claude Code",
-  "description": "Installs language server binaries for Python (pyright), TypeScript (typescript-language-server), and Go (gopls)",
-  "maintainer": "AnExiledDev",
-  "documentationURL": "https://code.claude.com/docs/en/discover-plugins#code-intelligence",
-  "options": {
-    "version": {
-      "type": "string",
-      "description": "Set to 'none' to skip installation of all LSP servers",
-      "default": "latest"
-    },
-    "pyrightVersion": {
-      "type": "string",
-      "description": "Pyright npm package version (e.g., 'latest', '1.1.350')",
-      "default": "latest"
-    },
-    "typescriptLspVersion": {
-      "type": "string",
-      "description": "typescript-language-server npm package version (e.g., 'latest', '4.3.0')",
-      "default": "latest"
-    },
-    "typescriptVersion": {
-      "type": "string",
-      "description": "TypeScript npm package version (e.g., 'latest', '5.3.0')",
-      "default": "latest"
-    },
-    "goplsVersion": {
-      "type": "string",
-      "description": "gopls version (e.g., 'latest', 'v0.16.0')",
-      "default": "latest"
-    },
-    "username": {
-      "type": "string",
-      "description": "Container user to install for",
-      "default": "automatic"
-    }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/common-utils:2",
-    "ghcr.io/devcontainers/features/node:1",
-    "ghcr.io/devcontainers/features/go:1"
-  ]
+	"id": "lsp-servers",
+	"version": "1.0.0",
+	"name": "LSP Servers for Claude Code",
+	"description": "Installs language server binaries for Python (pyright), TypeScript (typescript-language-server), and Go (gopls)",
+	"maintainer": "AnExiledDev",
+	"documentationURL": "https://code.claude.com/docs/en/discover-plugins#code-intelligence",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Set to 'none' to skip installation of all LSP servers",
+			"default": "latest"
+		},
+		"pyrightVersion": {
+			"type": "string",
+			"description": "Pyright npm package version (e.g., 'latest', '1.1.350')",
+			"default": "1.1.408"
+		},
+		"typescriptLspVersion": {
+			"type": "string",
+			"description": "typescript-language-server npm package version (e.g., 'latest', '4.3.0')",
+			"default": "5.1.3"
+		},
+		"typescriptVersion": {
+			"type": "string",
+			"description": "TypeScript npm package version (e.g., 'latest', '5.3.0')",
+			"default": "5.9.3"
+		},
+		"goplsVersion": {
+			"type": "string",
+			"description": "gopls version (e.g., 'latest', 'v0.16.0')",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/common-utils:2",
+		"ghcr.io/devcontainers/features/node:1",
+		"ghcr.io/devcontainers/features/go:1"
+	]
 }

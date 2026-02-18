@@ -1,5 +1,74 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.12.0] - 2026-02-18
+
+### Added
+
+#### Plugin README Documentation
+- **9 new README files** for all marketplace plugins: auto-formatter, auto-linter, code-directive, codeforge-lsp, dangerous-command-blocker, notify-hook, protected-files-guard, ticket-workflow, workspace-scope-guard. Each documents purpose, hook lifecycle, protected patterns, and plugin structure
+
+#### Protected Files Guard: Bash Hook
+- **`guard-protected-bash.py`** — new PreToolUse/Bash hook blocking bash commands that write to protected file paths (companion to existing Edit/Write guard). Covers `>`, `>>`, `tee`, `cp`, `mv`, `sed -i` targeting `.env`, lock files, `.git`, certificates, and credentials
+
+#### Devcontainer Secrets Declaration
+- **`secrets` block** in devcontainer.json declaring `GH_TOKEN`, `NPM_TOKEN`, `GH_USERNAME`, `GH_EMAIL` with documentation URLs for VS Code Codespaces/devcontainer secret management
+
+#### Post-Start Hook System
+- **`run_poststart_hooks()`** in setup.sh — runs executable `.sh` scripts from `/usr/local/devcontainer-poststart.d/`; controlled by `SETUP_POSTSTART` env flag (default: true)
+
+#### Git Worktree Support
+- **System prompt `<git_worktrees>` section** — layout convention, creation commands, project detection, and safety rules
+- **CLAUDE.md documentation** — full worktree section with layout, creation, detection, and compatibility details
+- **setup-projects.sh** — `.worktrees/` explicit scanning at depth 3, `.git` file detection via `gitdir:` check, `"worktree"` tag in Project Manager
+- **protected-files-guard** — `.git` regex updated from `\.git/` to `\.git(/|$)` to cover worktree `.git` pointer files
+
+#### Other
+- **`CLAUDECODE=null` env var** — unsets the detection flag in `remoteEnv` to allow nested Claude Code sessions (claude-in-claude)
+- **Go runtime option** — commented-out `ghcr.io/devcontainers/features/go:1` entry in devcontainer.json for easy opt-in
+
+### Changed
+
+#### Feature Version Pinning
+- All local features pinned from `"latest"` to explicit versions: agent-browser `0.11.1`, ast-grep `0.40.5`, biome `2.4.2`, ruff `0.15.1`, pyright `1.1.408`, typescript-language-server `5.1.3`, TypeScript `5.9.3`
+- External features pinned to minor versions: node `1.6`, github-cli `1.0`, docker-outside-of-docker `1.7`, uv `1.0`, rust `1.4`, claude-code `1.1`
+
+#### Default Shell: bash → zsh
+- VS Code terminal default profile changed from bash to zsh
+- Explicit `zsh` profile added to terminal profile list
+- Claude Teams tmux profile shell changed from bash to zsh
+
+#### Security Hardening
+- **dangerous-command-blocker** — 7 new blocked patterns: Docker container escape (`--privileged`, host root mount), destructive Docker ops (`stop/rm/kill/rmi`), bare force push (no branch specified), `find -exec rm`, `find -delete`, `git clean -f`, `rm -rf ../`. JSON parse failures now fail closed (exit 2 instead of 0)
+- **protected-files-guard** — JSON parse failures fail closed (exit 2 instead of 0)
+
+#### Build & Setup
+- **ccms build cache** — install.sh checks `.build-cache/bin/ccms` before cargo building; caches binary after first build for faster rebuilds; pinned to commit `f90d259a4476`
+- **setup.sh** — `setup-update-claude.sh` now runs in background (non-blocking container start); script failure output displayed for diagnostics; new `background` status indicator in summary
+- **inotify-tools moved to build time** — tmux feature installs inotify-tools via apt at build; setup-projects.sh no longer attempts runtime apt-get install
+- **Container memory** — recommended from 4GB/8GB to 6GB/12GB in troubleshooting docs
+
+#### Writing System Prompt
+- New **Emotional Architecture** section — cognitive-emotional loop, controlled emotion principle, autism framing for POV characters
+- Expanded metaphor guidance — secondary sources beyond primary domain, "would he think this?" test
+- Refined show-don't-tell rules — naming emotion permitted when it adds weight, brief internal processing after major events required
+- Character profile additions — emotional architecture and trigger fields
+
+#### Other
+- **connect-external-terminal.ps1** — tmux session directory respects `WORKSPACE_ROOT` env var with fallback
+- **setup-projects.sh** — inotifywait exclude pattern narrowed from `\.git/` to `\.git` for worktree compatibility
+- **README.md** — 5 new badges (changelog, last commit, npm downloads, Node.js, issues), updated tool/feature/skill counts, added Rust/Bun/ccw, changelog section
+- **CLAUDE.md** — expanded ccw description, fixed Bun registry reference, documented setup-auth.sh/check-setup.sh, added CLAUDECODE/env flags/experimental vars/git worktrees/rules system sections, skill count 17→28
+- **Documentation** — `SETUP_TERMINAL`/`SETUP_POSTSTART` in configuration reference, `CLAUDECODE=null` env var, workspace-scope-guard in plugins.md
+- **Agent definitions** — minor path/prompt fixes across 8 agents (claude-guide, debug-logs, dependency-analyst, explorer, generalist, git-archaeologist, researcher, security-auditor)
+- **.gitignore** — added `.build-cache/` exclusion
+
+### Removed
+
+- **mcp-reasoner feature** — entire feature directory deleted (README, devcontainer-feature.json, install.sh, poststart-hook.sh)
+- **splitrail feature** — entire feature directory deleted (README, devcontainer-feature.json, install.sh)
+
+---
+
 ## [v1.11.0] - 2026-02-17
 
 ### Added
