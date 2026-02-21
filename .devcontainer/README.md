@@ -281,9 +281,9 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `protected-files-guard` | Blocks modifications to .env, lock files, .git/, and credentials |
 | `workspace-scope-guard` | Enforces working directory scope — blocks writes and warns on reads outside the project |
 
-### auto-code-quality (Not Active by Default)
+### auto-code-quality
 
-A self-contained combined auto-formatter and auto-linter plugin available in the marketplace at `plugins/devs-marketplace/plugins/auto-code-quality/`. It bundles formatting and linting into a single plugin with a three-phase pipeline: collect edited files (PostToolUse), batch format (Stop), and batch lint (Stop). Supports the same languages as auto-formatter + auto-linter. **Do not enable alongside auto-formatter or auto-linter** — they overlap in functionality.
+Combined auto-formatter, auto-linter, and advisory test runner plugin at `plugins/devs-marketplace/plugins/auto-code-quality/`. Three-phase pipeline: collect edited files (PostToolUse), batch format + lint (Stop), and advisory test runner (Stop). Supports all languages from the former auto-formatter + auto-linter plugins. Replaces the separate `auto-formatter` and `auto-linter` plugins.
 
 ## Alias Management
 
@@ -301,11 +301,11 @@ All methods persist across container rebuilds via the bind-mounted `/workspaces/
 
 ## Agents & Skills
 
-The `code-directive` plugin includes 17 custom agent definitions and 28 coding reference skills.
+Agents and skills are distributed across focused plugins (replacing the former `code-directive` monolith).
 
-### Custom Agents (17)
+### Custom Agents (17) — `agent-system` plugin
 
-Agent definitions in `plugins/devs-marketplace/plugins/code-directive/agents/` provide enhanced behavior when spawned via the `Task` tool. The `redirect-builtin-agents.py` hook transparently swaps built-in agent types to these custom agents.
+Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` provide enhanced behavior when spawned via the `Task` tool. The `redirect-builtin-agents.py` hook transparently swaps built-in agent types to these custom agents.
 
 | Agent | Purpose |
 |-------|---------|
@@ -327,11 +327,17 @@ Agent definitions in `plugins/devs-marketplace/plugins/code-directive/agents/` p
 | `statusline-config` | ccstatusline configuration |
 | `test-writer` | Test authoring with pass verification |
 
-### Skills (28)
+### General Skills (21) — `skill-engine` plugin
 
-Skills in `plugins/devs-marketplace/plugins/code-directive/skills/` provide domain-specific coding references:
+Skills in `plugins/devs-marketplace/plugins/skill-engine/skills/` provide domain-specific coding references:
 
-`api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `spec-build` · `spec-check` · `spec-init` · `spec-new` · `spec-refine` · `spec-review` · `spec-update` · `specification-writing` · `sqlite` · `svelte5` · `testing`
+`api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `sqlite` · `svelte5` · `team` · `testing`
+
+### Spec Skills (8) — `spec-workflow` plugin
+
+Skills in `plugins/devs-marketplace/plugins/spec-workflow/skills/`:
+
+`spec-build` · `spec-check` · `spec-init` · `spec-new` · `spec-refine` · `spec-review` · `spec-update` · `specification-writing`
 
 ## Specification Workflow
 

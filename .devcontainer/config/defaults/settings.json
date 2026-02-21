@@ -59,9 +59,11 @@
 		"notify-hook@devs-marketplace": true,
 		"dangerous-command-blocker@devs-marketplace": true,
 		"protected-files-guard@devs-marketplace": true,
-		"auto-formatter@devs-marketplace": true,
-		"auto-linter@devs-marketplace": true,
-		"code-directive@devs-marketplace": true,
+		"agent-system@devs-marketplace": true,
+		"skill-engine@devs-marketplace": true,
+		"spec-workflow@devs-marketplace": true,
+		"session-context@devs-marketplace": true,
+		"auto-code-quality@devs-marketplace": true,
 		"workspace-scope-guard@devs-marketplace": true
 	},
 	"autoUpdatesChannel": "latest"

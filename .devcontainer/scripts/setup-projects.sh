@@ -198,7 +198,7 @@ start_watcher() {
 
 		# Cleanup on exit
 		rm -f "$PID_FILE"
-	) &
+	) &>/dev/null &
 	local watcher_pid=$!
 	set +m
 	echo "$watcher_pid" >"$PID_FILE"

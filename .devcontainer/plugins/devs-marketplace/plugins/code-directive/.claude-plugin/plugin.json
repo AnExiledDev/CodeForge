@@ -1,8 +1,0 @@
-{
-  "name": "code-directive",
-  "description": "17 custom agents, 16 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
-  "version": "1.0.0",
-  "author": {
-    "name": "AnExiledDev"
-  }
-}

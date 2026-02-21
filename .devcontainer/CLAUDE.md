@@ -161,13 +161,15 @@ Plugins are declared in `config/defaults/settings.json` under `enabledPlugins` a
 
 ### Local Marketplace (devs-marketplace)
 - `codeforge-lsp@devs-marketplace` — LSP for Python + TypeScript/JavaScript
-- `ticket-workflow@devs-marketplace` — EARS-based ticket workflow with GitHub integration
+- `ticket-workflow@devs-marketplace` — EARS-based ticket workflow with GitHub integration and auto-linking hook
 - `notify-hook@devs-marketplace` — Desktop notifications on completion
 - `dangerous-command-blocker@devs-marketplace` — Blocks destructive bash commands
 - `protected-files-guard@devs-marketplace` — Blocks edits to secrets/lock files
-- `auto-formatter@devs-marketplace` — Batch-formats edited files at Stop (Ruff for Python, Biome for JS/TS/CSS/JSON/GraphQL/HTML; also supports shfmt, dprint, gofmt, rustfmt when installed)
-- `auto-linter@devs-marketplace` — Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL; also supports ShellCheck, hadolint, go vet, clippy when installed)
-- `code-directive@devs-marketplace` — 17 custom agents, 28 skills, syntax validation, skill suggestions, agent redirect hook
+- `agent-system@devs-marketplace` — 17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement
+- `skill-engine@devs-marketplace` — 21 coding skills with auto-suggestion hook
+- `spec-workflow@devs-marketplace` — 8 spec lifecycle skills with spec-reminder hook
+- `session-context@devs-marketplace` — Session boundary hooks (git state injection, TODO harvesting, commit reminders)
+- `auto-code-quality@devs-marketplace` — Combined auto-format + auto-lint + advisory test runner
 - `workspace-scope-guard@devs-marketplace` — Blocks writes and warns on reads outside the working directory
 
 ### Local Marketplace
@@ -180,25 +182,30 @@ plugins/devs-marketplace/
 │   └── marketplace.json      # Marketplace manifest
 └── plugins/
     ├── codeforge-lsp/        # Combined LSP plugin
-    ├── ticket-workflow/      # EARS ticket workflow
-    ├── auto-formatter/       # Batch formatter (Stop hook)
-    ├── auto-linter/          # Pyright linter
-    ├── code-directive/       # Agents, skills + hooks
+    ├── ticket-workflow/      # EARS ticket workflow + auto-linking hook
+    ├── agent-system/         # 17 custom agents + redirection
+    ├── skill-engine/         # 21 coding skills + auto-suggestion
+    ├── spec-workflow/        # 8 spec lifecycle skills
+    ├── session-context/      # Session boundary hooks
+    ├── auto-code-quality/    # Combined format + lint + test runner
     ├── workspace-scope-guard/ # Workspace scope enforcement
     └── ...
 ```
 
 ## Agents & Skills
 
-The `code-directive` plugin includes 17 custom agent definitions and 28 coding reference skills.
+Agents and skills are distributed across focused plugins:
 
-**Agents** (`plugins/devs-marketplace/plugins/code-directive/agents/`):
+**Agents** (`plugins/devs-marketplace/plugins/agent-system/agents/`):
 architect, bash-exec, claude-guide, debug-logs, dependency-analyst, doc-writer, explorer, generalist, git-archaeologist, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, statusline-config, test-writer
 
 The `redirect-builtin-agents.py` hook (PreToolUse/Task) transparently swaps built-in agent types to these custom agents (e.g., Explore→explorer, Plan→architect).
 
-**Skills** (`plugins/devs-marketplace/plugins/code-directive/skills/`):
-api-design, ast-grep-patterns, claude-agent-sdk, claude-code-headless, debugging, dependency-management, docker, docker-py, documentation-patterns, fastapi, git-forensics, migration-patterns, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, spec-build, spec-check, spec-init, spec-new, spec-refine, spec-review, spec-update, specification-writing, sqlite, svelte5, testing
+**General Skills** (`plugins/devs-marketplace/plugins/skill-engine/skills/`):
+api-design, ast-grep-patterns, claude-agent-sdk, claude-code-headless, debugging, dependency-management, docker, docker-py, documentation-patterns, fastapi, git-forensics, migration-patterns, performance-profiling, pydantic-ai, refactoring-patterns, security-checklist, skill-building, sqlite, svelte5, team, testing
+
+**Spec Skills** (`plugins/devs-marketplace/plugins/spec-workflow/skills/`):
+spec-build, spec-check, spec-init, spec-new, spec-refine, spec-review, spec-update, specification-writing
 
 ## VS Code Keybinding Conflicts
 

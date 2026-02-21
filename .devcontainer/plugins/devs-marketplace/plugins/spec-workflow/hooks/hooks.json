@@ -1,0 +1,17 @@
+{
+	"description": "Spec reminder advisory when code is modified but specs are not updated",
+	"hooks": {
+		"Stop": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/spec-reminder.py",
+						"timeout": 8
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"name": "session-context",
+	"description": "Session lifecycle hooks: git state injection, TODO harvesting, and commit reminders",
+	"version": "1.0.0",
+	"author": {
+		"name": "AnExiledDev"
+	}
+}

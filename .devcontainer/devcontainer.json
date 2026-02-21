@@ -64,22 +64,22 @@
 	],
 
 	"features": {
-		"ghcr.io/devcontainers/features/node:1.6": {
+		"ghcr.io/devcontainers/features/node:1.7.1": {
 			"version": "lts",
 			"nodeGypDependencies": true
 		},
-		"ghcr.io/devcontainers/features/github-cli:1.0": {},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1.7": {
+		"ghcr.io/devcontainers/features/github-cli:1.1.0": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1.6": {
 			"moby": false
 		},
 		"ghcr.io/devcontainers-extra/features/uv:1.0": {},
 		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
-		"ghcr.io/devcontainers/features/rust:1.4": {
+		"ghcr.io/devcontainers/features/rust:1.5.0": {
 			"version": "latest"
 		},
 		// Uncomment to add Go runtime (not installed by default):
 		// "ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1.1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",

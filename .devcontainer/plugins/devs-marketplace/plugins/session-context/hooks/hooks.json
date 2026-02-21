@@ -1,0 +1,34 @@
+{
+	"description": "Context injection at session boundaries: git state, TODO harvesting, commit reminders",
+	"hooks": {
+		"SessionStart": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/git-state-injector.py",
+						"timeout": 10
+					},
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/todo-harvester.py",
+						"timeout": 8
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/commit-reminder.py",
+						"timeout": 8
+					}
+				]
+			}
+		]
+	}
+}

@@ -89,10 +89,31 @@
 			"category": "development"
 		},
 		{
-			"name": "code-directive",
-			"description": "17 custom agents, 28 coding skills, agent redirection, syntax validation, and skill auto-suggestion",
+			"name": "agent-system",
+			"description": "17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
 			"version": "1.0.0",
-			"source": "./plugins/code-directive",
+			"source": "./plugins/agent-system",
+			"category": "development"
+		},
+		{
+			"name": "skill-engine",
+			"description": "21 coding knowledge packs with auto-suggestion for frameworks, tools, and patterns",
+			"version": "1.0.0",
+			"source": "./plugins/skill-engine",
+			"category": "development"
+		},
+		{
+			"name": "spec-workflow",
+			"description": "Specification lifecycle management: creation, refinement, building, reviewing, updating, and auditing",
+			"version": "1.0.0",
+			"source": "./plugins/spec-workflow",
+			"category": "workflow"
+		},
+		{
+			"name": "session-context",
+			"description": "Session lifecycle hooks: git state injection, TODO harvesting, and commit reminders",
+			"version": "1.0.0",
+			"source": "./plugins/session-context",
 			"category": "development"
 		},
 		{

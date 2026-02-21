@@ -1,0 +1,29 @@
+{
+	"description": "Agent redirection and subagent configuration hooks",
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Task",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/redirect-builtin-agents.py",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"SubagentStart": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-cwd.py",
+						"timeout": 3
+					}
+				]
+			}
+		]
+	}
+}

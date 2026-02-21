@@ -1,0 +1,17 @@
+{
+	"description": "Auto-link GitHub tickets on user prompt submission",
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/ticket-linker.py",
+						"timeout": 12
+					}
+				]
+			}
+		]
+	}
+}

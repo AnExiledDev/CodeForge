@@ -1,5 +1,38 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.13.0] - 2026-02-21
+
+### Fixed
+
+- Feature version pins: node `1.6`→`1.7.1`, github-cli `1.0`→`1.1.0`, docker-outside-of-docker `1.7`→`1.6`, rust `1.4`→`1.5.0`, claude-code `1.1`→`1.0.5`
+- setup-projects.sh: suppress background inotifywait output
+- agent-system: add missing `verify-tests-pass.py` and `verify-no-regression.py` (referenced by agent defs)
+
+### Added
+
+#### Plugin Architecture: Focused Plugins
+- **`agent-system` plugin** — 17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement
+- **`skill-engine` plugin** — 21 coding skills with auto-suggestion hook
+- **`spec-workflow` plugin** — 8 spec lifecycle skills with spec-reminder hook
+- **`session-context` plugin** — session boundary hooks (git state injection, TODO harvesting, commit reminders)
+
+#### Other
+- **`ticket-workflow` hooks** — auto-links GitHub issue/PR references in user prompts via `ticket-linker.py`
+- **`auto-code-quality` advisory test runner** — runs affected tests at Stop via `advisory-test-runner.py`
+- **`/team` skill** — agent team creation and management with specialist catalog (in `skill-engine`)
+
+### Changed
+
+- Plugin architecture: `code-directive` monolith replaced by focused plugins (`agent-system`, `skill-engine`, `spec-workflow`, `session-context`)
+- `auto-code-quality` now consolidates `auto-formatter` + `auto-linter` (disabled separately, `auto-code-quality` is the superset)
+
+### Removed
+
+- `code-directive` plugin (replaced by `agent-system`, `skill-engine`, `spec-workflow`, `session-context`)
+- `auto-formatter` and `auto-linter` disabled in settings (consolidated into `auto-code-quality`)
+
+---
+
 ## [v1.12.0] - 2026-02-18
 
 ### Added

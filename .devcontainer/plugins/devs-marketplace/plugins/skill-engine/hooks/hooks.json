@@ -1,0 +1,29 @@
+{
+	"description": "Skill auto-suggestion on user prompts and Plan agent starts",
+	"hooks": {
+		"UserPromptSubmit": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/skill-suggester.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStart": [
+			{
+				"matcher": "Plan",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/skill-suggester.py",
+						"timeout": 3
+					}
+				]
+			}
+		]
+	}
+}
