@@ -17,9 +17,7 @@ import sys
 
 # Paths that are always allowed regardless of working directory
 ALLOWED_PREFIXES = [
-    "/workspaces/.claude/",
     "/workspaces/.tmp/",
-    "/workspaces/.devcontainer/",
     "/tmp/",
     "/home/vscode/",
 ]
