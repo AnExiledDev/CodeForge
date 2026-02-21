@@ -1,0 +1,35 @@
+{
+  "id": "claude-session-dashboard",
+  "version": "1.0.0",
+  "name": "Claude Session Dashboard",
+  "description": "Local analytics dashboard for Claude Code sessions (token usage, tool calls, cost estimates)",
+  "maintainer": "AnExiledDev",
+  "documentationURL": "https://github.com/dlupiak/claude-session-dashboard",
+  "options": {
+    "version": {
+      "type": "string",
+      "description": "Dashboard version (e.g., 'latest', '1.0.0', 'none' to skip)",
+      "default": "latest"
+    },
+    "port": {
+      "type": "string",
+      "description": "Default port for the dashboard server",
+      "default": "3000"
+    },
+    "shells": {
+      "type": "string",
+      "description": "Which shells to configure aliases in (bash, zsh, or both)",
+      "default": "both",
+      "enum": ["bash", "zsh", "both"],
+      "proposals": ["bash", "zsh", "both"]
+    },
+    "username": {
+      "type": "string",
+      "description": "Container user to install for",
+      "default": "automatic"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/node:1"
+  ]
+}

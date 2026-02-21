@@ -59,6 +59,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `ccms` | Search Claude Code session history (project-scoped) |
 | `cc-tools` | List all installed tools with version info |
 | `check-setup` | Verify CodeForge setup health |
+| `claude-dashboard` | Local session analytics dashboard (web UI on port 3000) |
 
 ## Feature Development
 
@@ -107,7 +108,7 @@ When `version` is set to `"none"`, the feature's `install.sh` exits immediately 
 The auto-formatter and auto-linter plugins gracefully skip missing tools at runtime.
 
 **All local features support this pattern:**
-ast-grep, biome, ccms, ccstatusline, claude-monitor, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
+ast-grep, biome, ccms, ccstatusline, claude-monitor, claude-session-dashboard, dprint, hadolint, lsp-servers, mcp-qdrant, mcp-reasoner, notify-hook, ruff, shfmt, shellcheck, splitrail, tmux
 
 **External features with `version: "none"` support:**
 `ghcr.io/devcontainers/features/node`, `ghcr.io/devcontainers/features/github-cli`, `ghcr.io/devcontainers/features/docker-outside-of-docker`, `ghcr.io/devcontainers/features/go` (all official Microsoft features)

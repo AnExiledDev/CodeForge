@@ -2,6 +2,8 @@
 
 ## [v1.13.0] - 2026-02-21
 
+Claude Code is an idiot sandwich and ignored my instructions and workspace scope because it's a god damned idiot.
+
 ### Fixed
 
 - Feature version pins: node `1.6`→`1.7.1`, github-cli `1.0`→`1.1.0`, docker-outside-of-docker `1.7`→`1.6`, rust `1.4`→`1.5.0`, claude-code `1.1`→`1.0.5`
@@ -20,11 +22,13 @@
 - **`ticket-workflow` hooks** — auto-links GitHub issue/PR references in user prompts via `ticket-linker.py`
 - **`auto-code-quality` advisory test runner** — runs affected tests at Stop via `advisory-test-runner.py`
 - **`/team` skill** — agent team creation and management with specialist catalog (in `skill-engine`)
+- **`claude-session-dashboard` feature** — local analytics dashboard for Claude Code sessions (token usage, tool calls, cost estimates, activity heatmaps). Installed globally via npm with `claude-dashboard` command. Settings persist across rebuilds via symlink to `/workspaces/.claude-dashboard/`
 
 ### Changed
 
 - Plugin architecture: `code-directive` monolith replaced by focused plugins (`agent-system`, `skill-engine`, `spec-workflow`, `session-context`)
 - `auto-code-quality` now consolidates `auto-formatter` + `auto-linter` (disabled separately, `auto-code-quality` is the superset)
+- **`workspace-scope.md` rule hardened** — strict enforcement with no exceptions; all file operations must target paths within the current project directory
 
 ### Removed
 

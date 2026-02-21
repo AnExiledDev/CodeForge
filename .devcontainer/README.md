@@ -189,6 +189,7 @@ claude --resume               # Resume previous session
 | `ccburn` | Visual token burn rate tracker with pace indicators |
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `claude-monitor` | Real-time usage tracking |
+| `claude-dashboard` | Local session analytics dashboard (token usage, costs, timelines) |
 
 ## Configuration
 
@@ -270,6 +271,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `hadolint` | Dockerfile linter (disabled by default) |
 | `dprint` | Pluggable formatter for Markdown/YAML/TOML (disabled by default) |
 | `ccms` | Claude Code session history search |
+| `claude-session-dashboard` | Local session analytics dashboard with web UI |
 | `notify-hook` | Desktop notifications on Claude completion |
 | `mcp-qdrant` | Qdrant vector database MCP server (optional) |
 

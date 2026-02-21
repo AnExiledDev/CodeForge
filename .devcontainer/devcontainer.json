@@ -32,8 +32,8 @@
 
 	// Feature install order: external runtimes first (Node, uv, Rust, Bun),
 	// then Claude Code (needs Node), then custom features.
-	// npm-dependent features (agent-browser, ccusage, ccburn, biome, lsp-servers)
-	// must come after Node. uv-dependent features (ruff, claude-monitor) must
+	// npm-dependent features (agent-browser, ccusage, ccburn, claude-session-dashboard,
+	// biome, lsp-servers) must come after Node. uv-dependent features (ruff, claude-monitor) must
 	// come after uv. cargo-dependent features (ccms) must come after Rust.
 	// notify-hook is last (lightweight, no dependencies).
 	"overrideFeatureInstallOrder": [
@@ -51,6 +51,7 @@
 		"./features/ccburn",
 		"./features/ccstatusline",
 		"./features/ccms",
+		"./features/claude-session-dashboard",
 		"./features/ast-grep",
 		"./features/tree-sitter",
 		"./features/lsp-servers",
@@ -100,6 +101,12 @@
 			"username": "automatic"
 		},
 		"./features/ccms": {},
+		"./features/claude-session-dashboard": {
+			"version": "latest",
+			"port": "3000",
+			"shells": "both",
+			"username": "automatic"
+		},
 		"./features/ast-grep": {},
 		"./features/tree-sitter": {},
 		"./features/lsp-servers": {},

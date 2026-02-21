@@ -1,7 +1,16 @@
 # Workspace Scoping Rule
 
-When working in a project subdirectory, restrict all file operations
-(reads, writes, searches, globs) to the current project directory
-unless the user explicitly requests cross-project work.
+ALL file operations (reads, writes, edits, searches, globs, bash commands)
+MUST target paths within the current project directory. No exceptions.
 
-Do not suggest changes to files in sibling project directories.
+Violations:
+- Writing, editing, or creating files outside the project directory is FORBIDDEN.
+- Reading or searching outside the project directory is FORBIDDEN.
+- Using paths like `/workspaces/.devcontainer/` when the project is at
+  `/workspaces/projects/ProjectName/` is a scope violation — always use
+  the project-relative path (e.g., `/workspaces/projects/ProjectName/.devcontainer/`).
+- This rule applies even if a file exists at both locations. The project copy
+  is the ONLY valid target.
+
+Do not suggest, reference, or modify files in sibling project directories
+or workspace-root directories that duplicate project content.
