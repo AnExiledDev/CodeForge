@@ -144,6 +144,32 @@ Slash commands for issue and ticket management within Claude Code sessions.
 | `/ticket:create-pr` | Generate a PR from ticket context with security review |
 | `/ticket:review-commit` | Review commits against ticket requirements |
 
+## Git Workflow Slash Commands
+
+Standalone slash commands for git operations within Claude Code sessions. These work independently of the ticket workflow but optionally link to tickets when context exists.
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `/ship` | Review changes, commit, push, and optionally create a PR | `/ship` |
+| `/pr:review` | Review an existing PR and post findings (never merges) | `/pr:review 42` |
+
+### `/ship` Workflow
+
+1. Gathers git context (status, diff, branch, project rules)
+2. Conducts full review (security, rules, quality, architecture, tests)
+3. Presents findings by severity — user decides what to fix, defer to issues, or ignore
+4. Drafts commit message — user must approve before committing
+5. Commits and pushes
+6. Asks whether to create a PR — only creates if user confirms
+
+### `/pr:review` Workflow
+
+1. Identifies target PR (by number, URL, or auto-detects from current branch)
+2. Fetches PR details, diff, and reads changed files in full
+3. Conducts aggressive analysis (attack surface, threat modeling, dependencies, rules, architecture, quality, tests, breaking changes)
+4. Presents findings — user selects what to include in review, create as issues, or ignore
+5. Posts review comment to PR (never approves or merges)
+
 ## GitHub CLI
 
 The GitHub CLI (`gh`) is pre-installed for repository operations.
@@ -179,7 +205,7 @@ Commands come from different sources in the CodeForge setup:
 | Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | Shell functions | `cc-tools` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | DevContainer features | `ccms`, `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, etc. | `install.sh` in each feature directory |
-| Slash commands | `/spec-new`, `/ticket:new`, etc. | Skill SKILL.md files in plugin directories |
+| Slash commands | `/spec-new`, `/ticket:new`, `/ship`, `/pr:review`, etc. | Skill SKILL.md files in plugin directories |
 | External features | `gh`, `docker`, `node`, `bun`, `cargo` | Installed via `devcontainer.json` features |
 
 :::tip[Listing All Tools]

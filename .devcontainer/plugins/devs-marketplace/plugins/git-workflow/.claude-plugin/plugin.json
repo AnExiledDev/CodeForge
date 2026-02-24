@@ -1,0 +1,7 @@
+{
+  "name": "git-workflow",
+  "description": "Standalone git workflow: review, commit, push, PR creation, and PR review",
+  "author": {
+    "name": "AnExiledDev"
+  }
+}

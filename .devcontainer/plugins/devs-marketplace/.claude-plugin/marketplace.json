@@ -105,6 +105,14 @@
 			"source": "./plugins/prompt-snippets",
 			"category": "productivity",
 			"keywords": ["snippets", "prompts", "modes", "shortcuts"]
+		},
+		{
+			"name": "git-workflow",
+			"description": "Standalone git workflow: ship (commit/push/PR) and PR review",
+			"version": "1.0.0",
+			"source": "./plugins/git-workflow",
+			"category": "workflow",
+			"keywords": ["git", "commit", "push", "pr", "review", "ship"]
 		}
 	]
 }
