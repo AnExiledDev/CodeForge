@@ -2,6 +2,12 @@
 
 ## [v1.14.2] - 2026-02-24
 
+### Changed
+
+#### Docs
+- **First Session page** — trimmed from 198 to 128 lines by consolidating "What Happens Automatically" into a concise summary, replacing full agent/skill tables with brief teasers linking to their dedicated pages
+- **Installation Troubleshooting** — expanded from 4 to 10 FAQ entries covering `npx` failures, VS Code extension issues, Docker permissions on Linux, WSL 2 integration, port conflicts, and slow rebuilds
+
 ### Fixed
 
 #### CI: Release Workflow (v1.14.1)
