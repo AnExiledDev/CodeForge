@@ -89,9 +89,12 @@ if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
         # Write credentials with restrictive permissions from the start (no race window).
         # Uses printf '%s' to avoid shell expansion of token value (defense against
         # metacharacters in the token string — backticks, $(), quotes).
-        ( umask 077; printf '{\n  "claudeAiOauth": {\n    "accessToken": "%s",\n    "refreshToken": "%s",\n    "expiresAt": 9999999999999,\n    "scopes": ["user:inference", "user:profile"]\n  }\n}\n' "$CLAUDE_AUTH_TOKEN" "$CLAUDE_AUTH_TOKEN" > "$CLAUDE_CRED_FILE" )
-        echo "[setup-auth] Claude auth token configured"
-        AUTH_CONFIGURED=true
+        if ( umask 077; printf '{\n  "claudeAiOauth": {\n    "accessToken": "%s",\n    "refreshToken": "%s",\n    "expiresAt": 9999999999999,\n    "scopes": ["user:inference", "user:profile"]\n  }\n}\n' "$CLAUDE_AUTH_TOKEN" "$CLAUDE_AUTH_TOKEN" > "$CLAUDE_CRED_FILE" ); then
+            echo "[setup-auth] Claude auth token configured"
+            AUTH_CONFIGURED=true
+        else
+            echo "[setup-auth] WARNING: Failed to write .credentials.json — check permissions on $CLAUDE_CRED_DIR"
+        fi
     fi
     unset CLAUDE_AUTH_TOKEN
 else

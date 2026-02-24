@@ -36,5 +36,8 @@ mkdir -p "$NEW_DIR"
 # --no-dereference: copy symlinks as symlinks (don't follow them)
 # -n: no-clobber (don't overwrite existing files)
 # -r: recursive
-cp -rn --no-dereference "$OLD_DIR/." "$NEW_DIR/" 2>/dev/null || true
-echo "[setup-migrate] Migration complete. You can safely remove /workspaces/.claude/"
+if cp -rn --no-dereference "$OLD_DIR/." "$NEW_DIR/" 2>/dev/null; then
+    echo "[setup-migrate] Migration complete. You can safely remove /workspaces/.claude/"
+else
+    echo "[setup-migrate] WARNING: Some files may not have been copied — verify $NEW_DIR before removing /workspaces/.claude/"
+fi

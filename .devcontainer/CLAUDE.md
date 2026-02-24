@@ -77,12 +77,19 @@ Rules in `config/defaults/rules/` deploy to `.claude/rules/` on every container 
 | Variable | Value |
 |----------|-------|
 | `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` |
+| `CLAUDE_AUTH_TOKEN` | Long-lived token from `claude setup-token` (optional, via `.secrets` or Codespaces secrets) |
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` |
 | `WORKSPACE_ROOT` | `/workspaces` |
 | `TERM` | `${localEnv:TERM:xterm-256color}` (via `remoteEnv` — forwards host TERM, falls back to 256-color) |
 | `COLORTERM` | `truecolor` (via `remoteEnv` — enables 24-bit color support) |
 
 All experimental feature flags are in `settings.json` under `env`. Setup steps controlled by boolean flags in `.env`.
+
+## Authentication & Persistence
+
+The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude-config-${devcontainerId}`), persisting config, credentials, and session data across container rebuilds. Each devcontainer instance gets an isolated volume.
+
+**Token authentication:** Set `CLAUDE_AUTH_TOKEN` in `.devcontainer/.secrets` (or as a Codespaces secret) with a long-lived token from `claude setup-token`. On container start, `setup-auth.sh` auto-creates `~/.claude/.credentials.json` with `600` permissions. If `.credentials.json` already exists, token injection is skipped (idempotent). Tokens must match `sk-ant-*` format.
 
 ## Modifying Behavior
 

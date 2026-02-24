@@ -68,7 +68,13 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
 - Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
 
+#### Documentation
+- All docs now reference `~/.claude` as default config path
+- Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
+
 ### Removed
+
+#### Scripts
 - `setup-symlink-claude.sh` — no longer needed with native home directory location
 
 #### VS Code Extensions
