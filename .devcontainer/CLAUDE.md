@@ -31,7 +31,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `devcontainer.json` | Container definition: image, features, mounts |
 | `.env` | Boolean flags controlling setup steps |
 
-Config files deploy via `file-manifest.json` on every container start. Most deploy to `/workspaces/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
+Config files deploy via `file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
 
 ## Commands
 
@@ -76,7 +76,7 @@ Rules in `config/defaults/rules/` deploy to `.claude/rules/` on every container 
 
 | Variable | Value |
 |----------|-------|
-| `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` |
+| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` |
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` |
 | `WORKSPACE_ROOT` | `/workspaces` |
 | `TERM` | `${localEnv:TERM:xterm-256color}` (via `remoteEnv` — forwards host TERM, falls back to 256-color) |

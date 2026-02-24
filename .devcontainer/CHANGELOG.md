@@ -9,8 +9,25 @@
 
 ### Changed
 
+#### Configuration
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `/home/vscode/.claude`
+
+#### Authentication
+- Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
+- Auto-creates `.credentials.json` from token on container start (skips if already exists)
+- Added `CLAUDE_AUTH_TOKEN` to devcontainer.json secrets declaration
+
+#### Security
+- Protected-files-guard now covers `.credentials.json` (leading dot)
+
 #### Status Bar
 - **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments
+
+#### Scripts
+- Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
+- Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
 
 ### Fixed
 
@@ -28,6 +45,8 @@
 - **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
 
 ### Removed
+
+- `setup-symlink-claude.sh` — no longer needed with native home directory location
 
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions

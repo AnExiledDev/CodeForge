@@ -189,7 +189,7 @@ else
 fi
 
 # Ensure settings.json exists
-SETTINGS_FILE="/workspaces/.claude/settings.json"
+SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
 if [ ! -f "$SETTINGS_FILE" ]; then
     echo "[mcp-qdrant] ERROR: $SETTINGS_FILE not found"
     exit 1

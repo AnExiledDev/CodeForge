@@ -17,7 +17,7 @@ Variables that control Claude Code's core behavior inside the CodeForge containe
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Opus model ID | `claude-opus-4-6` | settings.json |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | Sonnet model ID | `claude-sonnet-4-5-20250929` | settings.json |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Haiku model ID | `claude-haiku-4-5-20251001` | settings.json |
-| `CLAUDE_CONFIG_DIR` | Claude Code configuration directory | `/workspaces/.claude` | devcontainer.json |
+| `CLAUDE_CONFIG_DIR` | Claude Code configuration directory | `/home/vscode/.claude` | devcontainer.json |
 | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | Maximum tokens per response | `64000` | settings.json |
 | `MAX_THINKING_TOKENS` | Maximum tokens for extended thinking | `63999` | settings.json |
 | `CLAUDE_CODE_SHELL` | Shell used for Bash tool execution | `zsh` | settings.json |
@@ -71,7 +71,7 @@ Variables set by the DevContainer environment that define workspace paths.
 | Variable | Description | Default | Set In |
 |----------|-------------|---------|--------|
 | `WORKSPACE_ROOT` | Workspace root directory | `/workspaces` | devcontainer.json |
-| `CLAUDE_CONFIG_DIR` | Claude configuration directory | `/workspaces/.claude` | devcontainer.json |
+| `CLAUDE_CONFIG_DIR` | Claude configuration directory | `/home/vscode/.claude` | devcontainer.json |
 | `GH_CONFIG_DIR` | GitHub CLI configuration directory | `/workspaces/.gh` | devcontainer.json |
 | `TMPDIR` | Temporary files directory | `/workspaces/.tmp` | devcontainer.json |
 | `CLAUDECODE` | Set to `null` to unset the detection flag, enabling nested Claude Code sessions | `null` | devcontainer.json |
@@ -112,7 +112,7 @@ Applied when the container is created. Persists across all sessions.
 {
   "remoteEnv": {
     "WORKSPACE_ROOT": "/workspaces",
-    "CLAUDE_CONFIG_DIR": "/workspaces/.claude"
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   }
 }
 ```

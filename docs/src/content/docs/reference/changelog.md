@@ -49,10 +49,32 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Changed
+
+#### Configuration
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `/home/vscode/.claude`
+
+#### Authentication
+- Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
+- Auto-creates `.credentials.json` from token on container start (skips if already exists)
+- Added `CLAUDE_AUTH_TOKEN` to devcontainer.json secrets declaration
+
+#### Security
+- Protected-files-guard now covers `.credentials.json` (leading dot)
+
+#### Scripts
+- Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
+- Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
+
 ### Removed
+- `setup-symlink-claude.sh` — no longer needed with native home directory location
 
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
+
+---
 
 ## v1.14.2
 

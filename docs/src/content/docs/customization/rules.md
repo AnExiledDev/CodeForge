@@ -11,7 +11,7 @@ Rules are Markdown files that define hard constraints applied to every Claude Co
 
 Rule files are Markdown documents placed in `.claude/rules/`. Claude Code loads every `.md` file in this directory at session start and treats their contents as mandatory instructions. The filename is descriptive but does not affect loading -- all files are loaded equally.
 
-Rules are deployed from `.devcontainer/config/defaults/rules/` to `.claude/rules/` via the file manifest on every container start. You can also add rules directly to `.claude/rules/` in your project.
+Rules are deployed from `.devcontainer/config/defaults/rules/` to `~/.claude/rules/` via the file manifest on every container start. You can also add rules directly to `.claude/rules/` in your project.
 
 ### Rule Precedence
 

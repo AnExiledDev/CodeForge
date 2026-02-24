@@ -65,6 +65,35 @@ else
     echo "[setup-auth] NPM_TOKEN not set, skipping NPM auth"
 fi
 
+# --- Claude auth token (from 'claude setup-token') ---
+# Long-lived tokens only — generated via: claude setup-token
+CLAUDE_CRED_FILE="$HOME/.claude/.credentials.json"
+if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
+    if [ -f "$CLAUDE_CRED_FILE" ]; then
+        echo "[setup-auth] .credentials.json already exists, skipping token injection"
+    else
+        echo "[setup-auth] Creating .credentials.json from CLAUDE_AUTH_TOKEN..."
+        mkdir -p "$HOME/.claude"
+        # Write credentials with restrictive permissions from the start (no race window)
+        ( umask 077; cat > "$CLAUDE_CRED_FILE" <<CRED_EOF
+{
+  "claudeAiOauth": {
+    "accessToken": "$CLAUDE_AUTH_TOKEN",
+    "refreshToken": "$CLAUDE_AUTH_TOKEN",
+    "expiresAt": 9999999999999,
+    "scopes": ["user:inference", "user:profile"]
+  }
+}
+CRED_EOF
+        )
+        echo "[setup-auth] Claude auth token configured"
+        AUTH_CONFIGURED=true
+    fi
+    unset CLAUDE_AUTH_TOKEN
+else
+    echo "[setup-auth] CLAUDE_AUTH_TOKEN not set, skipping Claude auth"
+fi
+
 # --- Summary ---
 if [ "$AUTH_CONFIGURED" = true ]; then
     echo "[setup-auth] Auth configuration complete"

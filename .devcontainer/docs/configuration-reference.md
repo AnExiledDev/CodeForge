@@ -23,7 +23,7 @@ These control what `setup.sh` does on each container start. Copy `.env.example` 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` | Where Claude Code config files are stored |
+| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Where Claude Code config files are stored |
 | `CONFIG_SOURCE_DIR` | `(auto-detected)` | Source directory for config defaults |
 | `SETUP_CONFIG` | `true` | Copy config files per `file-manifest.json` |
 | `SETUP_ALIASES` | `true` | Add cc/claude/ccraw/cc-tools aliases to shell |
@@ -42,7 +42,7 @@ These environment variables are set in every terminal session inside the contain
 | Variable | Value | Description |
 |----------|-------|-------------|
 | `WORKSPACE_ROOT` | `/workspaces` | Workspace root directory |
-| `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` | Claude Code config directory |
+| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Claude Code config directory |
 | `GH_CONFIG_DIR` | `/workspaces/.gh` | GitHub CLI config directory |
 | `TMPDIR` | `/workspaces/.tmp` | Temporary files directory |
 | `CLAUDECODE` | `null` (unset) | Unsets the variable to allow nested Claude Code sessions (claude-in-claude) |
@@ -88,6 +88,9 @@ GH_TOKEN=ghp_your_token_here
 GH_USERNAME=your-github-username
 GH_EMAIL=your-email@example.com
 NPM_TOKEN=npm_your_token_here
+CLAUDE_AUTH_TOKEN=sk-ant-oat01-your-token-here
 ```
+
+The `CLAUDE_AUTH_TOKEN` is a long-lived token from `claude setup-token`. When set, `setup-auth.sh` creates `~/.claude/.credentials.json` on container start (skips if already exists).
 
 Environment variables with the same names take precedence over `.secrets` file values (useful for Codespaces).

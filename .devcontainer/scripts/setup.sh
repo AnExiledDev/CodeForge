@@ -13,7 +13,7 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 # Apply defaults for any unset variables
-: "${CLAUDE_CONFIG_DIR:=/workspaces/.claude}"
+: "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
 : "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"
 : "${SETUP_CONFIG:=true}"
 : "${SETUP_ALIASES:=true}"
@@ -25,6 +25,10 @@ fi
 : "${SETUP_POSTSTART:=true}"
 
 export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
+
+# Fix named volume ownership — Docker creates named volumes as root:root
+# regardless of remoteUser. This is the only setup script requiring sudo.
+sudo chown "$(id -un):$(id -gn)" "$HOME/.claude" 2>/dev/null || true
 
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()
@@ -88,7 +92,7 @@ run_poststart_hooks() {
     fi
 }
 
-run_script "$SCRIPT_DIR/setup-symlink-claude.sh" "true"
+run_script "$SCRIPT_DIR/setup-migrate-claude.sh" "true"
 run_script "$SCRIPT_DIR/setup-auth.sh" "$SETUP_AUTH"
 run_script "$SCRIPT_DIR/setup-config.sh" "$SETUP_CONFIG"
 run_script "$SCRIPT_DIR/setup-aliases.sh" "$SETUP_ALIASES"

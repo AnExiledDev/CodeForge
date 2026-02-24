@@ -199,7 +199,7 @@ devcontainer.json
      |
      v
 [postStartCommand] setup.sh orchestrates:
-  1. setup-symlink-claude.sh -- Symlink Claude config directory
+  1. setup-migrate-claude.sh -- Migrate Claude config from old location
   2. setup-auth.sh           -- Git/NPM authentication
   3. setup-config.sh         -- Deploy settings, prompts, rules via file-manifest.json
   4. setup-aliases.sh        -- Write shell aliases to .bashrc/.zshrc

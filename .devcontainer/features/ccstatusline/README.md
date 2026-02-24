@@ -105,7 +105,7 @@ You should see formatted output with powerline styling.
 
 **3. Check Claude Code integration:**
 ```bash
-cat /workspaces/.claude/settings.json | jq '.statusLine'
+cat ~/.claude/settings.json | jq '.statusLine'
 ```
 
 Should show:
@@ -204,7 +204,7 @@ cat ~/.config/ccstatusline/settings.json | jq .
 echo '{"model":{"display_name":"Test"}}' | npx -y ccstatusline@latest
 
 # 3. Check Claude Code settings
-cat /workspaces/.claude/settings.json | jq '.statusLine'
+cat ~/.claude/settings.json | jq '.statusLine'
 
 # 4. Manually run auto-config if needed
 configure-ccstatusline-auto

@@ -190,7 +190,7 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
-SETTINGS_FILE="${WORKSPACE_ROOT:-/workspaces}/.claude/settings.json"
+SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
 # Use SUDO_USER since _REMOTE_USER isn't set in post-start hooks
 USERNAME="${SUDO_USER:-vscode}"
 
