@@ -28,7 +28,9 @@ export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH
 
 # Fix named volume ownership — Docker creates named volumes as root:root
 # regardless of remoteUser. This is the only setup script requiring sudo.
-sudo chown "$(id -un):$(id -gn)" "$HOME/.claude" 2>/dev/null || true
+if ! sudo chown "$(id -un):$(id -gn)" "$HOME/.claude" 2>/dev/null; then
+    echo "[setup] WARNING: Could not fix volume ownership on $HOME/.claude — subsequent scripts may fail"
+fi
 
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()

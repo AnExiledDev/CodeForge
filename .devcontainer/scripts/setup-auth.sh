@@ -67,25 +67,29 @@ fi
 
 # --- Claude auth token (from 'claude setup-token') ---
 # Long-lived tokens only — generated via: claude setup-token
-CLAUDE_CRED_FILE="$HOME/.claude/.credentials.json"
+# Note: After unset, the token remains visible in /proc/<pid>/environ for the
+# lifetime of this process. This is a platform limitation of environment variables.
+CLAUDE_CRED_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+CLAUDE_CRED_FILE="$CLAUDE_CRED_DIR/.credentials.json"
 if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
-    if [ -f "$CLAUDE_CRED_FILE" ]; then
+    # Validate token format (claude setup-token produces sk-ant-* tokens)
+    if [[ ! "$CLAUDE_AUTH_TOKEN" =~ ^sk-ant- ]]; then
+        echo "[setup-auth] WARNING: CLAUDE_AUTH_TOKEN doesn't match expected format (sk-ant-*), skipping"
+    elif [ -f "$CLAUDE_CRED_FILE" ]; then
         echo "[setup-auth] .credentials.json already exists, skipping token injection"
+        # Verify permissions haven't been tampered with
+        perms=$(stat -c %a "$CLAUDE_CRED_FILE" 2>/dev/null)
+        if [ -n "$perms" ] && [ "$perms" != "600" ]; then
+            echo "[setup-auth] WARNING: .credentials.json has permissions $perms (expected 600), fixing"
+            chmod 600 "$CLAUDE_CRED_FILE"
+        fi
     else
         echo "[setup-auth] Creating .credentials.json from CLAUDE_AUTH_TOKEN..."
-        mkdir -p "$HOME/.claude"
-        # Write credentials with restrictive permissions from the start (no race window)
-        ( umask 077; cat > "$CLAUDE_CRED_FILE" <<CRED_EOF
-{
-  "claudeAiOauth": {
-    "accessToken": "$CLAUDE_AUTH_TOKEN",
-    "refreshToken": "$CLAUDE_AUTH_TOKEN",
-    "expiresAt": 9999999999999,
-    "scopes": ["user:inference", "user:profile"]
-  }
-}
-CRED_EOF
-        )
+        mkdir -p "$CLAUDE_CRED_DIR"
+        # Write credentials with restrictive permissions from the start (no race window).
+        # Uses printf '%s' to avoid shell expansion of token value (defense against
+        # metacharacters in the token string — backticks, $(), quotes).
+        ( umask 077; printf '{\n  "claudeAiOauth": {\n    "accessToken": "%s",\n    "refreshToken": "%s",\n    "expiresAt": 9999999999999,\n    "scopes": ["user:inference", "user:profile"]\n  }\n}\n' "$CLAUDE_AUTH_TOKEN" "$CLAUDE_AUTH_TOKEN" > "$CLAUDE_CRED_FILE" )
         echo "[setup-auth] Claude auth token configured"
         AUTH_CONFIGURED=true
     fi
