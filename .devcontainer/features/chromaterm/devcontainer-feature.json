@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "name": "ChromaTerm - Terminal Output Colorizer",
   "description": "Installs ChromaTerm2 for regex-based CLI output colorization via YAML rules",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/rgcr/ChromaTerm2",
   "options": {
     "version": {

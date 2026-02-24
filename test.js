@@ -20,7 +20,7 @@ function runTests() {
     'README.md',
     '.devcontainer/devcontainer.json',
     '.devcontainer/scripts/setup.sh',
-    '.devcontainer/config/settings.json'
+    '.devcontainer/config/defaults/settings.json'
   ];
 
   let allFilesExist = true;
@@ -48,16 +48,18 @@ function runTests() {
   });
 
   // Test 5: Setup script is executable
+  let setupExecutable = true;
   const setupStat = fs.statSync(path.join(__dirname, 'setup.js'));
   if (setupStat.mode & parseInt('111', 8)) {
     console.log('✓ Test 5: setup.js is executable');
   } else {
     console.log('❌ Test 5: setup.js is not executable');
+    setupExecutable = false;
   }
 
   // Summary
   console.log('\n📊 Test Results:');
-  if (allFilesExist && packageValid) {
+  if (allFilesExist && packageValid && setupExecutable) {
     console.log('🎉 All tests passed! Package is ready for distribution.');
     process.exit(0);
   } else {

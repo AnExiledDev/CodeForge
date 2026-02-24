@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "name": "Claude Monitor - Real-time Usage Tracker",
   "description": "Installs claude-monitor for real-time Claude Code token usage monitoring with ML-based predictions",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/Maciek-roboblog/Claude-Code-Usage-Monitor",
   "options": {
     "version": {

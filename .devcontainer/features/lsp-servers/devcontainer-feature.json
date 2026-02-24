@@ -3,7 +3,6 @@
 	"version": "1.0.0",
 	"name": "LSP Servers for Claude Code",
 	"description": "Installs language server binaries for Python (pyright), TypeScript (typescript-language-server), and Go (gopls)",
-	"maintainer": "AnExiledDev",
 	"documentationURL": "https://code.claude.com/docs/en/discover-plugins#code-intelligence",
 	"options": {
 		"version": {

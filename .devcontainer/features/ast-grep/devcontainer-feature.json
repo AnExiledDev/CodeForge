@@ -3,7 +3,6 @@
 	"version": "1.0.0",
 	"name": "ast-grep",
 	"description": "Installs ast-grep CLI for structural code search, lint, and rewriting using AST matching",
-	"maintainer": "AnExiledDev",
 	"documentationURL": "https://ast-grep.github.io/",
 	"options": {
 		"version": {

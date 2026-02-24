@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "name": "ccusage - Claude Code Usage Analyzer",
   "description": "Installs ccusage CLI tool for analyzing Claude Code token usage",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/ryoppippi/ccusage",
   "options": {
     "version": {

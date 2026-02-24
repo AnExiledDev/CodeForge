@@ -3,7 +3,6 @@
   "version": "1.0.4",
   "name": "Qdrant MCP Server",
   "description": "Installs Qdrant MCP server for vector database integration with AI coding agents",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/qdrant/mcp-server-qdrant",
   "options": {
     "version": {

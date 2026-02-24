@@ -3,7 +3,6 @@
   "version": "1.1.0",
   "name": "ccstatusline",
   "description": "Compact powerline status line for Claude Code with essential metrics",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/sirmalloc/ccstatusline",
   "options": {
     "version": {

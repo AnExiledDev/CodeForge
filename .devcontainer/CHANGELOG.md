@@ -1,5 +1,18 @@
 # CodeForge Devcontainer Changelog
 
+## [v1.14.1] - 2026-02-24
+
+### Fixed
+
+#### CI: Release Workflow
+- **test.js** — settings.json path updated from `config/settings.json` to `config/defaults/settings.json` to match config externalization refactor
+- **test.js** — Test 5 (executable check) result now included in exit condition; previously a failure was logged but did not affect the exit code
+- **setup.js** — file permissions changed from 644 to 755 (executable) to match shebang and `bin` declaration in package.json
+
+#### CI: Publish DevContainer Features Workflow
+- **features/README.md** — removed from features directory; `devcontainers/action@v1` treated it as a feature subdirectory and failed looking for `README.md/devcontainer-feature.json`
+- **11 devcontainer-feature.json files** — removed `"maintainer"` field (not in the DevContainer Feature spec schema, causing strict validation failure): ast-grep, ccburn, ccms, ccstatusline, ccusage, chromaterm, claude-monitor, claude-session-dashboard, lsp-servers, mcp-qdrant, tree-sitter
+
 ## [v1.14.0] - 2026-02-24
 
 ### Fixed (CodeRabbit review)

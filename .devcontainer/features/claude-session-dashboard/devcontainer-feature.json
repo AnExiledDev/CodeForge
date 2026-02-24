@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "name": "Claude Session Dashboard",
   "description": "Local analytics dashboard for Claude Code sessions (token usage, tool calls, cost estimates)",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/dlupiak/claude-session-dashboard",
   "options": {
     "version": {

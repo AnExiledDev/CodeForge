@@ -3,7 +3,6 @@
 	"version": "1.0.0",
 	"name": "ccms - Claude Code Message Searcher",
 	"description": "Installs ccms CLI for searching Claude Code session JSONL files with boolean queries, role filtering, and JSON output",
-	"maintainer": "AnExiledDev",
 	"documentationURL": "https://github.com/mkusaka/ccms",
 	"options": {
 		"version": {

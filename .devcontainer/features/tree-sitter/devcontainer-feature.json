@@ -3,7 +3,6 @@
   "version": "1.1.0",
   "name": "Tree-sitter Parser",
   "description": "Installs tree-sitter CLI (via npm) and parsing library with Node.js and Python bindings",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://tree-sitter.github.io/tree-sitter/",
   "options": {
     "version": {

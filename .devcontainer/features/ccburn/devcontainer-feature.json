@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "name": "ccburn - Visual Token Burn Rate Tracker",
   "description": "Installs ccburn CLI for real-time burn-up charts and pace tracking of Claude Code usage limits",
-  "maintainer": "AnExiledDev",
   "documentationURL": "https://github.com/JuanjoFuchs/ccburn",
   "options": {
     "version": {
