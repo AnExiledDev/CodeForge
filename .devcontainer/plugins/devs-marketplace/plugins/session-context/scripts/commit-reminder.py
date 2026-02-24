@@ -7,7 +7,8 @@ an advisory reminder as additionalContext. Claude sees it and can
 naturally ask the user if they want to commit.
 
 Reads hook input from stdin (JSON). Returns JSON on stdout.
-Always exits 0 (advisory, never blocking).
+Blocks with decision/reason so Claude addresses uncommitted changes
+before finishing. The stop_hook_active guard prevents infinite loops.
 """
 
 import json
@@ -82,7 +83,7 @@ def main():
         "Consider asking the user if they'd like to commit before finishing."
     )
 
-    json.dump({"additionalContext": message}, sys.stdout)
+    json.dump({"decision": "block", "reason": message}, sys.stdout)
     sys.exit(0)
 
 

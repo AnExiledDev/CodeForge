@@ -1,14 +1,15 @@
 ---
 name: refactoring-patterns
 description: >-
-  This skill should be used when the user asks to "refactor this code",
-  "clean up this function", "extract a method", "reduce code duplication",
-  "fix code smells", "simplify this class", "break up this large function",
-  "apply design patterns", "remove dead code", "improve code structure",
-  or discusses code smells, refactoring techniques, extract function,
-  inline variable, feature envy, god class, or behavior-preserving
-  transformations.
-version: 0.1.0
+  Teaches behavior-preserving code transformations with a smell-detect,
+  transform, verify cycle and language-specific idioms for Python and
+  TypeScript. USE WHEN the user asks to "refactor this code", "extract a
+  method", "fix code smells", "reduce code duplication", "simplify this
+  class", "break up this large function", "clean up this function", or
+  "remove dead code", or works with god class, feature envy, data clump,
+  primitive obsession, or inline variable. DO NOT USE for adding new
+  features, fixing bugs, or performance optimization.
+version: 0.2.0
 ---
 
 # Refactoring Patterns

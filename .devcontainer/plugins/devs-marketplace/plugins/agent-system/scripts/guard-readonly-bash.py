@@ -601,7 +601,7 @@ def main():
         error = check_general_readonly(command)
 
     if error:
-        json.dump({"error": error}, sys.stdout)
+        print(error, file=sys.stderr)
         sys.exit(2)
 
     sys.exit(0)

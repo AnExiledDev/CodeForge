@@ -1,13 +1,13 @@
 ---
 name: skill-building
 description: >-
-  This skill should be used when the user asks to "build a skill", "write a
-  SKILL.md", "create a Claude Code skill", "design skill instructions",
-  "improve a skill description", "optimize skill content", "write effective
-  prompts for skills", or discusses skill authoring best practices, progressive
-  disclosure, or cross-vendor prompt engineering principles for Claude Code
-  plugins.
-version: 0.1.0
+  Guides Claude Code plugin skill creation covering SKILL.md structure,
+  description optimization, and progressive disclosure. USE WHEN the user
+  asks to "build a skill", "write a SKILL.md", "create a Claude Code skill",
+  "improve a skill description", "optimize skill content", "design skill
+  instructions", or works with skill authoring patterns or plugin directory
+  structure. DO NOT USE for application code or general prompt engineering.
+version: 0.2.0
 ---
 
 # Skill Building for Claude Code Plugins

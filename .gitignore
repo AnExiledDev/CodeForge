@@ -63,26 +63,6 @@ node_modules/
 # Claude Code directory (user-specific)
 .claude/
 
-# Work in progress
-review-cli/
-
-# CodeDirective project (separate product)
-/code-directive/
-
-# Research & working files (not part of CodeForge)
-article/
-claude-research/
-claude-dev-discord-logs/
-dashboard/
-devforge/
-simple-review/
-devs-utilities/
-devs-notes/
-equicord-autobump/
-
-# Unfinished plugins
-.devcontainer/plugins/devs-marketplace/plugins/workflow-enhancer/
-
 # All hidden directories except devcontainer
 .*
 !.devcontainer/
@@ -90,8 +70,14 @@ equicord-autobump/
 !.devcontainer/
 !.devcontainer/**/.claude-plugin/**/.claude-plugin/
 !.git/
+!.github/
 !.gitignore
 !.gitattributes
 !.npmignore
 .devcontainer/config/claude/output-styles/strict-development.md
 .devcontainer/config/claude/mcp.json
+
+# Docs
+docs/node_modules/
+docs/dist/
+docs/.astro/

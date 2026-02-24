@@ -25,6 +25,34 @@ Claude stops responding (Stop event)
 
 The hook has a 5-second timeout. The plugin contains no scripts of its own — it delegates entirely to the `claude-notify` binary.
 
+## Installation
+
+### CodeForge DevContainer
+
+Pre-installed and activated automatically — no setup needed.
+
+### From GitHub
+
+Use this plugin in any Claude Code setup:
+
+1. Clone the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
+
+   ```bash
+   git clone https://github.com/AnExiledDev/CodeForge.git
+   ```
+
+2. Enable the plugin in your `.claude/settings.json`:
+
+   ```json
+   {
+     "enabledPlugins": {
+       "notify-hook@<clone-path>/.devcontainer/plugins/devs-marketplace": true
+     }
+   }
+   ```
+
+   Replace `<clone-path>` with the absolute path to your CodeForge clone.
+
 ## Plugin Structure
 
 ```

@@ -53,7 +53,7 @@ fi
 echo "[ccms] Installing for user: ${USERNAME}"
 
 # === BUILD CACHE ===
-CACHE_DIR="/workspaces/.devcontainer/.build-cache/bin"
+CACHE_DIR="${TMPDIR:-/tmp}/ccms-build-cache"
 
 # === INSTALL ===
 REPO_URL="https://github.com/mkusaka/ccms"

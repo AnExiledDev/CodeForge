@@ -1,0 +1,13 @@
+{
+  "id": "kitty-terminfo",
+  "version": "1.0.0",
+  "name": "Kitty Terminal Terminfo",
+  "description": "Installs xterm-kitty terminfo so Kitty terminal users get full color and capability support",
+  "options": {
+    "version": {
+      "type": "string",
+      "description": "'latest' to install, 'none' to skip",
+      "default": "latest"
+    }
+  }
+}

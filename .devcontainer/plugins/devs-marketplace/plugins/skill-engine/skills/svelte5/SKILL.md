@@ -1,14 +1,13 @@
 ---
 name: svelte5
 description: >-
-  This skill should be used when the user asks to "build a Svelte component",
-  "create a Svelte app", "use Svelte runes", "set up a SvelteKit SPA",
-  "migrate from Svelte 4 to Svelte 5", "manage state with runes",
-  "add reactivity in Svelte", "use AI SDK with Svelte",
-  "add drag and drop to Svelte", "build charts with LayerCake",
-  or discusses Svelte 5 component patterns, snippets, $state, $derived,
-  $effect, $props, or SvelteKit routing.
-version: 0.1.0
+  Guides Svelte 5 development with runes, SvelteKit SPA configuration, and
+  component architecture. USE WHEN the user asks to "build a Svelte component",
+  "use Svelte 5 runes", "set up a SvelteKit SPA", "migrate from Svelte 4
+  to 5", "manage state with $state", "add drag and drop to Svelte", or works
+  with $state, $derived, $effect, $props, @ai-sdk/svelte, svelte-dnd-action.
+  DO NOT USE for Svelte 4 legacy codebases or React/Vue development.
+version: 0.2.0
 ---
 
 # Svelte 5 Development

@@ -55,6 +55,8 @@
 		"./features/ast-grep",
 		"./features/tree-sitter",
 		"./features/lsp-servers",
+		"./features/kitty-terminfo",
+		"./features/chromaterm",
 		"./features/ruff",
 		"./features/shfmt",
 		"./features/dprint",
@@ -103,7 +105,7 @@
 		"./features/ccms": {},
 		"./features/claude-session-dashboard": {
 			"version": "latest",
-			"port": "3000",
+			"port": "7847",
 			"shells": "both",
 			"username": "automatic"
 		},
@@ -111,6 +113,11 @@
 		"./features/tree-sitter": {},
 		"./features/lsp-servers": {},
 		"./features/agent-browser": {},
+		"./features/kitty-terminfo": {},
+		"./features/chromaterm": {
+			"version": "latest",
+			"username": "automatic"
+		},
 		"./features/ruff": {
 			"version": "latest",
 			"username": "automatic"
@@ -126,6 +133,17 @@
 		"./features/notify-hook": {
 			"enableBell": true,
 			"enableOsc": true
+		}
+	},
+
+	"forwardPorts": [7847],
+	"portsAttributes": {
+		"7847": {
+			"label": "Claude Dashboard",
+			"onAutoForward": "notify"
+		},
+		"*": {
+			"onAutoForward": "silent"
 		}
 	},
 

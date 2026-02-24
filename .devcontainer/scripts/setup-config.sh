@@ -45,6 +45,7 @@ expand_vars() {
 	local val="$1"
 	val="${val//\$\{CLAUDE_CONFIG_DIR\}/$CLAUDE_CONFIG_DIR}"
 	val="${val//\$\{WORKSPACE_ROOT\}/$WORKSPACE_ROOT}"
+	val="${val//\$\{HOME\}/$HOME}"
 	# Warn on any remaining unresolved ${...} tokens
 	if [[ "$val" =~ \$\{[^}]+\} ]]; then
 		warn "Unresolved variable in: $val"

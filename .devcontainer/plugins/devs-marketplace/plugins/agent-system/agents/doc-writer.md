@@ -7,10 +7,13 @@ description: >-
   "write a README", "document this", "add docstrings", "add JSDoc", "update
   the docs", "write API documentation", "create architecture docs", "document
   these functions", or needs any form of code documentation, inline comments,
-  or technical writing.
+  or technical writing. Do not use for modifying source code logic,
+  fixing bugs, or feature implementation.
 tools: Read, Edit, Glob, Grep
 model: opus
 color: cyan
+permissionMode: acceptEdits
+isolation: worktree
 memory:
   scope: project
 skills:

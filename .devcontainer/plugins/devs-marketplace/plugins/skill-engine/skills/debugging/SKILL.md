@@ -1,13 +1,17 @@
 ---
 name: debugging
 description: >-
-  This skill should be used when the user asks to "debug logs", "check logs",
-  "find error in logs", "read docker logs", "investigate failure",
-  "check container logs", "analyze error output", "find what went wrong",
-  "why did this crash", "check what happened", "diagnose the issue",
-  "look at the logs", or discusses log analysis, container debugging,
-  error investigation, crash diagnosis, or service failure troubleshooting.
-version: 0.1.0
+  Guides systematic log analysis and error diagnosis across Docker, systemd,
+  and application environments using forensic investigation methodology.
+  USE WHEN the user asks to "debug logs", "check container logs",
+  "why did this crash", "investigate failure", "find error in logs",
+  "read docker logs", "diagnose the issue", or "analyze error output",
+  or works with Docker exit codes, Python tracebacks, ECONNREFUSED,
+  OOMKilled, or journalctl. DO NOT USE for performance profiling,
+  security auditing, or dependency vulnerability scanning.
+version: 0.2.0
+allowed-tools: Bash, Read, Glob, Grep
+argument-hint: "[service or log-path]"
 ---
 
 # Debugging & Log Analysis

@@ -50,45 +50,31 @@ Biome is resolved in this order:
 
 ## Installation
 
-### 1. Place the plugin
+### CodeForge DevContainer
 
-Copy the `auto-code-quality/` directory into your Claude Code plugin marketplace:
+Pre-installed and activated automatically — no setup needed.
 
-```
-your-marketplace/
-├── .claude-plugin/
-│   └── marketplace.json
-└── plugins/
-    └── auto-code-quality/    ← this directory
-```
+### From GitHub
 
-### 2. Register in marketplace.json
+Use this plugin in any Claude Code setup:
 
-Add this entry to your `marketplace.json` `plugins` array:
+1. Clone the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
 
-```json
-{
-  "name": "auto-code-quality",
-  "description": "Self-contained code quality: auto-format + auto-lint edited files",
-  "version": "1.0.0",
-  "source": "./plugins/auto-code-quality",
-  "category": "development"
-}
-```
+   ```bash
+   git clone https://github.com/AnExiledDev/CodeForge.git
+   ```
 
-### 3. Enable in settings.json
+2. Enable the plugin in your `.claude/settings.json`:
 
-Add to your Claude Code `settings.json` under `enabledPlugins`:
+   ```json
+   {
+     "enabledPlugins": {
+       "auto-code-quality@<clone-path>/.devcontainer/plugins/devs-marketplace": true
+     }
+   }
+   ```
 
-```json
-{
-  "enabledPlugins": {
-    "auto-code-quality@your-marketplace": true
-  }
-}
-```
-
-Replace `your-marketplace` with the name of your marketplace.
+   Replace `<clone-path>` with the absolute path to your CodeForge clone.
 
 ## How It Works
 

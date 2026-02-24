@@ -1,14 +1,60 @@
 {
-	"description": "Enforce workspace scope for file operations",
+	"description": "Nuclear workspace scope enforcement — blocks all operations outside cwd, permanently blacklists /workspaces/.devcontainer/",
 	"hooks": {
 		"PreToolUse": [
 			{
-				"matcher": "Read|Write|Edit|NotebookEdit|Glob|Grep",
+				"matcher": "Read|Write|Edit|NotebookEdit|Glob|Grep|Bash",
 				"hooks": [
 					{
 						"type": "command",
 						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/guard-workspace-scope.py",
-						"timeout": 5
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-workspace-cwd.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SessionStart": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-workspace-cwd.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-workspace-cwd.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStart": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/inject-workspace-cwd.py",
+						"timeout": 3
 					}
 				]
 			}

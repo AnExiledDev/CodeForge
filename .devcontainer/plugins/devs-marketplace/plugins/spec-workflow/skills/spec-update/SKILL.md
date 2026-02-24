@@ -1,11 +1,16 @@
 ---
 name: spec-update
 description: >-
-  This skill should be used when the user asks to "update the spec",
-  "mark spec as implemented", "as-built update", "spec maintenance",
-  "update spec status", "finish the spec", or after implementing a
-  feature when the spec needs to reflect what was actually built.
-version: 0.1.0
+  Performs the as-built spec update after implementation, closing the loop
+  between what was planned and what was built by setting status, checking
+  off acceptance criteria, and adding implementation notes. USE WHEN the
+  user asks to "update the spec", "mark spec as implemented", "as-built
+  update", "finish the spec", "close the spec", "update spec status",
+  "sync spec with code", or works with post-implementation documentation.
+  DO NOT USE for verifying code against a spec (use spec-review first)
+  or for creating new specs (use spec-new).
+version: 0.2.0
+argument-hint: "[spec-path]"
 ---
 
 # As-Built Spec Update

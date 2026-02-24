@@ -1,11 +1,16 @@
 ---
 name: spec-check
 description: >-
-  This skill should be used when the user asks to "check spec status",
-  "audit specs", "which specs are stale", "spec health", "find missing
-  specs", "review spec quality", or needs a comprehensive audit of all
-  specifications in the project.
-version: 0.1.0
+  Audits all specifications in a project for health issues including stale
+  status, missing sections, unapproved drafts, and assumed requirements.
+  USE WHEN the user asks to "check spec health", "audit specs", "which
+  specs are stale", "find missing specs", "review spec quality",
+  "run spec-check", "are my specs up to date", or works with .specs/
+  directory maintenance and specification metadata.
+  DO NOT USE for single-spec code review or implementation verification
+  — use spec-review for deep code-level audits against one spec.
+version: 0.2.0
+argument-hint: "[domain or path]"
 context: fork
 agent: explorer
 ---

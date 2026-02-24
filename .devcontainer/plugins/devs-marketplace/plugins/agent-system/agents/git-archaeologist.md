@@ -8,9 +8,12 @@ description: >-
   "git blame", "git bisect", "what happened to this code", "show the history
   of this file", "who contributed to this module", "recover lost commit",
   "trace this function's evolution", or needs any git history forensics.
+  Do not use for modifying git history, making commits, pushing, or any
+  git write operations.
 tools: Read, Grep, Bash
 model: haiku
 color: blue
+permissionMode: plan
 memory:
   scope: project
 skills:

@@ -1,15 +1,15 @@
 ---
 name: specification-writing
 description: >-
-  This skill should be used when the user asks to "write a specification",
-  "create requirements", "define acceptance criteria", "write user stories",
-  "create a feature spec", "document requirements", "use EARS format",
-  "write Given/When/Then scenarios", "define edge cases for a feature",
-  "structure a product requirement document",
-  or discusses requirement formats, EARS templates, Gherkin syntax,
-  acceptance criteria patterns, specification structure,
-  or completeness checklists for feature definitions.
-version: 0.1.0
+  Teaches EARS requirement formats, Given/When/Then acceptance criteria,
+  and structured specification patterns for feature definitions. USE WHEN
+  the user asks to "write requirements", "use EARS format", "define
+  acceptance criteria", "write Given/When/Then scenarios", "create a
+  feature spec", "structure requirements", "write user stories", or works
+  with Gherkin syntax, FR/NFR numbering, and completeness checklists.
+  DO NOT USE for managing the spec lifecycle (create, refine, build,
+  review, update) — use the dedicated spec-* skills instead.
+version: 0.2.0
 ---
 
 # Specification Writing

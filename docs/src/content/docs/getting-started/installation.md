@@ -1,0 +1,213 @@
+---
+title: Installation
+description: Step-by-step guide to installing and configuring CodeForge in your project.
+sidebar:
+  order: 3
+---
+
+This guide walks you through setting up CodeForge from scratch. The process has three steps: run the installer, open the container, and verify. Most of the heavy lifting happens automatically.
+
+## Step 1: Install CodeForge
+
+Navigate to your project root and run:
+
+```bash
+npx codeforge-dev
+```
+
+This creates a `.devcontainer/` directory containing the full CodeForge configuration — all plugins, features, agents, skills, system prompts, and settings. Your existing project files are not modified.
+
+:::tip[Already have a .devcontainer?]
+If your project already has a `.devcontainer/` directory, the installer will warn you and exit. Use the `--force` flag to perform a smart sync that preserves your user configuration:
+```bash
+npx codeforge-dev --force
+```
+The `--force` flag uses an intelligent sync — it preserves files you've customized (creating `.codeforge-new` diff files for review) rather than blindly overwriting everything.
+:::
+
+### Alternative Installation Methods
+
+```bash
+# Install globally for repeated use
+npm install -g codeforge-dev
+codeforge-dev
+
+# Pin a specific version
+npx codeforge-dev@1.14.0
+```
+
+### What the Installer Creates
+
+After running the installer, your project will have:
+
+```
+your-project/
+├── .devcontainer/
+│   ├── devcontainer.json       # Container definition and feature list
+│   ├── .env                    # Setup flags
+│   ├── config/
+│   │   ├── file-manifest.json  # Controls config file deployment
+│   │   └── defaults/           # System prompts, settings, rules
+│   ├── features/               # 21 custom DevContainer features
+│   ├── plugins/                # 12 plugins with hooks and scripts
+│   └── scripts/                # Setup and verification scripts
+└── ... (your existing files)
+```
+
+## Step 2: Open in VS Code
+
+Open your project in VS Code. You should see a notification in the bottom-right corner:
+
+> **Folder contains a Dev Container configuration file.** Reopen folder to develop in a container.
+
+Click **Reopen in Container**. If you miss the notification, use the Command Palette:
+
+1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+2. Type "Dev Containers" and select **Dev Containers: Reopen in Container**
+
+### What Happens During the First Build
+
+The first container build takes several minutes (typically 3-8 minutes depending on your internet speed and hardware). Here's what's happening behind the scenes:
+
+1. **Base image pull** — downloads the Python 3.14 DevContainer image from Microsoft's registry
+2. **Feature installation** — installs 21 DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Rust, Bun, Claude Code, and all custom features
+3. **Post-start setup** — deploys configuration files, sets up shell aliases, and configures plugins
+
+You can watch the progress in VS Code's log output. Look for the "Dev Containers" output channel in the terminal panel.
+
+:::caution[Don't interrupt the first build]
+If the build is interrupted, Docker may cache a partial state. Use **Dev Containers: Rebuild Container Without Cache** to start fresh.
+:::
+
+## Step 3: Verify Installation
+
+Once the container is running and you have a terminal prompt, verify everything installed correctly:
+
+```bash
+check-setup
+```
+
+This command checks that all tools, runtimes, and plugins are in place. You should see green checkmarks for each component.
+
+For a more detailed view of every installed tool and its version:
+
+```bash
+cc-tools
+```
+
+This lists every command CodeForge provides, along with its version number or installation status.
+
+### Expected Output
+
+A healthy installation shows all of these as available:
+
+| Category | Tools |
+|----------|-------|
+| Claude Code | `claude`, `cc`, `ccw`, `ccraw` |
+| Session tools | `ccms`, `ccusage`, `ccburn`, `claude-monitor` |
+| Languages | `node`, `python`, `rustc`, `bun` |
+| Code intelligence | `ast-grep`, `tree-sitter`, `pyright`, `typescript-language-server` |
+| Linters/Formatters | `ruff`, `biome` |
+| Utilities | `gh`, `docker`, `git`, `jq`, `tmux` |
+
+:::note[Some tools are optional]
+A few features ship with `"version": "none"` by default (shfmt, dprint, shellcheck, hadolint). These are available but disabled. Enable them by changing the version in `devcontainer.json` and rebuilding the container.
+:::
+
+## What Gets Installed
+
+### Language Runtimes
+
+- **Python 3.14** — the container's base image, with `uv` as the package manager
+- **Node.js LTS** — installed via nvm, with npm included
+- **Rust** — latest stable via rustup
+- **Bun** — fast JavaScript/TypeScript runtime and package manager
+- **Go** — available as an opt-in (uncomment in `devcontainer.json`)
+
+### CLI Tools
+
+- **GitHub CLI** (`gh`) — repository management, PR creation, issue tracking
+- **Docker** (Docker-outside-of-Docker) — container operations from inside the DevContainer
+- **tmux** — terminal multiplexing for parallel Claude Code sessions
+- **ccms** — search your Claude Code session history
+- **ccusage** / **ccburn** — token usage analysis and burn rate tracking
+- **ccstatusline** — session status in your terminal prompt
+- **claude-monitor** — real-time session monitoring
+- **claude-dashboard** — web-based session analytics on port 7847
+- **agent-browser** — headless Chromium via Playwright for web interaction
+- **ast-grep** / **tree-sitter** — structural code search and parsing
+
+### Plugins
+
+All 12 plugins are installed and active by default. They're configured through `settings.json` and managed by the plugin system. See the [Plugins Overview](../plugins/) for details on each plugin and how to enable or disable them.
+
+## Configuration
+
+CodeForge works out of the box, but everything is customizable:
+
+- **`devcontainer.json`** — container image, features, resource limits, port forwarding
+- **`config/defaults/settings.json`** — model selection, permissions, enabled plugins, environment variables
+- **`config/defaults/main-system-prompt.md`** — Claude Code's behavioral guidelines
+- **`config/defaults/rules/`** — rules loaded into every session automatically
+
+See the [Customization section](../customization/) for full details on each configuration surface.
+
+## Updating CodeForge
+
+To update to the latest version:
+
+```bash
+npx codeforge-dev@latest
+```
+
+This updates the `.devcontainer/` configuration. After updating, rebuild the container:
+
+1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+2. Select **Dev Containers: Rebuild Container**
+
+:::tip[Check what changed]
+Use `git diff .devcontainer/` after updating to review what changed before committing. This lets you verify the update didn't overwrite any customizations you want to keep.
+:::
+
+## Troubleshooting
+
+### Container fails to build
+
+**Symptoms:** VS Code shows a build error, or the container exits immediately.
+
+**Common causes and fixes:**
+
+- **Docker not running** — start Docker Desktop or the Docker daemon
+- **Insufficient resources** — open Docker Desktop settings and allocate at least 4 GB RAM and 20 GB disk to the VM
+- **Network issues** — the first build downloads several GB of images and tools; check your internet connection
+- **Cached partial build** — use **Dev Containers: Rebuild Container Without Cache** to start clean
+
+### Tools not found after build
+
+**Symptoms:** Commands like `cc` or `ccms` return "command not found."
+
+- Run `check-setup` to identify which tools are missing
+- Check that the post-start script completed successfully (look for errors in the terminal output)
+- Rebuild the container to trigger a fresh install
+
+### Claude Code authentication issues
+
+**Symptoms:** Running `cc` or `claude` prompts for authentication or returns an error.
+
+- Claude Code authenticates on first launch — follow the prompts to sign in
+- If authentication was previously completed but stopped working, try `claude auth` to re-authenticate
+- Ensure your Claude subscription is active
+
+### Slow container startup
+
+**Symptoms:** The container takes a long time to start after the initial build.
+
+- Subsequent starts should be fast (under 30 seconds) because Docker caches built layers
+- If starts are consistently slow, check Docker resource allocation
+- The `postStartCommand` runs on every start to deploy configuration files — this is normal and should complete in a few seconds
+
+## Next Steps
+
+- [First Session](./first-session/) — start using CodeForge with Claude Code
+- [Configuration](../customization/configuration/) — customize settings
+- [Plugins Overview](../plugins/) — understand what each plugin does

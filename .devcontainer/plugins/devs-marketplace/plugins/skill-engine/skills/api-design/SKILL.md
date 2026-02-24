@@ -1,12 +1,15 @@
 ---
 name: api-design
 description: >-
-  This skill should be used when the user asks to "design an API",
-  "design REST endpoints", "plan API versioning", "choose pagination strategy",
-  "design error responses", "API conventions", "endpoint design",
-  "create API documentation", or discusses REST API design, HTTP method
-  semantics, status code selection, authentication patterns, or rate limiting.
-version: 0.1.0
+  Provides REST API design guidance covering resource naming, pagination
+  strategies, error responses, versioning, and authentication patterns. USE
+  WHEN the user asks to "design an API", "design REST endpoints", "plan API
+  versioning", "choose a pagination strategy", "design error responses",
+  "set up rate limiting", "create OpenAPI documentation", or works with REST
+  conventions, HTTP method semantics, cursor pagination, RFC 7807, JWT auth,
+  status codes. DO NOT USE for API implementation code — use the fastapi skill
+  for building endpoints.
+version: 0.2.0
 ---
 
 # API Design

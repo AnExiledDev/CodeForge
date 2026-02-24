@@ -16,9 +16,13 @@ fi
 
 echo "[shellcheck] Starting installation..."
 
+cleanup() {
+    apt-get clean -y 2>/dev/null || true
+    rm -rf /var/lib/apt/lists/*
+}
+trap cleanup EXIT
+
 apt-get update -y
 apt-get install -y --no-install-recommends shellcheck
-apt-get clean -y
-rm -rf /var/lib/apt/lists/*
 
 echo "[shellcheck] Installed: $(shellcheck --version 2>/dev/null | head -2 || echo 'unknown')"

@@ -8,10 +8,13 @@ description: >-
   "update the framework", "bump Python version", "convert from Express to
   Fastify", "upgrade Pydantic", "modernize the codebase", or needs any
   framework, library, or language version migration with step-by-step
-  verification.
+  verification. Do not use for new feature development, bug fixes, or
+  changes unrelated to version or framework migration.
 tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch
 model: opus
 color: magenta
+permissionMode: acceptEdits
+isolation: worktree
 memory:
   scope: user
 skills:

@@ -1,0 +1,147 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "d904cca6-ade8-41c1-a4f5-ddea30607a5e",
+        "type": "model",
+        "backgroundColor": "bgMagenta"
+      },
+      {
+        "id": "1",
+        "type": "context-length",
+        "color": "cyan",
+        "rawValue": true
+      },
+      {
+        "id": "db519d5a-80a7-4b44-8a9c-2c7d8c0a7176",
+        "type": "context-percentage-usable",
+        "backgroundColor": "bgRed",
+        "rawValue": true
+      },
+      {
+        "id": "5",
+        "type": "tokens-input",
+        "color": "magenta",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "ac094d46-3673-4d41-84e3-dc8c5bcf639f",
+        "type": "tokens-output",
+        "backgroundColor": "bgMagenta",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "2ad12147-05fd-45fb-8336-53ba2e7df56c",
+        "type": "tokens-cached",
+        "backgroundColor": "bgBrightRed",
+        "rawValue": true,
+        "merge": "no-padding"
+      },
+      {
+        "id": "9bacbdb4-2e01-45de-a0c0-ee6ec30fa3c2",
+        "type": "tokens-total",
+        "backgroundColor": "bgGreen",
+        "rawValue": true
+      }
+    ],
+    [
+      {
+        "id": "3",
+        "type": "git-branch",
+        "color": "brightBlack"
+      },
+      {
+        "id": "a529e50e-b9f3-4150-a812-937ab81545e8",
+        "type": "git-changes",
+        "backgroundColor": "bgBrightBlue"
+      },
+      {
+        "id": "a9eaae3f-7f91-459c-833a-fbc9f01a09ae",
+        "type": "git-worktree",
+        "backgroundColor": "bgBrightBlue"
+      },
+      {
+        "id": "7",
+        "type": "session-clock",
+        "color": "yellow",
+        "rawValue": true
+      },
+      {
+        "id": "a4fe7f75-2f6c-49c7-88f6-ac7381142c2c",
+        "type": "session-cost",
+        "backgroundColor": "bgBrightWhite",
+        "rawValue": true
+      },
+      {
+        "id": "90aae111-3d3f-4bb0-8336-230f322cc2e8",
+        "type": "block-timer",
+        "backgroundColor": "bgYellow",
+        "rawValue": true
+      },
+      {
+        "id": "2cdff909-8297-44a1-83f9-ad4bf024391e",
+        "type": "version",
+        "backgroundColor": "bgRed",
+        "rawValue": true
+      }
+    ],
+    [
+      {
+        "id": "cc-resume-session",
+        "type": "custom-command",
+        "commandPath": "/usr/local/bin/ccstatusline-session-resume",
+        "timeout": 500,
+        "preserveColors": false,
+        "maxWidth": 50,
+        "color": "cyan",
+        "backgroundColor": "bgBrightBlack"
+      },
+      {
+        "id": "cc-cwd",
+        "type": "custom-command",
+        "commandPath": "/usr/local/bin/ccstatusline-cwd",
+        "timeout": 500,
+        "preserveColors": false,
+        "maxWidth": 40,
+        "color": "brightWhite",
+        "backgroundColor": "bgBrightBlack"
+      },
+      {
+        "id": "ccburn-compact",
+        "type": "custom-command",
+        "commandPath": "/usr/local/bin/ccburn-statusline",
+        "timeout": 8000,
+        "preserveColors": true,
+        "maxWidth": 80,
+        "color": "green",
+        "backgroundColor": "bgBlack"
+      }
+    ]
+  ],
+  "flexMode": "full",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "powerline": {
+    "enabled": true,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [
+      ""
+    ],
+    "endCaps": [
+      ""
+    ],
+    "autoAlign": false,
+    "theme": "monokai"
+  },
+  "defaultPadding": " "
+}

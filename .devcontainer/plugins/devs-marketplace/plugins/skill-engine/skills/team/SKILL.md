@@ -1,11 +1,17 @@
 ---
 name: team
 description: >-
-  This skill should be used when the user asks to "spawn a team",
-  "create a team of agents", "use a swarm", "work in parallel with agents",
-  "team up agents", "coordinate multiple agents", "split this across agents",
-  or needs to orchestrate parallel agent work using Claude Code Teams.
-version: 0.1.0
+  Guides agent team orchestration with TeamCreate, parallel teammate
+  spawning, task coordination, specialist agent selection, and
+  --teammate-mode configuration for concurrent workstreams. USE WHEN
+  the user asks to "spawn a team", "create a team of agents", "use a
+  swarm", "work in parallel", "coordinate multiple agents", "split this
+  across agents", "team up", or works with TeamCreate, SendMessage, and
+  multi-agent workflows. DO NOT USE for single-agent sequential tasks
+  where parallelism adds no value — a team requires 3+ independent
+  workstreams.
+version: 0.2.0
+disable-model-invocation: true
 ---
 
 # Agent Team Orchestration
@@ -113,6 +119,31 @@ TaskUpdate:
 - **Direct message:** `SendMessage` with `type: "message"` and `recipient: "test-writer"`
 - **Broadcast:** `SendMessage` with `type: "broadcast"` — use ONLY for critical team-wide issues
 - **Idle is normal:** Teammates go idle after each turn. This is expected. Send a message to wake them.
+- **Quality gate hooks:** TeammateIdle and TaskCompleted hooks run automatically. TeammateIdle checks for incomplete tasks (exit 2 → teammate keeps working); TaskCompleted runs the test suite (exit 2 → task stays open). See agent-system plugin hooks.
+
+**In-process mode keyboard shortcuts:**
+
+| Shortcut | Action |
+|----------|--------|
+| `Shift+Down` | Cycle through teammates |
+| `Ctrl+T` | Toggle task list |
+| `Enter` | View a teammate's session |
+| `Escape` | Interrupt teammate's current turn |
+
+> **Tip:** Use `claude --teammate-mode in-process` for per-session display mode override. Configure permanently via `teammateMode` in settings.json.
+
+### 5a. Plan Approval
+
+When `CLAUDE_CODE_PLAN_MODE_REQUIRED` is `true` (current setting), teammates run in read-only plan mode until the lead approves their plan.
+
+**Workflow:**
+1. Teammate enters plan mode → creates an implementation plan
+2. Lead receives `plan_approval_request` message with the plan
+3. Lead reviews the plan and sends `plan_approval_response` (approve or reject)
+4. On approval → teammate exits plan mode and implements
+5. On rejection → teammate stays in plan mode, revises, resubmits
+
+**Influencing plans:** Include criteria in the spawn `prompt` to shape what the lead should look for (e.g., "only approve plans that include test coverage", "reject plans that modify shared utilities without coordination").
 
 ### 6. Shutdown
 
@@ -151,6 +182,18 @@ Prefix with `agent-system:` when spawning (e.g., `agent-system:test-writer`).
 
 ---
 
+## Use Cases
+
+**Parallel code review** — split review criteria into independent domains (security, performance, test coverage). Each reviewer focuses on one lens, reducing blind spots.
+
+**Competing hypotheses** — adversarial investigation where teammates explore different theories about a bug or design decision. Each builds evidence for their hypothesis; lead synthesizes findings.
+
+**Cross-layer coordination** — frontend, backend, and tests each owned by a different teammate. Clear file ownership prevents conflicts; integration points are managed by the lead.
+
+**Research sweep** — parallel investigation of libraries, APIs, or approaches. Each researcher covers one option; lead compares findings and makes the selection.
+
+---
+
 ## Team Composition Examples
 
 | Purpose | Recommended Team |
@@ -177,6 +220,29 @@ Prefix with `agent-system:` when spawning (e.g., `agent-system:test-writer`).
 | Empty spawn prompts | Teammates have no prior context | Include all requirements, file paths, conventions |
 | Skipping shutdown | Orphaned agents consume resources | Always send `shutdown_request` + `TeamDelete` |
 | Broadcasting for routine updates | Each broadcast = N messages (one per teammate) | Use direct `message` to specific teammates |
+
+---
+
+## Best Practices
+
+- **Give teammates enough context** — they don't inherit conversation history. The spawn `prompt` must be self-contained: include file paths, requirements, constraints, and project conventions.
+- **Size tasks appropriately** — too small = coordination overhead exceeds benefit; too large = work too long without check-ins. Aim for self-contained units producing clear deliverables, roughly 5-6 tasks per teammate.
+- **Wait for teammates to finish** — leads sometimes start implementing work that teammates are handling. If you notice this, redirect yourself to monitoring and coordination.
+- **Start with research and review** — for first-time team use, prefer tasks with clear boundaries that don't require code changes: reviewing PRs, researching libraries, investigating bugs.
+- **Monitor and steer** — check progress via `TaskList`, redirect failing approaches, synthesize findings. Unattended teams risk wasted effort.
+- **Avoid file conflicts** — break work so each teammate owns different files. Agents with `isolation: worktree` (test-writer, refactorer, doc-writer, migrator) get automatic file isolation via git worktrees.
+
+---
+
+## Limitations
+
+- **No session resumption** — `/resume` does not restore in-process teammates. Plan team work to complete in one session.
+- **Task status can lag** — teammates sometimes fail to mark tasks complete. Use `TaskList` to verify and `SendMessage` to prompt updates.
+- **One team per session** — clean up the current team (`TeamDelete`) before starting a new one.
+- **No nested teams** — teammates cannot create teams (TeamCreate/TeamDelete are disallowed for team members).
+- **Lead is fixed** — leadership cannot be promoted or transferred during a session.
+- **Permissions set at spawn** — all teammates inherit the lead's permission mode at spawn time.
+- **Split panes require tmux or iTerm2** — in-process mode uses the terminal; external split-pane workflows need tmux or iTerm2 with `it2` CLI.
 
 ---
 

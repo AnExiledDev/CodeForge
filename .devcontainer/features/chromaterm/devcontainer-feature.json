@@ -1,0 +1,23 @@
+{
+  "id": "chromaterm",
+  "version": "1.0.0",
+  "name": "ChromaTerm - Terminal Output Colorizer",
+  "description": "Installs ChromaTerm2 for regex-based CLI output colorization via YAML rules",
+  "maintainer": "AnExiledDev",
+  "documentationURL": "https://github.com/rgcr/ChromaTerm2",
+  "options": {
+    "version": {
+      "type": "string",
+      "description": "ChromaTerm2 version to install (e.g., 'latest', '2.1.0', 'none' to skip)",
+      "default": "latest"
+    },
+    "username": {
+      "type": "string",
+      "description": "Container user to install for",
+      "default": "automatic"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers-extra/features/uv"
+  ]
+}

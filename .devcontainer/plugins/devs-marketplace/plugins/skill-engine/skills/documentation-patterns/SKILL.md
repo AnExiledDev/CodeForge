@@ -1,12 +1,13 @@
 ---
 name: documentation-patterns
 description: >-
-  This skill should be used when the user asks to "write a README",
-  "write documentation", "add docstrings", "add JSDoc", "document the API",
-  "create architecture docs", "documentation template", "update the docs",
-  or discusses docstring formats, README structure, API documentation,
-  inline comments, or technical writing patterns.
-version: 0.1.0
+  Guides documentation authoring including README structure, docstring formats,
+  API references, and architecture docs. USE WHEN the user asks to "write a
+  README", "add docstrings", "add JSDoc", "document the API", "create
+  architecture docs", "write documentation", "update the docs", or works with
+  Google-style docstrings, Sphinx, rustdoc, TSDoc, OpenAPI annotations.
+  DO NOT USE for writing code, fixing bugs, or generating changelogs.
+version: 0.2.0
 ---
 
 # Documentation Patterns

@@ -66,13 +66,13 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 `claude`, `cc` (wrapper), `ccw` (writing mode wrapper), `ccusage`, `ccburn`, `ccstatusline`, `claude-monitor`
 
-### Custom Features (18)
+### Custom Features (21)
 
-tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant
+tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo, claude-session-dashboard
 
-### Agents (17) & Skills (28)
+### Agents (17) & Skills (34)
 
-The `code-directive` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.) and 28 domain-specific coding reference skills (fastapi, svelte5, docker, testing, spec-workflow, security-checklist, etc.).
+The `agent-system` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 21 general coding skills, `spec-workflow` adds 8 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills.
 
 ## Quick Start
 
@@ -102,7 +102,7 @@ npm publish
 
 ## Changelog
 
-See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **1.12.0** (2026-02-18).
+See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **1.14.0** (2026-02-23).
 
 ## Further Reading
 

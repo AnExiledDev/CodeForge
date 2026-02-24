@@ -8,10 +8,12 @@ description: >-
   "spec this feature", "write user stories", "define the behavior of",
   "create a technical specification", or needs structured requirements,
   acceptance criteria, or feature specifications grounded in the actual
-  codebase state.
+  codebase state. Do not use for code implementation or writing
+  executable code — specification authoring only.
 tools: Read, Glob, Grep, WebSearch
 model: opus
 color: magenta
+permissionMode: plan
 memory:
   scope: user
 skills:

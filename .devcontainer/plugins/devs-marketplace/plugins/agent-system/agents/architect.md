@@ -7,10 +7,12 @@ description: >-
   "how should we architect", "what's the best strategy for", "create an
   implementation plan", or needs step-by-step plans, dependency analysis,
   risk assessment, or architectural decision-making. Returns structured
-  plans with critical file paths and never modifies any files.
+  plans with critical file paths and never modifies any files. Do not
+  use for implementation, code generation, or file modifications.
 tools: Read, Glob, Grep, Bash, WebSearch, WebFetch
 model: opus
 color: magenta
+permissionMode: plan
 memory:
   scope: project
 skills:

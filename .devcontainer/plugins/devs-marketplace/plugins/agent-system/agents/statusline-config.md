@@ -5,10 +5,13 @@ description: >-
   status line setting. Use when the user asks "set up my status line", "convert
   my PS1", "customize the status bar", "show git branch in status line",
   "add context usage to status line", or wants to configure what appears in
-  Claude Code's bottom status bar. Can read shell configs and write settings.
+  Claude Code's bottom status bar. Can read shell configs and write
+  settings. Do not use for general Claude Code settings, non-status-line
+  configuration, or shell profile modifications.
 tools: Read, Edit
 model: sonnet
 color: orange
+permissionMode: acceptEdits
 memory:
   scope: user
 ---

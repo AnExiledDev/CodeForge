@@ -1,13 +1,16 @@
 ---
 name: spec-refine
 description: >-
-  This skill should be used when the user asks to "refine a spec",
-  "review spec assumptions", "validate spec decisions", "question the
-  spec", "iterate on the spec", "check spec for assumptions", "approve
-  the spec", "walk me through the spec", or needs iterative
-  user-driven refinement of a specification through structured
-  questioning rounds.
-version: 0.1.0
+  Guides iterative user-driven spec refinement through structured
+  questioning rounds that validate assumptions, tech decisions, and scope
+  boundaries. USE WHEN the user asks to "refine the spec", "review spec
+  assumptions", "validate spec decisions", "approve the spec", "walk me
+  through the spec", "check spec for assumptions", "iterate on the spec",
+  or works with [assumed] requirements needing user-approved upgrade.
+  DO NOT USE for creating new specs (use spec-new) or for post-
+  implementation updates (use spec-update).
+version: 0.2.0
+argument-hint: "[spec-path]"
 ---
 
 # Iterative Spec Refinement

@@ -24,9 +24,11 @@ This directory contains DevContainer Features for AI coding agent environments. 
 | `ccms` | Claude Code session history search | ✅ |
 | `notify-hook` | Desktop notifications on Claude completion | ✅ |
 | `mcp-qdrant` | Qdrant vector database MCP server | ✅ (optional) |
-| `claude-code` | Fallback config for Anthropic's official Claude Code feature | ✅ (config only) |
+| `chromaterm` | Terminal output colorizer via ChromaTerm2 YAML rules | ✅ |
+| `kitty-terminfo` | xterm-kitty terminfo for Kitty terminal compatibility | ✅ |
+| `claude-session-dashboard` | Local analytics dashboard for Claude Code sessions | ✅ |
 
-> **Note**: Claude Code itself is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1` (Anthropic's official feature). The local `claude-code/` directory provides only fallback configuration.
+> **Note**: Claude Code itself is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1` (Anthropic's official feature).
 
 ## Feature Structure
 
@@ -63,17 +65,29 @@ To test a feature locally before publishing:
 }
 ```
 
-### Publishing Features
+### Using Features from GitHub
 
-Features will be published to GitHub Container Registry (GHCR):
+Features are published to GitHub Container Registry (GHCR) from the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
 
 ```
-ghcr.io/yourorg/codeforge-features/feature-name:1
+ghcr.io/anexileddev/codeforge/<feature-name>:<version>
 ```
 
-**Publishing workflow** (future):
-- Push to main branch
-- GitHub Actions builds and publishes
+To use a feature in your own `devcontainer.json`:
+
+```json
+{
+  "features": {
+    "ghcr.io/anexileddev/codeforge/<feature-name>:1": {
+      "option1": "value1"
+    }
+  }
+}
+```
+
+**Publishing workflow:**
+- Push to main branch triggers GitHub Actions
+- Actions build and publish features to GHCR
 - Tags create versioned releases
 
 ## Feature Guidelines
@@ -123,4 +137,4 @@ Features are part of the CodeForge project. See main repository for contribution
 ---
 
 **Status**: Active Development
-**Last Updated**: 2026-02-08
+**Last Updated**: 2026-02-23

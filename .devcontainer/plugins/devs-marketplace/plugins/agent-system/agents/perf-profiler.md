@@ -8,10 +8,13 @@ description: >-
   "measure performance", "optimize the build", "check response times",
   "profile the database queries", "find memory leaks", or needs any
   performance measurement, bottleneck identification, or optimization
-  guidance backed by profiling data.
+  guidance backed by profiling data. Do not use for implementing
+  optimizations or modifying code — measurement and analysis only.
 tools: Read, Bash, Glob, Grep
 model: sonnet
 color: yellow
+permissionMode: plan
+background: true
 memory:
   scope: project
 skills:

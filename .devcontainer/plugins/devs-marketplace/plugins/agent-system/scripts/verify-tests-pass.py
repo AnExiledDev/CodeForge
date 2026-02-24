@@ -136,12 +136,7 @@ def main():
             timeout=60,
         )
     except subprocess.TimeoutExpired:
-        json.dump(
-            {
-                "additionalContext": f"[Tests] {framework} timed out after 60s. Consider running tests manually."
-            },
-            sys.stdout,
-        )
+        print(f"Tests timed out ({framework})", file=sys.stderr)
         sys.exit(2)
     except FileNotFoundError:
         # Test runner not installed — non-critical
@@ -159,16 +154,9 @@ def main():
         output = "...(truncated)\n" + "\n".join(lines[-50:])
 
     if result.returncode != 0:
-        json.dump(
-            {"error": f"Tests failed ({framework}):\n{output}"},
-            sys.stdout,
-        )
+        print(f"Tests failed ({framework}):\n{output}", file=sys.stderr)
         sys.exit(2)
 
-    json.dump(
-        {"additionalContext": f"[Tests] All tests passed ({framework})"},
-        sys.stdout,
-    )
     sys.exit(0)
 
 

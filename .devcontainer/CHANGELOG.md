@@ -1,8 +1,125 @@
 # CodeForge Devcontainer Changelog
 
-## [v1.13.0] - 2026-02-21
+## [v1.14.0] - 2026-02-24
 
-Claude Code is an idiot sandwich and ignored my instructions and workspace scope because it's a god damned idiot.
+### Added
+
+#### Nuclear Workspace Scope Enforcement
+- **Blacklist system** — `/workspaces/.devcontainer/` permanently blocked for ALL operations (read, write, bash). Checked before allowlist, scope check, and cwd bypass. Cannot be overridden, even from workspace root
+- **Bash enforcement** — two-layer detection in `guard-workspace-scope.py`:
+  - Layer 1: 20+ regex patterns extract write targets (`>`, `tee`, `cp`, `mv`, `touch`, `mkdir`, `rm`, `ln`, `rsync`, `chmod`, `chown`, `dd`, `wget -O`, `curl -o`, `tar -C`, `unzip -d`, `gcc -o`, `sqlite3`). System command exemption only when ALL targets resolve to system paths
+  - Layer 2: regex scans entire command for any `/workspaces/` path string — catches inline scripts, variable assignments, quoted paths. No exemptions, always runs
+- **CWD context injector** (`inject-workspace-cwd.py`) — fires on SessionStart, UserPromptSubmit, PreToolUse, SubagentStart to reinforce working directory scope
+- **Fail-closed error handling** — JSON parse errors, exceptions, and unknown tools now exit 2 (block) instead of exit 0 (allow)
+
+#### Agent System Enhancements
+- **`task-completed-check.py`** — quality gate hook (TaskCompleted) runs test suite before allowing task completion
+- **`teammate-idle-check.py`** — quality gate hook (TeammateIdle) prevents teammates from going idle with incomplete tasks
+- **`skills/debug/SKILL.md`** — structured log investigation skill replacing the old `/debug` slash command
+- **`permissionMode`** declared on all 17 agent definitions (plan for read-only, default for write-capable)
+- **Agent-system README** — full plugin documentation with hook lifecycle, agent table, quality gates
+
+#### Skill Engine Enhancements
+- **6 new skill matchers** in `skill-suggester.py`: `spec-check`, `spec-init`, `spec-new`, `spec-refine`, `spec-update`, `team`
+- **Team skill expanded** (v0.2.0) — quality gate hooks, plan approval workflow, keyboard shortcuts, use case examples, best practices, limitations
+- **Skill-engine README** — full plugin documentation
+
+#### New Features
+- **chromaterm** — terminal output colorizer via ChromaTerm2 YAML rules
+- **kitty-terminfo** — xterm-kitty terminfo for Kitty terminal compatibility
+
+#### Documentation Site
+- **Astro/Starlight docs** (`docs/`) — full documentation portal with getting-started guides, plugin reference (12 pages), feature docs, customization, and API reference
+- **GitHub Actions** — `deploy-docs.yml` (docs deployment), `publish-features.yml` (GHCR feature publishing), `release.yml` (release workflow)
+- **Logos** — CodeForgeLogo.png, CodeForgeLogoTr.png, github-avatar.png
+
+#### Plugin Installation Documentation
+- **Remote install instructions** added to all 11 plugin READMEs — "From GitHub" section with clone + enabledPlugins setup from `https://github.com/AnExiledDev/CodeForge`
+- **GHCR feature paths** — features README updated with `ghcr.io/anexileddev/codeforge/<feature-name>:<version>` and devcontainer.json usage examples
+- **READMEs added** to session-context, skill-engine, spec-workflow plugins
+- **Install sections added** to workspace-scope-guard, codeforge-lsp, dangerous-command-blocker, protected-files-guard, notify-hook, ticket-workflow
+
+#### Other
+- **Marketplace metadata** — `marketplace.json` restructured with `metadata` object, `pluginRoot`, and `keywords` arrays for all plugins
+- **Port forwarding** for Claude Dashboard (port 7847) in devcontainer.json
+- **ChromaTerm wrapper** in setup-aliases.sh — `cc`/`claude`/`ccw` aliases pipe through `ct` when available
+- **`package.json` scripts** — added `prepublishOnly`, `docs:dev`, `docs:build`, `docs:preview`
+
+#### ccstatusline Config Externalization
+- **Widget config extracted** from inline `jq -n` generation in `install.sh` into `config/defaults/ccstatusline-settings.json` — editable JSON file, single source of truth
+- **File-manifest deployment** — two new entries deploy the config to `~/.config/ccstatusline/settings.json` (if-changed) and `/usr/local/share/ccstatusline/settings.template.json` (always)
+- **`${HOME}` variable expansion** added to `setup-config.sh` — enables manifest entries targeting user home directory paths
+
+#### Development Rules
+- **CLAUDE.md** (project root) — added changelog and documentation update rules: all changes must have a changelog entry and update relevant docs
+
+### Changed
+
+#### ccstatusline Feature
+- `install.sh` simplified — removed ~90 lines of inline JSON config generation, validation, and template creation. Config deployment now handled by file-manifest system
+
+#### Workspace Scope Guard
+- Reads (Read, Glob, Grep) now **hard-blocked** outside scope — upgraded from warning (exit 0) to block (exit 2)
+- Allowlist trimmed to `/workspaces/.claude/` and `/tmp/` only — removed `/workspaces/.devcontainer/`, `/workspaces/.tmp/`, `/home/vscode/`
+- Hook timeout increased from 5s to 10s
+- Matcher expanded to include Bash tool
+
+#### Hook Output Schema Migration
+- All hooks migrated to `hookSpecificOutput` wrapper with explicit `hookEventName`
+- `commit-reminder.py` — upgraded from advisory to blocking (`decision: block`)
+- `spec-reminder.py` — upgraded from advisory to blocking (`decision: block`)
+- `advisory-test-runner.py` — test failures now block with `decision: block`; passes/timeouts use `systemMessage`
+- `ticket-linker.py` — output wrapped in `hookSpecificOutput`
+- `git-state-injector.py`, `todo-harvester.py` — output wrapped in `hookSpecificOutput`
+
+#### Ticket Workflow
+- Migrated from slash commands to skill-based approach — 4 slash commands and system-prompt.md replaced by skills directory
+
+#### Skill Definitions
+- All 21+ SKILL.md files rewritten with USE WHEN / DO NOT USE guidance, action-oriented descriptions, bumped to v0.2.0
+- `skill-suggester.py` keyword maps overhauled with natural phrases and concrete identifiers
+- Skill suggestion output changed to mandatory directive format
+- SubagentStart hook removed — suggestions now fire on UserPromptSubmit only
+
+#### Error Output
+- `block-dangerous.py` — errors now written to stderr (was JSON on stdout)
+- `guard-protected.py`, `guard-protected-bash.py` — errors now written to stderr
+
+#### Features
+- `ccstatusline` — compact 3-line layout (was 8-line), `rawValue: true` on token widgets
+- `claude-session-dashboard` — default port 3000 → 7847, `--host 0.0.0.0` for external access
+- `ccms` — build cache moved from `.devcontainer/.build-cache/` to `${TMPDIR:-/tmp}/ccms-build-cache`
+
+#### Configuration
+- `CLAUDE.md` (devcontainer) — condensed from ~308 to ~90 lines, removed redundant sections
+- `spec-workflow.md` rule — condensed, defers to system prompt `<specification_management>` section
+- `main-system-prompt.md` — expanded Agent Teams guidance: file ownership, task sizing, quality gate hooks, plan approval
+- Plugin `plugin.json` files — `version` field removed across all plugins
+
+### Fixed
+- Stale references to deleted features (mcp-reasoner, splitrail, claude-code) removed from docs
+- Documentation counts updated (features: 21, agents: 17, skills: 34)
+- Version mismatch in README.md corrected
+- Auto-formatter/auto-linter references consolidated to auto-code-quality throughout
+- Code-directive plugin references updated to agent-system, skill-engine, spec-workflow
+- Personal project paths removed from .gitignore and .npmignore
+- setup.js stale feature references fixed (Reasoner MCP, Go → Rust)
+- `.secrets` added to .npmignore for npm publish safety
+- Duplicate "### Fixed" header in v1.5.3 changelog entry
+- NVM sourcing added to biome install script
+- Cleanup trap added to shellcheck install script
+
+### Removed
+- **`auto-formatter` plugin** — deleted entirely (consolidated into auto-code-quality)
+- **`auto-linter` plugin** — deleted entirely (consolidated into auto-code-quality)
+- **`/debug` slash command** from agent-system (replaced by debug skill)
+- **4 ticket-workflow slash commands** (`ticket:new`, `ticket:work`, `ticket:review-commit`, `ticket:create-pr`) and `system-prompt.md` (replaced by skills)
+- **Optional features docs** for mcp-reasoner and splitrail (features no longer exist)
+- **SubagentStart hook** from skill-engine (suggestion now UserPromptSubmit only)
+
+---
+
+## [v1.13.0] - 2026-02-21
 
 ### Fixed
 
@@ -487,8 +604,6 @@ Claude Code is an idiot sandwich and ignored my instructions and workspace scope
 
 - **ccstatusline powerline glyphs**: Powerline separators/caps were empty strings, rendering as underscores. Now uses proper Nerd Font glyphs (U+E0B0, U+E0B4, U+E0B6)
 - **Unicode rendering in external terminals**: tmux rendered ALL Unicode as underscores because `docker exec` doesn't propagate locale vars. External terminal scripts now pass `LANG`/`LC_ALL=en_US.UTF-8` and use `tmux -u` to force UTF-8 mode. Locale exports also added to `.bashrc`/`.zshrc` as permanent fallback
-
-### Fixed
 
 - **cc/claude aliases**: Converted from shell functions to simple aliases — functions were not reliably invoked across shell contexts (tmux, docker exec, external terminals), causing Claude to launch without config
 - **CLAUDE_CONFIG_DIR export**: Now exported in `.bashrc`/`.zshrc` directly, so credentials are found in all shells (not just VS Code terminals where `remoteEnv` applies)

@@ -20,7 +20,6 @@
 		],
 		"Stop": [
 			{
-				"matcher": "",
 				"hooks": [
 					{
 						"type": "command",
@@ -31,6 +30,11 @@
 						"type": "command",
 						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lint-file.py",
 						"timeout": 60
+					},
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/advisory-test-runner.py",
+						"timeout": 20
 					}
 				]
 			}

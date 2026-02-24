@@ -9,10 +9,13 @@ description: >-
   on Claude Code features, hooks, slash commands, skills, plugins, IDE
   integrations, keyboard shortcuts, Agent SDK setup, or API usage. Before
   spawning a new instance, check if there is already a running or recently
-  completed claude-guide agent that you can resume using the "resume" parameter.
+  completed claude-guide agent that you can resume using the "resume"
+  parameter. Do not use for code implementation, file modifications, or
+  questions unrelated to Claude Code, Agent SDK, or the Claude API.
 tools: Glob, Grep, Read, WebFetch, WebSearch
 model: haiku
 color: cyan
+permissionMode: plan
 memory:
   scope: user
 skills:

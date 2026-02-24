@@ -66,6 +66,34 @@ The Bash guard parses commands for write-indicating patterns and extracts the ta
 
 Both hooks have a 5-second timeout.
 
+## Installation
+
+### CodeForge DevContainer
+
+Pre-installed and activated automatically — no setup needed.
+
+### From GitHub
+
+Use this plugin in any Claude Code setup:
+
+1. Clone the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
+
+   ```bash
+   git clone https://github.com/AnExiledDev/CodeForge.git
+   ```
+
+2. Enable the plugin in your `.claude/settings.json`:
+
+   ```json
+   {
+     "enabledPlugins": {
+       "protected-files-guard@<clone-path>/.devcontainer/plugins/devs-marketplace": true
+     }
+   }
+   ```
+
+   Replace `<clone-path>` with the absolute path to your CodeForge clone.
+
 ## Plugin Structure
 
 ```

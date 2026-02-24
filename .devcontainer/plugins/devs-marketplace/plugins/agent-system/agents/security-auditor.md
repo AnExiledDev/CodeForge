@@ -8,10 +8,13 @@ description: >-
   "find hardcoded credentials", "check dependency vulnerabilities", "OWASP
   review", "security check", or needs a security assessment of any code.
   Reports findings with severity ratings and remediation guidance without
-  modifying any files.
+  modifying any files. Do not use for fixing vulnerabilities or
+  implementing security changes — audit and reporting only.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 color: red
+permissionMode: plan
+background: true
 memory:
   scope: user
 skills:

@@ -1,7 +1,27 @@
-# Workspace
+# CodeForge
 
-This workspace contains multiple independent projects under `/workspaces/`.
-Each project is its own codebase. Stay within the current project directory
-unless explicitly asked to work across projects.
+DevContainer configuration project for AI-assisted development with Claude Code.
 
-Do not explore, modify, or reference sibling project directories.
+See `.devcontainer/CLAUDE.md` for full devcontainer documentation.
+
+## Development Rules
+
+### Changelog
+
+Every change MUST have a corresponding entry in `.devcontainer/CHANGELOG.md`.
+
+- New features, enhancements, fixes, and removals each get their own bullet
+- Group related changes under the appropriate `### Added`, `### Changed`, `### Fixed`, or `### Removed` heading
+- Use sub-headings (`####`) to organize by area (e.g., Workspace Scope Guard, Features, Configuration)
+- If an unreleased version section doesn't exist, add changes to the current version's section
+- Write entries from the user's perspective — what changed, not how it was implemented
+
+### Documentation
+
+All user-facing changes MUST be reflected in documentation:
+
+- **Plugin changes** → update the plugin's `README.md`
+- **Feature changes** → update `features/README.md` and the feature's `devcontainer-feature.json` if applicable
+- **Config system changes** → update `.devcontainer/CLAUDE.md`
+- **New config files in `config/defaults/`** → add entry to `config/file-manifest.json`
+- **Docs site** → update relevant pages in `docs/` if the docs site exists

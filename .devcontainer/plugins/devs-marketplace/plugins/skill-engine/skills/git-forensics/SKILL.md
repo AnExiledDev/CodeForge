@@ -1,14 +1,16 @@
 ---
 name: git-forensics
 description: >-
-  This skill should be used when the user asks to "find who changed this line",
-  "search git history for a deleted function", "bisect a regression",
-  "recover a lost commit", "investigate when a bug was introduced",
-  "trace the history of a file", "search commit messages",
-  "find when code was removed", "check git blame", "use git reflog",
-  or discusses git archaeology, git bisect, git log search, pickaxe,
-  blame analysis, reflog recovery, or commit history investigation.
-version: 0.1.0
+  Provides git history investigation techniques including blame analysis,
+  bisect workflows, pickaxe search, and reflog recovery for tracing code
+  changes and recovering lost work. USE WHEN the user asks to "find who
+  changed this line", "bisect a regression", "recover a lost commit",
+  "search git history", "find when code was removed", "check git blame",
+  "use git reflog", or "trace the history of a file", or works with git
+  log -S, git bisect run, or .git-blame-ignore-revs. DO NOT USE for
+  routine git operations like committing, branching, or merging.
+version: 0.2.0
+allowed-tools: Bash, Read, Grep
 ---
 
 # Git Forensics

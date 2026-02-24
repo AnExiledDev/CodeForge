@@ -7,10 +7,13 @@ description: >-
   "write tests for", "add tests", "increase test coverage", "create unit tests",
   "add integration tests", "test this function", "test this module", or needs
   automated test coverage for any code. Supports pytest, Vitest, Jest, Go
-  testing, and Rust test frameworks.
+  testing, and Rust test frameworks. Do not use for modifying
+  application source code, fixing bugs, or implementing features.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: green
+permissionMode: acceptEdits
+isolation: worktree
 memory:
   scope: project
 skills:

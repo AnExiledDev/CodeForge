@@ -1,7 +1,0 @@
-{
-  "name": "auto-linter",
-  "description": "Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)",
-  "author": {
-    "name": "AnExiledDev"
-  }
-}

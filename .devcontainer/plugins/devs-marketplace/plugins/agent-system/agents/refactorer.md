@@ -7,10 +7,14 @@ description: >-
   asks "refactor this", "clean up this code", "reduce complexity", "split this
   class", "extract this function", "remove duplication", "simplify this module",
   or discusses code smells, technical debt, or structural improvements.
-  Runs tests after every edit to guarantee safety.
+  Runs tests after every edit to guarantee safety. Do not use for
+  adding new features, fixing bugs, or making behavioral changes to
+  code.
 tools: Read, Edit, Glob, Grep, Bash
 model: opus
 color: yellow
+permissionMode: acceptEdits
+isolation: worktree
 memory:
   scope: project
 skills:

@@ -3,7 +3,6 @@
 	"hooks": {
 		"UserPromptSubmit": [
 			{
-				"matcher": "*",
 				"hooks": [
 					{
 						"type": "command",

@@ -178,7 +178,10 @@ def main():
         # Timeout is non-critical for PostToolUse — don't block the agent
         json.dump(
             {
-                "additionalContext": f"[Tests] {framework} timed out after 60s — skipping regression check."
+                "hookSpecificOutput": {
+                    "hookEventName": "PostToolUse",
+                    "additionalContext": f"[Tests] {framework} timed out after 60s — skipping regression check.",
+                }
             },
             sys.stdout,
         )
@@ -199,19 +202,20 @@ def main():
 
     if result.returncode != 0:
         edited = os.path.basename(file_path)
-        json.dump(
-            {
-                "error": (
-                    f"Regression detected after editing {edited} "
-                    f"({framework}). Fix the failing tests before continuing:\n{output}"
-                )
-            },
-            sys.stdout,
+        print(
+            f"Regression detected after editing {edited} "
+            f"({framework}). Fix the failing tests before continuing:\n{output}",
+            file=sys.stderr,
         )
         sys.exit(2)
 
     json.dump(
-        {"additionalContext": f"[Tests] No regression ({framework}): all tests passed"},
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "PostToolUse",
+                "additionalContext": f"[Tests] No regression ({framework}): all tests passed",
+            }
+        },
         sys.stdout,
     )
     sys.exit(0)

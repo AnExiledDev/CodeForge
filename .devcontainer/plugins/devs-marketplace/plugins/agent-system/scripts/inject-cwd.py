@@ -23,10 +23,13 @@ def main():
 
     json.dump(
         {
-            "additionalContext": (
-                f"Working Directory: {cwd} — restrict all file operations to "
-                f"this directory unless explicitly instructed otherwise."
-            )
+            "hookSpecificOutput": {
+                "hookEventName": "SubagentStart",
+                "additionalContext": (
+                    f"Working Directory: {cwd} — restrict all file operations to "
+                    f"this directory unless explicitly instructed otherwise."
+                ),
+            }
         },
         sys.stdout,
     )

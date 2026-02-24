@@ -8,10 +8,12 @@ description: >-
   "what files contain", or needs quick file discovery, pattern matching,
   or codebase navigation. Supports thoroughness levels: quick, medium,
   very thorough. Reports findings with absolute file paths and never
-  modifies any files.
+  modifies any files. Do not use for code modifications, multi-step
+  research requiring web access, or implementation tasks.
 tools: Read, Glob, Grep, Bash
 model: haiku
 color: blue
+permissionMode: plan
 memory:
   scope: project
 skills:

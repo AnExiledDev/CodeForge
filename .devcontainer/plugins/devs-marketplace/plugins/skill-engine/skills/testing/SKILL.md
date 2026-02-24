@@ -1,13 +1,16 @@
 ---
 name: testing
 description: >-
-  This skill should be used when the user asks to "write tests for a FastAPI endpoint",
-  "test a Svelte component", "set up pytest fixtures for FastAPI",
-  "configure Vitest for SvelteKit", "mock dependencies in FastAPI tests",
-  "test SSE streaming endpoints", "write component tests with Testing Library",
-  "set up database fixtures for API tests", or discusses pytest, httpx AsyncClient,
-  Vitest, @testing-library/svelte, dependency overrides, or test fixtures.
-version: 0.1.0
+  Provides testing patterns for FastAPI endpoints and Svelte 5 components
+  using pytest and Vitest. USE WHEN the user asks to "write tests for a
+  FastAPI endpoint", "test a Svelte component", "set up pytest fixtures",
+  "configure Vitest for SvelteKit", "mock dependencies in tests", "test SSE
+  streaming endpoints", or works with pytest, httpx AsyncClient, Vitest,
+  @testing-library/svelte, MSW, pytest-anyio. DO NOT USE for general testing
+  theory unrelated to FastAPI or Svelte.
+version: 0.2.0
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep
+argument-hint: "[file or module]"
 ---
 
 # Testing (FastAPI + Svelte)

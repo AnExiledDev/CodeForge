@@ -9,7 +9,8 @@ Injects an advisory reminder as additionalContext pointing the user to
 Only fires when a .specs/ directory exists (project uses the spec system).
 
 Reads hook input from stdin (JSON). Returns JSON on stdout.
-Always exits 0 (advisory, never blocking).
+Blocks with decision/reason so Claude addresses the spec gap
+before finishing. The stop_hook_active guard prevents infinite loops.
 """
 
 import json
@@ -115,7 +116,7 @@ def main():
         "or /spec-refine if the spec is still in draft status."
     )
 
-    json.dump({"additionalContext": message}, sys.stdout)
+    json.dump({"decision": "block", "reason": message}, sys.stdout)
     sys.exit(0)
 
 

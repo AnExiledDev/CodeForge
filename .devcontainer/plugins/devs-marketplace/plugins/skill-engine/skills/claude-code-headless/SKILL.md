@@ -1,15 +1,14 @@
 ---
 name: claude-code-headless
 description: >-
-  This skill should be used when the user asks to "run Claude Code in headless mode",
-  "use claude -p for automation", "parse stream-json output from Claude Code",
-  "use the Claude Agent SDK", "run Claude Code in CI/CD",
-  "configure MCP servers for headless Claude",
-  "set up Claude Code permissions for scripts",
-  "track Claude Code costs programmatically", or discusses Claude Code
-  print mode, non-interactive pipelines, SDK integration in TypeScript or Python,
-  structured output with json-schema, or session management for automation.
-version: 0.1.0
+  Guides non-interactive Claude Code usage via the -p flag, stream-json output
+  parsing, and CI/CD pipeline integration. USE WHEN the user asks to "run
+  Claude Code in headless mode", "use claude -p for automation", "parse
+  stream-json output", "run Claude Code in CI/CD", "track costs
+  programmatically", "set up permissions for scripts", or works with
+  --output-format stream-json, --permission-mode, --json-schema, --resume.
+  DO NOT USE for the TypeScript SDK API — use claude-agent-sdk instead.
+version: 0.2.0
 ---
 
 # Claude Code Headless

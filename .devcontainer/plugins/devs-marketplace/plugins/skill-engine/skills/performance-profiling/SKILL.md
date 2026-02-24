@@ -1,14 +1,16 @@
 ---
 name: performance-profiling
 description: >-
-  This skill should be used when the user asks to "profile this code",
-  "find the bottleneck", "optimize performance", "measure execution time",
-  "check memory usage", "create a flamegraph", "benchmark this function",
-  "find memory leaks", "reduce latency", "run a performance test",
-  or discusses profiling tools, flamegraphs, benchmarking methodology,
-  cProfile, py-spy, scalene, Chrome DevTools performance,
-  memory profiling, or hot path analysis.
-version: 0.1.0
+  Guides measure-first performance investigation using CPU profilers, memory
+  analyzers, flamegraphs, and reproducible benchmarking across Python and
+  Node.js. USE WHEN the user asks to "profile this code", "find the
+  bottleneck", "create a flamegraph", "benchmark this function", "find
+  memory leaks", "check memory usage", "reduce latency", or "measure
+  execution time", or works with cProfile, py-spy, scalene, clinic.js,
+  Chrome DevTools, hyperfine, or pytest-benchmark. DO NOT USE for security
+  auditing, dependency management, or code refactoring.
+version: 0.2.0
+allowed-tools: Bash, Read, Glob, Grep
 ---
 
 # Performance Profiling
