@@ -1,10 +1,14 @@
 ---
 name: spec-init
 description: >-
-  This skill should be used when the user asks to "initialize specs",
-  "set up specs", "bootstrap specs", "start using specs", "create spec
-  directory", "init specs for this project", or needs to set up the
-  .specs/ directory structure for a project that doesn't have one yet.
+  Bootstraps the .specs/ directory structure for a project, creating
+  MILESTONES.md and BACKLOG.md from starter templates so spec-new has
+  a home. USE WHEN the user asks to "initialize specs", "set up specs",
+  "bootstrap specs", "start using specs", "create spec directory",
+  "init specs for this project", "set up .specs", or works with first-
+  time specification setup and project onboarding.
+  DO NOT USE if .specs/ already exists — use spec-check to audit health
+  or spec-new to add individual specs.
 version: 0.2.0
 ---
 

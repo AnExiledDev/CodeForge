@@ -14,7 +14,7 @@
     "port": {
       "type": "string",
       "description": "Default port for the dashboard server",
-      "default": "3000"
+      "default": "7847"
     },
     "shells": {
       "type": "string",

@@ -1,0 +1,31 @@
+---
+/* Terminal-style install command display. Self-contained, no props needed. */
+---
+
+<div class="terminal-frame install-terminal">
+	<div class="terminal-frame__header">
+		<span class="terminal-frame__dot" style="background: #ef4444;"></span>
+		<span class="terminal-frame__dot" style="background: #eab308;"></span>
+		<span class="terminal-frame__dot" style="background: #22c55e;"></span>
+	</div>
+	<div class="terminal-frame__body">
+		<span class="install-terminal__prompt">$</span>
+		<span class="install-terminal__command"> npx codeforge-dev</span><span class="typing-cursor"></span>
+	</div>
+</div>
+
+<style>
+	.install-terminal {
+		max-width: 440px;
+		margin: 0 auto;
+	}
+
+	.install-terminal__prompt {
+		color: var(--color-ember-400);
+		user-select: none;
+	}
+
+	.install-terminal__command {
+		color: var(--color-charcoal-100);
+	}
+</style>

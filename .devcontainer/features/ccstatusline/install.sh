@@ -66,105 +66,16 @@ else
     echo "[ccstatusline] ccstatusline will be cached on first use via npx"
 fi
 
-echo "[ccstatusline] Generating powerline configuration..."
+# Widget config is managed by file-manifest.json (deployed by setup-config.sh)
+# Source: .devcontainer/config/defaults/ccstatusline-settings.json
+# Deployed to: ~/.config/ccstatusline/settings.json (if-changed)
+# Template:    /usr/local/share/ccstatusline/settings.template.json (always)
+echo "[ccstatusline] Widget config managed by file-manifest.json"
 
-# Generate powerline configuration using jq (ANSI colors - same as module)
-# 6-line layout with session resume command and ccburn burn rate tracking
-CONFIG_JSON=$(jq -n '{
-    version: 3,
-    lines: [
-        [
-            {id: "1", type: "context-length", color: "cyan"},
-            {id: "db519d5a-80a7-4b44-8a9c-2c7d8c0a7176", type: "context-percentage-usable", backgroundColor: "bgRed"},
-            {id: "d904cca6-ade8-41c1-a4f5-ddea30607a5e", type: "model", backgroundColor: "bgMagenta"}
-        ],
-        [
-            {id: "5", type: "tokens-input", color: "magenta"},
-            {id: "ac094d46-3673-4d41-84e3-dc8c5bcf639f", type: "tokens-output", backgroundColor: "bgMagenta"},
-            {id: "2ad12147-05fd-45fb-8336-53ba2e7df56c", type: "tokens-cached", backgroundColor: "bgBrightRed"}
-        ],
-        [
-            {id: "3", type: "git-branch", color: "brightBlack"},
-            {id: "a529e50e-b9f3-4150-a812-937ab81545e8", type: "git-changes", backgroundColor: "bgBrightBlue"},
-            {id: "a9eaae3f-7f91-459c-833a-fbc9f01a09ae", type: "git-worktree", backgroundColor: "bgBrightBlue"}
-        ],
-        [
-            {id: "7", type: "session-clock", color: "yellow"},
-            {id: "a4fe7f75-2f6c-49c7-88f6-ac7381142c2c", type: "session-cost", backgroundColor: "bgBrightWhite"},
-            {id: "90aae111-3d3f-4bb0-8336-230f322cc2e8", type: "block-timer", backgroundColor: "bgYellow"}
-        ],
-        [
-            {id: "9bacbdb4-2e01-45de-a0c0-ee6ec30fa3c2", type: "tokens-total", backgroundColor: "bgGreen"},
-            {id: "2cdff909-8297-44a1-83f9-ad4bf024391e", type: "version", backgroundColor: "bgRed"}
-        ],
-        [
-            {id: "cc-resume-session", type: "custom-command", commandPath: "/usr/local/bin/ccstatusline-session-resume", timeout: 500, preserveColors: false, maxWidth: 50, color: "cyan", backgroundColor: "bgBrightBlack"}
-        ],
-        [
-            {id: "cc-cwd", type: "custom-command", commandPath: "/usr/local/bin/ccstatusline-cwd", timeout: 500, preserveColors: false, maxWidth: 40, color: "brightWhite", backgroundColor: "bgBrightBlack"}
-        ],
-        [
-            {id: "ccburn-compact", type: "custom-command", commandPath: "/usr/local/bin/ccburn-statusline", timeout: 8000, preserveColors: true, maxWidth: 80, color: "green", backgroundColor: "bgBlack"}
-        ]
-    ],
-    flexMode: "full-minus-40",
-    compactThreshold: 60,
-    colorLevel: 2,
-    inheritSeparatorColors: false,
-    globalBold: false,
-    powerline: {
-        enabled: true,
-        separators: ["\ue0b0"],
-        separatorInvertBackground: [false],
-        startCaps: ["\ue0b6"],
-        endCaps: ["\ue0b4"],
-        autoAlign: false,
-        theme: "monokai"
-    },
-    defaultPadding: " "
-}')
-
-# Validate generated config
-if ! echo "${CONFIG_JSON}" | jq empty 2>/dev/null; then
-    echo "[ccstatusline] ERROR: Generated configuration is invalid JSON"
-    exit 1
-fi
-
-echo "[ccstatusline] Writing configuration..."
-
-CONFIG_DIR="${USER_HOME}/.config/ccstatusline"
-CONFIG_FILE="${CONFIG_DIR}/settings.json"
-
-# Create directory
-mkdir -p "${CONFIG_DIR}"
-
-# Write config using secure temp file
-TEMP_CONFIG=$(mktemp)
-chmod 644 "${TEMP_CONFIG}"
-echo "${CONFIG_JSON}" | jq . > "${TEMP_CONFIG}"
-
-# Move to final location
-mv "${TEMP_CONFIG}" "${CONFIG_FILE}"
-
-# Set ownership
-if ! chown "${USERNAME}:${USERNAME}" "${CONFIG_FILE}" 2>/dev/null; then
-    echo "[ccstatusline] WARNING: Could not set ownership on ${CONFIG_FILE}"
-    echo "  Fix: sudo chown ${USERNAME}:${USERNAME} ${CONFIG_FILE}"
-fi
-
-if ! chown "${USERNAME}:${USERNAME}" "${CONFIG_DIR}" 2>/dev/null; then
-    echo "[ccstatusline] WARNING: Could not set ownership on ${CONFIG_DIR}"
-fi
-
-echo "[ccstatusline] ✓ Configuration written to ${CONFIG_FILE}"
-
-# Create template directory and save config template
-echo "[ccstatusline] Creating configuration template..."
+# Create directories so wrapper doesn't fail before first post-start
+mkdir -p "${USER_HOME}/.config/ccstatusline"
 mkdir -p /usr/local/share/ccstatusline
-TEMPLATE_FILE=/usr/local/share/ccstatusline/settings.template.json
-echo "${CONFIG_JSON}" | jq . > "${TEMPLATE_FILE}"
-chmod 644 "${TEMPLATE_FILE}"
-echo "[ccstatusline] ✓ Template saved to ${TEMPLATE_FILE}"
+chown "${USERNAME}:${USERNAME}" "${USER_HOME}/.config/ccstatusline" 2>/dev/null || true
 
 # Create session resume helper script for custom-command widget
 # Reads Claude Code JSON from stdin, outputs the session ID
@@ -321,31 +232,22 @@ echo "  ccstatusline Installation Complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Configuration:"
-echo "  • Config file: ${CONFIG_FILE}"
+echo "  • Source: .devcontainer/config/defaults/ccstatusline-settings.json"
+echo "  • Deployed to: ~/.config/ccstatusline/settings.json (by file-manifest)"
+echo "  • Template: /usr/local/share/ccstatusline/settings.template.json"
 echo "  • User: ${USERNAME}"
-echo "  • Theme: Powerline (8 lines, 17 widgets, ANSI colors)"
 echo "  • Protected by: /usr/local/bin/ccstatusline-wrapper"
-echo ""
-echo "Display:"
-echo "  Line 1: Context Length | Context % | Model"
-echo "  Line 2: Tokens In | Tokens Out | Tokens Cached"
-echo "  Line 3: Git Branch | Git Changes | Git Worktree"
-echo "  Line 4: Session Clock | Session Cost | Block Timer"
-echo "  Line 5: Tokens Total | Version"
-echo "  Line 6: Session ID"
-echo "  Line 7: Working Directory"
-echo "  Line 8: Burn Rate (ccburn compact)"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Next Steps"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "1. Configuration will be applied automatically on container creation"
+echo "1. Widget config is deployed automatically on container start"
 echo ""
-echo "2. Test manually:"
+echo "2. To customize: edit .devcontainer/config/defaults/ccstatusline-settings.json"
+echo "   Changes deploy on next container start (if-changed)"
+echo ""
+echo "3. Test manually:"
 echo "   echo '{\"model\":{\"display_name\":\"Test\"}}' | npx -y ccstatusline@latest"
-echo ""
-echo "3. View configuration:"
-echo "   cat ${CONFIG_FILE} | jq ."
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

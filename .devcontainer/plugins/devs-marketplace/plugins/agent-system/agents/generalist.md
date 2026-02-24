@@ -6,10 +6,18 @@ description: >-
   the user needs a keyword or file search that may require multiple attempts,
   multi-file investigation, code modifications across several files, or
   any complex task that doesn't fit a specialist agent's domain. Has access
-  to all tools and can both read and write files.
+  to all tools and can both read and write files. Do not use when a
+  specialist agent clearly matches the task — prefer the domain
+  specialist for better results.
 tools: "*"
+disallowedTools:
+  - EnterPlanMode
+  - EnterWorktree
+  - TeamCreate
+  - TeamDelete
 model: inherit
 color: green
+permissionMode: default
 memory:
   scope: project
 skills:

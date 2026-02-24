@@ -40,5 +40,19 @@
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/ccstatusline-settings.json",
+		"dest": "${HOME}/.config/ccstatusline",
+		"destFilename": "settings.json",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "defaults/ccstatusline-settings.json",
+		"dest": "/usr/local/share/ccstatusline",
+		"destFilename": "settings.template.json",
+		"enabled": true,
+		"overwrite": "always"
 	}
 ]

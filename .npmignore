@@ -6,8 +6,6 @@ test.js
 .devcontainer/config/backups/
 
 # Documentation that's not needed in package
-analysis.md
-searxng-implementation.md
 docs/
 
 # Git and development
@@ -46,6 +44,6 @@ Thumbs.db
 **/__pycache__/
 *.pyc
 
-# Local development
-.claude-trace/
-aeris-memory/
+# Secrets (never publish)
+.secrets
+.devcontainer/.secrets

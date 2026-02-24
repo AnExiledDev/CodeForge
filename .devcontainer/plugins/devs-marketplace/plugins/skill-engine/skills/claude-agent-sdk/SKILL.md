@@ -1,14 +1,14 @@
 ---
 name: claude-agent-sdk
 description: >-
-  This skill should be used when the user asks to "build an agent with the Claude Agent SDK",
-  "use the Claude Agent SDK", "create an agent with TypeScript SDK", "configure SDK permissions",
-  "use canUseTool callback", "create custom MCP tools with createSdkMcpServer",
-  "manage SDK sessions", "define subagents", "configure SDK hooks",
-  "set up SDK sandbox", "stream SDK messages", "use sdk query function",
-  or discusses Claude Agent SDK TypeScript integration, SDK permission modes,
-  SDK message types, agent definitions, or programmatic Claude agent orchestration.
-version: 0.1.0
+  Provides Claude Agent SDK patterns in TypeScript covering query function,
+  permissions, MCP tools, subagents, and hooks. USE WHEN the user asks to
+  "build an agent with the Claude Agent SDK", "use canUseTool callback",
+  "create MCP tools with createSdkMcpServer", "define subagents", "configure
+  SDK hooks", "stream SDK messages", or works with @anthropic-ai/claude-agent-sdk,
+  query(), PermissionResult, AgentDefinition. DO NOT USE for PydanticAI Python
+  agents or Claude Code CLI headless mode.
+version: 0.2.0
 ---
 
 # Claude Agent SDK (TypeScript)

@@ -3,6 +3,5 @@
   "description": "EARS-based ticket workflow: create issues, plan implementation, review commits, create PRs",
   "author": {
     "name": "AnExiledDev"
-  },
-  "keywords": ["tickets", "github", "workflow", "ears", "issues", "pr"]
+  }
 }

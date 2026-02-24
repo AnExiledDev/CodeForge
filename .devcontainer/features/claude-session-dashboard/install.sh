@@ -8,7 +8,7 @@ set -euo pipefail
 
 # === IMPORT OPTIONS ===
 DASHBOARD_VERSION="${VERSION:-latest}"
-PORT="${PORT:-3000}"
+PORT="${PORT:-7847}"
 SHELLS="${SHELLS:-both}"
 USERNAME="${USERNAME:-automatic}"
 
@@ -112,7 +112,7 @@ chmod +x "${HOOK_SCRIPT}"
 echo "[claude-session-dashboard] Created poststart hook for settings persistence"
 
 # === SHELL ALIASES ===
-ALIAS_CMD="alias claude-dashboard=\"claude-dashboard --port ${PORT}\""
+ALIAS_CMD="alias claude-dashboard=\"claude-dashboard --host 0.0.0.0 --port ${PORT}\""
 
 configure_shell() {
     local shell_rc="$1"

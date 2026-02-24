@@ -1,11 +1,15 @@
 ---
 name: spec-new
 description: >-
-  This skill should be used when the user asks to "create a spec",
-  "new feature spec", "write a spec for", "spec this feature",
-  "start a new spec", "plan a feature", or needs to create a new
-  specification file from the standard template.
+  Creates a new feature specification from the standard EARS template
+  with domain inference, acceptance criteria, and requirement tagging.
+  USE WHEN the user asks to "create a spec", "new feature spec", "write
+  a spec for", "spec this feature", "start a new spec", "plan a feature",
+  "add a spec", or works with .specs/ directory and feature planning.
+  DO NOT USE for updating existing specs after implementation — use
+  spec-update instead. Not for refining draft specs — use spec-refine.
 version: 0.2.0
+argument-hint: "[feature-name] [domain]"
 ---
 
 # Create New Feature Specification

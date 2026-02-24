@@ -104,7 +104,7 @@ def main():
         for target in targets:
             is_protected, message = check_path(target)
             if is_protected:
-                print(json.dumps({"error": f"{message} (via bash command)"}))
+                print(f"{message} (via bash command)", file=sys.stderr)
                 sys.exit(2)
 
         sys.exit(0)

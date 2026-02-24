@@ -1,0 +1,565 @@
+/* CodeForge Documentation — Ember/Charcoal Brand Theme */
+
+/* Cascade layer order — MUST be first */
+@layer base, starlight, theme, components, utilities;
+
+/* Starlight + Tailwind compatibility */
+@import '@astrojs/starlight-tailwind';
+
+/* Tailwind v4 */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Web font */
+@import '@fontsource-variable/plus-jakarta-sans';
+
+/* ============================================
+   Tailwind v4 Theme Tokens
+   ============================================ */
+@theme {
+	/* Typography */
+	--font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+	/* Ember accent palette */
+	--color-ember-50: #fff7ed;
+	--color-ember-100: #ffedd5;
+	--color-ember-200: #fed7aa;
+	--color-ember-300: #fdba74;
+	--color-ember-400: #fb923c;
+	--color-ember-500: #f97316;
+	--color-ember-600: #ea580c;
+	--color-ember-700: #c2410c;
+	--color-ember-800: #9a3412;
+	--color-ember-900: #7c2d12;
+	--color-ember-950: #431407;
+
+	/* Charcoal/stone palette */
+	--color-charcoal-50: #fafaf9;
+	--color-charcoal-100: #f5f5f4;
+	--color-charcoal-200: #e7e5e4;
+	--color-charcoal-300: #d6d3d1;
+	--color-charcoal-400: #a8a29e;
+	--color-charcoal-500: #78716c;
+	--color-charcoal-600: #57534e;
+	--color-charcoal-700: #44403c;
+	--color-charcoal-800: #292524;
+	--color-charcoal-900: #1c1917;
+	--color-charcoal-950: #0c0a09;
+}
+
+/* ============================================
+   Starlight Overrides (UNLAYERED — wins over
+   Starlight's @layer starlight.base defaults)
+   ============================================ */
+
+/* Dark mode (primary experience) */
+:root {
+	/* Ember accent scale */
+	--sl-color-accent-low: hsl(20, 60%, 14%);
+	--sl-color-accent: hsl(25, 95%, 53%);
+	--sl-color-accent-high: hsl(33, 90%, 85%);
+
+	/* Charcoal gray scale */
+	--sl-color-gray-1: #f5f5f4;
+	--sl-color-gray-2: #d6d3d1;
+	--sl-color-gray-3: #a8a29e;
+	--sl-color-gray-4: #57534e;
+	--sl-color-gray-5: #292524;
+	--sl-color-gray-6: #1c1917;
+	--sl-color-gray-7: #0c0a09;
+
+	/* Nav & sidebar — semi-transparent for glass effect */
+	--sl-color-bg-nav: hsla(20, 14%, 4%, 0.82);
+	--sl-color-bg-sidebar: hsla(20, 14%, 5%, 0.65);
+
+	/* Hairlines — warm-tinted for brand cohesion */
+	--sl-color-hairline-shade: hsla(25, 15%, 22%, 0.5);
+	--sl-color-hairline-light: hsla(25, 10%, 20%, 0.3);
+	--sl-color-hairline: hsla(25, 12%, 18%, 0.4);
+
+	/* Fonts */
+	--sl-font-system: var(--font-sans);
+	--sl-font-system-mono: var(--font-mono);
+
+	/* Tighter body text — reduced from previous sizes */
+	--sl-text-body: 0.875rem;      /* 14px — was 15px */
+	--sl-text-body-sm: 0.75rem;    /* 12px — was 13px */
+	--sl-text-code: 0.75rem;       /* 12px — was 13px */
+	--sl-text-code-sm: 0.6875rem;  /* 11px — was 12px */
+
+	/* Heading scale — smaller than Starlight defaults */
+	--sl-text-h1: 1.625rem;   /* 26px — was 28px */
+	--sl-text-h2: 1.25rem;    /* 20px — was 22px */
+	--sl-text-h3: 1.0625rem;  /* 17px — was 18px */
+	--sl-text-h4: 0.9375rem;  /* 15px — was 16px */
+	--sl-text-h5: 0.875rem;   /* 14px — was 15px */
+
+	/* Tighter line height — 1.65 instead of 1.75 */
+	--sl-line-height: 1.65;
+	--sl-line-height-headings: 1.25;
+}
+
+/* Desktop heading scale — prevent Starlight's 50em upscaling */
+@media (min-width: 50em) {
+	:root {
+		--sl-text-h1: 1.75rem;    /* 28px — was 30px */
+		--sl-text-h2: 1.375rem;   /* 22px — was 24px */
+		--sl-text-h3: 1.125rem;   /* 18px — was 20px */
+		--sl-text-h4: 1rem;       /* 16px — was 17px */
+		--sl-text-h5: 0.875rem;   /* 14px — was 15px */
+	}
+}
+
+/* Light mode */
+:root[data-theme='light'] {
+	--sl-color-accent-low: hsl(30, 70%, 92%);
+	--sl-color-accent: hsl(25, 90%, 48%);
+	--sl-color-accent-high: hsl(20, 80%, 28%);
+
+	--sl-color-gray-1: #1c1917;
+	--sl-color-gray-2: #44403c;
+	--sl-color-gray-3: #57534e;
+	--sl-color-gray-4: #a8a29e;
+	--sl-color-gray-5: #e7e5e4;
+	--sl-color-gray-6: #f5f5f4;
+	--sl-color-gray-7: #fafaf9;
+
+	--sl-color-bg-nav: hsla(30, 10%, 98%, 0.82);
+	--sl-color-bg-sidebar: hsla(30, 10%, 97%, 0.65);
+	--sl-color-hairline-shade: hsla(25, 8%, 80%, 0.5);
+	--sl-color-hairline-light: hsla(25, 8%, 85%, 0.4);
+	--sl-color-hairline: hsla(25, 8%, 82%, 0.45);
+}
+
+/* ============================================
+   Nav Bar — Glass Morphism
+   ============================================ */
+
+/* Backdrop blur on the fixed header */
+body header {
+	backdrop-filter: blur(14px) saturate(1.2);
+	-webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* Hero/splash page — fully transparent nav blending into the dark hero */
+[data-has-hero] {
+	--sl-color-bg-nav: transparent;
+	--sl-color-hairline-shade: transparent;
+}
+
+/* ============================================
+   Splash Page — Full-Page Dark Background
+   ============================================ */
+[data-has-hero] .main-frame,
+[data-has-hero] .main-pane {
+	background: var(--color-charcoal-950);
+}
+
+[data-has-hero] main {
+	background: transparent;
+}
+
+/* ============================================
+   Content Typography — Tighter & More Refined
+   ============================================ */
+
+/* H1 — subtle bottom border as section anchor */
+.sl-markdown-content h1:not(:where(.not-content *)) {
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	padding-bottom: 0.4em;
+	border-bottom: 1px solid var(--sl-color-hairline-light);
+	margin-bottom: 0.5em;
+}
+
+/* H2 — gradient bottom separator */
+.sl-markdown-content h2:not(:where(.not-content *)) {
+	font-weight: 650;
+	letter-spacing: -0.015em;
+	padding-bottom: 0.3em;
+	border-bottom: none;
+	background-image: linear-gradient(to right, var(--sl-color-accent), transparent);
+	background-size: 100% 1px;
+	background-position: bottom;
+	background-repeat: no-repeat;
+}
+
+/* H3, H4 — no borders, just weight differentiation */
+.sl-markdown-content h3:not(:where(.not-content *)) {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.sl-markdown-content h4:not(:where(.not-content *)) {
+	font-weight: 600;
+}
+
+/* Links — cleaner hover with underline reveal */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	text-decoration: none;
+	text-underline-offset: 3px;
+	transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+}
+
+/* Inline code — slightly tighter padding, rounded, warmer background */
+.sl-markdown-content code:not(:where(.not-content *)):not(pre code) {
+	border-radius: 4px;
+	padding: 0.15em 0.35em;
+	font-size: 0.85em;
+	background: hsla(25, 20%, 30%, 0.15);
+	border: 1px solid hsla(25, 15%, 40%, 0.12);
+}
+
+/* Code blocks — rounded with warm border */
+.sl-markdown-content pre:not(:where(.not-content *)) {
+	border-radius: 8px;
+	border: 1px solid hsla(25, 15%, 25%, 0.4);
+	background: hsla(20, 10%, 8%, 0.6);
+}
+
+/* Tables — tighter, more refined */
+.sl-markdown-content table:not(:where(.not-content *)) {
+	font-size: 0.875em;
+}
+
+.sl-markdown-content th:not(:where(.not-content *)) {
+	font-size: 0.8em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+/* Table row hover for scanability */
+.sl-markdown-content tr:not(:where(.not-content *)):hover {
+	background: hsla(25, 15%, 50%, 0.08);
+}
+
+/* Table header — stronger bottom border + subtle background */
+.sl-markdown-content thead:not(:where(.not-content *)) {
+	border-bottom: 2px solid var(--sl-color-hairline-shade);
+}
+
+.sl-markdown-content thead th:not(:where(.not-content *)) {
+	background: hsla(25, 10%, 30%, 0.1);
+	padding-block: 0.6em;
+}
+
+/* Blockquotes — ember tint on left border */
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+	border-inline-start-color: var(--sl-color-accent);
+	border-inline-start-width: 2px;
+	opacity: 0.9;
+}
+
+/* Horizontal rules */
+.sl-markdown-content hr:not(:where(.not-content *)) {
+	border-bottom-color: var(--sl-color-hairline-light);
+}
+
+/* ============================================
+   Sidebar Refinements
+   ============================================ */
+
+/* Active sidebar link — ember left-border accent with background */
+nav[aria-label="Main"] a[aria-current="page"],
+.sidebar-content a[aria-current="page"] {
+	border-inline-start: 2px solid var(--sl-color-accent);
+	padding-inline-start: calc(1rem - 2px);
+	background: hsla(25, 80%, 50%, 0.08);
+	border-radius: 0 6px 6px 0;
+}
+
+/* ============================================
+   Aside / Callout Refinements
+   ============================================ */
+.starlight-aside {
+	border-radius: 8px;
+	font-size: 0.9rem;
+}
+
+/* Tip aside — ember-themed instead of Starlight purple */
+.starlight-aside--tip {
+	--sl-color-asides-text-accent: var(--sl-color-accent);
+	border-color: var(--sl-color-accent);
+	background: hsla(25, 80%, 50%, 0.06);
+}
+
+/* Note aside — warm slate */
+.starlight-aside--note {
+	background: hsla(25, 10%, 40%, 0.08);
+}
+
+/* Caution aside — keep warm amber instead of Starlight default */
+.starlight-aside--caution {
+	background: hsla(38, 80%, 50%, 0.06);
+}
+
+/* ============================================
+   Table of Contents — Tighter
+   ============================================ */
+starlight-toc a {
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}
+
+starlight-toc [aria-current="true"] {
+	font-weight: 600;
+	color: var(--sl-color-accent);
+	position: relative;
+}
+
+/* Smooth scrollspy vertical indicator */
+starlight-toc nav {
+	position: relative;
+}
+
+starlight-toc nav::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: 0;
+	top: 0;
+	bottom: 0;
+	width: 1px;
+	background: var(--sl-color-hairline-light);
+}
+
+starlight-toc [aria-current="true"]::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: calc(-1 * var(--sl-nav-pad-x, 1rem));
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--sl-color-accent);
+	border-radius: 1px;
+}
+
+/* ============================================
+   Page Title (content-panel heading)
+   ============================================ */
+.content-panel h1 {
+	font-size: var(--sl-text-h1);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+}
+
+/* ============================================
+   Custom Component Styles
+   ============================================ */
+@layer components {
+	/* Ember glow effect for hero and accents */
+	.ember-glow {
+		box-shadow: 0 0 60px -12px oklch(0.65 0.2 30 / 0.3);
+	}
+
+	/* Terminal-style code preview frame */
+	.terminal-frame {
+		background: var(--color-charcoal-900);
+		border: 1px solid var(--color-charcoal-700);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	.terminal-frame__header {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 10px 14px;
+		background: var(--color-charcoal-800);
+		border-bottom: 1px solid var(--color-charcoal-700);
+	}
+
+	.terminal-frame__dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+	}
+
+	.terminal-frame__body {
+		padding: 16px 20px;
+		font-family: var(--font-mono);
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	/* Feature card styling */
+	.feature-card {
+		background: var(--color-charcoal-900);
+		border: 1px solid var(--color-charcoal-800);
+		border-radius: 12px;
+		padding: 1.5rem;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+	}
+
+	.feature-card:hover {
+		border-color: var(--color-ember-500);
+		box-shadow: 0 0 40px -8px oklch(0.65 0.2 30 / 0.25);
+		transform: translateY(-2px);
+	}
+
+	/* Animated ember particles for hero */
+	@keyframes ember-rise {
+		0% {
+			transform: translateY(0) scale(1);
+			opacity: 0;
+		}
+		10% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 0.6;
+		}
+		100% {
+			transform: translateY(-100vh) scale(0.3);
+			opacity: 0;
+		}
+	}
+
+	@keyframes ember-flicker {
+		0%, 100% {
+			opacity: 0.8;
+		}
+		50% {
+			opacity: 0.4;
+		}
+	}
+
+	@keyframes typing-cursor {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes fade-in-up {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* Progressive enhancement: scroll-triggered animations */
+	@supports (animation-timeline: view()) {
+		.sl-markdown-content h2:not(:where(.not-content *)),
+		.sl-markdown-content h3:not(:where(.not-content *)),
+		.starlight-aside,
+		.sl-markdown-content table:not(:where(.not-content *)),
+		.sl-markdown-content pre:not(:where(.not-content *)) {
+			animation: fade-in-up 0.4s ease both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 20%;
+		}
+	}
+
+	.ember-particle {
+		position: absolute;
+		bottom: 0;
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--color-ember-500);
+		box-shadow: 0 0 6px 2px var(--color-ember-500);
+		animation: ember-rise linear infinite;
+		pointer-events: none;
+	}
+
+	.typing-cursor {
+		display: inline-block;
+		width: 2px;
+		height: 1.1em;
+		background: var(--color-ember-400);
+		animation: typing-cursor 1s step-end infinite;
+		vertical-align: text-bottom;
+		margin-left: 2px;
+	}
+
+	/* Agent property badges */
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.15em 0.55em;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		line-height: 1.5;
+		white-space: nowrap;
+	}
+
+	.badge--green {
+		background: hsla(145, 60%, 40%, 0.12);
+		color: hsl(145, 60%, 65%);
+		border: 1px solid hsla(145, 50%, 45%, 0.2);
+	}
+
+	.badge--orange {
+		background: hsla(25, 80%, 50%, 0.12);
+		color: hsl(25, 90%, 70%);
+		border: 1px solid hsla(25, 70%, 50%, 0.2);
+	}
+
+	.badge--blue {
+		background: hsla(210, 60%, 50%, 0.12);
+		color: hsl(210, 70%, 72%);
+		border: 1px solid hsla(210, 50%, 50%, 0.2);
+	}
+
+	.badge--purple {
+		background: hsla(270, 50%, 50%, 0.12);
+		color: hsl(270, 60%, 75%);
+		border: 1px solid hsla(270, 40%, 50%, 0.2);
+	}
+
+	/* Light mode badge adjustments */
+	:root[data-theme='light'] .badge--green {
+		color: hsl(145, 50%, 30%);
+		background: hsla(145, 50%, 45%, 0.1);
+	}
+	:root[data-theme='light'] .badge--orange {
+		color: hsl(25, 80%, 35%);
+		background: hsla(25, 70%, 50%, 0.1);
+	}
+	:root[data-theme='light'] .badge--blue {
+		color: hsl(210, 60%, 35%);
+		background: hsla(210, 50%, 50%, 0.1);
+	}
+	:root[data-theme='light'] .badge--purple {
+		color: hsl(270, 45%, 35%);
+		background: hsla(270, 40%, 50%, 0.1);
+	}
+}
+
+/* ============================================
+   Accessibility: Respect reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+	.ember-particle {
+		animation: none;
+		display: none;
+	}
+
+	.typing-cursor {
+		animation: none;
+		opacity: 1;
+	}
+
+	.sl-markdown-content h2,
+	.sl-markdown-content h3,
+	.starlight-aside,
+	.sl-markdown-content table,
+	.sl-markdown-content pre {
+		animation: none !important;
+	}
+}

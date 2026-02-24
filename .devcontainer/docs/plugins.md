@@ -14,9 +14,11 @@ plugins/devs-marketplace/
     ├── notify-hook/           # Desktop notifications
     ├── dangerous-command-blocker/  # Safety: block destructive commands
     ├── protected-files-guard/ # Safety: protect sensitive files
-    ├── auto-formatter/        # Batch formatter (Stop hook)
-    ├── auto-linter/           # Batch linter (Stop hook)
-    ├── code-directive/        # Agents, skills, hooks
+    ├── auto-code-quality/     # Batch formatter + linter + advisory test runner
+    ├── agent-system/          # 17 custom agents + redirection hooks
+    ├── skill-engine/          # 21 coding skills + auto-suggestion
+    ├── spec-workflow/         # 8 spec lifecycle skills + spec-reminder
+    ├── session-context/       # Git state, TODO harvesting, commit reminders
     └── workspace-scope-guard/ # Workspace scope enforcement
 ```
 
@@ -28,9 +30,11 @@ Plugins are enabled in `config/defaults/settings.json` under `enabledPlugins`:
 
 ```json
 "enabledPlugins": [
-    "auto-formatter@devs-marketplace",
-    "auto-linter@devs-marketplace",
-    "code-directive@devs-marketplace"
+    "auto-code-quality@devs-marketplace",
+    "agent-system@devs-marketplace",
+    "skill-engine@devs-marketplace",
+    "spec-workflow@devs-marketplace",
+    "session-context@devs-marketplace"
 ]
 ```
 
@@ -109,11 +113,11 @@ The blocker runs as a PreToolUse hook on Bash commands. It checks the command ag
 
 Runs as a PreToolUse hook on Write and Edit operations.
 
-### auto-formatter
+### auto-code-quality
 
-**Purpose**: Batch-formats all files edited during a Claude Code session.
+**Purpose**: Batch-formats, lints, and runs advisory tests on files edited during a Claude Code session.
 
-**Supported languages**:
+**Supported formatters**:
 | Language | Formatter |
 |----------|-----------|
 | Python | Ruff |
@@ -122,12 +126,6 @@ Runs as a PreToolUse hook on Write and Edit operations.
 | Shell scripts | shfmt |
 | Markdown/YAML/TOML/Dockerfile | dprint |
 | Rust | rustfmt |
-
-**How it works**: Runs as a Stop hook. When Claude Code stops (end of a conversation turn), it checks which files were edited, detects their language, and runs the appropriate formatter. Has a 30-second timeout.
-
-### auto-linter
-
-**Purpose**: Batch-lints all files edited during a Claude Code session.
 
 **Supported linters**:
 | Language | Linter |
@@ -139,20 +137,37 @@ Runs as a PreToolUse hook on Write and Edit operations.
 | Dockerfile | hadolint |
 | Rust | clippy |
 
-**How it works**: Runs as a Stop hook alongside auto-formatter. Checks edited files and runs the appropriate linter. Results are reported but don't block — they're informational.
+**How it works**: Runs as a Stop hook. When Claude Code stops, it checks which files were edited, detects their language, and runs the appropriate formatter and linter. Also includes an advisory test runner that runs affected tests. Results are informational — they don't block.
 
-### code-directive
+### agent-system
 
-**Purpose**: The main intelligence layer — custom agents, coding skills, and behavior hooks.
+**Purpose**: 17 specialized agent definitions with built-in agent redirection.
 
 **Components**:
-- **17 custom agents** — Specialized agent definitions for different task types (architect, test-writer, refactorer, etc.)
-- **28 coding skills** — Domain-specific reference materials (FastAPI, Docker, testing patterns, spec workflow, etc.)
+- **17 custom agents** — Specialized agent definitions for different task types (architect, explorer, test-writer, refactorer, security-auditor, researcher, doc-writer, etc.)
 - **Agent redirection hook** — Transparently swaps built-in agent types to custom agents (e.g., `Explore` → `explorer`, `Plan` → `architect`)
-- **Syntax validation hook** — Validates code syntax before commits
-- **Skill auto-suggestion hook** — Suggests relevant skills based on conversation context
+- **CWD injection hook** — Injects current working directory into agent prompts
+- **Read-only bash enforcement** — Prevents read-only agents from executing write operations
 
-For detailed agent and skill documentation, see the agent markdown files in `plugins/devs-marketplace/plugins/code-directive/agents/` and skill files in `plugins/devs-marketplace/plugins/code-directive/skills/`.
+For detailed agent documentation, see `plugins/devs-marketplace/plugins/agent-system/agents/`.
+
+### skill-engine
+
+**Purpose**: 21 domain-specific coding reference skills with auto-suggestion.
+
+**Skills**: fastapi, svelte5, docker, docker-py, pydantic-ai, sqlite, testing, debugging, security-checklist, refactoring-patterns, git-forensics, performance-profiling, documentation-patterns, migration-patterns, dependency-management, claude-code-headless, claude-agent-sdk, ast-grep-patterns, api-design, skill-building, team
+
+**How it works**: Skills are loaded on demand via the Skill tool. A PreToolUse hook auto-suggests relevant skills based on conversation context.
+
+For skill details, see `plugins/devs-marketplace/plugins/skill-engine/skills/`.
+
+### spec-workflow
+
+**Purpose**: 8 spec lifecycle skills with spec-reminder hook.
+
+**Skills**: spec-new, spec-refine, spec-build, spec-review, spec-update, spec-check, spec-init, specification-writing
+
+**How it works**: Provides a structured specification workflow. A Stop hook reminds users to update specs when code was modified but specs weren't.
 
 ### workspace-scope-guard
 

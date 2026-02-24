@@ -1,0 +1,384 @@
+---
+/**
+ * Custom Hero component — overrides Starlight's built-in Hero.
+ * Full-width ember/charcoal hero with animated particles, terminal preview,
+ * stats bar, and a feature grid below the fold.
+ *
+ * Receives Starlight's Hero props but renders entirely custom content.
+ */
+import FeatureCard from './FeatureCard.astro';
+import InstallCommand from './InstallCommand.astro';
+
+/* Accept Starlight's props to satisfy the component override contract */
+const _props = Astro.props;
+---
+
+<div class="hero-container">
+	{/* ---- Ember particles (CSS-only, hidden under prefers-reduced-motion) ---- */}
+	<span class="ember-particle" style="left:5%;  animation-duration:6s;  animation-delay:0s;   width:3px; height:3px; opacity:0.7;"></span>
+	<span class="ember-particle" style="left:12%; animation-duration:8s;  animation-delay:1.2s; width:5px; height:5px;"></span>
+	<span class="ember-particle" style="left:20%; animation-duration:7s;  animation-delay:0.5s; width:4px; height:4px; opacity:0.9;"></span>
+	<span class="ember-particle" style="left:28%; animation-duration:9s;  animation-delay:2s;   width:3px; height:3px; opacity:0.6;"></span>
+	<span class="ember-particle" style="left:35%; animation-duration:6.5s;animation-delay:0.8s; width:6px; height:6px;"></span>
+	<span class="ember-particle" style="left:42%; animation-duration:7.5s;animation-delay:3s;   width:3px; height:3px; opacity:0.5;"></span>
+	<span class="ember-particle" style="left:50%; animation-duration:8.5s;animation-delay:1.5s; width:5px; height:5px; opacity:0.8;"></span>
+	<span class="ember-particle" style="left:58%; animation-duration:6s;  animation-delay:2.5s; width:4px; height:4px; opacity:0.7;"></span>
+	<span class="ember-particle" style="left:65%; animation-duration:9.5s;animation-delay:0.3s; width:3px; height:3px;"></span>
+	<span class="ember-particle" style="left:72%; animation-duration:7s;  animation-delay:1.8s; width:5px; height:5px; opacity:0.6;"></span>
+	<span class="ember-particle" style="left:80%; animation-duration:8s;  animation-delay:3.5s; width:4px; height:4px; opacity:0.9;"></span>
+	<span class="ember-particle" style="left:88%; animation-duration:6.5s;animation-delay:0.7s; width:3px; height:3px; opacity:0.5;"></span>
+	<span class="ember-particle" style="left:93%; animation-duration:9s;  animation-delay:2.2s; width:6px; height:6px; opacity:0.8;"></span>
+	<span class="ember-particle" style="left:15%; animation-duration:10s; animation-delay:4s;   width:4px; height:4px; opacity:0.4;"></span>
+	<span class="ember-particle" style="left:75%; animation-duration:7.5s;animation-delay:1s;   width:3px; height:3px; opacity:0.7;"></span>
+
+	{/* ---- Content ---- */}
+	<div class="hero-content">
+		<h1 class="hero-tagline">
+			Your AI dev environment,&nbsp;<span class="hero-tagline__accent">battle-tested.</span>
+		</h1>
+
+		<p class="hero-subtagline">
+			The complete Claude Code setup&nbsp;&mdash; 12&nbsp;plugins, 21&nbsp;tools,
+			17&nbsp;AI&nbsp;agents. Drop it into any project and start building.
+		</p>
+
+		{/* ---- CTA buttons ---- */}
+		<div class="hero-actions">
+			<a href="/CodeForge/getting-started/" class="hero-btn hero-btn--primary">
+				Get Started
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+			</a>
+			<a href="https://github.com/AnExiledDev/CodeForge" class="hero-btn hero-btn--ghost" target="_blank" rel="noopener noreferrer">
+				View on GitHub
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+			</a>
+		</div>
+
+		{/* ---- Terminal preview ---- */}
+		<div class="hero-terminal">
+			<InstallCommand />
+		</div>
+
+		{/* ---- Stats bar (pill style) ---- */}
+		<div class="hero-stats" role="list" aria-label="CodeForge by the numbers">
+			<span class="hero-stats__pill" role="listitem"><strong>12</strong> Plugins</span>
+			<span class="hero-stats__pill" role="listitem"><strong>21</strong> Tools</span>
+			<span class="hero-stats__pill" role="listitem"><strong>17</strong> AI Agents</span>
+			<span class="hero-stats__pill" role="listitem"><strong>21</strong> Skills</span>
+		</div>
+	</div>
+</div>
+
+{/* ---- Feature grid (below the hero fold) ---- */}
+<section class="feature-grid-section" aria-label="Key features">
+	<div class="feature-grid">
+		<FeatureCard
+			icon='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
+			title="Plug & Play"
+			description="One command to install. Works with VS Code, Codespaces, any devcontainer host."
+		/>
+		<FeatureCard
+			icon='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>'
+			title="17 AI Agents"
+			description="Specialized agents for every task — architecture, testing, security, refactoring, and more."
+		/>
+		<FeatureCard
+			icon='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>'
+			title="Battle-Tested Plugins"
+			description="12 production-hardened plugins for code quality, safety guardrails, and workflow automation."
+		/>
+		<FeatureCard
+			icon='<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>'
+			title="Fully Customizable"
+			description="System prompts, rules, hooks, skills — every layer is yours to modify."
+		/>
+	</div>
+</section>
+
+{/* ---- How it works (below feature grid) ---- */}
+<section class="how-it-works-section" aria-label="How CodeForge works">
+	<h2 class="how-it-works__title">Get running in 60 seconds</h2>
+	<div class="how-it-works__steps">
+		<div class="how-it-works__step">
+			<div class="how-it-works__number">1</div>
+			<h3 class="how-it-works__step-title">Install</h3>
+			<p class="how-it-works__step-desc">Run <code>npx codeforge-dev</code> in your project. One command sets up the entire DevContainer.</p>
+		</div>
+		<div class="how-it-works__connector" aria-hidden="true">
+			<svg width="32" height="16" viewBox="0 0 32 16" fill="none"><path d="M0 8h28m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</div>
+		<div class="how-it-works__step">
+			<div class="how-it-works__number">2</div>
+			<h3 class="how-it-works__step-title">Open</h3>
+			<p class="how-it-works__step-desc">Reopen in the DevContainer. VS Code, Codespaces, or any devcontainer host.</p>
+		</div>
+		<div class="how-it-works__connector" aria-hidden="true">
+			<svg width="32" height="16" viewBox="0 0 32 16" fill="none"><path d="M0 8h28m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		</div>
+		<div class="how-it-works__step">
+			<div class="how-it-works__number">3</div>
+			<h3 class="how-it-works__step-title">Build</h3>
+			<p class="how-it-works__step-desc">Type <code>cc</code> to launch Claude Code with 17 agents, 12 plugins, and full quality automation.</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	/* ---- Hero container ---- */
+	.hero-container {
+		position: relative;
+		width: 100%;
+		min-height: 85vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		background:
+			radial-gradient(
+				ellipse 80% 50% at 50% 100%,
+				oklch(0.45 0.15 30 / 0.35) 0%,
+				transparent 70%
+			),
+			var(--color-charcoal-950);
+		padding: 4rem 1.5rem 3rem;
+	}
+
+	/* ---- Content wrapper ---- */
+	.hero-content {
+		position: relative;
+		z-index: 1;
+		max-width: 720px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	/* ---- Tagline ---- */
+	.hero-tagline {
+		font-size: clamp(2rem, 5vw, 3.25rem);
+		font-weight: 800;
+		line-height: 1.15;
+		color: var(--color-charcoal-50);
+		margin: 0;
+		letter-spacing: -0.02em;
+	}
+
+	.hero-tagline__accent {
+		background: linear-gradient(135deg, var(--color-ember-400), var(--color-ember-600));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* ---- Sub-tagline ---- */
+	.hero-subtagline {
+		font-size: clamp(1rem, 2.2vw, 1.2rem);
+		color: var(--color-charcoal-400);
+		line-height: 1.6;
+		max-width: 560px;
+		margin: 0;
+	}
+
+	/* ---- CTA buttons ---- */
+	.hero-actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: 0.5rem;
+	}
+
+	.hero-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.7rem 1.5rem;
+		border-radius: 8px;
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+		line-height: 1;
+	}
+
+	.hero-btn:hover {
+		transform: translateY(-1px);
+	}
+
+	.hero-btn--primary {
+		background: var(--color-ember-500);
+		color: #fff;
+		box-shadow: 0 0 20px -4px oklch(0.65 0.2 30 / 0.4);
+	}
+
+	.hero-btn--primary:hover {
+		background: var(--color-ember-600);
+		box-shadow: 0 0 28px -4px oklch(0.65 0.2 30 / 0.55);
+	}
+
+	.hero-btn--ghost {
+		background: transparent;
+		color: var(--color-charcoal-200);
+		border: 1px solid var(--color-charcoal-600);
+	}
+
+	.hero-btn--ghost:hover {
+		border-color: var(--color-charcoal-400);
+		background: var(--color-charcoal-900);
+	}
+
+	/* ---- Terminal preview ---- */
+	.hero-terminal {
+		width: 100%;
+		max-width: 440px;
+		margin-top: 0.25rem;
+	}
+
+	/* ---- Stats bar (pill style) ---- */
+	.hero-stats {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: 0.5rem;
+	}
+
+	.hero-stats__pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 0.85rem;
+		border-radius: 9999px;
+		font-size: 0.8rem;
+		color: var(--color-charcoal-300);
+		background: hsla(25, 15%, 15%, 0.6);
+		border: 1px solid var(--color-charcoal-700);
+		letter-spacing: 0.01em;
+	}
+
+	.hero-stats__pill strong {
+		color: var(--color-ember-400);
+		font-weight: 700;
+		font-size: 0.95rem;
+	}
+
+	/* ---- Feature grid section ---- */
+	.feature-grid-section {
+		width: 100%;
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 3rem 1.5rem 4rem;
+		background: transparent;
+	}
+
+	.feature-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1.25rem;
+	}
+
+	@media (max-width: 900px) {
+		.feature-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 520px) {
+		.feature-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* ---- How it works section ---- */
+	.how-it-works-section {
+		width: 100%;
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem 5rem;
+		text-align: center;
+	}
+
+	.how-it-works__title {
+		font-size: clamp(1.25rem, 3vw, 1.75rem);
+		font-weight: 700;
+		color: var(--color-charcoal-100);
+		margin: 0 0 2.5rem;
+		letter-spacing: -0.02em;
+	}
+
+	.how-it-works__steps {
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.how-it-works__step {
+		flex: 1;
+		max-width: 220px;
+		text-align: center;
+	}
+
+	.how-it-works__number {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 50%;
+		background: var(--color-ember-500);
+		color: #fff;
+		font-size: 1rem;
+		font-weight: 800;
+		margin-bottom: 0.75rem;
+		box-shadow: 0 0 20px -4px oklch(0.65 0.2 30 / 0.35);
+	}
+
+	.how-it-works__step-title {
+		font-size: 1.05rem;
+		font-weight: 700;
+		color: var(--color-charcoal-100);
+		margin: 0 0 0.4rem;
+	}
+
+	.how-it-works__step-desc {
+		font-size: 0.825rem;
+		color: var(--color-charcoal-400);
+		line-height: 1.55;
+		margin: 0;
+	}
+
+	.how-it-works__step-desc code {
+		color: var(--color-ember-400);
+		font-size: 0.8rem;
+		background: hsla(25, 20%, 30%, 0.15);
+		padding: 0.1em 0.3em;
+		border-radius: 3px;
+	}
+
+	.how-it-works__connector {
+		display: flex;
+		align-items: center;
+		padding-top: 0.7rem;
+		color: var(--color-charcoal-600);
+	}
+
+	@media (max-width: 640px) {
+		.how-it-works__steps {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.how-it-works__connector {
+			transform: rotate(90deg);
+			padding-top: 0;
+		}
+
+		.how-it-works__step {
+			max-width: 280px;
+		}
+	}
+</style>

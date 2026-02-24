@@ -4,11 +4,11 @@ Advisory test runner — Stop hook that injects test results as context.
 
 Reads the list of files edited this session (written by collect-edited-files.py),
 maps them to affected test files, and runs only those tests. Skips entirely
-if no files were edited. Results are returned as additionalContext so Claude
-sees pass/fail info without being blocked.
+if no files were edited. Results are returned as systemMessage (pass/timeout) or decision/reason
+block (failure) so Claude acts on test failures before finishing.
 
 Reads hook input from stdin (JSON). Returns JSON on stdout.
-Always exits 0 (advisory, never blocking).
+Always exits 0. Failures use decision: "block" to prevent stopping.
 """
 
 import json
@@ -310,9 +310,7 @@ def main():
         )
     except subprocess.TimeoutExpired:
         json.dump(
-            {
-                "additionalContext": f"[Tests] {framework} timed out after {TIMEOUT_SECONDS}s"
-            },
+            {"systemMessage": f"[Tests] {framework} timed out after {TIMEOUT_SECONDS}s"},
             sys.stdout,
         )
         sys.exit(0)
@@ -323,7 +321,7 @@ def main():
 
     if result.returncode == 0:
         json.dump(
-            {"additionalContext": f"[Tests] All tests passed ({framework})"},
+            {"systemMessage": f"[Tests] All tests passed ({framework})"},
             sys.stdout,
         )
         sys.exit(0)
@@ -337,7 +335,10 @@ def main():
         output = "...(truncated)\n" + "\n".join(lines[-30:])
 
     json.dump(
-        {"additionalContext": (f"[Tests] Some tests FAILED ({framework}):\n{output}")},
+        {
+            "decision": "block",
+            "reason": f"[Tests] Some tests FAILED ({framework}):\n{output}",
+        },
         sys.stdout,
     )
     sys.exit(0)

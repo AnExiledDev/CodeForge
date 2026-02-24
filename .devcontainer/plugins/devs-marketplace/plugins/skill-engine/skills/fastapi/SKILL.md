@@ -1,14 +1,15 @@
 ---
 name: fastapi
 description: >-
-  This skill should be used when the user asks to "build a FastAPI app",
-  "create a REST API with FastAPI", "add SSE streaming to FastAPI",
-  "use dependency injection in FastAPI", "define Pydantic models for an API",
-  "stream LLM responses with FastAPI", "add middleware to FastAPI",
-  "handle background tasks in FastAPI", or discusses FastAPI routing,
-  Pydantic v2 models, dependency injection, server-sent events,
-  or ASGI middleware.
-version: 0.1.0
+  Teaches modern FastAPI development including REST APIs, Pydantic v2 models,
+  SSE streaming, and ASGI middleware patterns. USE WHEN the user asks to "build
+  a FastAPI app", "create a REST API with FastAPI", "add SSE streaming", "use
+  dependency injection in FastAPI", "define Pydantic models", "stream LLM
+  responses", "add middleware to FastAPI", or works with FastAPI routing,
+  Pydantic v2, sse-starlette, EventSourceResponse, APIRouter, BackgroundTasks.
+  DO NOT USE for general Python web frameworks like Flask or Django, or for
+  frontend development.
+version: 0.2.0
 ---
 
 # FastAPI Development

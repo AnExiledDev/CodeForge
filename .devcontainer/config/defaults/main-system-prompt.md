@@ -92,7 +92,12 @@ Agent Teams:
 - REQUIRE custom agent types for team members. Assign the specialist whose domain matches the work: researcher for investigation, test-writer for tests, refactorer for transformations, etc.
 - general-purpose/generalist is a LAST RESORT for team members — only when no specialist's domain applies.
 - Limit to 3-5 active teammates based on complexity.
-- Always clean up teams when work completes.
+- Always clean up teams when work completes. One team per session — `TeamDelete` before starting a new one.
+- File ownership: one agent per file to avoid merge conflicts. Agents with `isolation: worktree` (test-writer, refactorer, doc-writer, migrator) get automatic file isolation.
+- Task sizing: aim for 5-6 self-contained tasks per teammate, each producing a clear deliverable.
+- Wait for teammates: do not implement work assigned to teammates. Monitor via `TaskList`, steer via `SendMessage`.
+- Quality gate hooks: TeammateIdle (checks incomplete tasks) and TaskCompleted (runs test suite) are wired in the agent-system plugin.
+- Plan approval: with `CLAUDE_CODE_PLAN_MODE_REQUIRED: "true"`, teammates run in plan mode until you approve their plan via `plan_approval_response`.
 
 Team composition examples:
 - Feature build: researcher + test-writer + doc-writer

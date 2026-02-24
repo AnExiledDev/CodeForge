@@ -1,0 +1,25 @@
+name: "Publish DevContainer Features"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.devcontainer/features/**']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Publish Features"
+        uses: devcontainers/action@v1
+        with:
+          publish-features: "true"
+          base-path-to-features: "./.devcontainer/features"
+          generate-docs: "false"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

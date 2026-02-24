@@ -434,7 +434,7 @@ Common issues and solutions. For detailed troubleshooting, see [docs/troubleshoo
 **CodeForge Documentation**:
 - [Configuration Reference](docs/configuration-reference.md) — all env vars and config options
 - [Plugin System](docs/plugins.md) — plugin architecture and per-plugin docs
-- [Optional Features](docs/optional-features.md) — mcp-qdrant and other optional components
+- [Optional Features](docs/optional-features.md) — mcp-qdrant and other optional components, disabling features
 - [Keybinding Customization](docs/keybindings.md) — resolving VS Code conflicts
 - [Troubleshooting](docs/troubleshooting.md) — common issues and solutions
 

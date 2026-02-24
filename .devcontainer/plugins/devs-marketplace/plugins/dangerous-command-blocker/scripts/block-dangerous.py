@@ -116,8 +116,8 @@ def main():
         is_dangerous, message = check_command(command)
 
         if is_dangerous:
-            # Output error message and exit 2 to block
-            print(json.dumps({"error": message}))
+            # Output error to stderr (exit 2 ignores stdout)
+            print(message, file=sys.stderr)
             sys.exit(2)
 
         # Allow command to proceed

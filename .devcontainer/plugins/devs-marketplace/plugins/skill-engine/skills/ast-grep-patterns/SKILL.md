@@ -1,12 +1,13 @@
 ---
 name: ast-grep-patterns
 description: >-
-  This skill should be used when the user asks to "use ast-grep",
-  "structural search", "syntax-aware search", "find code patterns",
-  "search with ast-grep", "use tree-sitter", "find function calls structurally",
-  or discusses ast-grep patterns, structural code search, meta-variables,
-  tree-sitter parsing, or syntax-aware code matching.
-version: 0.1.0
+  Teaches syntax-aware code search using ast-grep (sg) and tree-sitter with
+  meta-variable patterns for functions, imports, and classes. USE WHEN the
+  user asks to "use ast-grep", "structural search", "find code patterns",
+  "search with ast-grep", "use tree-sitter", "syntax-aware search", or works
+  with sg run, $$$ARGS meta-variables, tree-sitter tags. DO NOT USE for
+  simple text searches where Grep suffices.
+version: 0.2.0
 ---
 
 # AST-Grep Patterns

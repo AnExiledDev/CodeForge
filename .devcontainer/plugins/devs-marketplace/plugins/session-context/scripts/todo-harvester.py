@@ -122,7 +122,15 @@ def main():
     if len(body) > TOTAL_OUTPUT_CAP:
         body = body[:TOTAL_OUTPUT_CAP] + "\n...(truncated)"
 
-    json.dump({"additionalContext": body}, sys.stdout)
+    json.dump(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "SessionStart",
+                "additionalContext": body,
+            }
+        },
+        sys.stdout,
+    )
     sys.exit(0)
 
 

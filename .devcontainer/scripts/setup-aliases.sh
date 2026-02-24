@@ -70,6 +70,7 @@ for rc in ~/.bashrc ~/.zshrc; do
 
 ${BLOCK_START}
 export CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR}"
+export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/workspaces/.gh}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -82,10 +83,17 @@ else
     _CLAUDE_BIN=claude
 fi
 
-alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 command "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
-alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 command "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
+# ChromaTerm wrapper (if ct is installed, wrap claude through it)
+if command -v ct >/dev/null 2>&1; then
+    _CLAUDE_WRAP="ct"
+else
+    _CLAUDE_WRAP="command"
+fi
+
+alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
+alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 alias ccraw='command "\$_CLAUDE_BIN"'
-alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 command "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
+alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 
 cc-tools() {
   echo "CodeForge Available Tools"
@@ -93,9 +101,9 @@ cc-tools() {
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
   for cmd in claude cc ccw ccraw ccusage ccburn claude-monitor \\
-             ccms cargo ruff biome dprint shfmt shellcheck hadolint \\
+             ccms ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
-             agent-browser gh docker git jq tmux bun go; do
+             agent-browser gh docker git jq tmux bun go infocmp; do
     if command -v "\$cmd" >/dev/null 2>&1; then
       ver=\$("\$cmd" --version 2>/dev/null | head -1 || echo "installed")
       printf "  %-20s ✓ %s\n" "\$cmd" "\$ver"

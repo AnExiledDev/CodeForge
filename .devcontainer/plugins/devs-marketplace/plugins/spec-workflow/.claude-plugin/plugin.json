@@ -1,7 +1,6 @@
 {
 	"name": "spec-workflow",
 	"description": "Specification lifecycle management: creation, refinement, building, reviewing, updating, and auditing",
-	"version": "1.0.0",
 	"author": {
 		"name": "AnExiledDev"
 	}

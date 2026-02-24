@@ -1,12 +1,16 @@
 ---
 name: spec-review
 description: >-
-  This skill should be used when the user asks to "review the spec",
-  "check spec adherence", "verify implementation", "spec-review",
-  "does code match spec", "audit implementation", or needs a standalone
-  deep implementation review that reads the code and confirms full
-  adherence to a specification.
-version: 0.1.0
+  Performs a standalone deep implementation review by reading code and
+  verifying full adherence to a specification's requirements and acceptance
+  criteria. USE WHEN the user asks to "review the spec", "verify
+  implementation", "does code match spec", "audit implementation",
+  "check spec adherence", "run spec-review", "regression check", or
+  works with post-implementation verification and pre-release audits.
+  DO NOT USE for batch metadata audits across all specs (use spec-check)
+  or for updating spec status after review (use spec-update).
+version: 0.2.0
+argument-hint: "[spec-path]"
 ---
 
 # Spec Implementation Review

@@ -16,14 +16,14 @@ Installs [claude-session-dashboard](https://github.com/dlupiak/claude-session-da
 | Option | Default | Description |
 |--------|---------|-------------|
 | `version` | `latest` | npm package version (`latest`, `1.0.0`, or `none` to skip) |
-| `port` | `3000` | Default port for the dashboard server |
+| `port` | `7847` | Default port for the dashboard server |
 | `shells` | `both` | Shell configs to add alias to (`bash`, `zsh`, `both`) |
 | `username` | `automatic` | Container user to install for |
 
 ## Usage
 
 ```bash
-# Start the dashboard (default port 3000)
+# Start the dashboard (default port 7847)
 claude-dashboard
 
 # Start on a custom port

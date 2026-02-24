@@ -1,7 +1,11 @@
 {
 	"$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
 	"name": "devs-marketplace",
-	"description": "CodeForge plugin marketplace for development tools",
+	"metadata": {
+		"description": "CodeForge plugin marketplace for development tools",
+		"version": "1.0.0",
+		"pluginRoot": "./plugins"
+	},
 	"owner": {
 		"name": "AnExiledDev"
 	},
@@ -10,125 +14,89 @@
 			"name": "codeforge-lsp",
 			"description": "LSP servers for CodeForge (Python, TypeScript, Go)",
 			"version": "1.0.0",
-			"source": "./plugins/codeforge-lsp",
+			"source": "codeforge-lsp",
 			"category": "development",
-			"lspServers": {
-				"pyright": {
-					"command": "pyright-langserver",
-					"args": ["--stdio"],
-					"extensionToLanguage": {
-						".py": "python",
-						".pyi": "python"
-					}
-				},
-				"typescript": {
-					"command": "typescript-language-server",
-					"args": ["--stdio"],
-					"extensionToLanguage": {
-						".ts": "typescript",
-						".tsx": "typescriptreact",
-						".js": "javascript",
-						".jsx": "javascriptreact",
-						".mts": "typescript",
-						".cts": "typescript",
-						".mjs": "javascript",
-						".cjs": "javascript"
-					}
-				},
-				"gopls": {
-					"command": "gopls",
-					"args": ["serve"],
-					"extensionToLanguage": {
-						".go": "go",
-						".mod": "go.mod",
-						".sum": "go.sum"
-					}
-				}
-			}
+			"keywords": ["lsp", "python", "typescript", "go"]
 		},
 		{
 			"name": "ticket-workflow",
 			"description": "EARS-based ticket workflow with GitHub integration",
 			"version": "1.0.0",
-			"source": "./plugins/ticket-workflow",
-			"category": "workflow"
+			"source": "ticket-workflow",
+			"category": "workflow",
+			"keywords": ["tickets", "github", "workflow", "ears", "issues", "pr"]
 		},
 		{
 			"name": "notify-hook",
 			"description": "Desktop notifications and audio chime when Claude finishes responding",
 			"version": "1.0.0",
-			"source": "./plugins/notify-hook",
-			"category": "productivity"
+			"source": "notify-hook",
+			"category": "productivity",
+			"keywords": ["notifications", "desktop", "audio"]
 		},
 		{
 			"name": "dangerous-command-blocker",
 			"description": "Blocks dangerous bash commands (rm -rf, sudo rm, chmod 777, force push)",
 			"version": "1.0.0",
-			"source": "./plugins/dangerous-command-blocker",
-			"category": "safety"
+			"source": "dangerous-command-blocker",
+			"category": "safety",
+			"keywords": ["safety", "bash", "blocker"]
 		},
 		{
 			"name": "protected-files-guard",
 			"description": "Blocks modifications to .env, lock files, .git/, and credentials",
 			"version": "1.0.0",
-			"source": "./plugins/protected-files-guard",
-			"category": "safety"
-		},
-		{
-			"name": "auto-formatter",
-			"description": "Batch-formats edited files at Stop (Ruff for Python, gofmt for Go, Biome for JS/TS/CSS/JSON/GraphQL/HTML, shfmt for Shell, dprint for Markdown/YAML/TOML/Dockerfile, rustfmt for Rust)",
-			"version": "1.0.0",
-			"source": "./plugins/auto-formatter",
-			"category": "development"
-		},
-		{
-			"name": "auto-linter",
-			"description": "Auto-lints edited files at Stop (Pyright + Ruff for Python, Biome for JS/TS/CSS/GraphQL, ShellCheck for Shell, go vet for Go, hadolint for Dockerfile, clippy for Rust)",
-			"version": "1.0.0",
-			"source": "./plugins/auto-linter",
-			"category": "development"
+			"source": "protected-files-guard",
+			"category": "safety",
+			"keywords": ["safety", "secrets", "env", "lockfiles"]
 		},
 		{
 			"name": "agent-system",
 			"description": "17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
 			"version": "1.0.0",
-			"source": "./plugins/agent-system",
-			"category": "development"
+			"source": "agent-system",
+			"category": "development",
+			"keywords": ["agents", "subagents", "redirection"]
 		},
 		{
 			"name": "skill-engine",
 			"description": "21 coding knowledge packs with auto-suggestion for frameworks, tools, and patterns",
 			"version": "1.0.0",
-			"source": "./plugins/skill-engine",
-			"category": "development"
+			"source": "skill-engine",
+			"category": "development",
+			"keywords": ["skills", "knowledge", "auto-suggestion"]
 		},
 		{
 			"name": "spec-workflow",
 			"description": "Specification lifecycle management: creation, refinement, building, reviewing, updating, and auditing",
 			"version": "1.0.0",
-			"source": "./plugins/spec-workflow",
-			"category": "workflow"
+			"source": "spec-workflow",
+			"category": "workflow",
+			"keywords": ["specifications", "lifecycle", "ears"]
 		},
 		{
 			"name": "session-context",
 			"description": "Session lifecycle hooks: git state injection, TODO harvesting, and commit reminders",
 			"version": "1.0.0",
-			"source": "./plugins/session-context",
-			"category": "development"
+			"source": "session-context",
+			"category": "development",
+			"keywords": ["session", "git", "todos", "commits"]
 		},
 		{
 			"name": "auto-code-quality",
 			"description": "Self-contained code quality: auto-format + auto-lint edited files (Ruff/Black, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
 			"version": "1.0.0",
-			"source": "./plugins/auto-code-quality",
-			"category": "development"
+			"source": "auto-code-quality",
+			"category": "development",
+			"keywords": ["formatting", "linting", "syntax", "quality"]
 		},
 		{
 			"name": "workspace-scope-guard",
 			"description": "Enforces working directory scope — blocks writes and warns on reads outside the project",
 			"version": "1.0.0",
-			"source": "./plugins/workspace-scope-guard",
-			"category": "safety"
+			"source": "workspace-scope-guard",
+			"category": "safety",
+			"keywords": ["safety", "scope", "workspace"]
 		}
 	]
 }

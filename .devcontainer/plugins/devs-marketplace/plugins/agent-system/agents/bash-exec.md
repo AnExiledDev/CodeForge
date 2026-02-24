@@ -6,9 +6,12 @@ description: >-
   execution, process management, or any terminal task. Follows git safety
   protocols, quotes paths with spaces, and reports command output clearly.
   Has only the Bash tool — no file reading or searching capabilities.
+  Do not use for file reading, code search, or tasks requiring file
+  content analysis.
 tools: Bash
 model: sonnet
 color: yellow
+permissionMode: default
 memory:
   scope: project
 ---

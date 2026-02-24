@@ -1,0 +1,35 @@
+# ChromaTerm rules — additive to built-in defaults
+# Customize to taste — this file won't be overwritten on rebuild.
+#
+# Built-in defaults already cover: errors, warnings, success, URLs,
+# IPv4/IPv6, MAC addresses, dates, times, sizes, numbers.
+# See: https://github.com/rgcr/ChromaTerm2
+#
+# These rules add patterns the defaults don't handle.
+# Colors: f#HEX (foreground), b#HEX (background), bold, italic, underline
+
+palette:
+  file_purple: '#bd93f9'
+  line_gray: '#6272a4'
+  info_blue: '#8be9fd'
+  hash_yellow: '#f1fa8c'
+
+rules:
+  # File paths with optional line numbers (e.g., src/main.py:42)
+  # Covers common extensions for languages used in development
+  - description: File paths with line numbers
+    regex: '(?<=[\s(]|^)([a-zA-Z0-9_./-]+\.(py|ts|tsx|js|jsx|md|json|yml|yaml|toml|sh|rs|go|sql|css|html|svelte))(:(\d+))?'
+    color:
+      1: f.file_purple underline
+      4: f.line_gray
+    exclusive: true
+
+  # Info/debug markers (not covered by defaults)
+  - description: Info and debug markers
+    regex: '\b(INFO|DEBUG|HINT|NOTE|TRACE|VERBOSE)\b'
+    color: f.info_blue
+
+  # Git short commit hashes (7-12 hex chars)
+  - description: Git commit hashes
+    regex: '(?<=commit |merge |pick |revert |fixup )[0-9a-f]{7,40}'
+    color: f.hash_yellow

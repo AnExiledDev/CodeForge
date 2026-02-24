@@ -64,7 +64,15 @@ def main():
             f"Working Directory: {cwd} — restrict all file operations to this "
             f"directory unless explicitly instructed otherwise."
         )
-        json.dump({"additionalContext": output}, sys.stdout)
+        json.dump(
+            {
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart",
+                    "additionalContext": output,
+                }
+            },
+            sys.stdout,
+        )
         sys.exit(0)
 
     sections = []
@@ -117,7 +125,15 @@ def main():
     if len(output) > TOTAL_OUTPUT_CAP:
         output = output[:TOTAL_OUTPUT_CAP] + "\n...(truncated)"
 
-    json.dump({"additionalContext": output}, sys.stdout)
+    json.dump(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "SessionStart",
+                "additionalContext": output,
+            }
+        },
+        sys.stdout,
+    )
     sys.exit(0)
 
 

@@ -74,6 +74,34 @@ Each ticket created by `/ticket:new` includes:
 
 The plugin injects a system prompt that defines the assistant persona, coding standards (SOLID, DRY, KISS, YAGNI), testing standards, and the ticket workflow rules. This ensures consistent behavior across all four commands.
 
+## Installation
+
+### CodeForge DevContainer
+
+Pre-installed and activated automatically — no setup needed.
+
+### From GitHub
+
+Use this plugin in any Claude Code setup:
+
+1. Clone the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
+
+   ```bash
+   git clone https://github.com/AnExiledDev/CodeForge.git
+   ```
+
+2. Enable the plugin in your `.claude/settings.json`:
+
+   ```json
+   {
+     "enabledPlugins": {
+       "ticket-workflow@<clone-path>/.devcontainer/plugins/devs-marketplace": true
+     }
+   }
+   ```
+
+   Replace `<clone-path>` with the absolute path to your CodeForge clone.
+
 ## Plugin Structure
 
 ```

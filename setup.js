@@ -10,6 +10,7 @@ const DEFAULT_PRESERVE = [
 	"config/defaults/settings.json",
 	"config/defaults/main-system-prompt.md",
 	"config/defaults/keybindings.json",
+	"config/defaults/ccstatusline-settings.json",
 	"config/file-manifest.json",
 	".codeforge-preserve",
 ];
@@ -244,8 +245,8 @@ function printNextSteps() {
 function printFeatures() {
 	console.log("Features included:");
 	console.log("  - Claude Code CLI with optimized tool configuration");
-	console.log("  - MCP servers: Qdrant (vector memory), Reasoner");
-	console.log("  - Development tools: Node.js LTS, Python 3.14, Go, Bun");
+	console.log("  - MCP servers: Qdrant (vector memory)");
+	console.log("  - Development tools: Node.js LTS, Python 3.14, Rust, Bun");
 	console.log("  - Persistent configuration and shell history");
 	console.log("");
 }

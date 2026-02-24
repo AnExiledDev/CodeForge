@@ -1,12 +1,15 @@
 ---
 name: spec-build
 description: >-
-  This skill should be used when the user asks to "implement the spec",
-  "build from spec", "start building the feature", "spec-build",
-  "implement this feature from the spec", "build what the spec describes",
-  or needs to orchestrate full implementation of an approved specification
-  through a phased workflow of planning, building, reviewing, and closing.
-version: 0.1.0
+  Orchestrates full implementation of an approved specification through
+  5 phases: discovery, planning, building, review, and closure. USE WHEN
+  the user asks to "implement the spec", "build from spec", "start building
+  the feature", "implement this feature", "build what the spec describes",
+  "run spec-build", or works with phased implementation workflows.
+  DO NOT USE for creating, refining, or updating specs — use spec-new,
+  spec-refine, or spec-update instead.
+version: 0.2.0
+argument-hint: "[spec-path]"
 ---
 
 # Spec-Driven Implementation

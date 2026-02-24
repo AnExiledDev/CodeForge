@@ -8,10 +8,14 @@ description: >-
   packages", "audit dependencies", "check dependency health", "license check",
   "are my dependencies up to date", "npm audit", "pip audit", or needs any
   dependency analysis across Node.js, Python, Rust, or Go ecosystems.
-  Reports findings without modifying any files.
+  Reports findings without modifying any files. Do not use for
+  installing, upgrading, or modifying dependencies — analysis and
+  advisory reporting only.
 tools: Read, Bash, Glob, Grep
 model: haiku
 color: blue
+permissionMode: plan
+background: true
 memory:
   scope: project
 skills:

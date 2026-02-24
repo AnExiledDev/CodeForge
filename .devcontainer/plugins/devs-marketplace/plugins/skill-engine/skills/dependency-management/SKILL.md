@@ -1,12 +1,16 @@
 ---
 name: dependency-management
 description: >-
-  This skill should be used when the user asks to "check dependencies",
-  "audit dependencies", "find outdated packages", "check dependency health",
-  "scan for vulnerabilities", "find unused dependencies", "license check",
-  "npm audit", "pip audit", "cargo audit", or discusses dependency analysis,
-  supply chain security, package version gaps, or license compliance.
-version: 0.1.0
+  Provides a five-phase dependency health analysis covering outdated packages,
+  security vulnerabilities, unused deps, version conflicts, and license
+  compliance across npm, pip, cargo, and Go modules. USE WHEN the user asks
+  to "audit dependencies", "find outdated packages", "find unused
+  dependencies", "check dependency health", "license check", "npm audit",
+  "pip-audit", or "cargo audit", or works with supply chain security, CVSS
+  scores, or SPDX identifiers. DO NOT USE for general security code review
+  or application-level vulnerability scanning.
+version: 0.2.0
+allowed-tools: Bash, Read, Glob, Grep
 ---
 
 # Dependency Management

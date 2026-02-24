@@ -1,14 +1,15 @@
 ---
 name: security-checklist
 description: >-
-  This skill should be used when the user asks to "check for security issues",
-  "audit this code for vulnerabilities", "scan for secrets", "review for
-  injection attacks", "check OWASP compliance", "find security bugs",
-  "detect hardcoded credentials", "review authentication logic",
-  "check for XSS", "audit dependencies for vulnerabilities",
-  or discusses security review, vulnerability scanning, OWASP Top 10,
-  secrets detection, SQL injection, command injection, or dependency auditing.
-version: 0.1.0
+  Provides defense-in-depth security review covering OWASP Top 10, secrets
+  detection, and dependency CVE scanning. USE WHEN the user asks to "check
+  for security issues", "scan for secrets", "audit dependencies for
+  vulnerabilities", "review for injection attacks", "check OWASP compliance",
+  "detect hardcoded credentials", or works with SQL injection, command
+  injection, pip-audit, npm audit, trivy, gitleaks. DO NOT USE for performance
+  profiling or general code quality reviews.
+version: 0.2.0
+allowed-tools: Bash, Read, Glob, Grep
 ---
 
 # Security Checklist

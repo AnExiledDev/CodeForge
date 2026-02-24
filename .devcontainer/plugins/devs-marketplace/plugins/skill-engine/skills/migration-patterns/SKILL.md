@@ -1,12 +1,13 @@
 ---
 name: migration-patterns
 description: >-
-  This skill should be used when the user asks to "migrate from X to Y",
-  "upgrade to version N", "bump Python version", "upgrade pydantic",
-  "migrate express to fastify", "framework migration", "version upgrade",
-  "modernize the codebase", or discusses code migration, framework upgrades,
-  API version bumps, or dependency migration strategies.
-version: 0.1.0
+  Guides incremental, rollback-safe framework upgrades and dependency
+  migrations with step-by-step verification. USE WHEN the user asks to
+  "migrate from X to Y", "upgrade to version N", "bump Python version",
+  "upgrade pydantic", "migrate express to fastify", "modernize the codebase",
+  or works with Pydantic v1-to-v2, Django upgrades, CommonJS to ESM.
+  DO NOT USE for routine dependency updates without API changes.
+version: 0.2.0
 ---
 
 # Migration Patterns

@@ -1,13 +1,15 @@
 ---
 name: sqlite
 description: >-
-  This skill should be used when the user asks to "set up a SQLite database",
-  "use WAL mode in SQLite", "query SQLite with Python", "use better-sqlite3",
-  "add full-text search with FTS5", "store JSON in SQLite",
-  "use SQLite with Cloudflare D1", "write CTEs or window functions in SQLite",
-  or discusses SQLite pragmas, schema design, JSON1 extension, FTS5,
-  aiosqlite, or embedded database patterns.
-version: 0.1.0
+  Teaches SQLite development including WAL mode, FTS5 full-text search, JSON1
+  queries, and async Python integration with aiosqlite. USE WHEN the user asks
+  to "set up a SQLite database", "use WAL mode", "add full-text search with
+  FTS5", "store JSON in SQLite", "query SQLite with Python", "use
+  better-sqlite3", "use Cloudflare D1", "write CTEs or window functions", or
+  works with aiosqlite, better-sqlite3, PRAGMA configuration, STRICT tables,
+  expression indexes. DO NOT USE for PostgreSQL, MySQL, or other client-server
+  database systems.
+version: 0.2.0
 ---
 
 # SQLite Development

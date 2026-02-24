@@ -20,6 +20,34 @@ The plugin uses the `lspServers` field in `plugin.json` to declare server config
 
 Each server maps file extensions to language identifiers. When Claude Code opens a file matching a registered extension, it routes it to the corresponding LSP server for diagnostics, completions, and other language features.
 
+## Installation
+
+### CodeForge DevContainer
+
+Pre-installed and activated automatically — no setup needed.
+
+### From GitHub
+
+Use this plugin in any Claude Code setup:
+
+1. Clone the [CodeForge](https://github.com/AnExiledDev/CodeForge) repository:
+
+   ```bash
+   git clone https://github.com/AnExiledDev/CodeForge.git
+   ```
+
+2. Enable the plugin in your `.claude/settings.json`:
+
+   ```json
+   {
+     "enabledPlugins": {
+       "codeforge-lsp@<clone-path>/.devcontainer/plugins/devs-marketplace": true
+     }
+   }
+   ```
+
+   Replace `<clone-path>` with the absolute path to your CodeForge clone.
+
 ## Plugin Structure
 
 ```

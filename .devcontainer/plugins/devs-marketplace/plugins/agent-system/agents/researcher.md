@@ -7,12 +7,16 @@ description: >-
   approach for", "investigate this", "research", "look into", "compare X vs Y",
   "explain this concept", or needs codebase analysis, library evaluation,
   technology comparison, or technical deep-dives. Reports structured findings
-  with citations without modifying any files.
+  with citations without modifying any files. Do not use for code
+  modifications, file writing, or implementation tasks.
 tools: Read, Glob, Grep, WebSearch, WebFetch, Bash
 model: sonnet
 color: cyan
+permissionMode: plan
 memory:
   scope: user
+skills:
+  - documentation-patterns
 ---
 
 # Research Agent

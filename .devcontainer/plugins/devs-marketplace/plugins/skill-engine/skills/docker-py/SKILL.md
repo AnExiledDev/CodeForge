@@ -1,13 +1,15 @@
 ---
 name: docker-py
 description: >-
-  This skill should be used when the user asks to "manage Docker containers from Python",
-  "create containers programmatically", "stream Docker container logs",
-  "execute commands in a running container", "manage Docker volumes from code",
-  "build images with the Docker SDK", "use docker-py for container lifecycle",
-  "monitor container health from Python", or discusses docker-py,
-  aiodocker, programmatic container management, or Docker Engine API.
-version: 0.1.0
+  Provides patterns for programmatic Docker container management using the
+  Docker SDK for Python and aiodocker. USE WHEN the user asks to "manage Docker
+  containers from Python", "create containers programmatically", "stream
+  container logs", "execute commands in a running container", "build images
+  with docker-py", "monitor container health from Python", or works with
+  docker-py, aiodocker, DockerClient, Docker Engine API, container lifecycle.
+  DO NOT USE for writing Dockerfiles or Docker Compose files — use the docker
+  skill instead.
+version: 0.2.0
 ---
 
 # Docker SDK for Python

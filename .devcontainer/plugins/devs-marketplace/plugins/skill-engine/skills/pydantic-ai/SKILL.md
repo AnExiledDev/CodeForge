@@ -1,13 +1,14 @@
 ---
 name: pydantic-ai
 description: >-
-  This skill should be used when the user asks to "build a PydanticAI agent",
-  "create an AI agent with PydanticAI", "add tools to a PydanticAI agent",
-  "stream responses with PydanticAI", "test a PydanticAI agent",
-  "connect PydanticAI to a Svelte frontend", "use RunContext for dependency injection",
-  "configure model fallbacks in PydanticAI", or discusses PydanticAI agents,
-  tool decorators, structured output, agent testing, or VercelAIAdapter.
-version: 0.1.0
+  Teaches PydanticAI agent development with tool decorators, RunContext
+  dependency injection, streaming, and VercelAIAdapter. USE WHEN the user
+  asks to "build a PydanticAI agent", "add tools to an agent", "stream
+  responses with PydanticAI", "test a PydanticAI agent", "connect PydanticAI
+  to Svelte", "configure model fallbacks", or works with pydantic-ai, Agent,
+  RunContext, TestModel, FallbackModel, VercelAIAdapter. DO NOT USE for Claude
+  Agent SDK TypeScript agents or general LLM API calls.
+version: 0.2.0
 ---
 
 # PydanticAI Agent Development

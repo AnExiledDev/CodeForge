@@ -129,7 +129,15 @@ def main():
     if len(output) > TOTAL_OUTPUT_CAP:
         output = output[:TOTAL_OUTPUT_CAP] + "\n...(truncated)"
 
-    json.dump({"additionalContext": output}, sys.stdout)
+    json.dump(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": "UserPromptSubmit",
+                "additionalContext": output,
+            }
+        },
+        sys.stdout,
+    )
     sys.exit(0)
 
 

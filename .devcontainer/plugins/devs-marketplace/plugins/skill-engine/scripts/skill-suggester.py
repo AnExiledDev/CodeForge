@@ -2,7 +2,7 @@
 """Skill suggester hook for UserPromptSubmit and SubagentStart events.
 
 Detects which hook event called it via input JSON shape:
-- UserPromptSubmit: {"prompt": "..."} -> {"systemMessage": "..."}
+- UserPromptSubmit: {"prompt": "..."} -> {"additionalContext": "..."}
 - SubagentStart:    {"subagent_type": "Plan", "prompt": "..."} -> {"additionalContext": "..."}
 
 Matches user prompts against skill keyword maps (phrases + terms) and suggests
@@ -16,30 +16,33 @@ import sys
 SKILLS = {
     "fastapi": {
         "phrases": [
-            "rest api",
+            "build a fastapi app",
+            "rest api with fastapi",
             "fastapi",
             "fast api",
+            "add sse streaming",
+            "dependency injection in fastapi",
+            "define pydantic models",
+            "stream llm responses",
+            "add middleware to fastapi",
             "pydantic model",
-            "sse streaming",
-            "server-sent event",
-            "dependency injection",
-            "asgi middleware",
-            "api endpoint",
-            "api route",
         ],
-        "terms": ["fastapi", "pydantic", "uvicorn", "starlette"],
+        "terms": ["fastapi", "pydantic", "uvicorn", "starlette", "sse-starlette"],
     },
     "sqlite": {
         "phrases": [
             "sqlite",
+            "set up a sqlite database",
             "wal mode",
             "fts5",
             "full-text search",
             "better-sqlite3",
             "cloudflare d1",
-            "json1 extension",
+            "store json in sqlite",
+            "write ctes",
+            "window functions",
         ],
-        "terms": ["aiosqlite"],
+        "terms": ["aiosqlite", "better-sqlite3"],
     },
     "claude-code-headless": {
         "phrases": [
@@ -49,31 +52,39 @@ SKILLS = {
             "claude code headless",
             "run claude in ci",
             "claude in pipeline",
+            "parse stream-json output",
+            "track costs programmatically",
+            "permissions for scripts",
         ],
-        "terms": [],
+        "terms": ["--output-format stream-json", "--permission-mode"],
     },
     "claude-agent-sdk": {
         "phrases": [
             "agent sdk",
             "claude agent sdk",
-            "build an agent",
-            "create an agent",
+            "build an agent with the claude agent sdk",
             "canusetool",
             "sdk permissions",
+            "create mcp tools",
+            "define subagents",
+            "configure sdk hooks",
+            "stream sdk messages",
         ],
-        "terms": ["claude-agent-sdk", "claude_agent_sdk"],
+        "terms": ["claude-agent-sdk", "claude_agent_sdk", "createSdkMcpServer"],
     },
     "pydantic-ai": {
         "phrases": [
             "pydantic ai",
             "pydantic-ai",
             "pydanticai",
-            "ai agent",
-            "runcontext",
-            "vercel ai adapter",
-            "model fallback",
+            "build a pydanticai agent",
+            "add tools to an agent",
+            "stream responses with pydanticai",
+            "test a pydanticai agent",
+            "connect pydanticai to svelte",
+            "configure model fallbacks",
         ],
-        "terms": ["pydanticai"],
+        "terms": ["pydanticai", "RunContext", "VercelAIAdapter", "FallbackModel"],
     },
     "testing": {
         "phrases": [
@@ -87,12 +98,11 @@ SKILLS = {
             "mock dependencies",
             "test endpoint",
             "test component",
+            "test sse streaming",
             "unit test",
             "integration test",
-            "run tests",
-            "run the tests",
         ],
-        "terms": ["pytest", "vitest"],
+        "terms": ["pytest", "vitest", "pytest-anyio", "httpx AsyncClient"],
     },
     "docker-py": {
         "phrases": [
@@ -102,8 +112,12 @@ SKILLS = {
             "docker engine api",
             "docker from python",
             "docker api",
+            "manage docker containers from python",
+            "create containers programmatically",
+            "stream container logs",
+            "monitor container health from python",
         ],
-        "terms": ["aiodocker"],
+        "terms": ["aiodocker", "DockerClient"],
     },
     "svelte5": {
         "phrases": [
@@ -113,12 +127,11 @@ SKILLS = {
             "svelte rune",
             "svelte 5",
             "svelte5",
-            "layercake",
-            "layer cake",
-            "svelte-dnd-action",
-            "svelte dnd",
+            "migrate from svelte 4",
+            "manage state with $state",
+            "drag and drop to svelte",
         ],
-        "terms": ["sveltekit", "svelte"],
+        "terms": ["sveltekit", "svelte", "svelte-dnd-action", "@ai-sdk/svelte"],
     },
     "docker": {
         "phrases": [
@@ -129,11 +142,10 @@ SKILLS = {
             "multi-stage build",
             "health check",
             "healthcheck",
-            "docker network",
-            "docker volume",
-            "docker image",
+            "docker compose watch",
+            "optimize docker image",
         ],
-        "terms": ["dockerfile", "compose"],
+        "terms": ["dockerfile", "compose.yaml", "BuildKit"],
     },
     "skill-building": {
         "phrases": [
@@ -144,6 +156,8 @@ SKILLS = {
             "skill instructions",
             "skill authoring",
             "design a skill",
+            "improve a skill description",
+            "optimize skill content",
         ],
         "terms": [],
     },
@@ -151,49 +165,46 @@ SKILLS = {
         "phrases": [
             "debug logs",
             "check logs",
+            "check container logs",
             "find error",
             "investigate failure",
-            "container logs",
             "what went wrong",
             "why did this crash",
             "diagnose the issue",
             "look at the logs",
             "read the logs",
+            "read docker logs",
             "analyze error",
         ],
-        "terms": ["diagnose", "troubleshoot"],
+        "terms": ["diagnose", "troubleshoot", "OOMKilled", "ECONNREFUSED"],
     },
     "refactoring-patterns": {
         "phrases": [
             "refactor this",
             "clean up code",
-            "improve code structure",
-            "reduce complexity",
+            "clean up this function",
+            "extract a method",
+            "fix code smells",
+            "reduce code duplication",
+            "simplify this class",
+            "break up this large function",
+            "remove dead code",
         ],
-        "terms": [
-            "refactor",
-            "refactoring",
-            "code smell",
-            "extract function",
-            "dead code",
-        ],
+        "terms": ["refactor", "refactoring", "code smell", "feature envy", "god class"],
     },
     "security-checklist": {
         "phrases": [
             "security review",
+            "security issues",
+            "security vulnerabilities",
             "check for vulnerabilities",
+            "scan for secrets",
             "audit security",
-            "find security issues",
+            "review for injection",
+            "owasp compliance",
+            "hardcoded credentials",
         ],
-        "terms": [
-            "security",
-            "vulnerability",
-            "owasp",
-            "injection",
-            "xss",
-            "secrets",
-            "cve",
-        ],
+        "terms": ["owasp", "injection", "xss", "cve", "trivy", "gitleaks"],
     },
     "git-forensics": {
         "phrases": [
@@ -201,62 +212,67 @@ SKILLS = {
             "who changed this",
             "when did this break",
             "git blame",
+            "bisect a regression",
+            "recover a lost commit",
+            "search git history",
+            "find when code was removed",
+            "trace the history",
+            "use git reflog",
         ],
-        "terms": ["bisect", "blame", "archaeology", "git log", "pickaxe", "reflog"],
+        "terms": ["bisect", "blame", "pickaxe", "reflog", "git log -S"],
     },
     "specification-writing": {
         "phrases": [
             "write a spec",
+            "write requirements",
             "define requirements",
             "acceptance criteria",
             "user stories",
+            "use ears format",
+            "given/when/then",
+            "write given/when/then scenarios",
+            "structure requirements",
         ],
-        "terms": [
-            "specification",
-            "requirements",
-            "ears",
-            "gherkin",
-            "given when then",
-        ],
+        "terms": ["specification", "ears", "gherkin", "given when then"],
     },
     "performance-profiling": {
         "phrases": [
+            "profile this code",
             "profile performance",
             "find bottleneck",
+            "find the bottleneck",
             "benchmark this",
+            "create a flamegraph",
+            "find memory leaks",
             "why is this slow",
+            "measure execution time",
+            "reduce latency",
         ],
-        "terms": [
-            "profiling",
-            "benchmark",
-            "flamegraph",
-            "bottleneck",
-            "latency",
-            "throughput",
-        ],
+        "terms": ["cProfile", "py-spy", "scalene", "flamegraph", "hyperfine"],
     },
     "api-design": {
         "phrases": [
             "api design",
             "rest api design",
             "design an api",
-            "design a rest",
-            "api convention",
-            "endpoint design",
+            "design rest endpoints",
             "api versioning",
-            "pagination pattern",
-            "error response format",
+            "pagination strategy",
+            "design error responses",
+            "rate limiting",
+            "openapi documentation",
         ],
-        "terms": ["openapi", "swagger", "rfc7807"],
+        "terms": ["openapi", "swagger", "rfc7807", "rfc 7807"],
     },
     "ast-grep-patterns": {
         "phrases": [
             "ast-grep",
             "ast grep",
             "structural search",
-            "structural code search",
             "syntax-aware search",
-            "tree-sitter",
+            "find code patterns",
+            "search with ast-grep",
+            "use tree-sitter",
         ],
         "terms": ["sg run", "ast-grep", "tree-sitter"],
     },
@@ -269,6 +285,7 @@ SKILLS = {
             "license check",
             "unused dependencies",
             "vulnerability scan",
+            "find unused dependencies",
         ],
         "terms": ["pip-audit", "npm audit", "cargo audit", "govulncheck"],
     },
@@ -279,10 +296,10 @@ SKILLS = {
             "add docstrings",
             "add jsdoc",
             "document the api",
-            "documentation template",
+            "create architecture docs",
             "update the docs",
         ],
-        "terms": ["docstring", "jsdoc", "tsdoc", "godoc", "rustdoc"],
+        "terms": ["docstring", "jsdoc", "tsdoc", "rustdoc", "Sphinx"],
     },
     "migration-patterns": {
         "phrases": [
@@ -293,8 +310,10 @@ SKILLS = {
             "bump python",
             "upgrade pydantic",
             "migrate express",
+            "modernize the codebase",
+            "commonjs to esm",
         ],
-        "terms": ["migrate", "migration", "upgrade"],
+        "terms": ["migrate", "migration"],
     },
     "spec-build": {
         "phrases": [
@@ -302,10 +321,9 @@ SKILLS = {
             "build from spec",
             "start building",
             "spec-build",
-            "implement this feature from the spec",
+            "implement this feature",
             "build what the spec describes",
-            "implement from the spec",
-            "build the feature",
+            "run spec-build",
         ],
         "terms": ["spec-build"],
     },
@@ -317,8 +335,85 @@ SKILLS = {
             "spec-review",
             "does code match spec",
             "audit implementation",
+            "run spec-review",
+            "regression check",
         ],
         "terms": ["spec-review"],
+    },
+    "spec-check": {
+        "phrases": [
+            "check spec health",
+            "audit specs",
+            "which specs are stale",
+            "find missing specs",
+            "review spec quality",
+            "run spec-check",
+            "are my specs up to date",
+        ],
+        "terms": ["spec-check"],
+    },
+    "spec-init": {
+        "phrases": [
+            "initialize specs",
+            "specs directory",
+            "set up specs",
+            "bootstrap specs",
+            "start using specs",
+            "create spec directory",
+            "init specs",
+            "set up .specs",
+        ],
+        "terms": ["spec-init"],
+    },
+    "spec-new": {
+        "phrases": [
+            "create a spec",
+            "new spec",
+            "new feature spec",
+            "write a spec for",
+            "spec this feature",
+            "start a new spec",
+            "plan a feature",
+            "add a spec",
+        ],
+        "terms": ["spec-new"],
+    },
+    "spec-refine": {
+        "phrases": [
+            "refine the spec",
+            "review spec assumptions",
+            "validate spec decisions",
+            "approve the spec",
+            "walk me through the spec",
+            "check spec for assumptions",
+            "iterate on the spec",
+        ],
+        "terms": ["spec-refine"],
+    },
+    "spec-update": {
+        "phrases": [
+            "update the spec",
+            "mark spec as implemented",
+            "as-built update",
+            "finish the spec",
+            "close the spec",
+            "update spec status",
+            "sync spec with code",
+        ],
+        "terms": ["spec-update"],
+    },
+    "team": {
+        "phrases": [
+            "spawn a team",
+            "create a team",
+            "team of agents",
+            "use a swarm",
+            "work in parallel",
+            "coordinate multiple agents",
+            "split this across agents",
+            "team up",
+        ],
+        "terms": ["TeamCreate", "SendMessage"],
     },
 }
 
@@ -370,25 +465,19 @@ def main() -> None:
         return
 
     skill_list = ", ".join(f'"{s}"' for s in skills)
-    is_subagent = "subagent_type" in data
 
-    if is_subagent:
-        output = {
+    output = {
+        "hookSpecificOutput": {
+            "hookEventName": "UserPromptSubmit",
             "additionalContext": (
-                f"Available skills matching this planning task: {skill_list}. "
-                "These skills contain project-specific patterns, conventions, "
-                "and reference material. Consider their guidance when designing "
-                "the implementation approach."
-            )
+                f"MANDATORY — Skill activation required. The user's prompt matches: {skill_list}. "
+                f"Before responding, evaluate each matched skill: is it relevant to this specific request? "
+                f"For each relevant skill, activate it using the Skill tool NOW. "
+                f"Skip any that are not relevant to the user's actual intent. "
+                f"Do not proceed with implementation until relevant skills are loaded."
+            ),
         }
-    else:
-        output = {
-            "systemMessage": (
-                f"<system-reminder>The user's prompt matches available skill(s): "
-                f"{skill_list}. Load the relevant skill(s) using the Skill tool "
-                f"before responding.</system-reminder>"
-            )
-        }
+    }
 
     json.dump(output, sys.stdout)
 

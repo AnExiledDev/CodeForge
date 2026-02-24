@@ -1,14 +1,14 @@
 ---
 name: docker
 description: >-
-  This skill should be used when the user asks to "write a Dockerfile",
-  "set up Docker Compose", "create a multi-stage Docker build",
-  "add health checks to Docker Compose", "use Docker Compose watch for development",
-  "configure Docker networking", "optimize Docker image size",
-  "add secrets to Docker Compose", or discusses Dockerfile best practices,
-  Compose service orchestration, container networking, volume management,
-  build caching, resource limits, or development workflows with containers.
-version: 0.1.0
+  Guides Dockerfile authoring and Docker Compose orchestration with multi-stage
+  builds, health checks, and dev watch mode. USE WHEN the user asks to "write
+  a Dockerfile", "set up Docker Compose", "create a multi-stage build", "add
+  health checks", "use Docker Compose watch", "optimize Docker image size",
+  or works with compose.yaml, docker compose, BuildKit, Compose profiles.
+  DO NOT USE for programmatic container management from Python — use
+  docker-py instead.
+version: 0.2.0
 ---
 
 # Docker & Docker Compose
