@@ -64,7 +64,8 @@
 		"spec-workflow@devs-marketplace": true,
 		"session-context@devs-marketplace": true,
 		"auto-code-quality@devs-marketplace": true,
-		"workspace-scope-guard@devs-marketplace": true
+		"workspace-scope-guard@devs-marketplace": true,
+		"prompt-snippets@devs-marketplace": true
 	},
 	"autoUpdatesChannel": "latest"
 }

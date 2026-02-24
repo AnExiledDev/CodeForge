@@ -97,6 +97,14 @@
 			"source": "./plugins/workspace-scope-guard",
 			"category": "safety",
 			"keywords": ["safety", "scope", "workspace"]
+		},
+		{
+			"name": "prompt-snippets",
+			"description": "Quick behavioral mode switches via /ps command",
+			"version": "1.0.0",
+			"source": "./plugins/prompt-snippets",
+			"category": "productivity",
+			"keywords": ["snippets", "prompts", "modes", "shortcuts"]
 		}
 	]
 }
