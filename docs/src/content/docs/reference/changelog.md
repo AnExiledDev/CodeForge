@@ -47,9 +47,38 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
+## v1.14.2
+
+**Release date:** 2026-02-24
+
+### Fixed
+
+#### CI: Release Workflow (v1.14.1)
+- **test.js** — settings.json path updated from `config/settings.json` to `config/defaults/settings.json` to match config externalization refactor
+- **test.js** — Test 5 (executable check) result now included in exit condition; previously a failure was logged but did not affect the exit code
+- **setup.js** — file permissions changed from 644 to 755 (executable) to match shebang and `bin` declaration in package.json
+
+#### CI: Publish DevContainer Features Workflow (v1.14.1)
+- **features/README.md** — removed from features directory; `devcontainers/action@v1` treated it as a feature subdirectory and failed looking for `README.md/devcontainer-feature.json`
+- **11 devcontainer-feature.json files** — removed `"maintainer"` field (not in the DevContainer Feature spec schema, causing strict validation failure): ast-grep, ccburn, ccms, ccstatusline, ccusage, chromaterm, claude-monitor, claude-session-dashboard, lsp-servers, mcp-qdrant, tree-sitter
+
+#### CI: Publish DevContainer Features Workflow (v1.14.2)
+- **6 devcontainer-feature.json files** — removed `"proposals"` field that coexisted with `"enum"` on the same option (spec schema treats them as mutually exclusive via `anyOf`): ccburn, ccusage, claude-monitor, claude-session-dashboard, mcp-qdrant, tree-sitter
+
+#### Docs
+- **Active sidebar item** — increased background opacity from 0.08 to 0.14, added `font-weight: 600` and `color: var(--sl-color-accent-high)` for readable contrast against inactive items
+
 ## v1.14.0
 
 **Release date:** 2026-02-24
+
+### Fixed (CodeRabbit review)
+- **chromaterm/install.sh** — username auto-detection now resets to empty before candidate loop, so `${USERNAME:-root}` fallback works correctly
+- **biome/install.sh** — nvm.sh sourcing wrapped in `set +u` / `set -u` to prevent unbound variable abort under `set -euo pipefail`
+- **setup.js** — `ccstatusline-settings.json` added to DEFAULT_PRESERVE so user customizations survive `--force` package updates
+- **docs agent-system.md** — spec-writer moved from Full-Access to Read-Only agents table (matches its `permissionMode: plan` definition)
+- **guard-readonly-bash.py** — docstring corrected from "Returns JSON on stdout" to "Outputs block reason to stderr"
+- **git-forensics/SKILL.md** — misleading "Blame through renames" comment fixed to "Show patch history through renames"
 
 ### Added
 
@@ -94,7 +123,18 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **ChromaTerm wrapper** in setup-aliases.sh — `cc`/`claude`/`ccw` aliases pipe through `ct` when available
 - **`package.json` scripts** — added `prepublishOnly`, `docs:dev`, `docs:build`, `docs:preview`
 
+#### ccstatusline Config Externalization
+- **Widget config extracted** from inline `jq -n` generation in `install.sh` into `config/defaults/ccstatusline-settings.json` — editable JSON file, single source of truth
+- **File-manifest deployment** — two new entries deploy the config to `~/.config/ccstatusline/settings.json` (if-changed) and `/usr/local/share/ccstatusline/settings.template.json` (always)
+- **`${HOME}` variable expansion** added to `setup-config.sh` — enables manifest entries targeting user home directory paths
+
+#### Development Rules
+- **CLAUDE.md** (project root) — added changelog and documentation update rules: all changes must have a changelog entry and update relevant docs
+
 ### Changed
+
+#### ccstatusline Feature
+- `install.sh` simplified — removed ~90 lines of inline JSON config generation, validation, and template creation. Config deployment now handled by file-manifest system
 
 #### Workspace Scope Guard
 - Reads (Read, Glob, Grep) now **hard-blocked** outside scope — upgraded from warning (exit 0) to block (exit 2)

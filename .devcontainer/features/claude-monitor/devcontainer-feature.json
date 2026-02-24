@@ -18,11 +18,6 @@
         "uv",
         "pipx",
         "pip"
-      ],
-      "proposals": [
-        "uv",
-        "pipx",
-        "pip"
       ]
     },
     "username": {

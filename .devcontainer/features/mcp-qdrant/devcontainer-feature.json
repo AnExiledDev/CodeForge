@@ -39,12 +39,6 @@
         "BAAI/bge-small-en-v1.5",
         "sentence-transformers/all-mpnet-base-v2",
         "BAAI/bge-base-en-v1.5"
-      ],
-      "proposals": [
-        "all-MiniLM-L6-v2",
-        "BAAI/bge-small-en-v1.5",
-        "sentence-transformers/all-mpnet-base-v2",
-        "BAAI/bge-base-en-v1.5"
       ]
     },
     "username": {

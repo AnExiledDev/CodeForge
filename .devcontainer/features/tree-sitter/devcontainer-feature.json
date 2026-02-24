@@ -19,12 +19,6 @@
         "python",
         "both",
         "none"
-      ],
-      "proposals": [
-        "node",
-        "python",
-        "both",
-        "none"
       ]
     },
     "installCli": {

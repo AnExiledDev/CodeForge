@@ -266,13 +266,15 @@ body header {
    Sidebar Refinements
    ============================================ */
 
-/* Active sidebar link — ember left-border accent with background */
+/* Active sidebar link — ember left-border accent with visible background */
 nav[aria-label="Main"] a[aria-current="page"],
 .sidebar-content a[aria-current="page"] {
 	border-inline-start: 2px solid var(--sl-color-accent);
 	padding-inline-start: calc(1rem - 2px);
-	background: hsla(25, 80%, 50%, 0.08);
+	background: hsla(25, 80%, 50%, 0.14);
 	border-radius: 0 6px 6px 0;
+	font-weight: 600;
+	color: var(--sl-color-accent-high);
 }
 
 /* ============================================

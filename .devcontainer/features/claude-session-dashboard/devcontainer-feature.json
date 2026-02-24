@@ -19,8 +19,7 @@
       "type": "string",
       "description": "Which shells to configure aliases in (bash, zsh, or both)",
       "default": "both",
-      "enum": ["bash", "zsh", "both"],
-      "proposals": ["bash", "zsh", "both"]
+      "enum": ["bash", "zsh", "both"]
     },
     "username": {
       "type": "string",

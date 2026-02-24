@@ -18,11 +18,6 @@
         "bash",
         "zsh",
         "both"
-      ],
-      "proposals": [
-        "bash",
-        "zsh",
-        "both"
       ]
     },
     "username": {
