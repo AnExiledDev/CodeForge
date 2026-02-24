@@ -74,6 +74,12 @@ export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/workspaces/.gh}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+# Terminal color defaults — Docker sets TERM=xterm (8 colors); upgrade to 256-color
+if [ "\$TERM" = "xterm" ] || [ -z "\$TERM" ]; then
+    export TERM=xterm-256color
+fi
+export COLORTERM="\${COLORTERM:-truecolor}"
+
 # Prefer native binary over npm-installed version
 if [ -x "\$HOME/.local/bin/claude" ]; then
     _CLAUDE_BIN="\$HOME/.local/bin/claude"

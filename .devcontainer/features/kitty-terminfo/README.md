@@ -14,7 +14,9 @@ Downloads and compiles the official kitty terminfo entry from the [Kitty termina
 
 ## Usage
 
-No configuration needed. Once installed, containers automatically recognize `TERM=xterm-kitty` and provide full capability support.
+The container defaults to `TERM=xterm-256color` with `COLORTERM=truecolor`, which provides full 256-color and 24-bit truecolor support for all terminals.
+
+For Kitty users: if your host terminal forwards `TERM=xterm-kitty` into the container, the installed terminfo ensures full Kitty-specific capability support (correct `bce` behavior, status line, etc.). If not forwarded, `xterm-256color` provides equivalent color rendering.
 
 ```bash
 # Verify installation

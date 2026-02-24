@@ -10,6 +10,8 @@
 		"CLAUDE_CONFIG_DIR": "/workspaces/.claude",
 		"GH_CONFIG_DIR": "/workspaces/.gh",
 		"TMPDIR": "/workspaces/.tmp",
+		"TERM": "xterm-256color",
+		"COLORTERM": "truecolor",
 		"CLAUDECODE": null
 	},
 
