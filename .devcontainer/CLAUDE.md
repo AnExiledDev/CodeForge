@@ -52,7 +52,7 @@ Config files deploy via `file-manifest.json` on every container start. Most depl
 Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
 - **agent-system** — 17 custom agents + built-in agent redirection
-- **skill-engine** — 21 general coding skills + auto-suggestion
+- **skill-engine** — 22 general coding skills + auto-suggestion
 - **spec-workflow** — 8 spec lifecycle skills + spec-reminder hook
 - **session-context** — Git state injection, TODO harvesting, commit reminders
 - **auto-code-quality** — Auto-format + auto-lint + advisory test runner

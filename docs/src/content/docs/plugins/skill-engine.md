@@ -35,7 +35,7 @@ Skills are designed to be practical, not encyclopedic. A typical skill includes:
 
 ## Available Skills
 
-CodeForge ships with 21 skills organized into three categories.
+CodeForge ships with 22 skills organized into three categories.
 
 ### Frameworks and Libraries
 
@@ -171,7 +171,7 @@ skill-engine/
     │   └── SKILL.md
     ├── debugging/
     │   └── SKILL.md
-    └── ...                  # 21 skills total
+    └── ...                  # 22 skills total
 ```
 
 ## Related

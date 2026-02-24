@@ -344,7 +344,7 @@ Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` pro
 | `statusline-config` | ccstatusline configuration |
 | `test-writer` | Test authoring with pass verification |
 
-### General Skills (21) — `skill-engine` plugin
+### General Skills (22) — `skill-engine` plugin
 
 Skills in `plugins/devs-marketplace/plugins/skill-engine/skills/` provide domain-specific coding references:
 

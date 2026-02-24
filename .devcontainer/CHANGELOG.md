@@ -7,6 +7,12 @@
 #### Docs
 - **CLAUDE.md** — new "Status Bar Widgets" section documenting widget properties, token color conventions, label fusion pattern, and available widget types
 
+#### Skills
+- **worktree** — New skill for git worktree creation, management, and cleanup. Covers `EnterWorktree` tool, `--worktree` CLI flag, `.worktreeinclude` setup, worktree naming conventions, cleanup lifecycle, and CodeForge integration (Project Manager auto-detection, agent isolation). Includes two reference files: manual worktree commands and parallel workflow patterns.
+
+#### System Prompt
+- **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
+
 ### Changed
 
 #### Configuration

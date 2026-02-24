@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: Complete reference for all 21 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
+description: Complete reference for all 22 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
 sidebar:
   order: 3
 ---
@@ -211,13 +211,21 @@ Agent team orchestration for parallel workstreams. Guides the creation and coord
 
 **Auto-suggested when:** You mention spawning a team, working in parallel, coordinating multiple agents, or splitting work across agents.
 
+### worktree
+
+Git worktree creation, management, and cleanup for parallel development workflows. Covers the full worktree lifecycle — creating worktrees via `EnterWorktree` or CLI, setting up `.worktreeinclude` for environment files, managing active worktrees, and cleanup. Integrates with CodeForge's Project Manager auto-detection and agent isolation system.
+
+**Key topics:** `EnterWorktree` tool, `--worktree` CLI flag, `.worktreeinclude` setup, worktree naming conventions, cleanup and merging, agent isolation via `isolation: worktree`, native vs legacy path conventions.
+
+**Auto-suggested when:** You mention creating a worktree, `EnterWorktree`, git worktree commands, parallel branches, or isolating work.
+
 ## Skill Categories Summary
 
 | Category | Skills | Focus |
 |----------|--------|-------|
 | **Frameworks** | fastapi, svelte5, pydantic-ai, docker, docker-py, sqlite | Framework-specific patterns and APIs |
 | **Practices** | testing, debugging, refactoring-patterns, security-checklist, api-design, documentation-patterns, performance-profiling, dependency-management, migration-patterns | Methodologies and established patterns |
-| **Claude & CodeForge** | claude-code-headless, claude-agent-sdk, skill-building, git-forensics, specification-writing, ast-grep-patterns, team | Building on and extending the Claude ecosystem |
+| **Claude & CodeForge** | claude-code-headless, claude-agent-sdk, skill-building, git-forensics, specification-writing, ast-grep-patterns, team, worktree | Building on and extending the Claude ecosystem |
 
 :::note[Skills vs Agents]
 Skills and agents serve different purposes. An **agent** is a specialized Claude instance with specific tools and constraints — it *does work*. A **skill** is a knowledge pack that *informs work* — it provides the patterns, best practices, and domain knowledge that make an agent (or the main Claude session) more effective. Many agents have associated skills that load automatically when the agent is spawned.

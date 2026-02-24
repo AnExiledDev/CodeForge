@@ -16,7 +16,7 @@ plugins/devs-marketplace/
     ├── protected-files-guard/ # Safety: protect sensitive files
     ├── auto-code-quality/     # Batch formatter + linter + advisory test runner
     ├── agent-system/          # 17 custom agents + redirection hooks
-    ├── skill-engine/          # 21 coding skills + auto-suggestion
+    ├── skill-engine/          # 22 coding skills + auto-suggestion
     ├── spec-workflow/         # 8 spec lifecycle skills + spec-reminder
     ├── session-context/       # Git state, TODO harvesting, commit reminders
     └── workspace-scope-guard/ # Workspace scope enforcement
@@ -153,9 +153,9 @@ For detailed agent documentation, see `plugins/devs-marketplace/plugins/agent-sy
 
 ### skill-engine
 
-**Purpose**: 21 domain-specific coding reference skills with auto-suggestion.
+**Purpose**: 22 domain-specific coding reference skills with auto-suggestion.
 
-**Skills**: fastapi, svelte5, docker, docker-py, pydantic-ai, sqlite, testing, debugging, security-checklist, refactoring-patterns, git-forensics, performance-profiling, documentation-patterns, migration-patterns, dependency-management, claude-code-headless, claude-agent-sdk, ast-grep-patterns, api-design, skill-building, team
+**Skills**: fastapi, svelte5, docker, docker-py, pydantic-ai, sqlite, testing, debugging, security-checklist, refactoring-patterns, git-forensics, performance-profiling, documentation-patterns, migration-patterns, dependency-management, claude-code-headless, claude-agent-sdk, ast-grep-patterns, api-design, skill-building, team, worktree
 
 **How it works**: Skills are loaded on demand via the Skill tool. A PreToolUse hook auto-suggests relevant skills based on conversation context.
 

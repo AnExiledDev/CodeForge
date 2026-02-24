@@ -415,6 +415,21 @@ SKILLS = {
         ],
         "terms": ["TeamCreate", "SendMessage"],
     },
+    "worktree": {
+        "phrases": [
+            "create a worktree",
+            "work in a worktree",
+            "git worktree",
+            "worktree",
+            "parallel branches",
+            "isolate my work",
+            "clean up worktrees",
+            "list worktrees",
+            "set up a worktree",
+            "enter worktree",
+        ],
+        "terms": ["worktree", "EnterWorktree", "WorktreeCreate"],
+    },
 }
 
 # Pre-compile term patterns for whole-word matching
