@@ -188,7 +188,6 @@
 			"extensions": [
 				"wenbopan.vscode-terminal-osc-notifier",
 				"GitHub.vscode-github-actions",
-				"fabiospampinato.vscode-todo-plus",
 				"alefragnani.project-manager"
 			]
 		}
