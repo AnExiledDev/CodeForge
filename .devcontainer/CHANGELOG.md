@@ -2,6 +2,14 @@
 
 ## [v1.14.0] - 2026-02-24
 
+### Fixed (CodeRabbit review)
+- **chromaterm/install.sh** — username auto-detection now resets to empty before candidate loop, so `${USERNAME:-root}` fallback works correctly
+- **biome/install.sh** — nvm.sh sourcing wrapped in `set +u` / `set -u` to prevent unbound variable abort under `set -euo pipefail`
+- **setup.js** — `ccstatusline-settings.json` added to DEFAULT_PRESERVE so user customizations survive `--force` package updates
+- **docs agent-system.md** — spec-writer moved from Full-Access to Read-Only agents table (matches its `permissionMode: plan` definition)
+- **guard-readonly-bash.py** — docstring corrected from "Returns JSON on stdout" to "Outputs block reason to stderr"
+- **git-forensics/SKILL.md** — misleading "Blame through renames" comment fixed to "Show patch history through renames"
+
 ### Added
 
 #### Nuclear Workspace Scope Enforcement

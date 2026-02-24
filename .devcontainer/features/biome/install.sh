@@ -14,7 +14,9 @@ echo "[biome] Version: ${VERSION}"
 
 # Source NVM if available
 if [ -f /usr/local/share/nvm/nvm.sh ]; then
+    set +u
     source /usr/local/share/nvm/nvm.sh
+    set -u
 fi
 
 # Validate npm is available

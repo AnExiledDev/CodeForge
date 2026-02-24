@@ -19,6 +19,7 @@ echo "[chromaterm] Starting ChromaTerm2 installation..."
 
 # ---------- USER ----------
 if [[ "${USERNAME}" == "auto" || "${USERNAME}" == "automatic" ]]; then
+    USERNAME=""
     for u in vscode node codespace; do
         if id -u "$u" >/dev/null 2>&1; then
             USERNAME="$u"

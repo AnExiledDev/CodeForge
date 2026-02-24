@@ -12,7 +12,7 @@ command substitution ($(), backticks), backgrounding (&), redirections
 (>, >>), eval/exec, inline scripting (python -c, node -e), and
 path/backslash prefix bypasses (/usr/bin/rm, \\rm).
 
-Reads tool input from stdin (JSON). Returns JSON on stdout.
+Reads tool input from stdin (JSON). Outputs block reason to stderr.
 Exit 0: Command is safe (allowed)
 Exit 2: Command would modify state (blocked)
 """

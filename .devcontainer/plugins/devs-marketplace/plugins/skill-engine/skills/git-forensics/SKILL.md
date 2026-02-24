@@ -105,7 +105,7 @@ Track a file across renames. Without `--follow`, history stops at the rename:
 # Follow a file through renames
 git log --follow --oneline -- path/to/current_name.py
 
-# Blame through renames
+# Show patch history through renames
 git log --follow -p -- path/to/file.py
 ```
 

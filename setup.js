@@ -10,6 +10,7 @@ const DEFAULT_PRESERVE = [
 	"config/defaults/settings.json",
 	"config/defaults/main-system-prompt.md",
 	"config/defaults/keybindings.json",
+	"config/defaults/ccstatusline-settings.json",
 	"config/file-manifest.json",
 	".codeforge-preserve",
 ];

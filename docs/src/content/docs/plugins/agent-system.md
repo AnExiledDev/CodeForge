@@ -122,6 +122,7 @@ These agents investigate, analyze, and report — they never modify files.
 | **git-archaeologist** | Git history analysis, blame, bisect, forensics | Haiku | git-forensics |
 | **perf-profiler** | Performance profiling, bottleneck identification | Sonnet | performance-profiling |
 | **security-auditor** | Security audit, vulnerability assessment, OWASP checks | Sonnet | security-checklist |
+| **spec-writer** | Specification authoring and refinement | Opus | specification-writing |
 
 ### Full-Access Agents
 
@@ -134,7 +135,6 @@ These agents can read and write files, run commands, and make changes to your co
 | **refactorer** | Behavior-preserving code transformations | Opus | Worktree | refactoring-patterns |
 | **doc-writer** | Documentation writing and maintenance | Opus | Worktree | documentation-patterns |
 | **migrator** | Code migration, framework upgrades | Opus | Worktree | migration-patterns |
-| **spec-writer** | Specification authoring and refinement | Opus | No | specification-writing |
 | **bash-exec** | Shell command execution and scripting | Sonnet | No | — |
 | **statusline-config** | Statusline customization | Sonnet | No | — |
 
