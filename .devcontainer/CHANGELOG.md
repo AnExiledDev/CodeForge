@@ -17,6 +17,9 @@
 - **`/ship`** — Combined commit/push/PR command with full code review, commit message approval, and AskUserQuestion confirmation before PR creation; optionally links to tickets if context exists
 - **`/pr:review`** — Review any PR by number/URL or auto-detect from current branch; posts findings as PR comment with severity ratings; never approves or merges
 
+#### Port Forwarding
+- **devcontainer-bridge (dbr)** — Dynamic port auto-discovery and forwarding independent of VS Code. Container daemon polls for new listeners and forwards them to the host via reverse TCP connections. Requires `dbr host-daemon` running on the host machine. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)
+
 ### Changed
 
 #### Skill Engine: Auto-Suggestion
