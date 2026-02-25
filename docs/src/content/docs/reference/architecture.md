@@ -111,7 +111,7 @@ Skills are Markdown knowledge files loaded on demand during a session:
 4. The skill content is injected into the conversation context
 5. Claude uses the skill knowledge for the current task
 
-CodeForge ships 34 skills across the skill-engine, spec-workflow, ticket-workflow, and agent-system plugins.
+CodeForge ships 35 skills across the skill-engine, spec-workflow, ticket-workflow, and agent-system plugins.
 
 ## Directory Structure
 

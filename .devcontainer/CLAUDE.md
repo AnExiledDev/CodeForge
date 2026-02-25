@@ -33,6 +33,34 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 
 Config files deploy via `file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
 
+## Worktrees
+
+Git worktrees allow checking out multiple branches simultaneously, each in its own directory.
+
+**Native (recommended for Claude Code sessions):**
+- **In-session:** `EnterWorktree` tool — creates worktree at `<repo>/.claude/worktrees/<name>/`, branch `worktree-<name>`, auto-cleaned if no changes
+- **New session:** `claude --worktree <name>` — starts Claude in its own worktree; combine with `--tmux` for background work
+
+**Manual (legacy convention):**
+```bash
+mkdir -p /workspaces/projects/.worktrees
+git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
+```
+
+**Environment files:** Place a `.worktreeinclude` file at the project root listing `.gitignore`-excluded files to copy into new worktrees (e.g., `.env`). Uses `.gitignore` pattern syntax; only files matching both `.worktreeinclude` and `.gitignore` are copied.
+
+**Management:**
+
+| Command | Purpose |
+|---------|---------|
+| `git worktree list` | Show all active worktrees |
+| `git worktree remove <path>` | Remove a worktree (destructive — confirm first) |
+| `git worktree prune` | Clean up stale references (destructive — confirm first) |
+
+**Path conventions:**
+- **Native:** `<repo>/.claude/worktrees/<name>/` — used by `--worktree` flag and `EnterWorktree`
+- **Legacy:** `.worktrees/` as sibling to the main repo — used for manual `git worktree add` and Project Manager integration
+
 ## Commands
 
 | Command | Purpose |

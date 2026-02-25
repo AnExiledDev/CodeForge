@@ -72,14 +72,14 @@ git worktree list --porcelain
 ```
 
 **Default output:**
-```
+```text
 /workspaces/projects/CodeForge            d2ba55e [main]
 /workspaces/projects/.worktrees/feature-a abc1234 [feature-a]
 /workspaces/projects/.worktrees/bugfix-b  def5678 [bugfix-b] locked
 ```
 
 **Porcelain output:**
-```
+```text
 worktree /workspaces/projects/CodeForge
 HEAD d2ba55eabc1234def5678901234567890abcdef
 branch refs/heads/main
@@ -168,7 +168,7 @@ git worktree unlock <path>
 
 The main repository has a `.git` **directory**. Each worktree has a `.git` **file** (not directory) containing a pointer:
 
-```
+```text
 gitdir: /workspaces/projects/CodeForge/.git/worktrees/feature-a
 ```
 

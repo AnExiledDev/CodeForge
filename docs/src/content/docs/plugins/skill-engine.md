@@ -1,6 +1,6 @@
 ---
 title: Skill Engine
-description: The skill engine plugin provides 21 domain-specific knowledge packs with automatic suggestion based on conversation context.
+description: The skill engine plugin provides 22 domain-specific knowledge packs with automatic suggestion based on conversation context.
 sidebar:
   order: 3
 ---
@@ -78,6 +78,7 @@ Skills for working with Claude Code itself and extending CodeForge.
 | **git-forensics** | Git history analysis, blame, bisect, pickaxe search, reflog recovery |
 | **ast-grep-patterns** | AST-grep pattern writing for syntax-aware code search |
 | **team** | Multi-agent team coordination, task decomposition, parallel workstreams |
+| **worktree** | Git worktree lifecycle, EnterWorktree tool, `.worktreeinclude` setup, parallel workflows |
 
 :::note[Cross-Plugin Skills]
 The `specification-writing` skill and the spec lifecycle skills (`spec-new`, `spec-build`, etc.) live in the [Spec Workflow](./spec-workflow/) plugin, not the skill engine. However, the skill-suggester registers keywords for them so they are auto-suggested alongside skill-engine skills.

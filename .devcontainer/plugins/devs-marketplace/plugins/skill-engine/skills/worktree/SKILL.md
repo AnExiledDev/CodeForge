@@ -10,7 +10,7 @@ description: >-
   or parallel development patterns. DO NOT USE for routine git branching
   or single-branch workflows.
 version: 0.1.0
-allowed-tools: Bash, Read, Grep, Glob
+allowed-tools: Bash, Read, Grep, Glob, EnterWorktree
 ---
 
 # Git Worktrees
@@ -36,7 +36,7 @@ Use worktrees when:
 
 The fastest way to create a worktree during a Claude Code session. Call `EnterWorktree` with a descriptive name:
 
-```
+```text
 EnterWorktree: feature-auth-oauth2
 ```
 
@@ -129,7 +129,7 @@ git worktree list
 
 Output shows each worktree's path, HEAD commit, and branch:
 
-```
+```text
 /workspaces/projects/CodeForge            d2ba55e [main]
 /workspaces/projects/.worktrees/feature-a abc1234 [feature-a]
 ```

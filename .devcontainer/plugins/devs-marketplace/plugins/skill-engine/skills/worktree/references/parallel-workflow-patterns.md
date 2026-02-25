@@ -71,7 +71,7 @@ Agents with `isolation: worktree` in their frontmatter (refactorer, test-writer,
 **Workflow:**
 1. Each agent/session works on independent files
 2. Changes stay isolated until explicitly merged
-3. No merge conflicts during parallel work
+3. Reduced conflict risk when file ownership is respected
 4. After each session completes, review changes via PR
 
 **When to use:** Large tasks that decompose into independent workstreams. Effective for feature builds, migrations, or test suites where each agent owns a different set of files.
