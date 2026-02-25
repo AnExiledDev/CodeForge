@@ -4,7 +4,7 @@ Quick behavioral mode switches via a single `/ps` slash command.
 
 ## Usage
 
-```
+```text
 /ps [snippet-name]
 ```
 
@@ -29,7 +29,7 @@ Type `/ps` followed by a snippet name to inject a behavioral directive for the r
 
 Combine snippets by listing multiple names:
 
-```
+```text
 /ps noaction brief
 ```
 

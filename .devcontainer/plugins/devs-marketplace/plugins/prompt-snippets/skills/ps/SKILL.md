@@ -30,7 +30,7 @@ If `$ARGUMENTS` does not match any snippet name, list all available snippets and
 
 Multiple snippets can be applied in one invocation by separating names with spaces:
 
-```
+```text
 /ps noaction brief
 ```
 
