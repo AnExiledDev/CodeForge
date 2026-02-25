@@ -58,7 +58,8 @@ fi
 
 # Resolve target user's home (guards against $HOME=/root when hook runs as root)
 _USERNAME="${SUDO_USER:-${USER:-vscode}}"
-_USER_HOME=$(eval echo "~${_USERNAME}")
+_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
+_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
 
 # Ensure settings.json exists
 SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}/settings.json"
@@ -129,6 +130,6 @@ fi
 
 # Set proper permissions
 chmod 644 "$SETTINGS_FILE"
-chown vscode:vscode "$SETTINGS_FILE" 2>/dev/null || true
+chown "${_USERNAME}:${_USERNAME}" "$SETTINGS_FILE" 2>/dev/null || true
 
 echo "[mcp-qdrant] ✓ Configuration complete"

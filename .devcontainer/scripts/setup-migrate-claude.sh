@@ -8,7 +8,8 @@
 
 OLD_DIR="/workspaces/.claude"
 _USERNAME="${SUDO_USER:-${USER:-vscode}}"
-_USER_HOME=$(eval echo "~${_USERNAME}")
+_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
+_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
 NEW_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
 
 # Nothing to migrate if old directory doesn't exist

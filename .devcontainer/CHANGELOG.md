@@ -21,6 +21,9 @@
 
 #### Security
 - Protected-files-guard now blocks modifications to `.credentials.json`
+- Replaced `eval` tilde expansion with `getent passwd` lookup across all scripts (prevents shell injection via `SUDO_USER`/`USER`)
+- Auth token value is now JSON-escaped before writing to `.credentials.json`
+- Credential directory created with restrictive umask (700) matching credential file permissions (600)
 
 #### Status Bar
 - **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments
@@ -28,10 +31,12 @@
 #### Scripts
 - Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
 - Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
+- `chown` in mcp-qdrant poststart hooks now uses resolved `_USERNAME` instead of hardcoded `vscode` or `$(id -un)`
 
 #### Documentation
 - All docs now reference `~/.claude` as default config path
 - Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
+- ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
 
 ### Fixed
 
