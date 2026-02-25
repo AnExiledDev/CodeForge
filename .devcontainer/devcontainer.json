@@ -150,7 +150,7 @@
 			"enableBell": true,
 			"enableOsc": true
 		},
-		"ghcr.io/bradleybeddoes/devcontainer-bridge/dbr:latest": {}
+		"ghcr.io/bradleybeddoes/devcontainer-bridge/dbr:0.2.0": {}
 	},
 
 	"forwardPorts": [7847],

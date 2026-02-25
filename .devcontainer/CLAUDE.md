@@ -183,7 +183,7 @@ Two mechanisms handle port access:
 
 | Mechanism | When Active | Dynamic Discovery |
 |-----------|-------------|-------------------|
-| `forwardPorts` (devcontainer.json) | VS Code / Codespaces only | Yes (VS Code auto-detect) |
+| `forwardPorts` (devcontainer.json) | VS Code / Codespaces only | No (static list; VS Code auto-detects separately) |
 | devcontainer-bridge (`dbr`) | Any terminal client | Yes (polls `/proc/net/tcp`) |
 
 `forwardPorts` is a no-op outside VS Code — the `devcontainer` CLI ignores it. `dbr` provides VS Code-independent dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
