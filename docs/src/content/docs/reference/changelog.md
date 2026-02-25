@@ -47,6 +47,13 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
+## Unreleased
+
+### Removed
+
+#### VS Code Extensions
+- **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
+
 ## v1.14.2
 
 **Release date:** 2026-02-24
