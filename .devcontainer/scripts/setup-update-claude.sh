@@ -55,7 +55,9 @@ CURRENT_VERSION=$("$NATIVE_BIN" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+
 log "Current version: ${CURRENT_VERSION}"
 
 # Use the official update command with timeout (handles download, verification, and versioned install)
-if timeout 60 "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"; then
+timeout 60 "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"
+UPDATE_STATUS=${PIPESTATUS[0]}
+if [ "$UPDATE_STATUS" -eq 0 ]; then
 	UPDATED_VERSION=$("$NATIVE_BIN" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
 	if [ "$CURRENT_VERSION" != "$UPDATED_VERSION" ]; then
 		log "Updated Claude Code: ${CURRENT_VERSION} → ${UPDATED_VERSION}"
@@ -63,5 +65,5 @@ if timeout 60 "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"; then
 		log "Already up to date (${CURRENT_VERSION})"
 	fi
 else
-	log "WARNING: 'claude update' failed or timed out"
+	log "WARNING: 'claude update' failed or timed out (exit ${UPDATE_STATUS})"
 fi

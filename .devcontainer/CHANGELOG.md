@@ -13,11 +13,15 @@
 ### Changed
 
 #### Claude Code Installation
-- **Replaced npm installation with native binary** — swapped `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5` (npm-based) for new `./features/claude-code-native` feature that installs via Anthropic's official native installer (`https://claude.ai/install.sh`)
-- **In-session auto-updater now works** — native binary installs to `~/.local/bin/claude` owned by the container user, so `claude update` can write freely without root permission issues
-- **setup-update-claude.sh** — stripped all npm fallback and `claude install` bootstrap code; now native-binary-only with 60s timeout and transitional npm cleanup
-- **setup-aliases.sh** — simplified `_CLAUDE_BIN` resolution to native binary path only (removed npm and `/usr/local/bin` fallbacks)
-- **setup.sh** — fixed background update script invocation to capture all output to log file instead of discarding via `&>/dev/null`
+- **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
+- **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues
+
+### Fixed
+
+#### Claude Code Installation
+- **Update script no longer silently discards errors** — background update output now captured to log file instead of being discarded via `&>/dev/null`
+- **Update script simplified to native-binary-only** — removed npm fallback and `claude install` bootstrap code; added 60s timeout and transitional npm cleanup
+- **Alias resolution simplified** — `_CLAUDE_BIN` now resolves directly to native binary path (removed npm and `/usr/local/bin` fallbacks)
 
 #### System Prompt
 - **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.

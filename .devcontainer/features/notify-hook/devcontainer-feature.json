@@ -23,6 +23,6 @@
   },
   "installsAfter": [
     "ghcr.io/devcontainers/features/common-utils:2",
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1"
+    "./features/claude-code-native"
   ]
 }

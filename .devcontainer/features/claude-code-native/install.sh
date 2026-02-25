@@ -14,8 +14,9 @@ echo "[claude-code-native] Starting installation..."
 echo "[claude-code-native] Version: ${VERSION}"
 
 # === VALIDATE DEPENDENCIES ===
-if ! command -v curl &>/dev/null && ! command -v wget &>/dev/null; then
-	echo "[claude-code-native] ERROR: curl or wget is required"
+# The official installer (claude.ai/install.sh) requires curl internally
+if ! command -v curl &>/dev/null; then
+	echo "[claude-code-native] ERROR: curl is required"
 	echo "  Ensure common-utils feature is installed first"
 	exit 1
 fi
@@ -50,11 +51,13 @@ chown -R "${USERNAME}:" "${USER_HOME}/.local/bin" "${USER_HOME}/.local/share/cla
 
 # === DETERMINE TARGET ===
 # The official installer accepts: stable, latest, or a specific semver
-TARGET=""
-if [ "${VERSION}" != "latest" ] && [ "${VERSION}" != "stable" ]; then
-	TARGET="${VERSION}"
-else
-	TARGET="${VERSION}"
+TARGET="${VERSION}"
+if [ "${TARGET}" != "latest" ] && [ "${TARGET}" != "stable" ]; then
+	if ! echo "${TARGET}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+		echo "[claude-code-native] ERROR: Invalid version '${TARGET}'"
+		echo "  Use 'latest', 'stable', or a semver (e.g., 2.1.52)"
+		exit 1
+	fi
 fi
 
 # === INSTALL ===
@@ -67,7 +70,7 @@ echo "[claude-code-native] Downloading official installer..."
 if [ "${USERNAME}" = "root" ]; then
 	curl -fsSL https://claude.ai/install.sh | sh -s -- "${TARGET}"
 else
-	su - "${USERNAME}" -c "curl -fsSL https://claude.ai/install.sh | sh -s -- ${TARGET}"
+	su - "${USERNAME}" -c "curl -fsSL https://claude.ai/install.sh | sh -s -- \"${TARGET}\""
 fi
 
 # === VERIFICATION ===

@@ -50,6 +50,6 @@
   "installsAfter": [
     "ghcr.io/devcontainers/features/python:1",
     "ghcr.io/devcontainers/features/common-utils:2",
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1"
+    "./features/claude-code-native"
   ]
 }
