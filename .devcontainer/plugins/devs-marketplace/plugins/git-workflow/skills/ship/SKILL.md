@@ -2,7 +2,7 @@
 description: Review changes, commit with detailed message, push, and optionally create pull request
 argument-hint: [commit message hint]
 disable-model-invocation: true
-allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, AskUserQuestion
+allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Edit, Write, AskUserQuestion
 ---
 
 # /ship - Review, Commit, Push & Optional PR

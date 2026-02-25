@@ -17,7 +17,7 @@ Provides two slash commands for shipping code and reviewing pull requests.
 
 ### `/ship` Workflow
 
-```
+```text
 /ship [optional commit message hint]
   │
   └─→ Gather context (git status, diff, branch, project rules)
@@ -38,7 +38,7 @@ Provides two slash commands for shipping code and reviewing pull requests.
 
 ### `/pr:review` Workflow
 
-```
+```text
 /pr:review [PR number, URL, or omit for auto-detect]
   │
   └─→ Identify target PR (argument, auto-detect, or ask)
@@ -106,7 +106,7 @@ Use this plugin in any Claude Code setup:
 
 ## Plugin Structure
 
-```
+```text
 git-workflow/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin metadata

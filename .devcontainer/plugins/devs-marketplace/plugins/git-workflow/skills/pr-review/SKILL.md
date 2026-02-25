@@ -78,7 +78,7 @@ For each significant feature in the PR:
 ```bash
 # Check for new dependencies (adapt patterns to project)
 gh pr diff $PR | grep -E '^\+.*"(dependencies|devDependencies)"' -A 50
-gh pr diff $PR | grep -E '^\+' -- "**/requirements*.txt" "**/package*.json" "**/Cargo.toml" "**/go.mod" "**/Gemfile" 2>/dev/null
+gh pr diff $PR | grep -E '^\+' | grep -E 'requirements.*\.txt|package.*\.json|Cargo\.toml|go\.mod|Gemfile'
 ```
 
 | Check | Look For |
