@@ -79,6 +79,8 @@ Rules in `config/defaults/rules/` deploy to `.claude/rules/` on every container 
 | `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` |
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` |
 | `WORKSPACE_ROOT` | `/workspaces` |
+| `TERM` | `${localEnv:TERM:xterm-256color}` (via `remoteEnv` — forwards host TERM, falls back to 256-color) |
+| `COLORTERM` | `truecolor` (via `remoteEnv` — enables 24-bit color support) |
 
 All experimental feature flags are in `settings.json` under `env`. Setup steps controlled by boolean flags in `.env`.
 
