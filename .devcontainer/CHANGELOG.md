@@ -1,5 +1,12 @@
 # CodeForge Devcontainer Changelog
 
+## [Unreleased]
+
+### Removed
+
+#### VS Code Extensions
+- **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
+
 ## [v1.14.2] - 2026-02-24
 
 ### Changed
