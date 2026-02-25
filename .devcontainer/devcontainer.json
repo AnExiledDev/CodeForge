@@ -45,7 +45,7 @@
 	},
 
 	// Feature install order: external runtimes first (Node, uv, Rust, Bun),
-	// then Claude Code (needs Node), then custom features.
+	// then Claude Code native binary (no Node dependency), then custom features.
 	// npm-dependent features (agent-browser, ccusage, ccburn, claude-session-dashboard,
 	// biome, lsp-servers) must come after Node. uv-dependent features (ruff, claude-monitor) must
 	// come after uv. cargo-dependent features (ccms) must come after Rust.
@@ -57,7 +57,7 @@
 		"ghcr.io/devcontainers-extra/features/uv",
 		"ghcr.io/rails/devcontainer/features/bun",
 		"ghcr.io/devcontainers/features/rust",
-		"ghcr.io/anthropics/devcontainer-features/claude-code",
+		"./features/claude-code-native",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
@@ -96,7 +96,7 @@
 		},
 		// Uncomment to add Go runtime (not installed by default):
 		// "ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5": {},
+		"./features/claude-code-native": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",

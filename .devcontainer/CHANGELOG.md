@@ -12,6 +12,13 @@
 
 ### Changed
 
+#### Claude Code Installation
+- **Replaced npm installation with native binary** — swapped `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5` (npm-based) for new `./features/claude-code-native` feature that installs via Anthropic's official native installer (`https://claude.ai/install.sh`)
+- **In-session auto-updater now works** — native binary installs to `~/.local/bin/claude` owned by the container user, so `claude update` can write freely without root permission issues
+- **setup-update-claude.sh** — stripped all npm fallback and `claude install` bootstrap code; now native-binary-only with 60s timeout and transitional npm cleanup
+- **setup-aliases.sh** — simplified `_CLAUDE_BIN` resolution to native binary path only (removed npm and `/usr/local/bin` fallbacks)
+- **setup.sh** — fixed background update script invocation to capture all output to log file instead of discarding via `&>/dev/null`
+
 #### System Prompt
 - **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
 

@@ -25,46 +25,37 @@ fi
 
 # === CLEANUP TRAP ===
 cleanup() {
-	rm -f "${_TMPDIR}/claude-update" 2>/dev/null || true
-	rm -f "${_TMPDIR}/claude-update-manifest.json" 2>/dev/null || true
 	rm -rf "$LOCK_FILE" 2>/dev/null || true
 }
 trap cleanup EXIT
 
-# === VERIFY CLAUDE IS INSTALLED ===
-if ! command -v claude &>/dev/null; then
-	log "Claude Code not found, skipping update"
-	exit 0
+# === NATIVE BINARY ===
+NATIVE_BIN="$HOME/.local/bin/claude"
+
+if [ ! -x "$NATIVE_BIN" ]; then
+	log "ERROR: Native binary not found at ${NATIVE_BIN}"
+	log "  The claude-code-native feature should install this during container build."
+	log "  Try rebuilding the container or running: curl -fsSL https://claude.ai/install.sh | sh"
+	exit 1
 fi
 
-# === ENSURE NATIVE BINARY EXISTS ===
-# 'claude install' puts the binary at ~/.local/bin/claude (symlink to ~/.local/share/claude/versions/*)
-# Legacy manual installs used /usr/local/bin/claude — check both, prefer ~/.local
-if [ -x "$HOME/.local/bin/claude" ]; then
-	NATIVE_BIN="$HOME/.local/bin/claude"
-elif [ -x "/usr/local/bin/claude" ]; then
-	NATIVE_BIN="/usr/local/bin/claude"
-else
-	NATIVE_BIN=""
-fi
-if [ -z "$NATIVE_BIN" ]; then
-	log "Native binary not found, installing..."
-	if claude install 2>&1 | tee -a "$LOG_FILE"; then
-		log "Native binary installed successfully"
+# === TRANSITIONAL: Remove leftover npm installation ===
+NPM_CLAUDE="$(npm config get prefix 2>/dev/null)/lib/node_modules/@anthropic-ai/claude-code"
+if [ -d "$NPM_CLAUDE" ]; then
+	log "Removing leftover npm installation at ${NPM_CLAUDE}..."
+	if sudo npm uninstall -g @anthropic-ai/claude-code 2>/dev/null; then
+		log "Removed leftover npm installation"
 	else
-		log "WARNING: 'claude install' failed, skipping"
-		exit 0
+		log "WARNING: Could not remove npm installation (non-blocking)"
 	fi
-	# Skip update check on first install — next start will handle it
-	exit 0
 fi
 
 # === CHECK FOR UPDATES ===
 CURRENT_VERSION=$("$NATIVE_BIN" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
 log "Current version: ${CURRENT_VERSION}"
 
-# Use the official update command (handles download, verification, and versioned install)
-if "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"; then
+# Use the official update command with timeout (handles download, verification, and versioned install)
+if timeout 60 "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"; then
 	UPDATED_VERSION=$("$NATIVE_BIN" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "unknown")
 	if [ "$CURRENT_VERSION" != "$UPDATED_VERSION" ]; then
 		log "Updated Claude Code: ${CURRENT_VERSION} → ${UPDATED_VERSION}"
@@ -72,5 +63,5 @@ if "$NATIVE_BIN" update 2>&1 | tee -a "$LOG_FILE"; then
 		log "Already up to date (${CURRENT_VERSION})"
 	fi
 else
-	log "WARNING: 'claude update' failed, skipping"
+	log "WARNING: 'claude update' failed or timed out"
 fi

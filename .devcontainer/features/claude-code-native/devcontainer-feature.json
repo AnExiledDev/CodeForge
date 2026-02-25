@@ -1,0 +1,29 @@
+{
+	"id": "claude-code-native",
+	"version": "1.0.0",
+	"name": "Claude Code CLI (Native Binary)",
+	"description": "Installs Claude Code CLI as a native binary via the official Anthropic installer",
+	"documentationURL": "https://docs.anthropic.com/en/docs/claude-code",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Version to install: 'latest', 'stable', or a specific semver. Use 'none' to skip.",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"anthropic.claude-code"
+			]
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/common-utils:2"
+	]
+}
