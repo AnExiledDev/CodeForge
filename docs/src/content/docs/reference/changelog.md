@@ -73,6 +73,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 #### Docs
 - **Active sidebar item** — increased background opacity from 0.08 to 0.14, added `font-weight: 600` and `color: var(--sl-color-accent-high)` for readable contrast against inactive items
+- **Stale skill counts** — 5 pages (First Session, Getting Started index, Features index) referenced "21 skills" instead of the correct total of 34 across all plugins (skill-engine: 21, spec-workflow: 8, ticket-workflow: 4, agent-system: 1)
 
 ## v1.14.0
 

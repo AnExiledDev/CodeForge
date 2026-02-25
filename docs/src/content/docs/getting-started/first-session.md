@@ -96,7 +96,7 @@ claude-dashboard
 
 ## Agents and Skills
 
-CodeForge includes **17 specialized agents** and **21 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
+CodeForge includes **17 specialized agents** and **34 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
 
 - **[Agents](../features/agents/)** — specialized AI personas for architecture, debugging, testing, security, migrations, and more
 - **[Skills](../features/skills/)** — domain-specific knowledge packs (FastAPI, Docker, Svelte, debugging patterns, etc.) that the skill engine suggests automatically or you invoke with slash commands like `/spec-new`
