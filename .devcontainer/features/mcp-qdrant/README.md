@@ -154,6 +154,7 @@ The feature will validate these are present and exit with an error if missing.
 - ✅ **Cloud or Local**: Supports both Qdrant Cloud and local instances
 - ✅ **Idempotent**: Safe to run multiple times
 - ✅ **Multi-user**: Automatically detects container user
+- ✅ **Config-aware**: Respects `CLAUDE_CONFIG_DIR` environment variable (defaults to `~/.claude`)
 - ✅ **Native mcpServers**: Uses VS Code's native devcontainer mcpServers support (declarative configuration)
 - ✅ **Dynamic Configuration**: Environment variables loaded from `/workspaces/.qdrant-mcp.env` file
 - ✅ **Secure**: API keys protected with 600 permissions on env file

@@ -69,7 +69,9 @@ fi
 # Long-lived tokens only — generated via: claude setup-token
 # Note: After unset, the token remains visible in /proc/<pid>/environ for the
 # lifetime of this process. This is a platform limitation of environment variables.
-CLAUDE_CRED_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+_USERNAME="${SUDO_USER:-${USER:-vscode}}"
+_USER_HOME=$(eval echo "~${_USERNAME}")
+CLAUDE_CRED_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
 CLAUDE_CRED_FILE="$CLAUDE_CRED_DIR/.credentials.json"
 if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
     # Validate token format (claude setup-token produces sk-ant-* tokens)
@@ -83,6 +85,7 @@ if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
             echo "[setup-auth] WARNING: .credentials.json has permissions $perms (expected 600), fixing"
             chmod 600 "$CLAUDE_CRED_FILE"
         fi
+        AUTH_CONFIGURED=true
     else
         echo "[setup-auth] Creating .credentials.json from CLAUDE_AUTH_TOKEN..."
         mkdir -p "$CLAUDE_CRED_DIR"

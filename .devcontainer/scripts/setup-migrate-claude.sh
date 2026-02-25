@@ -7,7 +7,9 @@
 # prevent overwriting files already in the destination.
 
 OLD_DIR="/workspaces/.claude"
-NEW_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+_USERNAME="${SUDO_USER:-${USER:-vscode}}"
+_USER_HOME=$(eval echo "~${_USERNAME}")
+NEW_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
 
 # Nothing to migrate if old directory doesn't exist
 if [ ! -d "$OLD_DIR" ]; then

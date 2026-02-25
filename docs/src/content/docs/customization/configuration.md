@@ -9,7 +9,7 @@ CodeForge configuration is spread across three files that each control a differe
 
 ## settings.json
 
-The primary configuration file lives at `.devcontainer/config/defaults/settings.json`. It is deployed to `.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
+The primary configuration file lives at `.devcontainer/config/defaults/settings.json`. It is deployed to `~/.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
 
 ### Core Settings
 

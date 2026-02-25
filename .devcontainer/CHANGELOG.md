@@ -12,7 +12,7 @@
 #### Configuration
 - Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
 - Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
-- `CLAUDE_CONFIG_DIR` now defaults to `/home/vscode/.claude`
+- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
 
 #### Authentication
 - Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
@@ -20,7 +20,7 @@
 - Added `CLAUDE_AUTH_TOKEN` to devcontainer.json secrets declaration
 
 #### Security
-- Protected-files-guard now covers `.credentials.json` (leading dot)
+- Protected-files-guard now blocks modifications to `.credentials.json`
 
 #### Status Bar
 - **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments

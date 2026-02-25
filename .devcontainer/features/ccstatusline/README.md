@@ -45,7 +45,7 @@ All widgets connected with powerline arrows (monokai theme).
 
 - **ccstatusline npm package**: Installed on-demand via `npx` (not globally)
 - **Configuration file**: `~/.config/ccstatusline/settings.json` with powerline theme
-- **Claude Code integration**: Automatically updates `.claude/settings.json`
+- **Claude Code integration**: Automatically updates `~/.claude/settings.json`
 - **Disk Usage**: Minimal (~2MB when cached by npx)
 
 ## Requirements
@@ -75,9 +75,10 @@ The feature will validate these are present and exit with an error if missing.
 - ✅ **Session Resume**: Copyable `cc --resume {sessionId}` command via custom-command widget
 - ✅ **Burn Rate Tracking**: Live ccburn compact output showing pace indicators (🧊/🔥/🚨)
 - ✅ **ANSI Colors**: High-contrast colors optimized for dark terminals
-- ✅ **Automatic Integration**: Auto-configures `.claude/settings.json`
+- ✅ **Automatic Integration**: Auto-configures `~/.claude/settings.json`
 - ✅ **Idempotent**: Safe to run multiple times
 - ✅ **Multi-user**: Automatically detects container user
+- ✅ **Config-aware**: Respects `CLAUDE_CONFIG_DIR` environment variable (defaults to `~/.claude`)
 
 ## Post-Installation Steps
 
@@ -85,7 +86,7 @@ The feature will validate these are present and exit with an error if missing.
 
 This feature automatically:
 1. Creates `~/.config/ccstatusline/settings.json` with powerline configuration
-2. Configures `.claude/settings.json` to use ccstatusline
+2. Configures `~/.claude/settings.json` to use ccstatusline
 
 **No manual steps required!**
 
@@ -258,7 +259,7 @@ configure-ccstatusline-auto
 npm install -g ccstatusline@latest
 ```
 
-Then update `.claude/settings.json`:
+Then update `~/.claude/settings.json`:
 ```json
 {
   "statusLine": {

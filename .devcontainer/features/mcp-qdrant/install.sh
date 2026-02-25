@@ -188,8 +188,12 @@ else
     QDRANT_LOCAL_PATH="${QDRANT_LOCAL_PATH:-/workspaces/.qdrant/storage}"
 fi
 
+# Resolve target user's home (guards against $HOME=/root during feature install)
+_USERNAME="${SUDO_USER:-${USER:-vscode}}"
+_USER_HOME=$(eval echo "~${_USERNAME}")
+
 # Ensure settings.json exists
-SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
+SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}/settings.json"
 if [ ! -f "$SETTINGS_FILE" ]; then
     echo "[mcp-qdrant] ERROR: $SETTINGS_FILE not found"
     exit 1
