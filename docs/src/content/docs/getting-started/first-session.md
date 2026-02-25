@@ -32,39 +32,11 @@ If something isn't working as expected in a CodeForge session, try `ccraw` to se
 
 ## What Happens Automatically
 
-When your session starts, several systems activate behind the scenes to make Claude smarter and safer. You don't need to configure any of this — it just works.
+When your session starts, several systems activate behind the scenes. You don't need to configure any of this — it just works.
 
-### System Prompt Loading
-
-The main system prompt gives Claude context about your project, coding standards, and behavioral guidelines. It's loaded from your configuration directory and defines how Claude approaches tasks, what tools to prefer, and how to communicate. The prompt is customizable — see [System Prompts](../customization/system-prompts/) for details.
-
-### Plugin Hook Activation
-
-Plugins register hooks that fire at specific points during your session. These run automatically and silently in the background:
-
-**PreToolUse hooks** run before Claude executes a command or edits a file:
-- The **workspace scope guard** blocks writes outside your project directory
-- The **dangerous command blocker** catches destructive shell commands (`rm -rf /`, `git push --force`, etc.)
-- The **protected files guard** prevents edits to secrets, lock files, and other sensitive files
-
-**PostToolUse hooks** run after a tool completes:
-- The **session context** plugin injects git state and TODO information
-- The **notify hook** sends a desktop notification when Claude finishes a long task
-
-**Stop hooks** run when Claude finishes a turn:
-- The **spec reminder** checks whether code was modified without updating specs
-- The **auto code quality** plugin runs formatting and linting checks
-- The **commit reminder** nudges you to commit if there are significant uncommitted changes
-
-### Session Context Injection
-
-The session context plugin keeps Claude informed about your working environment. At turn boundaries, it injects:
-
-- **Git state** — current branch, uncommitted changes, recent commits
-- **Active TODOs** — extracted from TODO comments in recently modified files
-- **Commit reminders** — when there are significant uncommitted changes
-
-This means Claude always knows the state of your repository without you having to explain it.
+- **System prompt** — gives Claude context about your project, coding standards, and how to communicate. Customizable via [System Prompts](../customization/system-prompts/).
+- **Plugin hooks** — 12 plugins fire automatically at key moments: blocking dangerous commands, guarding workspace scope, injecting git state, running code quality checks, and more. See the [Plugins Overview](../plugins/) for details on each one.
+- **Session context** — Claude always knows your current branch, uncommitted changes, recent commits, and active TODOs without you having to explain it.
 
 ## What to Try First
 
@@ -122,53 +94,12 @@ ccusage
 claude-dashboard
 ```
 
-## Working with Agents
+## Agents and Skills
 
-CodeForge includes 17 specialized agents. You don't need to know their names — Claude automatically delegates to the right agent based on your request. But understanding what's available helps you make better requests.
+CodeForge includes **17 specialized agents** and **34 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
 
-Here are some example interactions and which agents handle them:
-
-| Your Request | Agent | What It Does |
-|-------------|-------|-------------|
-| "Explore this codebase" | Explorer | Systematic codebase navigation |
-| "Design the API for user management" | Architect | System design and architecture |
-| "Debug why the login fails" | Debug Logs | Log analysis and bug investigation |
-| "Refactor this module to reduce duplication" | Refactorer | Safe, incremental code transformations |
-| "Write a migration from SQLite to PostgreSQL" | Migrator | Database and framework migrations |
-| "Profile the performance of the search endpoint" | Perf Profiler | Performance analysis and optimization |
-| "Audit this module for vulnerabilities" | Security Auditor | Security review and recommendations |
-| "Write documentation for the API" | Doc Writer | Documentation generation |
-
-Each agent carries domain-specific instructions that guide how Claude approaches the task. For example, the security auditor checks OWASP Top 10 categories, while the test writer respects your project's testing patterns and frameworks.
-
-See [Agents](../features/agents/) for the full list of all 17 agents and their specializations.
-
-## Working with Skills
-
-Skills are domain-specific knowledge packs that Claude draws on when relevant. They're suggested automatically by the skill engine based on what you're working on, or you can invoke them directly with slash commands.
-
-### Frequently Used Skills
-
-| Skill | What It Provides |
-|-------|-----------------|
-| `/spec-new` | Create a new feature specification |
-| `/spec-build` | Implement a feature from its spec (plan, build, review, close) |
-| `/spec-check` | Audit spec health across the project |
-| `/spec-update` | Update specs to match current implementation |
-
-### Auto-Suggested Skills
-
-You don't always need to invoke skills manually. The skill engine watches what you're working on and suggests relevant skills. For example:
-
-- Working on a FastAPI endpoint? The FastAPI skill is suggested with best practices for route design, dependency injection, and error handling
-- Writing Docker configuration? The Docker skill provides patterns for multi-stage builds, security hardening, and compose setups
-- Debugging a tricky issue? The debugging skill offers systematic approaches to isolate and fix problems
-
-See [Skills](../features/skills/) for the complete catalog of all 21 available skills.
-
-## Understanding the Status Line
-
-If your terminal supports it, CodeForge provides a status line that shows session information at a glance. The `ccstatusline` feature adds session metadata to your terminal prompt, so you always know which session you're in and its current state.
+- **[Agents](../features/agents/)** — specialized AI personas for architecture, debugging, testing, security, migrations, and more
+- **[Skills](../features/skills/)** — domain-specific knowledge packs (FastAPI, Docker, Svelte, debugging patterns, etc.) that the skill engine suggests automatically or you invoke with slash commands like `/spec-new`
 
 ## Tips for Effective Sessions
 
