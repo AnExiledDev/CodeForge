@@ -42,6 +42,12 @@
 		"overwrite": "if-changed"
 	},
 	{
+		"src": "defaults/orchestrator-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
 		"src": "defaults/ccstatusline-settings.json",
 		"dest": "${HOME}/.config/ccstatusline",
 		"destFilename": "settings.json",

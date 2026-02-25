@@ -1,12 +1,25 @@
 # agent-system
 
-Claude Code plugin that provides 17 custom specialist agents with automatic built-in agent redirection, working directory injection, read-only bash enforcement, and team quality gates.
+Claude Code plugin that provides 21 custom agents (4 workhorse + 17 specialist) with automatic built-in agent redirection, working directory injection, read-only bash enforcement, and team quality gates.
 
 ## What It Does
 
 Replaces Claude Code's built-in agents with enhanced custom agents that carry domain-specific instructions, safety hooks, and tailored tool configurations. Also provides team orchestration quality gates.
 
-### Custom Agents
+### Workhorse Agents
+
+General-purpose agents designed for orchestrator mode (`cc-orc`). Each covers a broad domain, carrying detailed execution discipline, code standards, and a question surfacing protocol. Most tasks need only 2-3 of these.
+
+| Agent | Domain | Access | Model |
+|-------|--------|--------|-------|
+| investigator | Research, codebase search, git forensics, dependency audit, log analysis, performance profiling | Read-only | Sonnet |
+| implementer | Code changes, bug fixes, refactoring, migrations | Full access (worktree) | Opus |
+| tester | Test suite creation, coverage analysis, test verification | Full access (worktree) | Opus |
+| documenter | Documentation, specs, spec lifecycle (create/refine/review/update) | Full access | Opus |
+
+### Specialist Agents
+
+Domain-specific agents for targeted tasks. Used by both `cc` (monolithic) and `cc-orc` (orchestrator) modes.
 
 | Agent | Specialty | Access |
 |-------|-----------|--------|
@@ -52,7 +65,9 @@ Per-agent hooks (registered within agent definitions, not in hooks.json):
 
 | Agent | Hook | Script | Purpose |
 |-------|------|--------|---------|
+| implementer | PostToolUse (Edit) | `verify-no-regression.py` | Runs tests after each edit to catch regressions |
 | refactorer | PostToolUse (Edit) | `verify-no-regression.py` | Runs tests after each edit to catch regressions |
+| tester | Stop | `verify-tests-pass.py` | Verifies written tests actually pass |
 | test-writer | Stop | `verify-tests-pass.py` | Verifies written tests actually pass |
 
 ## How It Works
@@ -156,7 +171,11 @@ agent-system/
 +-- .claude-plugin/
 |   +-- plugin.json                  # Plugin metadata
 +-- agents/
-|   +-- architect.md                 # 17 agent definition files
+|   +-- investigator.md              # 4 workhorse agents (orchestrator mode)
+|   +-- implementer.md
+|   +-- tester.md
+|   +-- documenter.md
+|   +-- architect.md                 # 17 specialist agents
 |   +-- bash-exec.md
 |   +-- claude-guide.md
 |   +-- debug-logs.md

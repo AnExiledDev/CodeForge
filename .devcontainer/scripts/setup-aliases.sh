@@ -94,6 +94,7 @@ alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CL
 alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 alias ccraw='command "\$_CLAUDE_BIN"'
 alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
+alias cc-orc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 
 cc-tools() {
   echo "CodeForge Available Tools"
@@ -126,5 +127,6 @@ echo "  cc          -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
 echo "  claude      -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
 echo "  ccraw       -> vanilla claude without any config"
 echo "  ccw         -> claude with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
+echo "  cc-orc      -> claude with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
 echo "  cc-tools    -> list all available CodeForge tools"
 echo "  check-setup -> verify CodeForge setup health"
