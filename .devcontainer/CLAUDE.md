@@ -92,7 +92,48 @@ All experimental feature flags are in `settings.json` under `env`. Setup steps c
 4. **Add features**: Add to `"features"` in `devcontainer.json`
 5. **Disable features**: Set `"version": "none"` in the feature's config
 6. **Disable setup steps**: Set flags to `false` in `.env`
-7. **Customize status bar**: Edit `config/defaults/ccstatusline-settings.json`
+7. **Customize status bar**: Edit `config/defaults/ccstatusline-settings.json` (see below)
+
+## Status Bar Widgets
+
+The status bar is configured in `config/defaults/ccstatusline-settings.json` (deploys to `~/.config/ccstatusline/settings.json`). Each widget is a JSON object in a line array.
+
+### Widget Properties
+
+| Property | Purpose |
+|----------|---------|
+| `id` | Unique identifier (UUID or descriptive string) |
+| `type` | Widget type (see below) |
+| `backgroundColor` | Background color: `bgBlue`, `bgMagenta`, `bgYellow`, `bgGreen`, `bgRed`, etc. |
+| `color` | Text color: `brightWhite`, `black`, `cyan`, `yellow`, etc. |
+| `rawValue` | `true` to strip type-specific prefixes (e.g., removes "Model:" from model widget) |
+| `bold` | `true` for bold text |
+| `merge` | `"no-padding"` fuses this widget to the next (no separator/space between them) |
+| `customText` | Static text content (only for `custom-text` type) |
+
+### Token Widgets
+
+Each token metric uses a distinct background color for at-a-glance identification:
+
+| Type | Color | Label |
+|------|-------|-------|
+| `tokens-input` | Blue (`bgBlue`) | **In** |
+| `tokens-output` | Magenta (`bgMagenta`) | **Ou** |
+| `tokens-cached` | Yellow (`bgYellow`) | **Ca** |
+| `tokens-total` | Green (`bgGreen`) | **Tt** |
+
+Labels are `custom-text` widgets with `merge: "no-padding"` so they fuse visually to their data widget:
+
+```json
+{ "id": "lbl-tokens-input", "type": "custom-text", "customText": "In",
+  "backgroundColor": "bgBlue", "color": "brightWhite", "bold": true, "merge": "no-padding" },
+{ "id": "5", "type": "tokens-input",
+  "backgroundColor": "bgBlue", "color": "brightWhite", "rawValue": true }
+```
+
+### Other Widget Types
+
+`model`, `context-length`, `context-percentage-usable`, `git-branch`, `git-changes`, `git-worktree`, `session-clock`, `session-cost`, `block-timer`, `version`, `custom-command`
 
 ## Features
 
