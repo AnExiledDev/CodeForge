@@ -8,7 +8,7 @@ Replaces Claude Code's built-in agents with enhanced custom agents that carry do
 
 ### Workhorse Agents
 
-General-purpose agents designed for orchestrator mode (`cc-orc`). Each covers a broad domain, carrying detailed execution discipline, code standards, and a question surfacing protocol. Most tasks need only 2-3 of these.
+General-purpose agents designed for orchestrator mode (`cc-orc`). Each covers a broad domain, carrying detailed execution discipline, code standards, and a question-surfacing protocol. Most tasks need only 2-3 of these.
 
 | Agent | Domain | Access | Model |
 |-------|--------|--------|-------|
@@ -200,7 +200,7 @@ agent-system/
 |   +-- redirect-builtin-agents.py   # Built-in agent redirection
 |   +-- task-completed-check.py      # Test suite quality gate
 |   +-- teammate-idle-check.py       # Incomplete task checker
-|   +-- verify-no-regression.py      # Post-edit regression tests (refactorer)
+|   +-- verify-no-regression.py      # Post-edit regression tests (implementer, refactorer)
 |   +-- verify-tests-pass.py         # Test verification (test-writer)
 +-- skills/
 |   +-- debug/

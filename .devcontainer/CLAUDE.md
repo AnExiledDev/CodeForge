@@ -12,7 +12,10 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 │   ├── file-manifest.json     # Declarative config file deployment
 │   └── defaults/              # Source files deployed on start via file-manifest
 │       ├── settings.json      # Model, permissions, plugins, env vars
+│       ├── keybindings.json   # Keyboard shortcuts
 │       ├── main-system-prompt.md
+│       ├── orchestrator-system-prompt.md
+│       ├── writing-system-prompt.md
 │       ├── ccstatusline-settings.json  # Status bar widget layout
 │       └── rules/             # Deployed to .claude/rules/
 ├── features/                  # Custom devcontainer features

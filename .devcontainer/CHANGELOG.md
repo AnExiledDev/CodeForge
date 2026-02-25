@@ -26,10 +26,21 @@
 
 #### Workhorse Agents
 - **`investigator`** — consolidated read-only research agent (sonnet) merging the domains of researcher, explorer, dependency-analyst, git-archaeologist, debug-logs, and perf-profiler; handles codebase search, web research, git forensics, dependency auditing, log analysis, and performance profiling
-- **`implementer`** — consolidated read-write implementation agent (opus, worktree) merging generalist, refactorer, and migrator; handles all code modifications with embedded code standards, execution discipline, and PostToolUse regression testing
+- **`implementer`** — consolidated read-write implementation agent (opus, worktree) merging generalist, refactorer, and migrator; handles all code modifications with embedded code standards, execution discipline, and Stop hook regression testing
 - **`tester`** — enhanced test agent (opus, worktree) with full testing standards, framework-specific guidance, and Stop hook verification; creates and verifies test suites
 - **`documenter`** — consolidated documentation and specification agent (opus) merging doc-writer and spec-writer; handles README, API docs, docstrings, and the full spec lifecycle (create, refine, build, review, update, check)
 - **Question Surfacing Protocol** — all 4 workhorse agents carry an identical protocol requiring them to STOP and return `## BLOCKED: Questions` sections when hitting ambiguities, ensuring no assumptions are made without user input
+
+### Fixed
+
+#### CodeRabbit Review Fixes
+- **`implementer.md`** — changed PostToolUse hook (fires every Edit) to Stop hook (fires once at task end) with 120s timeout; prevents redundant test runs during multi-file tasks
+- **`tester.md`** — increased Stop hook timeout from 30s to 120s to accommodate larger test suites
+- **`setup-aliases.sh`** — added `cc-orc` to `cc-tools` discovery loop so it appears in tool audit
+- **`CLAUDE.md`** — added missing `keybindings.json`, `orchestrator-system-prompt.md`, and `writing-system-prompt.md` to directory structure tree
+- **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
+- **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
+- **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
 
 ### Changed
 

@@ -22,7 +22,7 @@ hooks:
   Stop:
     - type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify-tests-pass.py"
-      timeout: 30
+      timeout: 120
 ---
 
 # Tester Agent
@@ -35,7 +35,7 @@ Before starting any task, check for project-specific instructions:
 
 1. **Rules**: `Glob: .claude/rules/*.md` — read all files found. These are mandatory constraints.
 2. **CLAUDE.md files**: Starting from your working directory, read CLAUDE.md files walking up to the workspace root:
-   ```
+   ```text
    Glob: **/CLAUDE.md (within the project directory)
    ```
 3. **Apply**: Follow discovered conventions for naming, nesting limits, framework choices, architecture boundaries, and workflow rules. CLAUDE.md instructions take precedence over your defaults.
@@ -171,7 +171,7 @@ When uncertain, investigate first — read the code, check the docs — rather t
 
 ### Step 1: Detect the Test Framework
 
-```
+```text
 # Python
 Glob: **/pytest.ini, **/pyproject.toml, **/setup.cfg, **/conftest.py
 Grep in pyproject.toml/setup.cfg: "pytest", "unittest"
@@ -203,7 +203,7 @@ Read 2-3 existing test files for:
 
 ### Step 3: Identify Untested Code
 
-```
+```text
 # Compare source files to test files
 # Check coverage reports if available
 Glob: **/coverage/**, **/.coverage, **/htmlcov/**

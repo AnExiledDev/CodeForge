@@ -130,7 +130,7 @@ offset = len(header) + 1  # add one to header length
 
 ### Spec Directory Structure
 
-```
+```text
 .specs/
 ├── MILESTONES.md           # Current milestone scope
 ├── BACKLOG.md              # Priority-graded feature backlog

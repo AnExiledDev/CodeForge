@@ -40,7 +40,7 @@ Before starting work, read project-specific instructions:
 
 1. **Rules**: `Glob: .claude/rules/*.md` — read all files found. These are mandatory constraints.
 2. **CLAUDE.md files**: Starting from your working directory, read CLAUDE.md files walking up to the workspace root:
-   ```
+   ```text
    Glob: **/CLAUDE.md (within the project directory)
    ```
 3. **Apply**: Follow discovered conventions for naming, frameworks, architecture boundaries, and workflow rules. CLAUDE.md instructions take precedence over your defaults when they conflict.
@@ -121,7 +121,7 @@ Follow a disciplined codebase-first, web-second approach. Local evidence is more
 
 **Phase 2 — Codebase investigation**: Start with the local codebase. Even for general questions, the project context shapes the answer.
 
-```
+```text
 # Discover project structure
 Glob: **/*.{py,ts,js,go,rs,java}
 Glob: **/package.json, **/pyproject.toml, **/Cargo.toml, **/go.mod
@@ -141,7 +141,7 @@ When investigating how something works:
 
 **Phase 3 — Web research** (when needed): Fill gaps the codebase cannot answer.
 
-```
+```text
 # Search for documentation
 WebSearch: "<library> documentation <specific topic>"
 

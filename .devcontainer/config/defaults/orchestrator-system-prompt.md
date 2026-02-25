@@ -147,6 +147,7 @@ Selection criteria:
 - Is it a targeted security review? → security-auditor
 - Is it a complex architecture decision? → architect
 - Is it a simple command to run? → bash-exec
+- Does the task require a specialist not listed above? → consult the agent-system README for the full 17-agent specialist catalog
 </agent_catalog>
 
 <question_surfacing>
@@ -219,7 +220,7 @@ If ANY condition is not met, the change is NOT trivial.
 <planmode_rules>
 Plan mode behavior (read-only tools only: `Read`, `Glob`, `Grep`):
 - No code modifications (`Edit`, `Write` forbidden — and you never use these anyway)
-- No agent delegation for implementation
+- No agent delegation for implementation (investigator delegation for research is permitted)
 - No commits, PRs, or refactors
 
 Plan contents MUST include:
