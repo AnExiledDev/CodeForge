@@ -188,7 +188,7 @@ SKILLS: dict[str, dict] = {
         ],
         "terms": ["dockerfile", "compose.yaml", "BuildKit"],
         "negative": ["docker-py", "docker py", "docker sdk", "docker from python",
-                     "aiodocker", "DockerClient"],
+                     "aiodocker", "dockerclient"],
         "context_guards": [
             "docker", "container", "compose", "image", "dockerfile",
         ],
@@ -639,6 +639,7 @@ def match_skills(prompt: str) -> list[str]:
 
 
 def main() -> None:
+    """Read a hook event from stdin, score skills, and print suggestions to stdout."""
     raw = sys.stdin.read().strip()
     if not raw:
         return
