@@ -7,6 +7,9 @@
 #### Plugin Marketplace
 - **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
 
+#### ChromaTerm
+- **Regex lookbehinds** — replaced alternation inside lookbehinds (`(?<=[\s(]|^)` and `(?<=commit |merge |...)`) with non-capturing groups containing individual lookbehinds (`(?:(?<=[\s(])|^)` and `(?:(?<=commit )|(?<=merge )|...)`) for PCRE2 compatibility
+
 ### Removed
 
 #### VS Code Extensions

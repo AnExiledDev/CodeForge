@@ -18,7 +18,7 @@ rules:
   # File paths with optional line numbers (e.g., src/main.py:42)
   # Covers common extensions for languages used in development
   - description: File paths with line numbers
-    regex: '(?<=[\s(]|^)([a-zA-Z0-9_./-]+\.(py|ts|tsx|js|jsx|md|json|yml|yaml|toml|sh|rs|go|sql|css|html|svelte))(:(\d+))?'
+    regex: '(?:(?<=[\s(])|^)([a-zA-Z0-9_./-]+\.(py|ts|tsx|js|jsx|md|json|yml|yaml|toml|sh|rs|go|sql|css|html|svelte))(:(\d+))?'
     color:
       1: f.file_purple underline
       4: f.line_gray
@@ -31,5 +31,5 @@ rules:
 
   # Git short commit hashes (7-12 hex chars)
   - description: Git commit hashes
-    regex: '(?<=commit |merge |pick |revert |fixup )[0-9a-f]{7,40}'
+    regex: '(?:(?<=commit )|(?<=merge )|(?<=pick )|(?<=revert )|(?<=fixup ))[0-9a-f]{7,40}'
     color: f.hash_yellow
