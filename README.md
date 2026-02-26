@@ -11,6 +11,12 @@
 
 A curated development environment optimized for AI-powered coding with Claude Code. CodeForge comes pre-configured with language servers, code intelligence tools, and official Anthropic plugins to streamline your development workflow.
 
+## Why CodeForge?
+
+Claude Code is powerful out of the box, but getting the most from it takes significant configuration — custom agents, safety plugins, code quality hooks, system prompts, and development tools that aren't obvious from the docs. CodeForge is a Claude Code power user's personal development environment, packaged so anyone can use it.
+
+Instead of spending hours discovering and configuring advanced features like built-in agent replacement, automated code quality pipelines, or spec-driven workflows, you get a production-tested setup in one command. It's opinionated by design — every default reflects real daily use, not theoretical best practices.
+
 ## Installation
 
 Add CodeForge to any project:
@@ -74,6 +80,49 @@ tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tr
 ### Agents (17) & Skills (35)
 
 The `agent-system` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 22 general coding skills, `spec-workflow` adds 8 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills.
+
+## Architecture
+
+CodeForge operates in three layers, each building on the one below:
+
+```
+┌──────────────────────────────────────────────┐
+│                 Claude Code                   │
+│   AI assistant, tool execution, Agent Teams   │
+├──────────────────────────────────────────────┤
+│               CodeForge Layer                 │
+│   Plugins · Agents · Skills · Hooks · Rules   │
+├──────────────────────────────────────────────┤
+│                DevContainer                   │
+│   Runtimes · CLI Tools · LSP Servers          │
+└──────────────────────────────────────────────┘
+```
+
+**DevContainer** — The foundation. A Python 3.14 container with Node.js, Rust, and Bun runtimes, plus 22 custom features that install development tools (ast-grep, tree-sitter, biome, ruff, and others).
+
+**CodeForge Layer** — The intelligence. 13 plugins register hooks that validate commands, inject context, and enforce safety. 17 agents provide specialized personas. 35 skills offer on-demand reference material. System prompts and rules shape behavior.
+
+**Claude Code** — The AI assistant, executing tools and coordinating work. CodeForge enhances it through configuration — replacing built-in subagents, adding safety guardrails, and wiring up quality checks that run automatically.
+
+For the full architecture breakdown — hook pipeline, agent routing, skill loading, and design principles — see the [Architecture Reference](https://anexileddev.github.io/CodeForge/reference/architecture/).
+
+## Configuration
+
+All configuration lives in `.devcontainer/` and deploys automatically on container start. Key files:
+
+| File | What It Configures | User-Modifiable? |
+|------|--------------------|------------------|
+| `config/defaults/settings.json` | Model, plugins, permissions, environment variables | Yes |
+| `config/defaults/main-system-prompt.md` | Claude's behavioral guidelines and directives | Yes |
+| `config/defaults/keybindings.json` | Keyboard shortcuts | Yes |
+| `config/defaults/ccstatusline-settings.json` | Terminal status bar widgets and layout | Yes |
+| `config/file-manifest.json` | Which config files deploy and how they update | Yes |
+| `devcontainer.json` | Container image, features, runtimes, ports | Yes |
+| `.env` | Setup phase toggles (auth, plugins, aliases, etc.) | Yes |
+
+Config files use SHA-256 change detection — your edits persist across container rebuilds unless the source changes. Set a file's overwrite mode to `"never"` in `file-manifest.json` to permanently preserve your customizations.
+
+For the complete configuration guide, see the [documentation site](https://anexileddev.github.io/CodeForge/customization/configuration/).
 
 ## Quick Start
 
