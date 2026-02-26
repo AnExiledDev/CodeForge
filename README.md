@@ -48,7 +48,12 @@ npx codeforge-dev@1.2.3
 ## Prerequisites
 
 - **Docker Desktop** (or compatible container runtime like Podman)
-- **VS Code** with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), or **GitHub Codespaces**
+- **A DevContainer client** — any of:
+  - **VS Code** with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+  - **DevContainer CLI** — `npm install -g @devcontainers/cli` ([docs](https://containers.dev/supporting#devcontainer-cli))
+  - **GitHub Codespaces** — zero local setup
+  - **JetBrains Gateway** with [Dev Containers plugin](https://plugins.jetbrains.com/plugin/21962-dev-containers)
+  - **DevPod** — open-source, editor-agnostic ([devpod.sh](https://devpod.sh/))
 - **Claude Code authentication** — run `claude` on first start to authenticate
 
 ## What's Included
@@ -127,11 +132,14 @@ For the complete configuration guide, see the [documentation site](https://anexi
 ## Quick Start
 
 1. **Install**: `npx codeforge-dev`
-2. **Open in Container**: "Reopen in Container" in VS Code, or create a Codespace
+2. **Open in Container**:
+   - **VS Code**: "Reopen in Container" from the Command Palette
+   - **CLI**: `devcontainer up --workspace-folder .` then `docker exec -it <container> zsh`
+   - **Codespaces**: Create a Codespace from the repo
 3. **Authenticate**: Run `claude` and follow prompts
 4. **Start coding**: Run `cc`
 
-For full usage documentation — authentication, configuration, tools, agents, and keybindings — see [`.devcontainer/README.md`](.devcontainer/README.md).
+CodeForge uses the open [Dev Containers specification](https://containers.dev/) — any compatible client works. For full usage documentation — authentication, configuration, tools, agents, and keybindings — see [`.devcontainer/README.md`](.devcontainer/README.md).
 
 ## Contributing
 

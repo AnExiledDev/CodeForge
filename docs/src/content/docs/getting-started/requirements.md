@@ -29,15 +29,20 @@ Run `docker info` in your terminal. If you see container and image counts, Docke
 WSL 2 is required. Docker Desktop's legacy Hyper-V backend is not supported because DevContainers rely on WSL 2 for Linux container support. If you haven't enabled WSL 2, follow [Microsoft's WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install) before proceeding.
 :::
 
-### VS Code
+### DevContainer Client
 
-- **Visual Studio Code** — version 1.85 or later
-- **Dev Containers extension** — install `ms-vscode-remote.remote-containers` from the Extensions marketplace
+CodeForge uses the open [Dev Containers specification](https://containers.dev/). Any compatible client works — pick whichever fits your workflow:
 
-The Dev Containers extension is what makes VS Code able to open your project inside the container. Without it, the "Reopen in Container" prompt won't appear.
+| Client | Notes |
+|--------|-------|
+| **VS Code** with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) | Most popular option. Version 1.85+ required. |
+| **DevContainer CLI** | Standalone CLI: `npm install -g @devcontainers/cli`. No editor required — connect via any terminal. |
+| **GitHub Codespaces** | Zero local setup. Push your repo with `.devcontainer/` and create a Codespace. |
+| **JetBrains Gateway** | Native devcontainer.json support via [Dev Containers plugin](https://plugins.jetbrains.com/plugin/21962-dev-containers). |
+| **DevPod** | Open-source, editor-agnostic client. Supports local Docker, Kubernetes, and cloud backends. See [devpod.sh](https://devpod.sh/). |
 
-:::note[Alternative: GitHub Codespaces]
-If you prefer not to run Docker locally, you can use GitHub Codespaces. Push your project (with the `.devcontainer/` directory) to GitHub and create a Codespace from it. Codespaces use the same DevContainer configuration, so everything works the same way.
+:::tip[Port forwarding outside VS Code]
+VS Code auto-detects ports opened inside the container. Other clients don't. CodeForge includes `devcontainer-bridge` (`dbr`) for dynamic port forwarding from any terminal. See the [Port Forwarding reference](../reference/port-forwarding/) for setup details.
 :::
 
 ### Claude Code

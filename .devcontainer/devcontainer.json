@@ -155,14 +155,14 @@
 		"ghcr.io/bradleybeddoes/devcontainer-bridge/dbr:0.2.0": {}
 	},
 
-	"forwardPorts": [7847],
+	"forwardPorts": [],
 	"portsAttributes": {
 		"7847": {
 			"label": "Claude Dashboard",
 			"onAutoForward": "notify"
 		},
 		"*": {
-			"onAutoForward": "silent"
+			"onAutoForward": "notify"
 		}
 	},
 

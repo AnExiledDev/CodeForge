@@ -105,6 +105,8 @@ CodeForge includes **21 specialized agents** and **38 skills** that activate aut
 
 If your terminal supports it, CodeForge provides a status line that shows session information at a glance. The `ccstatusline` feature adds session metadata to your terminal prompt, so you always know which session you're in and its current state.
 
+
+
 ## Tips for Effective Sessions
 
 :::tip[Be specific with requests]

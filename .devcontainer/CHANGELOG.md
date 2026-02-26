@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Changed
+
+#### Port Forwarding
+- Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
+
+#### Documentation
+- Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
+- Added tabbed client-specific instructions on the installation page
+- Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
+
 ### Fixed
 
 #### Session Context Plugin
@@ -11,6 +21,9 @@
 
 #### Auto Code Quality Plugin
 - **Advisory test runner** now reads from the correct tmp file prefix (`claude-cq-edited` instead of `claude-edited-files`), fixing a mismatch that prevented it from ever finding edited files
+
+#### Docs
+- Removed stale merge conflict marker in first-session docs page
 
 ### Added
 

@@ -1,67 +1,71 @@
-import { defineConfig } from 'astro/config';
-import starlight from '@astrojs/starlight';
-import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
-import astroMermaid from 'astro-mermaid';
-import starlightSidebarTopics from 'starlight-sidebar-topics';
-import starlightImageZoom from 'starlight-image-zoom';
-import starlightLinksValidator from 'starlight-links-validator';
-import starlightKbd from 'starlight-kbd';
-import starlightScrollToTop from 'starlight-scroll-to-top';
-import starlightLlmsTxt from 'starlight-llms-txt';
+import sitemap from "@astrojs/sitemap";
+import starlight from "@astrojs/starlight";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
+import astroMermaid from "astro-mermaid";
+import starlightImageZoom from "starlight-image-zoom";
+import starlightKbd from "starlight-kbd";
+import starlightLinksValidator from "starlight-links-validator";
+import starlightLlmsTxt from "starlight-llms-txt";
+import starlightScrollToTop from "starlight-scroll-to-top";
+import starlightSidebarTopics from "starlight-sidebar-topics";
 
 export default defineConfig({
-	site: 'https://anexileddev.github.io',
-	base: '/CodeForge',
+	site: "https://anexileddev.github.io",
+	base: "/CodeForge",
 	integrations: [
 		// astro-mermaid MUST be registered BEFORE starlight
 		astroMermaid(),
 		starlight({
-			title: 'CodeForge',
-			tagline: 'Your AI dev environment, battle-tested.',
+			title: "CodeForge",
+			tagline: "Your AI dev environment, battle-tested.",
 			logo: {
-				src: './src/assets/logo.png',
+				src: "./src/assets/logo.png",
 				replacesTitle: false,
 			},
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/AnExiledDev/CodeForge' },
-				{ icon: 'x.com', label: 'X', href: 'https://x.com/AnExiledDev' },
+				{
+					icon: "github",
+					label: "GitHub",
+					href: "https://github.com/AnExiledDev/CodeForge",
+				},
+				{ icon: "x.com", label: "X", href: "https://x.com/AnExiledDev" },
 			],
-			customCss: ['./src/styles/global.css'],
+			customCss: ["./src/styles/global.css"],
 			components: {
-				Hero: './src/components/Hero.astro',
-				Header: './src/components/Header.astro',
+				Hero: "./src/components/Hero.astro",
+				Header: "./src/components/Header.astro",
 			},
 			editLink: {
-				baseUrl: 'https://github.com/AnExiledDev/CodeForge/edit/main/docs/',
+				baseUrl: "https://github.com/AnExiledDev/CodeForge/edit/main/docs/",
 			},
 			head: [
 				{
-					tag: 'meta',
+					tag: "meta",
 					attrs: {
-						name: 'og:image',
-						content: '/CodeForge/og-image.png',
+						name: "og:image",
+						content: "/CodeForge/og-image.png",
 					},
 				},
 				{
-					tag: 'link',
+					tag: "link",
 					attrs: {
-						rel: 'icon',
-						type: 'image/png',
-						href: '/CodeForge/favicon.png',
+						rel: "icon",
+						type: "image/png",
+						href: "/CodeForge/favicon.png",
 					},
 				},
 				{
-					tag: 'link',
+					tag: "link",
 					attrs: {
-						rel: 'apple-touch-icon',
-						href: '/CodeForge/apple-touch-icon.png',
+						rel: "apple-touch-icon",
+						href: "/CodeForge/apple-touch-icon.png",
 					},
 				},
 				{
 					// Default to dark theme when no user preference is saved
-					tag: 'script',
-					attrs: { is: 'inline' },
+					tag: "script",
+					attrs: { is: "inline" },
 					content: `(function(){var k='starlight-theme';if(!localStorage.getItem(k)){localStorage.setItem(k,'dark');document.documentElement.setAttribute('data-theme','dark');document.documentElement.style.colorScheme='dark'}})()`,
 				},
 			],
@@ -150,6 +154,7 @@ export default defineConfig({
 								{ label: 'Commands', slug: 'reference/commands' },
 								{ label: 'Environment Variables', slug: 'reference/environment' },
 								{ label: 'Architecture', slug: 'reference/architecture' },
+								{ label: 'Port Forwarding', slug: 'reference/port-forwarding' },
 							],
 						},
 					],
@@ -160,8 +165,13 @@ export default defineConfig({
 				}),
 				starlightKbd({
 					types: [
-						{ id: 'mac', label: 'macOS', detector: 'apple', default: false },
-						{ id: 'windows', label: 'Windows / Linux', detector: 'windows', default: true },
+						{ id: "mac", label: "macOS", detector: "apple", default: false },
+						{
+							id: "windows",
+							label: "Windows / Linux",
+							detector: "windows",
+							default: true,
+						},
 					],
 				}),
 				starlightScrollToTop(),
@@ -171,7 +181,7 @@ export default defineConfig({
 		sitemap(),
 	],
 	server: {
-		host: '0.0.0.0',
+		host: "0.0.0.0",
 	},
 	vite: {
 		plugins: [tailwindcss()],
