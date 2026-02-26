@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # One-time migration: /workspaces/.claude → $HOME/.claude
 # Migrates config, credentials, and rules from the old bind-mount location
 # to the new home directory (Docker named volume).

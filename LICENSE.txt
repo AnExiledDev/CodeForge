@@ -1,3 +1,17 @@
+CodeForge — Copyright (c) 2026 Marcus Krueger (AnExiledDev)
+
+This software is dual-licensed:
+
+  1. GNU General Public License v3.0 (see below) — for open source use
+  2. Commercial License — available upon request for proprietary use
+
+For commercial licensing inquiries, contact:
+  696222+AnExiledDev@users.noreply.github.com
+
+SPDX-License-Identifier: GPL-3.0-only
+
+────────────────────────────────────────────────────────────────────────
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

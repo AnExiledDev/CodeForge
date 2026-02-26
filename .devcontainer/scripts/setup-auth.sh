@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # Configure Git (GitHub CLI) and NPM authentication from .secrets file or environment variables.
 # Environment variables override .secrets values, supporting Codespaces secrets and localEnv.
 # Auth failure should not block other setup steps, so set -e is intentionally omitted.

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) 2026 Marcus Krueger
 
 const fs = require('fs');
 const path = require('path');

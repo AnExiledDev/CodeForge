@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 #
 # Connect to CodeForge devcontainer from external terminal with tmux
 # For Claude Code Agent Teams split-pane support

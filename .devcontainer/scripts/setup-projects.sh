@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # Auto-detect projects under /workspaces/ and register them in Project Manager's projects.json.
 # Runs an initial scan synchronously, then starts an inotifywait background watcher
 # that updates the project list instantly when directories are created or removed.
