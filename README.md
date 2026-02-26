@@ -7,6 +7,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/codeforge-dev)](https://www.npmjs.com/package/codeforge-dev)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org/)
 [![GitHub issues](https://img.shields.io/github/issues/AnExiledDev/CodeForge)](https://github.com/AnExiledDev/CodeForge/issues)
+[![CI](https://github.com/AnExiledDev/CodeForge/actions/workflows/ci.yml/badge.svg)](https://github.com/AnExiledDev/CodeForge/actions/workflows/ci.yml)
 
 A curated development environment optimized for AI-powered coding with Claude Code. CodeForge comes pre-configured with language servers, code intelligence tools, and official Anthropic plugins to streamline your development workflow.
 
@@ -82,6 +83,22 @@ The `agent-system` plugin includes 17 specialized agents (architect, explorer, t
 4. **Start coding**: Run `cc`
 
 For full usage documentation — authentication, configuration, tools, agents, and keybindings — see [`.devcontainer/README.md`](.devcontainer/README.md).
+
+## Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md)
+before submitting a pull request. All contributions require signing our
+[Contributor License Agreement](CLA.md).
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).
+
+**Commercial licensing** is available for organizations that need to use CodeForge
+without GPL-3.0 obligations. Contact
+[696222+AnExiledDev@users.noreply.github.com](mailto:696222+AnExiledDev@users.noreply.github.com)
+or [open a GitHub issue](https://github.com/AnExiledDev/CodeForge/issues/new)
+for terms.
 
 ## Development
 

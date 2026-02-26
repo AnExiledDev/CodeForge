@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # Update Claude Code CLI to the latest version (native binary only)
 # Runs non-blocking in background by default via setup.sh
 # All failures are warnings — this script never blocks container startup

@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # Copy configuration files to workspace based on file-manifest.json
 
 CONFIG_DIR="${CONFIG_SOURCE_DIR:?CONFIG_SOURCE_DIR not set}"

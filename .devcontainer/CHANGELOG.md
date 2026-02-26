@@ -4,6 +4,20 @@
 
 ### Added
 
+#### Public Repo Quality
+- **CI workflow** (`.github/workflows/ci.yml`) — test and lint jobs on PRs and pushes to main (Node 18, `npm test` + Biome check)
+- **CodeQL security analysis** (`.github/workflows/codeql.yml`) — JavaScript scanning on PRs, pushes, and weekly schedule
+- **Dependabot** (`.github/dependabot.yml`) — weekly updates for npm (root + docs) and GitHub Actions
+- **Bug report template** (`.github/ISSUE_TEMPLATE/bug-report.yml`) — YAML form with version, environment, and repro steps
+- **Feature request template** (`.github/ISSUE_TEMPLATE/feature-request.yml`) — YAML form with problem/solution/alternatives
+- **Issue template config** (`.github/ISSUE_TEMPLATE/config.yml`) — commercial licensing contact link
+- **Pull request template** (`.github/pull_request_template.md`) — description, type of change, and checklist
+- **CONTRIBUTING.md** — contribution guidelines with GPL-3.0 licensing and CLA requirement
+- **CLA.md** — Individual Contributor License Agreement enabling dual licensing
+- **Dual licensing notice** — added to README.md (Contributing + License sections) and LICENSE.txt (header)
+- **CI badge** — added to README.md badge row
+- **SPDX copyright headers** — `GPL-3.0-only` identifier and `Copyright (c) 2026 Marcus Krueger` added to all 36 source files (setup.js, test.js, 34 shell scripts)
+
 #### Docs
 - **CLAUDE.md** — new "Status Bar Widgets" section documenting widget properties, token color conventions, label fusion pattern, and available widget types
 

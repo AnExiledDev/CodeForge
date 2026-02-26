@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Marcus Krueger
 # Install plugins: official Anthropic + local devs-marketplace registration
 #
 # Individual marketplace plugins are enabled via enabledPlugins in settings.json.
