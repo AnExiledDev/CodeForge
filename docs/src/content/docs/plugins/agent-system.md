@@ -1,11 +1,11 @@
 ---
 title: Agent System
-description: The agent system plugin provides 17 specialized AI agents with automatic delegation, CWD injection, and read-only enforcement.
+description: The agent system plugin provides 21 specialized AI agents with automatic delegation, CWD injection, and read-only enforcement.
 sidebar:
   order: 2
 ---
 
-The agent system is CodeForge's flagship plugin. It gives you access to 17 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to test writing and security auditing. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
+The agent system is CodeForge's flagship plugin. It gives you access to 21 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to test writing and security auditing. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
 
 ## How Delegation Works
 
@@ -105,7 +105,7 @@ Read-only agents don't just have instructions saying "don't write files." The gu
 
 ## Agent Reference
 
-CodeForge includes 17 specialized agents. Each one is tailored for a specific class of development task.
+CodeForge includes 21 specialized agents. Each one is tailored for a specific class of development task.
 
 ### Read-Only Agents
 

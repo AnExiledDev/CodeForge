@@ -71,7 +71,7 @@ def fetch_ticket(number: int) -> str | None:
 
     try:
         data = json.loads(result.stdout)
-    except (json.JSONDecodeError, ValueError):
+    except json.JSONDecodeError:
         return None
 
     title = data.get("title", "(no title)")
@@ -103,7 +103,7 @@ def main():
 
     try:
         data = json.loads(raw)
-    except (json.JSONDecodeError, ValueError):
+    except json.JSONDecodeError:
         sys.exit(0)
 
     prompt = data.get("prompt", "")

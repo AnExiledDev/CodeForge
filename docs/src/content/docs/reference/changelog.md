@@ -49,6 +49,20 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Fixed
+
+#### Post-Integration Review Fixes
+- **skill-engine** — worktree skill definition uses weighted tuples (was plain strings, caused crash)
+- **dangerous-command-blocker** — fail closed on unexpected exceptions (was fail-open)
+- **ticket-workflow** — remove redundant `ValueError` from exception handlers
+- **workspace-scope-guard** — use maxsplit in variable assignment detection
+- **Shell scripts** — add executable bit to `check-setup.sh`, quote `PLUGIN_BLACKLIST` variable, add `set -uo pipefail` to tmux installer, replace deprecated `which` with `command -v`, normalize `&>` redirects in setup scripts
+- **Documentation** — update agent count to 21, skill count to 38, plugin count to 14 across all docs site pages
+- **Documentation** — add missing plugin pages for git-workflow and prompt-snippets
+- **Documentation** — add `cc-orc` and `dbr` to commands reference
+- **Documentation** — remove merge conflict marker from first-session.md
+- **Documentation** — update architecture.md directory tree with new plugins
+
 ### Changed
 
 #### Configuration

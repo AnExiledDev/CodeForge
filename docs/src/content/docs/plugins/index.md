@@ -43,7 +43,7 @@ The `plugin.json` manifest is minimal — it identifies the plugin and its autho
 ```json
 {
   "name": "agent-system",
-  "description": "17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
+  "description": "21 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
   "author": {
     "name": "AnExiledDev"
   }
@@ -96,7 +96,7 @@ See [Hooks](../customization/hooks/) for the full hook API and configuration det
 
 ## Installed Plugins
 
-CodeForge ships with 11 local marketplace plugins plus 1 external Anthropic plugin, organized into two categories: **core plugins** that provide primary functionality, and **safety and integration plugins** that protect your work and connect to external tools.
+CodeForge ships with 13 local marketplace plugins plus 1 external Anthropic plugin, organized into two categories: **core plugins** that provide primary functionality, and **safety and integration plugins** that protect your work and connect to external tools.
 
 ### Core Plugins
 
@@ -104,10 +104,12 @@ These plugins deliver the headline features of CodeForge — intelligent delegat
 
 | Plugin | What It Does |
 |--------|-------------|
-| [Agent System](./agent-system/) | 17 specialized agents with automatic delegation, CWD injection, and read-only enforcement |
+| [Agent System](./agent-system/) | 21 specialized agents with automatic delegation, CWD injection, and read-only enforcement |
 | [Skill Engine](./skill-engine/) | 22 domain skills with context-aware auto-suggestion |
 | [Spec Workflow](./spec-workflow/) | Full specification lifecycle from creation through implementation to as-built closure |
 | [Ticket Workflow](./ticket-workflow/) | GitHub issue integration with EARS-formatted tickets and automated PR reviews |
+| [Git Workflow](./git-workflow/) | Standalone git operations: /ship (review/commit/push/PR) and /pr:review |
+| [Prompt Snippets](./prompt-snippets/) | Quick behavioral mode switches via /ps command |
 
 ### Safety Plugins
 

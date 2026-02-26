@@ -28,6 +28,19 @@ if [ "$CLAUDE_CONFIG_DIR" = "/workspaces/.claude" ]; then
     fi
 fi
 
+# Deprecation guard: CONFIG_SOURCE_DIR may still point to /workspaces/.claude
+# (pre-v2.0 default was to keep config source in workspace .claude dir).
+# Override with correct path.
+if [ "$CONFIG_SOURCE_DIR" = "/workspaces/.claude" ]; then
+    echo "[setup] WARNING: CONFIG_SOURCE_DIR=/workspaces/.claude is deprecated (moved to .devcontainer/config in v2.0)"
+    echo "[setup]   Updating .devcontainer/.env automatically."
+    CONFIG_SOURCE_DIR="$DEVCONTAINER_DIR/config"
+    if [ -f "$ENV_FILE" ]; then
+        sed -i 's|^CONFIG_SOURCE_DIR=.*/workspaces/\.claude.*|# CONFIG_SOURCE_DIR removed (v2.0: now uses .devcontainer/config)|' "$ENV_FILE"
+        echo "[setup]   .env updated — CONFIG_SOURCE_DIR line commented out."
+    fi
+fi
+
 # Apply defaults for any unset variables
 : "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
 : "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"

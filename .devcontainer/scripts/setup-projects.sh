@@ -178,7 +178,7 @@ start_watcher() {
 	fi
 
 	# Check if inotifywait is available (installed by tmux feature at build time)
-	if ! command -v inotifywait &>/dev/null; then
+	if ! command -v inotifywait >/dev/null 2>&1; then
 		echo "$LOG_PREFIX WARNING: inotify-tools not installed, watcher disabled"
 		return 1
 	fi

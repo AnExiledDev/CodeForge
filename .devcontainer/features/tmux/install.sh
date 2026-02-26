@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-only
 # Copyright (c) 2026 Marcus Krueger
-set -e
+set -euo pipefail
 
 VERSION="${VERSION:-latest}"
 

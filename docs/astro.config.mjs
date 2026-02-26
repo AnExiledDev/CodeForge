@@ -107,6 +107,8 @@ export default defineConfig({
 									label: 'Session & Integration',
 									items: [
 										{ label: 'Session Context', slug: 'plugins/session-context' },
+										{ label: 'Git Workflow', slug: 'plugins/git-workflow' },
+										{ label: 'Prompt Snippets', slug: 'plugins/prompt-snippets' },
 										{ label: 'Notify Hook', slug: 'plugins/notify-hook' },
 										{ label: 'CodeForge LSP', slug: 'plugins/codeforge-lsp' },
 										{ label: 'Frontend Design', slug: 'plugins/frontend-design' },

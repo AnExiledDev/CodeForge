@@ -59,7 +59,7 @@ if [ -d "$MARKETPLACE_PATH/plugins" ]; then
         plugin_name=$(basename "$plugin_dir")
 
         # Skip blacklisted plugins
-        if echo ",$PLUGIN_BLACKLIST," | grep -q ",$plugin_name,"; then
+        if echo ",${PLUGIN_BLACKLIST}," | grep -q ",$plugin_name,"; then
             echo "[setup-plugins] Skipping $plugin_name (blacklisted)"
             continue
         fi
