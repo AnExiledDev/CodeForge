@@ -173,4 +173,4 @@ Labels are `custom-text` widgets with `merge: "no-padding"` so they fuse visuall
 
 ## Features
 
-Custom features in `./features/` follow the [devcontainer feature spec](https://containers.dev/implementors/features/). Every local feature supports `"version": "none"` to skip installation. Claude Code is installed via `ghcr.io/anthropics/devcontainer-features/claude-code:1`.
+Custom features in `./features/` follow the [devcontainer feature spec](https://containers.dev/implementors/features/). Every local feature supports `"version": "none"` to skip installation. Claude Code is installed as a native binary via `./features/claude-code-native` (uses Anthropic's official installer at `https://claude.ai/install.sh`).

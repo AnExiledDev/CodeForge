@@ -118,7 +118,9 @@ run_script "$SCRIPT_DIR/setup-terminal.sh" "$SETUP_TERMINAL"
 
 # Background the update to avoid blocking container start
 if [ "$SETUP_UPDATE_CLAUDE" = "true" ] && [ -f "$SCRIPT_DIR/setup-update-claude.sh" ]; then
-    bash "$SCRIPT_DIR/setup-update-claude.sh" &>/dev/null &
+    CLAUDE_UPDATE_LOG="${CLAUDE_UPDATE_LOG:-/workspaces/.tmp/claude-update.log}"
+    mkdir -p "$(dirname "$CLAUDE_UPDATE_LOG")"
+    bash "$SCRIPT_DIR/setup-update-claude.sh" >>"$CLAUDE_UPDATE_LOG" 2>&1 &
     disown
     SETUP_RESULTS+=("setup-update-claude:background")
 else

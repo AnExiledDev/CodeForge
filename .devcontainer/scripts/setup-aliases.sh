@@ -80,14 +80,8 @@ if [ "\$TERM" = "xterm" ] || [ -z "\$TERM" ]; then
 fi
 export COLORTERM="\${COLORTERM:-truecolor}"
 
-# Prefer native binary over npm-installed version
-if [ -x "\$HOME/.local/bin/claude" ]; then
-    _CLAUDE_BIN="\$HOME/.local/bin/claude"
-elif [ -x /usr/local/bin/claude ]; then
-    _CLAUDE_BIN=/usr/local/bin/claude
-else
-    _CLAUDE_BIN=claude
-fi
+# Native binary (installed by claude-code-native feature)
+_CLAUDE_BIN="\$HOME/.local/bin/claude"
 
 # ChromaTerm wrapper (if ct is installed, wrap claude through it)
 if command -v ct >/dev/null 2>&1; then

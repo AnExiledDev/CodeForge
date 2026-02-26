@@ -10,7 +10,14 @@
 #### Skills
 - **worktree** — New skill for git worktree creation, management, and cleanup. Covers `EnterWorktree` tool, `--worktree` CLI flag, `.worktreeinclude` setup, worktree naming conventions, cleanup lifecycle, and CodeForge integration (Project Manager auto-detection, agent isolation). Includes two reference files: manual worktree commands and parallel workflow patterns.
 
+#### Claude Code Installation
+- **Post-start onboarding hook** (`99-claude-onboarding.sh`) — ensures `hasCompletedOnboarding: true` in `.claude.json` when token auth is configured; catches overwrites from Claude Code CLI/extension that race with `postStartCommand`
+
 ### Changed
+
+#### Claude Code Installation
+- **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
+- **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues
 
 #### System Prompt
 - **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
@@ -47,6 +54,15 @@
 - ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
 
 ### Fixed
+
+#### Claude Code Installation
+- **Update script no longer silently discards errors** — background update output now captured to log file instead of being discarded via `&>/dev/null`
+- **Update script simplified to native-binary-only** — removed npm fallback and `claude install` bootstrap code; added 60s timeout and transitional npm cleanup
+- **Alias resolution simplified** — `_CLAUDE_BIN` now resolves directly to native binary path (removed npm and `/usr/local/bin` fallbacks)
+- **POSIX redirect** — replaced `&>/dev/null` with `>/dev/null 2>&1` in dependency check for portability
+- **Installer shell** — changed `sh -s` to `bash -s` when piping the official installer (it requires bash)
+- **Unquoted `${TARGET}`** — quoted variable in `su -c` command to prevent word splitting
+- **Directory prep** — added `~/.local/state` and `~/.claude` pre-creation; consolidated `chown` to cover entire `~/.local` tree
 
 #### Plugin Marketplace
 - **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
