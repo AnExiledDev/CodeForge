@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (c) 2026 Marcus Krueger
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // ── Default preserve list ────────────────────────────────────────
 // Files in the package that should NOT overwrite user customizations.
@@ -82,7 +82,7 @@ function syncDirectory(src, dest, preserveSet) {
 			const srcPath = path.join(srcDir, entry.name);
 			const destPath = path.join(destDir, entry.name);
 			const relativePath = relativeBase
-				? relativeBase + "/" + entry.name
+				? `${relativeBase}/${entry.name}`
 				: entry.name;
 
 			if (entry.isDirectory()) {
@@ -92,7 +92,7 @@ function syncDirectory(src, dest, preserveSet) {
 
 			// Special handling for devcontainer.json: overwrite + save .bak
 			if (relativePath === "devcontainer.json" && fs.existsSync(destPath)) {
-				fs.copyFileSync(destPath, destPath + ".bak");
+				fs.copyFileSync(destPath, `${destPath}.bak`);
 				fs.copyFileSync(srcPath, destPath);
 				stats.backedUp++;
 				stats.updated++;
@@ -101,7 +101,7 @@ function syncDirectory(src, dest, preserveSet) {
 
 			// Preserved files: skip overwrite, save package version as .codeforge-new
 			if (preserveSet.has(relativePath) && fs.existsSync(destPath)) {
-				fs.copyFileSync(srcPath, destPath + ".codeforge-new");
+				fs.copyFileSync(srcPath, `${destPath}.codeforge-new`);
 				stats.preserved++;
 				stats.preservedFiles.push(relativePath);
 				continue;
