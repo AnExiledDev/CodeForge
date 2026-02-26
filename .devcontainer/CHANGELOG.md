@@ -11,6 +11,13 @@
 - Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
 - Added tabbed client-specific instructions on the installation page
 - Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
+- **Ported `.devcontainer/docs/` to docs site** — merged 5 legacy reference docs into the Starlight documentation site:
+  - New **Keybindings** page (Customization) — VS Code/Claude Code shortcut conflicts and resolution options
+  - New **Troubleshooting** page (Reference) — 12+ problem/solution entries for build, auth, plugins, and performance issues
+  - New **Optional Features** page (Customization) — mcp-qdrant vector memory setup guide
+  - Merged setup variables (`.env` flags) into the Environment Variables reference
+  - Merged `.secrets` file authentication docs into the Configuration page
+- Removed `.devcontainer/docs/` directory — all content now lives in the docs site
 
 ### Fixed
 

@@ -220,6 +220,32 @@ Optional secrets can be declared for VS Code Codespaces or other DevContainer ho
 }
 ```
 
+## Secrets File
+
+Create `.devcontainer/.secrets` to configure automatic authentication on container start. The file uses `KEY=VALUE` format:
+
+```bash
+GH_TOKEN=ghp_your_token_here
+GH_USERNAME=your-github-username
+GH_EMAIL=your-email@example.com
+NPM_TOKEN=npm_your_token_here
+CLAUDE_AUTH_TOKEN=sk-ant-oat01-your-token-here
+```
+
+| Variable | Purpose |
+|----------|---------|
+| `GH_TOKEN` | GitHub Personal Access Token for `gh` CLI and git authentication |
+| `GH_USERNAME` | GitHub username for `git config user.name` |
+| `GH_EMAIL` | Email for `git config user.email` |
+| `NPM_TOKEN` | NPM authentication token for publishing and private packages |
+| `CLAUDE_AUTH_TOKEN` | Long-lived Claude Code token from `claude setup-token` |
+
+When `CLAUDE_AUTH_TOKEN` is set, `setup-auth.sh` creates `~/.claude/.credentials.json` on container start with `600` permissions. If `.credentials.json` already exists, token injection is skipped (idempotent). Tokens must match the `sk-ant-*` format.
+
+:::caution[Don't Commit Secrets]
+The `.secrets` file is listed in `.gitignore`. Never commit it to version control. For Codespaces, use [GitHub Secrets](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-secrets-for-your-repository-and-organization-for-github-codespaces) instead — environment variables with the same names take precedence over `.secrets` file values.
+:::
+
 ## Configuration Precedence
 
 When the same setting is defined at multiple levels, the most specific value wins:
