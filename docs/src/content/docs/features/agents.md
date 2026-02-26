@@ -1,11 +1,11 @@
 ---
 title: Agents
-description: Complete reference for all 17 CodeForge agents — capabilities, tool access, and use cases.
+description: Complete reference for all 21 CodeForge agents — capabilities, tool access, and use cases.
 sidebar:
   order: 2
 ---
 
-CodeForge provides 17 specialized agents, each configured with a focused system prompt, specific tool access, and domain expertise. Claude automatically delegates to the appropriate agent based on your request — ask about architecture and you get the architect; ask for a security review and you get the security auditor.
+CodeForge provides 21 specialized agents, each configured with a focused system prompt, specific tool access, and domain expertise. Claude automatically delegates to the appropriate agent based on your request — ask about architecture and you get the architect; ask for a security review and you get the security auditor.
 
 ## How Agents Work
 

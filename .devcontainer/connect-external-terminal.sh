@@ -49,7 +49,7 @@ echo "Found container: $CONTAINER_NAME ($CONTAINER_ID)"
 echo ""
 
 # Check if tmux is available in the container
-if ! docker exec "$CONTAINER_ID" which tmux >/dev/null 2>&1; then
+if ! docker exec "$CONTAINER_ID" command -v tmux >/dev/null 2>&1; then
 	echo "ERROR: tmux is not installed in the container."
 	echo "Rebuild the devcontainer to install the tmux feature."
 	exit 1

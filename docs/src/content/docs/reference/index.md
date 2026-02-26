@@ -69,10 +69,10 @@ These are the files you will interact with most often when configuring CodeForge
 
 | Component | Count | Details |
 |-----------|-------|---------|
-| DevContainer features | 21 | Runtimes, CLI tools, monitoring |
-| Plugins | 12 | Safety, quality, workflow, intelligence |
-| Agents | 17 | Specialized personas from explorer to security-auditor |
-| Skills | 34 | On-demand knowledge across coding, testing, frameworks |
+| DevContainer features | 22 | Runtimes, CLI tools, monitoring |
+| Plugins | 14 | Safety, quality, workflow, intelligence |
+| Agents | 21 | Specialized personas from explorer to security-auditor |
+| Skills | 38 | On-demand knowledge across coding, testing, frameworks |
 | Built-in rules | 3 | Workspace scope, spec workflow, session search |
 | CLI commands | 10+ | Session, analysis, code quality, intelligence |
 

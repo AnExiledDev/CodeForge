@@ -127,9 +127,9 @@ def main():
         # Fail closed: can't parse means can't verify safety
         sys.exit(2)
     except Exception as e:
-        # Log error but don't block on hook failure
+        # Fail closed: unexpected errors should block, not allow
         print(f"Hook error: {e}", file=sys.stderr)
-        sys.exit(0)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

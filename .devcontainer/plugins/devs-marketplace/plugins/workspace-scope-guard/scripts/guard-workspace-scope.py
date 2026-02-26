@@ -157,7 +157,7 @@ def extract_primary_command(command: str) -> str:
     while i < len(tokens):
         tok = tokens[i]
         # Skip inline variable assignments: VAR=value
-        if "=" in tok and not tok.startswith("-") and tok.split("=")[0].isidentifier():
+        if "=" in tok and not tok.startswith("-") and tok.split("=", 1)[0].isidentifier():
             i += 1
             continue
         # Skip sudo and its flags

@@ -17,6 +17,7 @@ Commands for launching and managing Claude Code sessions.
 | `claude` | Identical to `cc` | `claude` |
 | `ccw` | Launch Claude Code with the writing system prompt (for docs and prose) | `ccw` |
 | `ccraw` | Launch vanilla Claude Code with no custom config, prompts, or plugins | `ccraw` |
+| `cc-orc` | Launch Claude Code in orchestrator mode (delegation-first workflow) | `cc-orc` |
 
 All session commands auto-detect the Claude binary location: `~/.local/bin/claude` (native install) is preferred, then `/usr/local/bin/claude`, then PATH lookup. If ChromaTerm (`ct`) is installed, output is wrapped through it for color highlighting.
 
@@ -43,6 +44,7 @@ Commands for session analysis, usage tracking, and system monitoring.
 | `agent-browser` | Headless Chromium browser for agent automation with accessibility tree snapshots | `agent-browser` |
 | `check-setup` | Verify CodeForge installation health -- checks tools, config, and aliases | `check-setup` |
 | `cc-tools` | List all installed CodeForge CLI tools with version info | `cc-tools` |
+| `dbr` | Dynamic port forwarding via devcontainer-bridge (container↔host) | `dbr` |
 
 ### ccms Usage
 
@@ -202,10 +204,10 @@ Commands come from different sources in the CodeForge setup:
 
 | Source | Commands | How Defined |
 |--------|----------|-------------|
-| Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
+| Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | Shell functions | `cc-tools` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
-| DevContainer features | `ccms`, `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, etc. | `install.sh` in each feature directory |
-| Slash commands | `/spec-new`, `/ticket:new`, `/ship`, `/pr:review`, etc. | Skill SKILL.md files in plugin directories |
+| DevContainer features | `ccms`, `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
+| Slash commands | `/spec-new`, `/ticket:new`, `/ship`, `/pr:review`, `/ps`, etc. | Skill SKILL.md files in plugin directories |
 | External features | `gh`, `docker`, `node`, `bun`, `cargo` | Installed via `devcontainer.json` features |
 
 :::tip[Listing All Tools]

@@ -48,8 +48,8 @@ your-project/
 │   ├── config/
 │   │   ├── file-manifest.json  # Controls config file deployment
 │   │   └── defaults/           # System prompts, settings, rules
-│   ├── features/               # 21 custom DevContainer features
-│   ├── plugins/                # 12 plugins with hooks and scripts
+│   ├── features/               # 22 custom DevContainer features
+│   ├── plugins/                # 14 plugins with hooks and scripts
 │   └── scripts/                # Setup and verification scripts
 └── ... (your existing files)
 ```
@@ -139,7 +139,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 
 ### Plugins
 
-All 12 plugins are installed and active by default. They're configured through `settings.json` and managed by the plugin system. See the [Plugins Overview](../plugins/) for details on each plugin and how to enable or disable them.
+All 14 plugins are installed and active by default. They're configured through `settings.json` and managed by the plugin system. See the [Plugins Overview](../plugins/) for details on each plugin and how to enable or disable them.
 
 ## Configuration
 

@@ -85,7 +85,7 @@ Additional hook points (`SessionStart`, `SubagentStart`, `TeammateIdle`, `TaskCo
 
 ### Agent System
 
-The agent system provides specialized personas with constrained tools and focus areas. CodeForge ships 17 custom agents:
+The agent system provides specialized personas with constrained tools and focus areas. CodeForge ships 21 custom agents:
 
 **How agent routing works:**
 
@@ -111,7 +111,7 @@ Skills are Markdown knowledge files loaded on demand during a session:
 4. The skill content is injected into the conversation context
 5. Claude uses the skill knowledge for the current task
 
-CodeForge ships 35 skills across the skill-engine, spec-workflow, ticket-workflow, and agent-system plugins.
+CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflow, git-workflow, agent-system, and prompt-snippets plugins.
 
 ## Directory Structure
 
@@ -141,11 +141,11 @@ CodeForge ships 35 skills across the skill-engine, spec-workflow, ticket-workflo
 |   +-- tree-sitter/               # Syntax parsing
 |   +-- ruff/                      # Python formatter/linter
 |   +-- biome/                     # JS/TS formatter/linter
-|   +-- ... (21 features total)
+|   +-- ... (22 features total)
 +-- plugins/
 |   +-- devs-marketplace/
 |       +-- plugins/
-|           +-- agent-system/      # 17 agents + redirection hooks
+|           +-- agent-system/      # 21 agents + redirection hooks
 |           +-- skill-engine/      # 22 skills + auto-suggestion
 |           +-- spec-workflow/     # 8 spec lifecycle skills
 |           +-- session-context/   # Git state, TODOs, commit reminders
@@ -153,8 +153,10 @@ CodeForge ships 35 skills across the skill-engine, spec-workflow, ticket-workflo
 |           +-- dangerous-command-blocker/  # Block destructive commands
 |           +-- protected-files-guard/     # Block edits to sensitive files
 |           +-- workspace-scope-guard/     # Enforce project isolation
-|           +-- ticket-workflow/   # GitHub issue/PR workflow
+|           +-- ticket-workflow/   # 4 ticket lifecycle skills
+|           +-- git-workflow/      # 2 git operation skills (/ship, /pr:review)
 |           +-- notify-hook/       # Desktop notifications
+|           +-- prompt-snippets/   # 1 behavioral mode switch skill
 |           +-- codeforge-lsp/     # Language servers
 +-- scripts/                       # Setup scripts (run via postStartCommand)
     +-- setup.sh                   # Main orchestrator

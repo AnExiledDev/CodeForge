@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: Complete reference for all 22 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
+description: Complete reference for all 38 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
 sidebar:
   order: 3
 ---

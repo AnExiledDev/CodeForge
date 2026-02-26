@@ -21,7 +21,7 @@ fi
 # === Merge or create keybindings ===
 BINDING='{"key":"shift+enter","command":"workbench.action.terminal.sendSequence","args":{"text":"\\u001b\\r"},"when":"terminalFocus"}'
 
-if [ -f "$KEYBINDINGS_FILE" ] && command -v jq &>/dev/null; then
+if [ -f "$KEYBINDINGS_FILE" ] && command -v jq >/dev/null 2>&1; then
 	# Merge into existing keybindings
 	if jq empty "$KEYBINDINGS_FILE" 2>/dev/null; then
 		jq ". + [$BINDING]" "$KEYBINDINGS_FILE" >"$KEYBINDINGS_FILE.tmp" &&

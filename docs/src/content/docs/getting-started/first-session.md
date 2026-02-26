@@ -35,7 +35,7 @@ If something isn't working as expected in a CodeForge session, try `ccraw` to se
 When your session starts, several systems activate behind the scenes. You don't need to configure any of this — it just works.
 
 - **System prompt** — gives Claude context about your project, coding standards, and how to communicate. Customizable via [System Prompts](../customization/system-prompts/).
-- **Plugin hooks** — 12 plugins fire automatically at key moments: blocking dangerous commands, guarding workspace scope, injecting git state, running code quality checks, and more. See the [Plugins Overview](../plugins/) for details on each one.
+- **Plugin hooks** — 14 plugins fire automatically at key moments: blocking dangerous commands, guarding workspace scope, injecting git state, running code quality checks, and more. See the [Plugins Overview](../plugins/) for details on each one.
 - **Session context** — Claude always knows your current branch, uncommitted changes, recent commits, and active TODOs without you having to explain it.
 
 ## What to Try First
@@ -96,7 +96,7 @@ claude-dashboard
 
 ## Agents and Skills
 
-CodeForge includes **17 specialized agents** and **34 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
+CodeForge includes **21 specialized agents** and **38 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
 
 - **[Agents](../features/agents/)** — specialized AI personas for architecture, debugging, testing, security, migrations, and more
 - **[Skills](../features/skills/)** — domain-specific knowledge packs (FastAPI, Docker, Svelte, debugging patterns, etc.) that the skill engine suggests automatically or you invoke with slash commands like `/spec-new`
@@ -104,7 +104,6 @@ CodeForge includes **17 specialized agents** and **34 skills** that activate aut
 ## Understanding the Status Line
 
 If your terminal supports it, CodeForge provides a status line that shows session information at a glance. The `ccstatusline` feature adds session metadata to your terminal prompt, so you always know which session you're in and its current state.
->>>>>>> b9f14e6 (Add worktree skill for git worktree lifecycle guidance)
 
 ## Tips for Effective Sessions
 
@@ -127,7 +126,7 @@ The session context plugin reminds you to commit when there are significant unco
 ## Next Steps
 
 - [Plugins Overview](../plugins/) — understand how each plugin enhances your workflow
-- [Agents](../features/agents/) — explore all 17 specialized agents in detail
+- [Agents](../features/agents/) — explore all 21 specialized agents in detail
 - [Skills](../features/skills/) — browse the complete skill catalog
 - [Configuration](../customization/configuration/) — customize CodeForge to match your preferences
 - [Commands Reference](../reference/commands/) — full reference for all CLI commands
