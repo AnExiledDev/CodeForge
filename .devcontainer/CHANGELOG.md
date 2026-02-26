@@ -4,6 +4,11 @@
 
 ### Added
 
+#### README
+- **"Why CodeForge?" section** — motivation and value proposition explaining the project's origins as a power user's personal setup
+- **Architecture overview** — three-layer diagram (DevContainer → CodeForge Layer → Claude Code) with brief descriptions and link to full architecture docs
+- **Configuration summary** — table of key config files with links to the documentation site
+
 #### Public Repo Quality
 - **CI workflow** (`.github/workflows/ci.yml`) — test and lint jobs on PRs and pushes to main (Node 18, `npm test` + Biome check)
 - **CodeQL security analysis** (`.github/workflows/codeql.yml`) — JavaScript scanning on PRs, pushes, and weekly schedule
