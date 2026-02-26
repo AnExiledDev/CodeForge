@@ -184,11 +184,14 @@ Custom features in `./features/` follow the [devcontainer feature spec](https://
 
 ## Port Forwarding
 
-Two mechanisms handle port access:
+Three mechanisms handle port access depending on your client:
 
-| Mechanism | When Active | Dynamic Discovery |
-|-----------|-------------|-------------------|
-| `forwardPorts` (devcontainer.json) | VS Code / Codespaces only | No (static list; VS Code auto-detects separately) |
-| devcontainer-bridge (`dbr`) | Any terminal client | Yes (polls `/proc/net/tcp`) |
+| Mechanism | Client | Discovery |
+|-----------|--------|-----------|
+| VS Code auto-detect | VS Code only | Dynamic — all ports auto-forwarded with notification |
+| devcontainer-bridge (`dbr`) | Any terminal client | Dynamic — polls `/proc/net/tcp` |
+| SSH tunneling | Any SSH client | Manual — `ssh -L localPort:localhost:remotePort` |
 
-`forwardPorts` is a no-op outside VS Code — the `devcontainer` CLI ignores it. `dbr` provides VS Code-independent dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
+VS Code auto-detects all ports opened inside the container (configured via `portsAttributes` in `devcontainer.json`). Outside VS Code, `dbr` provides dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
+
+For full setup instructions, see the [Port Forwarding reference](https://anexileddev.github.io/CodeForge/reference/port-forwarding/) in the docs.

@@ -1,6 +1,6 @@
 # CodeForge Usage Guide
 
-Everything you need to know once you're inside the devcontainer.
+Everything you need to know once you're inside the devcontainer. These instructions apply regardless of which client you used to start the container — VS Code, the `devcontainer` CLI, JetBrains Gateway, DevPod, or GitHub Codespaces.
 
 ## Quick Start
 

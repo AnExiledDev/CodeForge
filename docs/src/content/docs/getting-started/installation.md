@@ -54,7 +54,14 @@ your-project/
 └── ... (your existing files)
 ```
 
-## Step 2: Open in VS Code
+## Step 2: Open in a DevContainer Client
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+CodeForge uses the open [Dev Containers specification](https://containers.dev/). Pick whichever client fits your workflow:
+
+<Tabs>
+<TabItem label="VS Code">
 
 Open your project in VS Code. You should see a notification in the bottom-right corner:
 
@@ -65,6 +72,51 @@ Click **Reopen in Container**. If you miss the notification, use the Command Pal
 1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
 2. Type "Dev Containers" and select **Dev Containers: Reopen in Container**
 
+You can watch the build progress in the "Dev Containers" output channel in the terminal panel.
+
+</TabItem>
+<TabItem label="DevContainer CLI">
+
+Install the CLI if you haven't already:
+
+```bash
+npm install -g @devcontainers/cli
+```
+
+Build and start the container:
+
+```bash
+devcontainer up --workspace-folder .
+```
+
+Then connect to the running container:
+
+```bash
+docker exec -it <container-name> zsh
+```
+
+Use `docker ps` to find the container name. For port forwarding outside VS Code, see the [Port Forwarding reference](../reference/port-forwarding/).
+
+</TabItem>
+<TabItem label="JetBrains">
+
+1. Open **JetBrains Gateway** (or IntelliJ IDEA / PyCharm with the [Dev Containers plugin](https://plugins.jetbrains.com/plugin/21962-dev-containers))
+2. Select **Dev Containers** as the connection type
+3. Point to your project directory containing `.devcontainer/`
+4. Gateway builds the container and connects the IDE backend automatically
+
+</TabItem>
+<TabItem label="Codespaces">
+
+1. Push your project (with the `.devcontainer/` directory) to GitHub
+2. Go to your repository on GitHub and click **Code → Codespaces → Create codespace**
+3. Codespaces reads your `devcontainer.json` and builds the environment in the cloud
+
+No local Docker installation required. Port forwarding is handled automatically by Codespaces.
+
+</TabItem>
+</Tabs>
+
 ### What Happens During the First Build
 
 The first container build takes several minutes (typically 3-8 minutes depending on your internet speed and hardware). Here's what's happening behind the scenes:
@@ -73,10 +125,10 @@ The first container build takes several minutes (typically 3-8 minutes depending
 2. **Feature installation** — installs 21 DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Rust, Bun, Claude Code, and all custom features
 3. **Post-start setup** — deploys configuration files, sets up shell aliases, and configures plugins
 
-You can watch the progress in VS Code's log output. Look for the "Dev Containers" output channel in the terminal panel.
-
 :::caution[Don't interrupt the first build]
-If the build is interrupted, Docker may cache a partial state. Use **Dev Containers: Rebuild Container Without Cache** to start fresh.
+If the build is interrupted, Docker may cache a partial state. Rebuild without cache to start fresh:
+- **VS Code**: Dev Containers: Rebuild Container Without Cache
+- **CLI**: `devcontainer up --workspace-folder . --remove-existing-container`
 :::
 
 ## Step 3: Verify Installation
@@ -162,8 +214,8 @@ npx codeforge-dev@latest
 
 This updates the `.devcontainer/` configuration. After updating, rebuild the container:
 
-1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
-2. Select **Dev Containers: Rebuild Container**
+- **VS Code**: Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS) and select **Dev Containers: Rebuild Container**
+- **CLI**: `devcontainer up --workspace-folder . --remove-existing-container`
 
 :::tip[Check what changed]
 Use `git diff .devcontainer/` after updating to review what changed before committing. This lets you verify the update didn't overwrite any customizations you want to keep.
@@ -220,6 +272,10 @@ Use `git diff .devcontainer/` after updating to review what changed before commi
 
 - **Extension not installed** — install `ms-vscode-remote.remote-containers` from the Extensions marketplace, then reload VS Code
 - **`.devcontainer/` not at repo root** — VS Code looks for `.devcontainer/` in the workspace root folder. If your project is inside a subfolder, open that subfolder directly
+
+:::note[Using a different client?]
+Not using VS Code? The DevContainer CLI, JetBrains Gateway, DevPod, and Codespaces all read the same `devcontainer.json`. See [Step 2](#step-2-open-in-a-devcontainer-client) for client-specific instructions.
+:::
 - **VS Code version** — DevContainers requires VS Code 1.85 or later. Check **Help → About** and update if needed
 
 ### Docker permission errors (Linux)
