@@ -94,13 +94,14 @@ alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CL
 alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 alias ccraw='command "\$_CLAUDE_BIN"'
 alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
+alias cc-orc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions'
 
 cc-tools() {
   echo "CodeForge Available Tools"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━"
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
-  for cmd in claude cc ccw ccraw ccusage ccburn claude-monitor \\
+  for cmd in claude cc ccw ccraw cc-orc ccusage ccburn claude-monitor \\
              ccms ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
              agent-browser gh docker git jq tmux bun go infocmp; do
@@ -126,5 +127,6 @@ echo "  cc          -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
 echo "  claude      -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
 echo "  ccraw       -> vanilla claude without any config"
 echo "  ccw         -> claude with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
+echo "  cc-orc      -> claude with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
 echo "  cc-tools    -> list all available CodeForge tools"
 echo "  check-setup -> verify CodeForge setup health"

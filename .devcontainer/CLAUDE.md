@@ -12,7 +12,10 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 │   ├── file-manifest.json     # Declarative config file deployment
 │   └── defaults/              # Source files deployed on start via file-manifest
 │       ├── settings.json      # Model, permissions, plugins, env vars
+│       ├── keybindings.json   # Keyboard shortcuts
 │       ├── main-system-prompt.md
+│       ├── orchestrator-system-prompt.md
+│       ├── writing-system-prompt.md
 │       ├── ccstatusline-settings.json  # Status bar widget layout
 │       └── rules/             # Deployed to .claude/rules/
 ├── features/                  # Custom devcontainer features
@@ -26,6 +29,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 |------|---------|
 | `config/defaults/settings.json` | Model, tokens, permissions, plugins, env vars |
 | `config/defaults/main-system-prompt.md` | System prompt defining assistant behavior |
+| `config/defaults/orchestrator-system-prompt.md` | Orchestrator mode prompt (delegation-first) |
 | `config/defaults/ccstatusline-settings.json` | Status bar widget layout (deployed to ~/.config/ccstatusline/) |
 | `config/file-manifest.json` | Controls which config files deploy and when |
 | `devcontainer.json` | Container definition: image, features, mounts |
@@ -68,6 +72,7 @@ git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 | `cc` / `claude` | Run Claude Code with auto-configuration |
 | `ccraw` | Vanilla Claude Code (bypasses config) |
 | `ccw` | Claude Code with writing system prompt |
+| `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
 | `ccms` | Search session history (project-scoped) |
 | `ccusage` / `ccburn` | Token usage analysis / burn rate |
 | `agent-browser` | Headless Chromium (Playwright-based) |
@@ -80,7 +85,7 @@ git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 
 Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
-- **agent-system** — 17 custom agents + built-in agent redirection
+- **agent-system** — 21 custom agents (4 workhorse + 17 specialist) + built-in agent redirection
 - **skill-engine** — 22 general coding skills + auto-suggestion
 - **spec-workflow** — 8 spec lifecycle skills + spec-reminder hook
 - **session-context** — Git state injection, TODO harvesting, commit reminders

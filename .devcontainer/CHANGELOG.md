@@ -20,6 +20,28 @@
 #### Features
 - **devcontainer-bridge (dbr)** — Ports opened inside the container are now automatically discovered and forwarded to the host, even outside VS Code. Requires `dbr host-daemon` running on the host. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)
 
+#### Orchestrator Mode
+- **`cc-orc` alias** — new Claude Code entry point using `orchestrator-system-prompt.md` for delegation-first operation; orchestrator decomposes tasks, delegates to agents, surfaces questions, and synthesizes results without performing direct implementation work
+- **`orchestrator-system-prompt.md`** — slim system prompt (~250 lines) containing only delegation model, agent catalog, question surfacing protocol, planning gates, spec enforcement, and action safety; all code standards, testing standards, and implementation details live in agent prompts
+
+#### Workhorse Agents
+- **`investigator`** — consolidated read-only research agent (sonnet) merging the domains of researcher, explorer, dependency-analyst, git-archaeologist, debug-logs, and perf-profiler; handles codebase search, web research, git forensics, dependency auditing, log analysis, and performance profiling
+- **`implementer`** — consolidated read-write implementation agent (opus, worktree) merging generalist, refactorer, and migrator; handles all code modifications with embedded code standards, execution discipline, and Stop hook regression testing
+- **`tester`** — enhanced test agent (opus, worktree) with full testing standards, framework-specific guidance, and Stop hook verification; creates and verifies test suites
+- **`documenter`** — consolidated documentation and specification agent (opus) merging doc-writer and spec-writer; handles README, API docs, docstrings, and the full spec lifecycle (create, refine, build, review, update, check)
+- **Question Surfacing Protocol** — all 4 workhorse agents carry an identical protocol requiring them to STOP and return `## BLOCKED: Questions` sections when hitting ambiguities, ensuring no assumptions are made without user input
+
+### Fixed
+
+#### CodeRabbit Review Fixes
+- **`implementer.md`** — changed PostToolUse hook (fires every Edit) to Stop hook (fires once at task end) with 120s timeout; prevents redundant test runs during multi-file tasks
+- **`tester.md`** — increased Stop hook timeout from 30s to 120s to accommodate larger test suites
+- **`setup-aliases.sh`** — added `cc-orc` to `cc-tools` discovery loop so it appears in tool audit
+- **`CLAUDE.md`** — added missing `keybindings.json`, `orchestrator-system-prompt.md`, and `writing-system-prompt.md` to directory structure tree
+- **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
+- **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
+- **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
+
 ### Changed
 
 #### Skill Engine: Auto-Suggestion
@@ -40,6 +62,13 @@
 - Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
 - Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
 - `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+- `file-manifest.json` — added deployment entry for `orchestrator-system-prompt.md`
+- `setup-aliases.sh` — added `cc-orc` alias alongside existing `cc`, `claude`, `ccw`, `ccraw`
+- `CLAUDE.md` — documented `cc-orc` command and orchestrator system prompt in key configuration table
+
+#### Agent System
+- Agent count increased from 17 to 21 (4 workhorse + 17 specialist)
+- Agent-system README updated with workhorse agent table, per-agent hooks for implementer and tester, and updated plugin structure
 
 #### Authentication
 - Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
