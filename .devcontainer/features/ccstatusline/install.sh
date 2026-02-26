@@ -190,9 +190,11 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
-SETTINGS_FILE="${WORKSPACE_ROOT:-/workspaces}/.claude/settings.json"
 # Use SUDO_USER since _REMOTE_USER isn't set in post-start hooks
 USERNAME="${SUDO_USER:-vscode}"
+_USER_HOME=$(getent passwd "$USERNAME" 2>/dev/null | cut -d: -f6)
+_USER_HOME="${_USER_HOME:-/home/$USERNAME}"
+SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}/settings.json"
 
 # Ensure directory exists
 mkdir -p "$(dirname "${SETTINGS_FILE}")"

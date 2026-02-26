@@ -78,7 +78,7 @@ Edit `config/defaults/keybindings.json` to remap Claude Code actions to non-conf
 }
 ```
 
-The keybindings file is copied to `/workspaces/.claude/keybindings.json` on container start (controlled by `file-manifest.json`).
+The keybindings file is copied to `~/.claude/keybindings.json` on container start (controlled by `file-manifest.json`).
 
 ## Claude Code Keybinding Reference
 

@@ -49,10 +49,43 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Changed
+
+#### Configuration
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+
+#### Authentication
+- Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
+- Auto-creates `.credentials.json` from token on container start (skips if already exists)
+- Added `CLAUDE_AUTH_TOKEN` to devcontainer.json secrets declaration
+
+#### Security
+- Protected-files-guard now blocks modifications to `.credentials.json`
+- Replaced `eval` tilde expansion with `getent passwd` lookup across all scripts (prevents shell injection via `SUDO_USER`/`USER`)
+- Auth token value is now JSON-escaped before writing to `.credentials.json`
+- Credential directory created with restrictive umask (700) matching credential file permissions (600)
+
+#### Scripts
+- Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
+- Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
+- `chown` in mcp-qdrant poststart hooks now uses resolved `_USERNAME` instead of hardcoded `vscode` or `$(id -un)`
+
+#### Documentation
+- All docs now reference `~/.claude` as default config path
+- Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
+- ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
+
 ### Removed
+
+#### Scripts
+- `setup-symlink-claude.sh` — no longer needed with native home directory location
 
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
+
+---
 
 ## v1.14.2
 

@@ -65,6 +65,50 @@ else
     echo "[setup-auth] NPM_TOKEN not set, skipping NPM auth"
 fi
 
+# --- Claude auth token (from 'claude setup-token') ---
+# Long-lived tokens only — generated via: claude setup-token
+# Note: After unset, the token remains visible in /proc/<pid>/environ for the
+# lifetime of this process. This is a platform limitation of environment variables.
+_USERNAME="${SUDO_USER:-${USER:-vscode}}"
+_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
+_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
+CLAUDE_CRED_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
+CLAUDE_CRED_FILE="$CLAUDE_CRED_DIR/.credentials.json"
+if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
+    # Validate token format (claude setup-token produces sk-ant-* tokens)
+    if [[ ! "$CLAUDE_AUTH_TOKEN" =~ ^sk-ant- ]]; then
+        echo "[setup-auth] WARNING: CLAUDE_AUTH_TOKEN doesn't match expected format (sk-ant-*), skipping"
+    elif [ -f "$CLAUDE_CRED_FILE" ]; then
+        echo "[setup-auth] .credentials.json already exists, skipping token injection"
+        # Verify permissions haven't been tampered with
+        perms=$(stat -c %a "$CLAUDE_CRED_FILE" 2>/dev/null)
+        if [ -n "$perms" ] && [ "$perms" != "600" ]; then
+            echo "[setup-auth] WARNING: .credentials.json has permissions $perms (expected 600), fixing"
+            chmod 600 "$CLAUDE_CRED_FILE"
+        fi
+        AUTH_CONFIGURED=true
+    else
+        echo "[setup-auth] Creating .credentials.json from CLAUDE_AUTH_TOKEN..."
+        # Create directory with restrictive permissions (matches credential file at 600)
+        ( umask 077; mkdir -p "$CLAUDE_CRED_DIR" )
+        # Escape JSON-special characters in token value (defense against malformed JSON
+        # if a token ever contains " or \ — unlikely with sk-ant-* but closes the gap)
+        ESCAPED_TOKEN=$(printf '%s' "$CLAUDE_AUTH_TOKEN" | sed 's/\\/\\\\/g; s/"/\\"/g')
+        # Write credentials with restrictive permissions from the start (no race window).
+        # Uses printf '%s' to avoid shell expansion of token value (defense against
+        # metacharacters in the token string — backticks, $(), quotes).
+        if ( umask 077; printf '{\n  "claudeAiOauth": {\n    "accessToken": "%s",\n    "refreshToken": "%s",\n    "expiresAt": 9999999999999,\n    "scopes": ["user:inference", "user:profile"]\n  }\n}\n' "$ESCAPED_TOKEN" "$ESCAPED_TOKEN" > "$CLAUDE_CRED_FILE" ); then
+            echo "[setup-auth] Claude auth token configured"
+            AUTH_CONFIGURED=true
+        else
+            echo "[setup-auth] WARNING: Failed to write .credentials.json — check permissions on $CLAUDE_CRED_DIR"
+        fi
+    fi
+    unset CLAUDE_AUTH_TOKEN
+else
+    echo "[setup-auth] CLAUDE_AUTH_TOKEN not set, skipping Claude auth"
+fi
+
 # --- Summary ---
 if [ "$AUTH_CONFIGURED" = true ]; then
     echo "[setup-auth] Auth configuration complete"

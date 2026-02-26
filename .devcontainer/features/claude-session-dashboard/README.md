@@ -33,8 +33,8 @@ claude-dashboard -p 8080
 claude-dashboard --help
 ```
 
-The dashboard reads session data from `~/.claude/projects/` (symlinked to `/workspaces/.claude/projects/` in this devcontainer).
+The dashboard reads session data from `~/.claude/projects/`.
 
 ## How persistence works
 
-Dashboard settings and cache are stored at `~/.claude-dashboard/`. Since the home directory is ephemeral in devcontainers, a poststart hook symlinks `~/.claude-dashboard` → `/workspaces/.claude-dashboard/`, which is bind-mounted and survives rebuilds.
+Dashboard settings and cache are stored at `~/.claude-dashboard/`. A poststart hook symlinks `~/.claude-dashboard` → `/workspaces/.claude-dashboard/`, which is bind-mounted and survives rebuilds.

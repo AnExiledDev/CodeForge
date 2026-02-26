@@ -27,7 +27,7 @@ These paths are always permitted regardless of working directory:
 
 | Path | Reason |
 |------|--------|
-| `/workspaces/.claude/` | Claude config, plans, rules |
+| `~/.claude/` | Claude config, plans, rules |
 | `/tmp/` | System temp directory |
 
 ### CWD Context Injection

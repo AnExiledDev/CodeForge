@@ -36,7 +36,7 @@ PROTECTED_PATTERNS = [
     (r"\.crt$", "Blocked: .crt certificate files should not be edited directly"),
     (r"\.p12$", "Blocked: .p12 files contain sensitive cryptographic material"),
     (r"\.pfx$", "Blocked: .pfx files contain sensitive cryptographic material"),
-    (r"(^|/)credentials\.json$", "Blocked: credentials.json contains secrets"),
+    (r"(^|/)\.?credentials\.json$", "Blocked: credentials.json contains secrets"),
     (r"(^|/)secrets\.yaml$", "Blocked: secrets.yaml contains secrets"),
     (r"(^|/)secrets\.yml$", "Blocked: secrets.yml contains secrets"),
     (r"(^|/)secrets\.json$", "Blocked: secrets.json contains secrets"),

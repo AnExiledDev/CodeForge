@@ -28,8 +28,9 @@ BLACKLISTED_PREFIXES = [
 ]
 
 # Paths always allowed regardless of working directory
+_home = os.environ.get("HOME", "/home/vscode")
 ALLOWED_PREFIXES = [
-    "/workspaces/.claude/",  # Claude config, plans, rules
+    f"{_home}/.claude/",     # Claude config, plans, rules
     "/tmp/",                 # System scratch
 ]
 

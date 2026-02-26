@@ -40,7 +40,20 @@ Get an API key from [console.anthropic.com](https://console.anthropic.com/).
 
 ### Credential Persistence
 
-Authentication credentials are stored in `/workspaces/.claude/` and persist across container rebuilds.
+Authentication credentials are stored in `~/.claude/` and persist across container rebuilds via a Docker named volume.
+
+### Long-Lived Token Authentication
+
+For headless or automated environments, you can use a long-lived auth token instead of browser login:
+
+1. Generate a token: `claude setup-token`
+2. Add to `.devcontainer/.secrets`:
+   ```bash
+   CLAUDE_AUTH_TOKEN=sk-ant-oat01-your-token-here
+   ```
+3. On next container start, `setup-auth.sh` will create `~/.claude/.credentials.json` automatically.
+
+You can also set `CLAUDE_AUTH_TOKEN` as a Codespaces secret for cloud environments.
 
 For more options, see the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
 
@@ -111,7 +124,7 @@ Expected output shows your authenticated account and token scopes.
 
 ### Credential Persistence
 
-GitHub CLI credentials are automatically persisted across container rebuilds. The container is configured to store credentials in `/workspaces/.gh/` (via `GH_CONFIG_DIR`), which is part of the bind-mounted workspace.
+GitHub CLI credentials are automatically persisted across container rebuilds. The container is configured to store credentials in `/workspaces/.gh/` (via `GH_CONFIG_DIR`), which is part of the bind-mounted workspace. Claude Code credentials persist via a Docker named volume mounted at `~/.claude/`.
 
 **You only need to authenticate once.** After running `gh auth login` or configuring `.secrets`, your credentials will survive container rebuilds and be available in future sessions.
 
@@ -199,7 +212,7 @@ Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `CLAUDE_CONFIG_DIR` | `/workspaces/.claude` | Claude configuration directory |
+| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Claude configuration directory |
 | `SETUP_CONFIG` | `true` | Copy config files during setup (per `file-manifest.json`) |
 | `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw` aliases to shell |
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` |
@@ -300,6 +313,8 @@ Three methods for providing GitHub/NPM credentials, in order of precedence:
 3. **Interactive login** — Run `gh auth login` for GitHub CLI, then set git identity manually
 
 All methods persist across container rebuilds via the bind-mounted `/workspaces/.gh/` directory.
+
+4. **`.secrets` file with `CLAUDE_AUTH_TOKEN`** — Long-lived Claude auth token from `claude setup-token`. Auto-creates `~/.claude/.credentials.json` on container start.
 
 ## Agents & Skills
 

@@ -259,11 +259,11 @@ MCP_CONFIG_DIR="${USER_HOME}/.config/mcp"
 
 **Current Behavior:**
 - Feature creates: `~/.config/mcp/qdrant-config.json`
-- Helper script (`configure-qdrant-mcp`) can update: `/workspaces/.claude/settings.json`
+- Helper script (`configure-qdrant-mcp`) can update: `~/.claude/settings.json`
 - User must manually run helper script
 
 **Not Implemented (by request):**
-- Automatic injection into `/workspaces/.claude/settings.json` during installation
+- Automatic injection into `~/.claude/settings.json` during installation
 - This will be discussed separately
 
 ---
@@ -378,7 +378,7 @@ Based on comprehensive review, the following fixes were applied:
 2. ✅ Fixed credentials leak - Added cleanup trap, secure temp file handling
 
 ### High Priority Fixes
-3. ✅ Removed unused config directory (~/.config/mcp) - Target is /workspaces/.claude/settings.json
+3. ✅ Removed unused config directory (~/.config/mcp) - Target is ~/.claude/settings.json
 4. ✅ Consolidated helper scripts - Removed duplicate manual helper, kept auto-config only
 5. ✅ Fixed redundant redirections - Changed `&>/dev/null 2>&1` to `&>/dev/null`
 6. ✅ Fixed hardcoded workspace paths - Now uses `${WORKSPACE_ROOT:-/workspaces}`

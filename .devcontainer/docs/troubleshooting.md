@@ -32,6 +32,11 @@ Common issues and solutions for the CodeForge devcontainer.
 - Or configure `.devcontainer/.secrets` with `GH_TOKEN` for automatic auth on container start.
 - Credentials persist in `/workspaces/.gh/` across rebuilds.
 
+**Problem**: Claude auth token not taking effect in Codespaces.
+
+- When `CLAUDE_AUTH_TOKEN` is set via Codespaces secrets, it persists as an environment variable for the entire container lifetime. The `unset` in `setup-auth.sh` only clears it in the child process. This is a Codespaces platform limitation.
+- If `.credentials.json` already exists, the token injection is skipped (idempotent). Delete `~/.claude/.credentials.json` to force re-creation from the token.
+
 **Problem**: Git push fails with permission error.
 
 - Run `gh auth status` to verify authentication.
@@ -119,7 +124,7 @@ Common issues and solutions for the CodeForge devcontainer.
 
 ## How to Reset to Defaults
 
-1. **Reset config files**: Delete `/workspaces/.claude/` and restart the container. `setup-config.sh` will recopy all files from `config/defaults/`.
+1. **Reset config files**: Delete `~/.claude/` and restart the container. `setup-config.sh` will recopy all files from `config/defaults/`.
 
 2. **Reset aliases**: Delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash /workspaces/.devcontainer/scripts/setup-aliases.sh`.
 

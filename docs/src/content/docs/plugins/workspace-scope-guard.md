@@ -74,7 +74,7 @@ A minimal set of paths are always allowed:
 
 | Allowed Path | Reason |
 |-------------|--------|
-| `/workspaces/.claude/` | Claude config, plans, rules |
+| `~/.claude/` | Claude config, plans, rules |
 | `/tmp/` | System temp directory |
 
 ## Bash Enforcement

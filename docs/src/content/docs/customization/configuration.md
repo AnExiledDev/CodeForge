@@ -9,7 +9,7 @@ CodeForge configuration is spread across three files that each control a differe
 
 ## settings.json
 
-The primary configuration file lives at `.devcontainer/config/defaults/settings.json`. It is deployed to `.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
+The primary configuration file lives at `.devcontainer/config/defaults/settings.json`. It is deployed to `~/.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
 
 ### Core Settings
 
@@ -116,7 +116,7 @@ The `statusLine` block configures the terminal status bar:
 
 ## file-manifest.json
 
-The file manifest at `.devcontainer/config/file-manifest.json` controls which configuration files are deployed to `.claude/` and how they are updated. Each entry specifies a source file, a destination, and an overwrite strategy:
+The file manifest at `.devcontainer/config/file-manifest.json` controls which configuration files are deployed to `~/.claude/` and how they are updated. Each entry specifies a source file, a destination, and an overwrite strategy:
 
 ```json
 [
@@ -155,7 +155,7 @@ If you customize a deployed file (like `settings.json` or the system prompt) and
 
 ### Adding a New Config File
 
-To deploy a new file to `.claude/` automatically:
+To deploy a new file to `~/.claude/` automatically:
 
 1. Place the file in `.devcontainer/config/defaults/`
 2. Add an entry to `file-manifest.json`

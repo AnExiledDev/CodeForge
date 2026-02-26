@@ -5,9 +5,17 @@
 	"workspaceFolder": "/workspaces",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
 
+	"mounts": [
+		{
+			"source": "codeforge-claude-config-${devcontainerId}",
+			"target": "/home/vscode/.claude",
+			"type": "volume"
+		}
+	],
+
 	"remoteEnv": {
 		"WORKSPACE_ROOT": "/workspaces",
-		"CLAUDE_CONFIG_DIR": "/workspaces/.claude",
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
 		"GH_CONFIG_DIR": "/workspaces/.gh",
 		"TMPDIR": "/workspaces/.tmp",
 		"TERM": "${localEnv:TERM:xterm-256color}",
@@ -29,6 +37,10 @@
 		},
 		"GH_EMAIL": {
 			"description": "GitHub email for git config (optional)"
+		},
+		"CLAUDE_AUTH_TOKEN": {
+			"description": "Claude long-lived auth token from 'claude setup-token' (optional - sk-ant-oat01-*)",
+			"documentationUrl": "https://docs.anthropic.com/en/docs/claude-code/cli-reference#claude-setup-token"
 		}
 	},
 

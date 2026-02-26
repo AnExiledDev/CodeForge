@@ -9,8 +9,36 @@
 
 ### Changed
 
+#### Configuration
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+
+#### Authentication
+- Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
+- Auto-creates `.credentials.json` from token on container start (skips if already exists)
+- Added `CLAUDE_AUTH_TOKEN` to devcontainer.json secrets declaration
+
+#### Security
+- Protected-files-guard now blocks modifications to `.credentials.json`
+- Replaced `eval` tilde expansion with `getent passwd` lookup across all scripts (prevents shell injection via `SUDO_USER`/`USER`)
+- Auth token value is now JSON-escaped before writing to `.credentials.json`
+- Credential directory created with restrictive umask (700) matching credential file permissions (600)
+
 #### Status Bar
 - **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments
+
+#### Scripts
+- Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
+- Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
+- `chown` in mcp-qdrant poststart hooks now uses resolved `_USERNAME` instead of hardcoded `vscode` or `$(id -un)`
+- **Migration script hardened** — switched from `cp -rn` to `cp -a` (archive mode); added marker-based idempotency, critical file verification, ownership fixup, and old-directory rename
+- **`.env` deprecation guard** — `setup.sh` detects stale `CLAUDE_CONFIG_DIR=/workspaces/.claude` in `.env`, overrides to `$HOME/.claude`, and auto-comments the line on disk
+
+#### Documentation
+- All docs now reference `~/.claude` as default config path
+- Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
+- ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
 
 ### Fixed
 
@@ -28,6 +56,9 @@
 - **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
 
 ### Removed
+
+#### Scripts
+- `setup-symlink-claude.sh` — no longer needed with native home directory location
 
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
