@@ -5,7 +5,8 @@
       {
         "id": "d904cca6-ade8-41c1-a4f5-ddea30607a5e",
         "type": "model",
-        "backgroundColor": "bgMagenta"
+        "backgroundColor": "bgMagenta",
+        "rawValue": true
       },
       {
         "id": "1",
@@ -20,30 +21,67 @@
         "rawValue": true
       },
       {
+        "id": "lbl-tokens-input",
+        "type": "custom-text",
+        "customText": "In",
+        "backgroundColor": "bgBlue",
+        "color": "brightWhite",
+        "bold": true,
+        "merge": "no-padding"
+      },
+      {
         "id": "5",
         "type": "tokens-input",
-        "color": "magenta",
-        "rawValue": true,
+        "backgroundColor": "bgBlue",
+        "color": "brightWhite",
+        "rawValue": true
+      },
+      {
+        "id": "lbl-tokens-output",
+        "type": "custom-text",
+        "customText": "Ou",
+        "backgroundColor": "bgMagenta",
+        "color": "brightWhite",
+        "bold": true,
         "merge": "no-padding"
       },
       {
         "id": "ac094d46-3673-4d41-84e3-dc8c5bcf639f",
         "type": "tokens-output",
         "backgroundColor": "bgMagenta",
-        "rawValue": true,
+        "color": "brightWhite",
+        "rawValue": true
+      },
+      {
+        "id": "lbl-tokens-cached",
+        "type": "custom-text",
+        "customText": "Ca",
+        "backgroundColor": "bgYellow",
+        "color": "black",
+        "bold": true,
         "merge": "no-padding"
       },
       {
         "id": "2ad12147-05fd-45fb-8336-53ba2e7df56c",
         "type": "tokens-cached",
-        "backgroundColor": "bgBrightRed",
-        "rawValue": true,
+        "backgroundColor": "bgYellow",
+        "color": "black",
+        "rawValue": true
+      },
+      {
+        "id": "lbl-tokens-total",
+        "type": "custom-text",
+        "customText": "Tt",
+        "backgroundColor": "bgGreen",
+        "color": "black",
+        "bold": true,
         "merge": "no-padding"
       },
       {
         "id": "9bacbdb4-2e01-45de-a0c0-ee6ec30fa3c2",
         "type": "tokens-total",
         "backgroundColor": "bgGreen",
+        "color": "black",
         "rawValue": true
       }
     ],

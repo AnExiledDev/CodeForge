@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+#### Docs
+- **CLAUDE.md** — new "Status Bar Widgets" section documenting widget properties, token color conventions, label fusion pattern, and available widget types
+
+### Changed
+
+#### Status Bar
+- **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments
+
 ### Fixed
 
 #### Plugin Marketplace
