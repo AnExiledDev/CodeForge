@@ -1,6 +1,18 @@
 {
-	"description": "Context injection at session boundaries: git state, TODO harvesting, commit reminders",
+	"description": "Context injection at session boundaries: git state, TODO harvesting, edit tracking, commit reminders",
 	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/collect-session-edits.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
 		"SessionStart": [
 			{
 				"matcher": "",

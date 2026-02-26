@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Fixed
+
+#### Session Context Plugin
+- **Commit reminder** no longer blocks Claude from stopping — switched from `decision: "block"` to advisory `systemMessage` wrapped in `<system-reminder>` tags
+- **Commit reminder** now uses tiered logic: meaningful changes (3+ files, 2+ source files, or test files) get an advisory suggestion; small changes are silent
+- **Commit reminder** only fires when the session actually modified files (via new PostToolUse edit tracker), preventing false reminders during read-only sessions
+
+#### Auto Code Quality Plugin
+- **Advisory test runner** now reads from the correct tmp file prefix (`claude-cq-edited` instead of `claude-edited-files`), fixing a mismatch that prevented it from ever finding edited files
+
 ### Added
 
 #### README

@@ -120,7 +120,7 @@ This plugin bundles functionality that may overlap with other plugins. If you're
 - `auto-linter` — linting is included here
 - `code-directive` `collect-edited-files.py` hook — file collection is included here
 
-The temp file prefixes are different (`claude-cq-*` vs `claude-edited-files-*` / `claude-lint-files-*`), so enabling both won't corrupt data — but files would be formatted and linted twice.
+All pipelines use the `claude-cq-*` temp file prefix, so enabling both won't corrupt data — but files would be formatted and linted twice.
 
 ## Plugin Structure
 
