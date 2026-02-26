@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Fixed
+
+#### Plugin Marketplace
+- **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
+
 ### Removed
 
 #### VS Code Extensions

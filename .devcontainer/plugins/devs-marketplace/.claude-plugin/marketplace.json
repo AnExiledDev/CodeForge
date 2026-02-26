@@ -14,7 +14,7 @@
 			"name": "codeforge-lsp",
 			"description": "LSP servers for CodeForge (Python, TypeScript, Go)",
 			"version": "1.0.0",
-			"source": "codeforge-lsp",
+			"source": "./plugins/codeforge-lsp",
 			"category": "development",
 			"keywords": ["lsp", "python", "typescript", "go"]
 		},
@@ -22,7 +22,7 @@
 			"name": "ticket-workflow",
 			"description": "EARS-based ticket workflow with GitHub integration",
 			"version": "1.0.0",
-			"source": "ticket-workflow",
+			"source": "./plugins/ticket-workflow",
 			"category": "workflow",
 			"keywords": ["tickets", "github", "workflow", "ears", "issues", "pr"]
 		},
@@ -30,7 +30,7 @@
 			"name": "notify-hook",
 			"description": "Desktop notifications and audio chime when Claude finishes responding",
 			"version": "1.0.0",
-			"source": "notify-hook",
+			"source": "./plugins/notify-hook",
 			"category": "productivity",
 			"keywords": ["notifications", "desktop", "audio"]
 		},
@@ -38,7 +38,7 @@
 			"name": "dangerous-command-blocker",
 			"description": "Blocks dangerous bash commands (rm -rf, sudo rm, chmod 777, force push)",
 			"version": "1.0.0",
-			"source": "dangerous-command-blocker",
+			"source": "./plugins/dangerous-command-blocker",
 			"category": "safety",
 			"keywords": ["safety", "bash", "blocker"]
 		},
@@ -46,7 +46,7 @@
 			"name": "protected-files-guard",
 			"description": "Blocks modifications to .env, lock files, .git/, and credentials",
 			"version": "1.0.0",
-			"source": "protected-files-guard",
+			"source": "./plugins/protected-files-guard",
 			"category": "safety",
 			"keywords": ["safety", "secrets", "env", "lockfiles"]
 		},
@@ -54,7 +54,7 @@
 			"name": "agent-system",
 			"description": "17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
 			"version": "1.0.0",
-			"source": "agent-system",
+			"source": "./plugins/agent-system",
 			"category": "development",
 			"keywords": ["agents", "subagents", "redirection"]
 		},
@@ -62,7 +62,7 @@
 			"name": "skill-engine",
 			"description": "21 coding knowledge packs with auto-suggestion for frameworks, tools, and patterns",
 			"version": "1.0.0",
-			"source": "skill-engine",
+			"source": "./plugins/skill-engine",
 			"category": "development",
 			"keywords": ["skills", "knowledge", "auto-suggestion"]
 		},
@@ -70,7 +70,7 @@
 			"name": "spec-workflow",
 			"description": "Specification lifecycle management: creation, refinement, building, reviewing, updating, and auditing",
 			"version": "1.0.0",
-			"source": "spec-workflow",
+			"source": "./plugins/spec-workflow",
 			"category": "workflow",
 			"keywords": ["specifications", "lifecycle", "ears"]
 		},
@@ -78,7 +78,7 @@
 			"name": "session-context",
 			"description": "Session lifecycle hooks: git state injection, TODO harvesting, and commit reminders",
 			"version": "1.0.0",
-			"source": "session-context",
+			"source": "./plugins/session-context",
 			"category": "development",
 			"keywords": ["session", "git", "todos", "commits"]
 		},
@@ -86,7 +86,7 @@
 			"name": "auto-code-quality",
 			"description": "Self-contained code quality: auto-format + auto-lint edited files (Ruff/Black, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
 			"version": "1.0.0",
-			"source": "auto-code-quality",
+			"source": "./plugins/auto-code-quality",
 			"category": "development",
 			"keywords": ["formatting", "linting", "syntax", "quality"]
 		},
@@ -94,7 +94,7 @@
 			"name": "workspace-scope-guard",
 			"description": "Enforces working directory scope — blocks writes and warns on reads outside the project",
 			"version": "1.0.0",
-			"source": "workspace-scope-guard",
+			"source": "./plugins/workspace-scope-guard",
 			"category": "safety",
 			"keywords": ["safety", "scope", "workspace"]
 		}
