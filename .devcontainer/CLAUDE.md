@@ -89,6 +89,7 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 - **protected-files-guard** — Blocks edits to secrets/lock files
 - **codeforge-lsp** — LSP for Python + TypeScript/JavaScript
 - **ticket-workflow** — EARS ticket workflow + auto-linking
+- **git-workflow** — Standalone ship (commit/push/PR) + PR review
 - **notify-hook** — Desktop notifications on completion
 - **frontend-design** (Anthropic official) — UI/frontend design skill
 - **prompt-snippets** — Quick behavioral mode switches via /ps command

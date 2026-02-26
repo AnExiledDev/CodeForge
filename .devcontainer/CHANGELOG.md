@@ -13,6 +13,10 @@
 #### Claude Code Installation
 - **Post-start onboarding hook** (`99-claude-onboarding.sh`) — ensures `hasCompletedOnboarding: true` in `.claude.json` when token auth is configured; catches overwrites from Claude Code CLI/extension that race with `postStartCommand`
 
+#### Git Workflow Plugin
+- **`/ship`** — Combined commit/push/PR command with full code review, commit message approval, and AskUserQuestion confirmation before PR creation; optionally links to tickets if context exists
+- **`/pr:review`** — Review any PR by number/URL or auto-detect from current branch; posts findings as PR comment with severity ratings; never approves or merges
+
 ### Changed
 
 #### Claude Code Installation
