@@ -52,6 +52,11 @@
 
 ### Fixed
 
+#### CCStatusLine Deployment
+- **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
+- **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start
+- **Silent copy failures** — `setup-config.sh` now reports warnings when file deployment fails instead of logging success after a failed `cp`
+
 #### Post-Integration Review Fixes
 - **skill-engine** — worktree skill definition uses weighted tuples (was plain strings, caused crash)
 - **dangerous-command-blocker** — fail closed on unexpected exceptions (was fail-open)

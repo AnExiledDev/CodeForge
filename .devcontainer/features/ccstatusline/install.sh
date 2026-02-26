@@ -77,6 +77,7 @@ echo "[ccstatusline] Widget config managed by file-manifest.json"
 # Create directories so wrapper doesn't fail before first post-start
 mkdir -p "${USER_HOME}/.config/ccstatusline"
 mkdir -p /usr/local/share/ccstatusline
+chown "${USERNAME}:${USERNAME}" /usr/local/share/ccstatusline
 chown "${USERNAME}:${USERNAME}" "${USER_HOME}/.config/ccstatusline" 2>/dev/null || true
 
 # Create session resume helper script for custom-command widget

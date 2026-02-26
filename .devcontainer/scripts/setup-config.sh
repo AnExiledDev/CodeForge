@@ -98,21 +98,30 @@ jq -r '.[] | [.src, .dest, (.destFilename // "__NONE__"), (.enabled // true | to
 		# Apply overwrite strategy
 		case "$overwrite" in
 		always)
-			cp "$src_path" "$dest_path"
-			log "Copied $src → $dest_path (always)"
+			if cp "$src_path" "$dest_path" 2>/dev/null; then
+				log "Copied $src → $dest_path (always)"
+			else
+				warn "Failed to copy $src → $dest_path (permission denied?)"
+			fi
 			;;
 		never)
 			if [ ! -f "$dest_path" ]; then
-				cp "$src_path" "$dest_path"
-				log "Copied $src → $dest_path (new)"
+				if cp "$src_path" "$dest_path" 2>/dev/null; then
+					log "Copied $src → $dest_path (new)"
+				else
+					warn "Failed to copy $src → $dest_path (permission denied?)"
+				fi
 			else
 				log "Skipping $src (exists, overwrite=never)"
 			fi
 			;;
 		if-changed | *)
 			if should_copy "$src_path" "$dest_path"; then
-				cp "$src_path" "$dest_path"
-				log "Copied $src → $dest_path (changed)"
+				if cp "$src_path" "$dest_path" 2>/dev/null; then
+					log "Copied $src → $dest_path (changed)"
+				else
+					warn "Failed to copy $src → $dest_path (permission denied?)"
+				fi
 			else
 				log "Skipping $src (unchanged)"
 			fi
