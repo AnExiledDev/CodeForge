@@ -71,6 +71,14 @@
 
 ## [v1.14.2] - 2026-02-24
 
+### Added
+
+#### Prompt Snippets Plugin
+- **New plugin: `prompt-snippets`** — single `/ps` slash command for quick behavioral mode switches (noaction, brief, plan, go, review, ship, deep, hold, recall, wait)
+- Snippets inject short directives that persist for the conversation (e.g., `/ps noaction` → "Investigate and report only. Take no action.")
+- Composable: `/ps noaction brief` applies multiple snippets at once
+- Isolated from skill-engine auto-suggestion (`disable-model-invocation: true`) and independently toggleable via `enabledPlugins`
+
 ### Changed
 
 #### Docs

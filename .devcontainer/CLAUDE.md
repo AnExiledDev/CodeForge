@@ -91,6 +91,7 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 - **ticket-workflow** — EARS ticket workflow + auto-linking
 - **notify-hook** — Desktop notifications on completion
 - **frontend-design** (Anthropic official) — UI/frontend design skill
+- **prompt-snippets** — Quick behavioral mode switches via /ps command
 
 ## Rules System
 
