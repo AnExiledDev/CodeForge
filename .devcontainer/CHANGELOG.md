@@ -32,6 +32,8 @@
 - Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
 - Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
 - `chown` in mcp-qdrant poststart hooks now uses resolved `_USERNAME` instead of hardcoded `vscode` or `$(id -un)`
+- **Migration script hardened** — switched from `cp -rn` to `cp -a` (archive mode); added marker-based idempotency, critical file verification, ownership fixup, and old-directory rename
+- **`.env` deprecation guard** — `setup.sh` detects stale `CLAUDE_CONFIG_DIR=/workspaces/.claude` in `.env`, overrides to `$HOME/.claude`, and auto-comments the line on disk
 
 #### Documentation
 - All docs now reference `~/.claude` as default config path

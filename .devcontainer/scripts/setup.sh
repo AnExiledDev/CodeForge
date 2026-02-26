@@ -12,6 +12,20 @@ if [ -f "$ENV_FILE" ]; then
     set +a
 fi
 
+# Deprecation guard: .env may still set CLAUDE_CONFIG_DIR=/workspaces/.claude
+# (pre-v2.0 default). Since .env is gitignored, PR updates can't fix it.
+# Override with warning so all child scripts use the correct home location.
+if [ "$CLAUDE_CONFIG_DIR" = "/workspaces/.claude" ]; then
+    echo "[setup] WARNING: CLAUDE_CONFIG_DIR=/workspaces/.claude is deprecated (moved to home dir in v2.0)"
+    echo "[setup]   Updating .devcontainer/.env automatically."
+    CLAUDE_CONFIG_DIR="$HOME/.claude"
+    # Fix the file on disk so subsequent restarts don't trigger this guard
+    if [ -f "$ENV_FILE" ]; then
+        sed -i 's|^CLAUDE_CONFIG_DIR=.*/workspaces/\.claude.*|# CLAUDE_CONFIG_DIR removed (v2.0: now uses $HOME/.claude)|' "$ENV_FILE"
+        echo "[setup]   .env updated — CLAUDE_CONFIG_DIR line commented out."
+    fi
+fi
+
 # Apply defaults for any unset variables
 : "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
 : "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"
