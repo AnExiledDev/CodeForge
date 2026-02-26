@@ -101,6 +101,11 @@ CodeForge includes **17 specialized agents** and **34 skills** that activate aut
 - **[Agents](../features/agents/)** — specialized AI personas for architecture, debugging, testing, security, migrations, and more
 - **[Skills](../features/skills/)** — domain-specific knowledge packs (FastAPI, Docker, Svelte, debugging patterns, etc.) that the skill engine suggests automatically or you invoke with slash commands like `/spec-new`
 
+## Understanding the Status Line
+
+If your terminal supports it, CodeForge provides a status line that shows session information at a glance. The `ccstatusline` feature adds session metadata to your terminal prompt, so you always know which session you're in and its current state.
+>>>>>>> b9f14e6 (Add worktree skill for git worktree lifecycle guidance)
+
 ## Tips for Effective Sessions
 
 :::tip[Be specific with requests]

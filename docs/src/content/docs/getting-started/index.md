@@ -42,7 +42,7 @@ If you already have Docker and VS Code installed, you can go from zero to a runn
 Plugins are the backbone of CodeForge. They hook into Claude Code's lifecycle to enhance, guard, and automate your workflow. Highlights include:
 
 - **Agent System** — 17 specialized agents for architecture, debugging, testing, security, and more
-- **Skill Engine** — 21 domain-specific knowledge packs covering frameworks, patterns, and workflows
+- **Skill Engine** — 22 domain-specific knowledge packs covering frameworks, patterns, and workflows
 - **Spec Workflow** — specification-driven development with 8 lifecycle skills
 - **Session Context** — automatic git state injection, TODO harvesting, and commit reminders
 - **Auto Code Quality** — formatting, linting, and advisory test runs on every change

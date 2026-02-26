@@ -105,7 +105,7 @@ These plugins deliver the headline features of CodeForge — intelligent delegat
 | Plugin | What It Does |
 |--------|-------------|
 | [Agent System](./agent-system/) | 17 specialized agents with automatic delegation, CWD injection, and read-only enforcement |
-| [Skill Engine](./skill-engine/) | 21 domain skills with context-aware auto-suggestion |
+| [Skill Engine](./skill-engine/) | 22 domain skills with context-aware auto-suggestion |
 | [Spec Workflow](./spec-workflow/) | Full specification lifecycle from creation through implementation to as-built closure |
 | [Ticket Workflow](./ticket-workflow/) | GitHub issue integration with EARS-formatted tickets and automated PR reviews |
 

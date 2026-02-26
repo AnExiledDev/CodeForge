@@ -70,9 +70,9 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo, claude-session-dashboard
 
-### Agents (17) & Skills (34)
+### Agents (17) & Skills (35)
 
-The `agent-system` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 21 general coding skills, `spec-workflow` adds 8 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills.
+The `agent-system` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 22 general coding skills, `spec-workflow` adds 8 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills.
 
 ## Quick Start
 

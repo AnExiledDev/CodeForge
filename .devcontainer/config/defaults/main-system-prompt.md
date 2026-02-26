@@ -338,21 +338,29 @@ When blocked, do not use destructive actions as a shortcut. Investigate before d
 <git_worktrees>
 Git worktrees allow checking out multiple branches simultaneously, each in its own directory.
 
-Layout convention:
-- Worktrees go in a `.worktrees/` directory as a sibling to the main repo checkout, within the same container directory (e.g., `projects/.worktrees/feature-name`)
-- The main repo has a `.git` directory; worktrees have a `.git` file containing `gitdir:` pointing to the main repo's worktree metadata
+Creating worktrees (recommended — use Claude Code native tools):
+- **In-session:** Use `EnterWorktree` tool with a descriptive name. Creates worktree at `<repo>/.claude/worktrees/<name>/` with branch `worktree-<name>`. Auto-cleaned if no changes.
+- **New session:** `claude --worktree <name>` starts Claude in its own worktree. Combine with `--tmux` for background work.
 
-Creating worktrees:
+Creating worktrees (manual):
 ```bash
-# Always create inside .worktrees/
+# Legacy convention — detected by setup-projects.sh
 mkdir -p /workspaces/projects/.worktrees
-git worktree add /workspaces/projects/.worktrees/<branch-name> <branch>
+git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 ```
+
+Environment files:
+- Place a `.worktreeinclude` file at the project root listing `.gitignore`-excluded files to copy into new worktrees (e.g., `.env`, `.env.local`)
+- Uses `.gitignore` pattern syntax; only files matching both `.worktreeinclude` and `.gitignore` are copied
 
 Managing worktrees:
 - `git worktree list` — show all active worktrees
 - `git worktree remove <path>` — remove a worktree (confirm with user first — destructive)
 - `git worktree prune` — clean up stale worktree references (confirm with user first — destructive)
+
+Path conventions:
+- **Native (recommended):** `<repo>/.claude/worktrees/<name>/` — used by `--worktree` flag and `EnterWorktree`
+- **Legacy:** `.worktrees/` as sibling to the main repo — used for manual `git worktree add` and Project Manager integration
 
 Project detection:
 - Worktrees in `.worktrees/` are auto-detected by `setup-projects.sh` and tagged with both `"git"` and `"worktree"` in Project Manager

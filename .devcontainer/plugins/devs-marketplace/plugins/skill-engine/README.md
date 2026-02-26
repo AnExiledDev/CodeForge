@@ -1,12 +1,12 @@
 # skill-engine
 
-Claude Code plugin that provides 21 coding knowledge packs (skills) with automatic suggestion based on user prompts. Each skill contains domain-specific instructions and reference material that Claude loads on demand via the `/skill` command.
+Claude Code plugin that provides 22 coding knowledge packs (skills) with automatic suggestion based on user prompts. Each skill contains domain-specific instructions and reference material that Claude loads on demand via the `/skill` command.
 
 ## What It Does
 
 Two capabilities:
 
-1. **Skill library** — 21 skills covering frameworks, tools, and development patterns. Each skill is a structured knowledge pack with a `SKILL.md` entrypoint and `references/` subdirectory containing detailed reference docs.
+1. **Skill library** — 22 skills covering frameworks, tools, and development patterns. Each skill is a structured knowledge pack with a `SKILL.md` entrypoint and `references/` subdirectory containing detailed reference docs.
 
 2. **Auto-suggestion** — A `UserPromptSubmit` hook watches user prompts for keyword matches and suggests relevant skills as context, so Claude can proactively load the right knowledge.
 
@@ -35,6 +35,7 @@ Two capabilities:
 | svelte5 | Runes, reactivity, components, SPA routing, LayerCake |
 | team | Agent team orchestration, parallel workstreams, task coordination |
 | testing | Testing frameworks, FastAPI testing, Svelte testing |
+| worktree | Git worktree lifecycle, EnterWorktree, parallel development |
 
 ### Auto-Suggestion
 
@@ -128,7 +129,7 @@ skill-engine/
 +-- scripts/
 |   +-- skill-suggester.py           # Keyword-based skill auto-suggestion
 +-- skills/
-|   +-- api-design/                  # 21 skill directories
+|   +-- api-design/                  # 22 skill directories
 |   +-- ast-grep-patterns/
 |   +-- claude-agent-sdk/
 |   +-- claude-code-headless/
@@ -149,6 +150,7 @@ skill-engine/
 |   +-- svelte5/
 |   +-- team/
 |   +-- testing/
+|   +-- worktree/
 +-- README.md                        # This file
 ```
 
