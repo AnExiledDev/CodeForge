@@ -73,6 +73,7 @@ git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 | `agent-browser` | Headless Chromium (Playwright-based) |
 | `check-setup` | Verify CodeForge setup health |
 | `claude-dashboard` | Session analytics dashboard (port 7847) |
+| `dbr` | Dynamic port forwarding (devcontainer-bridge) |
 | `cc-tools` | List all installed tools with versions |
 
 ## Plugins
@@ -175,3 +176,14 @@ Labels are `custom-text` widgets with `merge: "no-padding"` so they fuse visuall
 ## Features
 
 Custom features in `./features/` follow the [devcontainer feature spec](https://containers.dev/implementors/features/). Every local feature supports `"version": "none"` to skip installation. Claude Code is installed as a native binary via `./features/claude-code-native` (uses Anthropic's official installer at `https://claude.ai/install.sh`).
+
+## Port Forwarding
+
+Two mechanisms handle port access:
+
+| Mechanism | When Active | Dynamic Discovery |
+|-----------|-------------|-------------------|
+| `forwardPorts` (devcontainer.json) | VS Code / Codespaces only | No (static list; VS Code auto-detects separately) |
+| devcontainer-bridge (`dbr`) | Any terminal client | Yes (polls `/proc/net/tcp`) |
+
+`forwardPorts` is a no-op outside VS Code — the `devcontainer` CLI ignores it. `dbr` provides VS Code-independent dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
