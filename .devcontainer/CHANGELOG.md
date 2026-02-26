@@ -19,6 +19,13 @@
 
 ### Changed
 
+#### Skill Engine: Auto-Suggestion
+- **Weighted scoring** — Skill suggestion phrases now carry confidence weights (0.0–1.0) instead of binary match/no-match. Specific phrases like "build a fastapi app" score 1.0; ambiguous phrases like "start building" score 0.2
+- **Negative patterns** — Skills can define substrings that instantly disqualify them. Prevents `fastapi` from triggering when discussing `pydantic-ai`, and `docker` from triggering for `docker-py` prompts
+- **Context guards** — Low-confidence matches (score < 0.6) require a confirming context word elsewhere in the prompt. "health check" only suggests `docker` if "docker", "container", or "compose" also appears
+- **Ranked results, capped at 3** — Suggestions are sorted by score (then priority tier), and only the top 3 are returned. Eliminates 6+ skill suggestion floods
+- **Priority tiers** — Explicit commands (priority 10) outrank technology skills (7), which outrank patterns (5) and generic skills (3) when scores tie
+
 #### Claude Code Installation
 - **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
 - **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues

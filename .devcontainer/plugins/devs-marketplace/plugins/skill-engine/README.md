@@ -39,11 +39,14 @@ Two capabilities:
 
 ### Auto-Suggestion
 
-The `skill-suggester.py` hook matches user prompts against keyword maps defined in each skill. When a match is found, it injects a suggestion via `additionalContext` so Claude knows a relevant skill is available.
+The `skill-suggester.py` hook scores user prompts against keyword maps for each skill using weighted matching. Suggestions are ranked by confidence and capped at **3 skills maximum** per prompt.
 
-Keywords are defined per skill as:
-- **Phrases** — Multi-word patterns (e.g., "docker compose", "REST API")
-- **Terms** — Single keywords (e.g., "FastAPI", "pytest")
+Each skill defines:
+- **Phrases** — `(substring, weight)` tuples. Weight 0.0–1.0 reflects specificity (e.g., `("build a fastapi app", 1.0)` vs `("pydantic model", 0.3)`)
+- **Terms** — Whole-word regex patterns, all scored at 0.6
+- **Negative patterns** — Substrings that instantly disqualify a skill (e.g., `"pydanticai"` suppresses `fastapi`)
+- **Context guards** — Required co-occurring words for low-confidence matches. When the best score is below 0.6, at least one guard word must appear in the prompt or the match is dropped
+- **Priority** — Integer tie-breaker (10 = commands, 7 = tech, 5 = patterns, 3 = generic)
 
 ## How It Works
 
@@ -56,9 +59,12 @@ User submits a prompt
         |
         +-> skill-suggester.py
               |
-              +-> Scan prompt against all skill keyword maps
-              +-> Match found? -> Inject skill suggestion as additionalContext
-              +-> No match? -> Silent (no output)
+              +-> Check negative patterns (instant disqualify)
+              +-> Score phrases (best weight) and terms (0.6)
+              +-> Enforce context guards on low-confidence matches
+              +-> Rank by score desc, priority desc
+              +-> Return top 3 as additionalContext
+              +-> No matches above threshold? -> Silent (no output)
 ```
 
 ### Skill Structure
@@ -127,7 +133,7 @@ skill-engine/
 +-- hooks/
 |   +-- hooks.json                   # UserPromptSubmit hook registration
 +-- scripts/
-|   +-- skill-suggester.py           # Keyword-based skill auto-suggestion
+|   +-- skill-suggester.py           # Weighted scoring skill auto-suggestion
 +-- skills/
 |   +-- api-design/                  # 22 skill directories
 |   +-- ast-grep-patterns/
