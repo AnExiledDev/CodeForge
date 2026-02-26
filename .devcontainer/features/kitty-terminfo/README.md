@@ -14,7 +14,9 @@ Downloads and compiles the official kitty terminfo entry from the [Kitty termina
 
 ## Usage
 
-No configuration needed. Once installed, containers automatically recognize `TERM=xterm-kitty` and provide full capability support.
+The container defaults to `TERM=xterm-256color` with `COLORTERM=truecolor`, which provides full 256-color and 24-bit truecolor support for all terminals.
+
+For Kitty users: the `devcontainer.json` `remoteEnv` uses `${localEnv:TERM:xterm-256color}`, which forwards your host `TERM` into VS Code sessions. If your host sets `TERM=xterm-kitty`, the installed terminfo ensures full Kitty-specific capability support (correct `bce` behavior, status line, etc.). For non-VS Code entry points (tmux, `docker exec`, SSH), `setup-aliases.sh` upgrades `TERM=xterm` to `xterm-256color` but preserves any other value. If no Kitty TERM is forwarded, `xterm-256color` provides equivalent color rendering.
 
 ```bash
 # Verify installation

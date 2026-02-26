@@ -10,6 +10,13 @@
 #### ChromaTerm
 - **Regex lookbehinds** — replaced alternation inside lookbehinds (`(?<=[\s(]|^)` and `(?<=commit |merge |...)`) with non-capturing groups containing individual lookbehinds (`(?:(?<=[\s(])|^)` and `(?:(?<=commit )|(?<=merge )|...)`) for PCRE2 compatibility
 
+#### Terminal Color Support
+- **devcontainer.json** — added `TERM` and `COLORTERM=truecolor` to `remoteEnv`; Docker defaults to `TERM=xterm` (8 colors) which caused Claude Code and other CLI tools to downgrade rendering
+- **devcontainer.json** — `TERM` uses `${localEnv:TERM:xterm-256color}` to forward the host terminal type (e.g., `xterm-kitty`) instead of unconditionally overriding it
+- **setup-aliases.sh** — added terminal color defaults to managed shell block so tmux panes, `docker exec`, and SSH sessions also get 256-color and truecolor support
+- **kitty-terminfo/README.md** — updated documentation to reflect `localEnv` forwarding and clarify behavior across VS Code vs non-VS Code entry points
+- **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
+
 ### Removed
 
 #### VS Code Extensions
