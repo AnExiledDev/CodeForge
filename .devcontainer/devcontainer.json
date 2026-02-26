@@ -5,6 +5,8 @@
 	"workspaceFolder": "/workspaces",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
 
+	"initializeCommand": "bash .devcontainer/scripts/preflight.sh",
+
 	"mounts": [
 		{
 			"source": "codeforge-claude-config-${devcontainerId}",

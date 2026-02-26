@@ -14,6 +14,9 @@
 
 ### Added
 
+#### Startup
+- **Container runtime pre-flight check** — validates Docker or Podman is installed and running before attempting to build the devcontainer; aborts with OS-specific remediation guidance (Windows/WSL, macOS, Linux) instead of a cryptic Docker client error
+
 #### README
 - **"Why CodeForge?" section** — motivation and value proposition explaining the project's origins as a power user's personal setup
 - **Architecture overview** — three-layer diagram (DevContainer → CodeForge Layer → Claude Code) with brief descriptions and link to full architecture docs
