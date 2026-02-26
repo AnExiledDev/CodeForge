@@ -25,7 +25,7 @@ def get_edited_files(session_id: str) -> list[str]:
     Relies on collect-edited-files.py writing paths to a temp file.
     Returns deduplicated list of paths that still exist on disk.
     """
-    tmp_path = f"/tmp/claude-edited-files-{session_id}"
+    tmp_path = f"/tmp/claude-cq-edited-{session_id}"
     try:
         with open(tmp_path, "r") as f:
             raw = f.read()
@@ -310,7 +310,9 @@ def main():
         )
     except subprocess.TimeoutExpired:
         json.dump(
-            {"systemMessage": f"[Tests] {framework} timed out after {TIMEOUT_SECONDS}s"},
+            {
+                "systemMessage": f"[Tests] {framework} timed out after {TIMEOUT_SECONDS}s"
+            },
             sys.stdout,
         )
         sys.exit(0)

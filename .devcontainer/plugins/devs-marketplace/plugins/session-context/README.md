@@ -4,13 +4,14 @@ Claude Code plugin that injects contextual information at session boundaries. Pr
 
 ## What It Does
 
-Three hooks that run automatically at session lifecycle boundaries:
+Four hooks that run automatically at session lifecycle boundaries:
 
 | Phase | Script | What It Injects |
 |-------|--------|-----------------|
 | Session start | `git-state-injector.py` | Current branch, status, recent commits, uncommitted changes |
 | Session start | `todo-harvester.py` | Count and top 10 TODO/FIXME/HACK/XXX markers in the codebase |
-| Stop | `commit-reminder.py` | Advisory about staged/unstaged changes that should be committed |
+| PostToolUse (Edit/Write) | `collect-session-edits.py` | Tracks which files the session modified (tmp file) |
+| Stop | `commit-reminder.py` | Advisory about uncommitted changes (only if session edited files) |
 
 All hooks are non-blocking and cap their output to prevent context bloat.
 
@@ -31,12 +32,19 @@ Scans source files for tech debt markers and injects a summary:
 - Shows total count plus top 10 items
 - Output capped at 800 characters
 
+### Edit Tracking
+
+Lightweight PostToolUse hook on Edit/Write that records file paths to `/tmp/claude-session-edits-{session_id}`. Used by the commit reminder to determine if this session actually modified files.
+
 ### Commit Reminder
 
-Fires when Claude stops responding and checks for uncommitted work:
-- Detects staged and unstaged changes
-- Injects an advisory so Claude can naturally ask if the user wants to commit
-- Uses a guard flag to prevent infinite loops (the reminder itself is a Stop event)
+Fires when Claude stops responding, using tiered logic based on change significance:
+- Checks the session edit tracker — skips entirely if session was read-only
+- **Meaningful changes** (3+ files, 2+ source files, or test files): suggests committing via advisory `systemMessage`
+- **Small changes** (1-2 non-source files): silent, no output
+- Output wrapped in `<system-reminder>` tags — advisory only, never blocks
+- Instructs Claude not to commit without explicit user approval
+- Uses a guard flag to prevent infinite loops
 
 ## How It Works
 
@@ -58,6 +66,12 @@ Session starts
   |           +-> Injects count + top 10 as additionalContext
   |
   |  ... Claude works ...
+  |     |
+  |     +-> PostToolUse (Edit|Write) fires
+  |           |
+  |           +-> collect-session-edits.py
+  |                 |
+  |                 +-> Appends file path to /tmp/claude-session-edits-{session_id}
   |
 Claude stops responding
   |
@@ -65,14 +79,14 @@ Claude stops responding
         |
         +-> commit-reminder.py
               |
-              +-> Checks git status for changes
-              +-> Has changes? -> Inject commit advisory
-              +-> No changes? -> Silent (no output)
+              +-> Session edited files? (checks tmp file)
+              +-> No edits this session? -> Silent (no output)
+              +-> Has edits + uncommitted changes? -> Inject advisory systemMessage
 ```
 
 ### Exit Code Behavior
 
-All three scripts exit 0 (advisory only). They never block operations.
+All four scripts exit 0 (advisory only). They never block operations.
 
 ### Error Handling
 
@@ -88,6 +102,7 @@ All three scripts exit 0 (advisory only). They never block operations.
 |------|---------|
 | Git state injection | 10s |
 | TODO harvesting | 8s |
+| Edit tracking | 3s |
 | Commit reminder | 8s |
 
 ## Installation
@@ -125,11 +140,12 @@ session-context/
 +-- .claude-plugin/
 |   +-- plugin.json            # Plugin metadata
 +-- hooks/
-|   +-- hooks.json             # Hook registrations (SessionStart + Stop)
+|   +-- hooks.json               # Hook registrations (SessionStart + PostToolUse + Stop)
 +-- scripts/
-|   +-- git-state-injector.py  # Git state context (SessionStart)
-|   +-- todo-harvester.py      # Tech debt markers (SessionStart)
-|   +-- commit-reminder.py     # Uncommitted changes advisory (Stop)
+|   +-- git-state-injector.py    # Git state context (SessionStart)
+|   +-- todo-harvester.py        # Tech debt markers (SessionStart)
+|   +-- collect-session-edits.py # Edit tracking (PostToolUse)
+|   +-- commit-reminder.py       # Uncommitted changes advisory (Stop)
 +-- README.md                  # This file
 ```
 
