@@ -58,13 +58,15 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
 - Added tabbed client-specific instructions on the installation page
 - Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
-- **Ported `.devcontainer/docs/` to docs site** — merged 5 legacy reference docs into the Starlight documentation site:
+- **Ported `.devcontainer/docs/` to docs site** — migrated content from 5 legacy reference docs into the Starlight documentation site:
   - New **Keybindings** page (Customization) — VS Code/Claude Code shortcut conflicts and resolution options
   - New **Troubleshooting** page (Reference) — 12+ problem/solution entries for build, auth, plugins, and performance issues
   - New **Optional Features** page (Customization) — mcp-qdrant vector memory setup guide
   - Merged setup variables (`.env` flags) into the Environment Variables reference
   - Merged `.secrets` file authentication docs into the Configuration page
 - Removed `.devcontainer/docs/` directory — all content now lives in the docs site
+- **Versioned docs infrastructure** — installed `starlight-versions` plugin; no archived versions yet, first snapshot will be taken when v3 development begins
+- **Fixed docs site URL** — updated `site` to `https://codeforge.core-directive.com` and removed `/CodeForge` base path (custom domain serves from root)
 
 ### Fixed
 
@@ -132,6 +134,9 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ### Fixed
 
+#### CI/CD
+- **Release workflow** — switched from auto-publish on `package.json` change to tag-triggered (`v*` tags only); prevents accidental releases when PRs include version bumps. Tag must match `package.json` version or the workflow fails.
+
 #### CCStatusLine Deployment
 - **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
 - **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start
@@ -157,6 +162,11 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
 - **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
 - **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
+- **`setup.js` path traversal** — `configApply()` now validates that source paths resolve within `.codeforge/` and destination paths resolve within allowed directories (`CLAUDE_CONFIG_DIR`, `HOME`, `/usr/local/`), preventing directory traversal via `../` in manifest entries
+- **`setup.sh` CODEFORGE_DIR** — deprecation guard now uses default-assignment semantics (`:=`) instead of unconditional overwrite, preserving any user-defined `CODEFORGE_DIR` from `.env`
+- **Docs site URLs** — replaced `anexileddev.github.io/CodeForge/` with custom domain `codeforge.core-directive.com/` across README.md, CLAUDE.md, and .devcontainer/README.md
+- **Architecture docs** — added `.checksums/` and `.markers/` directories to the `.codeforge/` tree in architecture.md
+- **Troubleshooting docs** — renamed "Reset to Defaults" to "How to Reset" and clarified that `--reset` preserves `.codeforge/` user modifications; added step for restoring default config sources
 
 ### Changed
 

@@ -9,10 +9,11 @@ import starlightLinksValidator from "starlight-links-validator";
 import starlightLlmsTxt from "starlight-llms-txt";
 import starlightScrollToTop from "starlight-scroll-to-top";
 import starlightSidebarTopics from "starlight-sidebar-topics";
+// Uncomment when activating versioned docs (see plugin comment below)
+// import starlightVersions from "starlight-versions";
 
 export default defineConfig({
-	site: "https://anexileddev.github.io",
-	base: "/CodeForge",
+	site: "https://codeforge.core-directive.com",
 	integrations: [
 		// astro-mermaid MUST be registered BEFORE starlight
 		astroMermaid(),
@@ -44,7 +45,7 @@ export default defineConfig({
 					tag: "meta",
 					attrs: {
 						name: "og:image",
-						content: "/CodeForge/og-image.png",
+						content: "/og-image.png",
 					},
 				},
 				{
@@ -52,14 +53,14 @@ export default defineConfig({
 					attrs: {
 						rel: "icon",
 						type: "image/png",
-						href: "/CodeForge/favicon.png",
+						href: "/favicon.png",
 					},
 				},
 				{
 					tag: "link",
 					attrs: {
 						rel: "apple-touch-icon",
-						href: "/CodeForge/apple-touch-icon.png",
+						href: "/apple-touch-icon.png",
 					},
 				},
 				{
@@ -70,6 +71,17 @@ export default defineConfig({
 				},
 			],
 			plugins: [
+				// ── Versioned docs (activate when archiving the first version) ──
+				// starlightVersions requires at least one archived version.
+				// When v3 development begins, uncomment and add v2 as the first entry:
+				//
+				//   starlightVersions({
+				//     versions: [{ slug: "2.0", label: "v2.0" }],
+				//     current: { label: "v3" },
+				//   }),
+				//
+				// Then run `npm run dev` — the plugin archives current docs as v2.0.
+				// See: https://github.com/HiDeoo/starlight-versions
 				starlightSidebarTopics([
 					{
 						label: "Getting Started",

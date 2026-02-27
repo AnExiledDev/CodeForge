@@ -18,6 +18,8 @@
   - Merged setup variables (`.env` flags) into the Environment Variables reference
   - Merged `.secrets` file authentication docs into the Configuration page
 - Removed `.devcontainer/docs/` directory — all content now lives in the docs site
+- **Versioned docs infrastructure** — installed `starlight-versions` plugin; no archived versions yet, first snapshot will be taken when v3 development begins
+- **Fixed docs site URL** — updated `site` to `https://codeforge.core-directive.com` and removed `/CodeForge` base path (custom domain serves from root)
 
 ### Fixed
 
