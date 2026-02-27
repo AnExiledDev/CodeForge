@@ -66,7 +66,7 @@ claude --worktree fix-tests --tmux
 ```
 
 **Setup (via agent teams):**
-Agents with `isolation: worktree` in their frontmatter (refactorer, test-writer, migrator, doc-writer) automatically get worktrees when spawned via the `Task` tool. The lead agent coordinates, and each teammate operates in its own isolated copy.
+Agents with `isolation: worktree` in their frontmatter (refactorer, test-writer, migrator, documenter, implementer) automatically get worktrees when spawned via the `Task` tool. The lead agent coordinates, and each teammate operates in its own isolated copy.
 
 **Workflow:**
 1. Each agent/session works on independent files
