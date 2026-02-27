@@ -1,61 +1,61 @@
 [
 	{
-		"src": "defaults/settings.json",
+		"src": "config/settings.json",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/keybindings.json",
+		"src": "config/keybindings.json",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/main-system-prompt.md",
+		"src": "config/main-system-prompt.md",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/rules/spec-workflow.md",
+		"src": "config/rules/spec-workflow.md",
 		"dest": "${CLAUDE_CONFIG_DIR}/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/rules/workspace-scope.md",
+		"src": "config/rules/workspace-scope.md",
 		"dest": "${CLAUDE_CONFIG_DIR}/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/rules/session-search.md",
+		"src": "config/rules/session-search.md",
 		"dest": "${CLAUDE_CONFIG_DIR}/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/writing-system-prompt.md",
+		"src": "config/writing-system-prompt.md",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/orchestrator-system-prompt.md",
+		"src": "config/orchestrator-system-prompt.md",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/ccstatusline-settings.json",
+		"src": "config/ccstatusline-settings.json",
 		"dest": "${HOME}/.config/ccstatusline",
 		"destFilename": "settings.json",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "defaults/ccstatusline-settings.json",
+		"src": "config/ccstatusline-settings.json",
 		"dest": "/usr/local/share/ccstatusline",
 		"destFilename": "settings.template.json",
 		"enabled": true,

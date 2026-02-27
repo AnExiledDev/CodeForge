@@ -69,7 +69,7 @@ else
 fi
 
 # Widget config is managed by file-manifest.json (deployed by setup-config.sh)
-# Source: .devcontainer/config/defaults/ccstatusline-settings.json
+# Source: .codeforge/config/ccstatusline-settings.json
 # Deployed to: ~/.config/ccstatusline/settings.json (if-changed)
 # Template:    /usr/local/share/ccstatusline/settings.template.json (always)
 echo "[ccstatusline] Widget config managed by file-manifest.json"
@@ -237,7 +237,7 @@ echo "  ccstatusline Installation Complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Configuration:"
-echo "  • Source: .devcontainer/config/defaults/ccstatusline-settings.json"
+echo "  • Source: .codeforge/config/ccstatusline-settings.json"
 echo "  • Deployed to: ~/.config/ccstatusline/settings.json (by file-manifest)"
 echo "  • Template: /usr/local/share/ccstatusline/settings.template.json"
 echo "  • User: ${USERNAME}"
@@ -249,7 +249,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "1. Widget config is deployed automatically on container start"
 echo ""
-echo "2. To customize: edit .devcontainer/config/defaults/ccstatusline-settings.json"
+echo "2. To customize: edit .codeforge/config/ccstatusline-settings.json"
 echo "   Changes deploy on next container start (if-changed)"
 echo ""
 echo "3. Test manually:"

@@ -15,6 +15,7 @@ _USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
 _USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
 NEW_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
 MARKER="$NEW_DIR/.migrated-from-workspaces"
+CODEFORGE_MARKER="${CODEFORGE_DIR:-${WORKSPACE_ROOT:-/workspaces}/.codeforge}/.markers/v2-migrated"
 
 # Nothing to migrate if old directory doesn't exist
 if [ ! -d "$OLD_DIR" ]; then
@@ -26,8 +27,8 @@ if [ -z "$(ls -A "$OLD_DIR" 2>/dev/null)" ]; then
     exit 0
 fi
 
-# Idempotency: skip if migration already completed
-if [ -f "$MARKER" ]; then
+# Idempotency: skip if migration already completed (check both old and new markers)
+if [ -f "$MARKER" ] || [ -f "$CODEFORGE_MARKER" ]; then
     exit 0
 fi
 
@@ -59,8 +60,12 @@ if cp -a "$OLD_DIR/." "$NEW_DIR/"; then
         exit 1
     fi
 
-    # Mark migration complete
+    # Mark migration complete (write to both old and new marker locations)
     date -Iseconds > "$MARKER"
+    _codeforge_markers_dir="$(dirname "$CODEFORGE_MARKER")"
+    if [ -d "$_codeforge_markers_dir" ] || mkdir -p "$_codeforge_markers_dir" 2>/dev/null; then
+        date -Iseconds > "$CODEFORGE_MARKER"
+    fi
 
     # Rename old directory to .bak
     if mv "$OLD_DIR" "${OLD_DIR}.bak" 2>/dev/null; then

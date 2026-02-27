@@ -78,7 +78,7 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 
 **Problem: Plugin not loading or not appearing in Claude Code.**
 
-- Check `enabledPlugins` in `.devcontainer/config/defaults/settings.json` — the plugin must be listed there.
+- Check `enabledPlugins` in `.codeforge/config/settings.json` — the plugin must be listed there.
 - Verify the plugin directory exists under `plugins/devs-marketplace/plugins/`.
 - Run `check-setup` to verify core configuration is correct.
 - Check plugin blacklist: ensure it's not in `PLUGIN_BLACKLIST` in `.env`.
@@ -95,7 +95,7 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 
 - Agent Teams requires tmux. Use the **"Claude Teams (tmux)"** terminal profile in VS Code.
 - Verify tmux is installed: `tmux -V`.
-- If using an external terminal, connect via `connect-external-terminal.sh`.
+- If using an external terminal, connect via `.codeforge/scripts/connect-external-terminal.sh`.
 
 **Problem: tmux Unicode/emoji rendering broken.**
 
@@ -132,7 +132,7 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 
 ## How to Reset to Defaults
 
-1. **Reset config files** — delete `~/.claude/` and restart the container. `setup-config.sh` will recopy all files from `config/defaults/`.
+1. **Reset config files** — delete `~/.claude/` and restart the container. `setup-config.sh` will recopy all files from `.codeforge/config/`. Note that `--reset` preserves `.codeforge/` user modifications (only `.devcontainer/` is wiped).
 
 2. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash /workspaces/.devcontainer/scripts/setup-aliases.sh`.
 

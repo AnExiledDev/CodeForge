@@ -32,9 +32,9 @@ This section is a lookup resource for CodeForge internals. Use it when you need 
 
 | Path | Purpose |
 |------|---------|
-| `.devcontainer/config/defaults/settings.json` | Primary configuration file |
-| `.devcontainer/config/defaults/main-system-prompt.md` | Main system prompt |
-| `.devcontainer/config/file-manifest.json` | Config file deployment rules |
+| `.codeforge/config/settings.json` | Primary configuration file |
+| `.codeforge/config/main-system-prompt.md` | Main system prompt |
+| `.codeforge/file-manifest.json` | Config file deployment rules |
 | `.devcontainer/devcontainer.json` | Container definition |
 | `.devcontainer/plugins/devs-marketplace/` | Local plugin marketplace |
 | `.claude/rules/` | Active rules (deployed from defaults) |
@@ -57,10 +57,10 @@ These are the files you will interact with most often when configuring CodeForge
 
 | File | Location | Purpose |
 |------|----------|---------|
-| `settings.json` | `.devcontainer/config/defaults/` | Model selection, plugin toggles, env vars, permissions |
-| `main-system-prompt.md` | `.devcontainer/config/defaults/` | Claude's coding behavior and response style |
-| `writing-system-prompt.md` | `.devcontainer/config/defaults/` | Claude's writing mode behavior |
-| `file-manifest.json` | `.devcontainer/config/` | Rules for deploying config files to `.claude/` |
+| `settings.json` | `.codeforge/config/` | Model selection, plugin toggles, env vars, permissions |
+| `main-system-prompt.md` | `.codeforge/config/` | Claude's coding behavior and response style |
+| `writing-system-prompt.md` | `.codeforge/config/` | Claude's writing mode behavior |
+| `file-manifest.json` | `.codeforge/` | Rules for deploying config files to `.claude/` |
 | `devcontainer.json` | `.devcontainer/` | Container image, features, mounts, resource limits |
 | `hooks.json` | Each plugin's `hooks/` directory | Hook registration for lifecycle automation |
 | `plugin.json` | Each plugin's `.claude-plugin/` directory | Plugin manifest and metadata |

@@ -119,17 +119,6 @@ CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflo
 .devcontainer/
 +-- devcontainer.json              # Container definition (image, features, mounts)
 +-- .env                           # Setup flags (SETUP_CONFIG, SETUP_ALIASES, etc.)
-+-- config/
-|   +-- file-manifest.json         # Declarative config deployment rules
-|   +-- defaults/
-|       +-- settings.json          # Claude Code settings (model, plugins, env vars)
-|       +-- keybindings.json       # Keyboard shortcuts
-|       +-- main-system-prompt.md  # Development system prompt
-|       +-- writing-system-prompt.md  # Writing mode system prompt
-|       +-- rules/                 # Default rules deployed to .claude/rules/
-|           +-- spec-workflow.md
-|           +-- workspace-scope.md
-|           +-- session-search.md
 +-- features/                      # DevContainer features (tool installers)
 |   +-- ccms/                      # Session history search (Rust)
 |   +-- ccstatusline/              # Terminal status line
@@ -165,6 +154,22 @@ CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflo
     +-- setup-plugins.sh           # Plugin installation
     +-- setup-auth.sh              # Git/NPM auth
     +-- check-setup.sh             # Health verification
+
+.codeforge/
++-- file-manifest.json             # Declarative config deployment rules
++-- config/
+|   +-- settings.json              # Claude Code settings (model, plugins, env vars)
+|   +-- keybindings.json           # Keyboard shortcuts
+|   +-- main-system-prompt.md      # Development system prompt
+|   +-- writing-system-prompt.md   # Writing mode system prompt
+|   +-- rules/                     # Default rules deployed to .claude/rules/
+|       +-- spec-workflow.md
+|       +-- workspace-scope.md
+|       +-- session-search.md
++-- scripts/
+|   +-- connect-external-terminal.sh   # External terminal connection (Linux/macOS)
+|   +-- connect-external-terminal.ps1  # External terminal connection (Windows)
++-- .codeforge-preserve            # Lists additional files to preserve during updates
 ```
 
 ## Design Principles

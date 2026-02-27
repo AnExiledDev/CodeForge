@@ -23,5 +23,9 @@ All user-facing changes MUST be reflected in documentation:
 - **Plugin changes** → update the plugin's `README.md`
 - **Feature changes** → update `features/README.md` and the feature's `devcontainer-feature.json` if applicable
 - **Config system changes** → update `.devcontainer/CLAUDE.md`
-- **New config files in `config/defaults/`** → add entry to `config/file-manifest.json`
+- **New config files in `.codeforge/config/`** → add entry to `.codeforge/file-manifest.json`
 - **Docs site** → update relevant pages in `docs/` if the docs site exists
+
+### User Configuration
+
+All user-customizable configuration files belong in `.codeforge/`. New config files go in `.codeforge/config/`, with a corresponding entry in `.codeforge/file-manifest.json`.

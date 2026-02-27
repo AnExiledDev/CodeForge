@@ -63,17 +63,24 @@ node_modules/
 # Claude Code directory (user-specific)
 .claude/
 
-# All hidden directories except devcontainer
+# All hidden directories except devcontainer and codeforge
 .*
 !.devcontainer/
 !.devcontainer/**/.claude-plugin/
 !.devcontainer/
 !.devcontainer/**/.claude-plugin/**/.claude-plugin/
+!.codeforge/
 !.git/
 !.github/
 !.gitignore
 !.gitattributes
 !.npmignore
+
+# .codeforge per-installation state (not tracked)
+.codeforge/.checksums/
+.codeforge/.markers/
+# Un-ignore .codeforge-preserve (user-editable, should be tracked)
+!.codeforge/.codeforge-preserve
 .devcontainer/config/claude/output-styles/strict-development.md
 .devcontainer/config/claude/mcp.json
 
