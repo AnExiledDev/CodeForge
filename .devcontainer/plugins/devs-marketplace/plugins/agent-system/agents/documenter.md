@@ -108,7 +108,7 @@ Follow the discover-understand-write workflow for every documentation task.
 
 Map the project structure and existing documentation before writing anything. Read CLAUDE.md files (per Project Context Discovery) for project structure, conventions, and architecture decisions.
 
-```
+```bash
 # Find existing documentation
 Glob: **/README*, **/CHANGELOG*, **/CONTRIBUTING*, **/docs/**/*.md
 

@@ -8,7 +8,7 @@ description: >-
   packages", "audit dependencies", "check dependency health", "license check",
   "are my dependencies up to date", "npm audit", "pip audit", "cargo audit",
   "supply chain risk", "check for CVEs", or needs any dependency analysis
-  across Node.js, Python, Rust, or Go ecosystems. Focuses on PACKAGES and
+  across Node.js, Python, Rust, Ruby, or Go ecosystems. Focuses on PACKAGES and
   their versions — for code-level security review (injection, auth, secrets),
   use security-auditor instead. Reports findings without modifying any files.
   Do not use for installing, upgrading, or modifying dependencies — analysis
