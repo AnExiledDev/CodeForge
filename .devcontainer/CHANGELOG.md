@@ -30,7 +30,7 @@
 ### Fixed
 
 #### Bun
-- Bun PATH not available in non-interactive shells — added `/etc/profile.d/bun.sh` via postStart hook
+- Bun PATH not available in non-interactive shells — Bun is now accessible in all shell contexts
 
 #### Session Context Plugin
 - **Commit reminder** no longer blocks Claude from stopping — switched from `decision: "block"` to advisory `systemMessage` wrapped in `<system-reminder>` tags

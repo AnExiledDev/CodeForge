@@ -166,9 +166,10 @@ fi
 if [ -d "/home/vscode/.bun/bin" ] && [ ! -f /etc/profile.d/bun.sh ]; then
     sudo tee /etc/profile.d/bun.sh > /dev/null <<'BUNEOF'
 export BUN_INSTALL="/home/vscode/.bun"
-if [[ "${PATH}" != *"${BUN_INSTALL}/bin"* ]]; then
-    export PATH="${BUN_INSTALL}/bin:${PATH}"
-fi
+case ":${PATH}:" in
+    *:"${BUN_INSTALL}/bin":*) ;;
+    *) export PATH="${BUN_INSTALL}/bin:${PATH}" ;;
+esac
 BUNEOF
     sudo chmod +x /etc/profile.d/bun.sh
 fi
