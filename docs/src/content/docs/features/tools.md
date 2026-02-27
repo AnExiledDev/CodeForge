@@ -45,6 +45,10 @@ ccw
 
 ### ccms — Session History Search
 
+:::caution[Currently Disabled]
+The `ccms` feature is currently commented out in `devcontainer.json`. A replacement tool is pending. The documentation below is preserved for reference.
+:::
+
 Search through your Claude Code session history (JSONL files) with boolean queries, role filtering, and time scoping. Built in Rust for fast searching across large session archives.
 
 ```bash
@@ -180,7 +184,7 @@ CodeForge includes modern language runtimes and fast package managers so you can
 |------|---------|---------|---------|
 | **Node.js** | via nvm | JavaScript runtime | `node --version` |
 | **Python** | 3.14 via uv | Python runtime | `python --version` |
-| **Rust** | via rustup | Rust toolchain | `cargo --version` |
+| **Rust** | via rustup | Rust toolchain _(opt-in — commented out by default)_ | `cargo --version` |
 | **Bun** | latest | Fast JS runtime and package manager | `bun install` |
 | **uv** | latest | Fast Python package manager | `uv pip install requests` |
 | **Go** | via feature | Go toolchain | `go version` |
@@ -207,7 +211,7 @@ CodeForge uses `uv` as the default Python package manager. It is significantly f
 | 1 | `cc` / `claude` | Session | Claude Code with CodeForge config |
 | 2 | `ccraw` | Session | Vanilla Claude Code |
 | 3 | `ccw` | Session | Claude Code in writing mode |
-| 4 | `ccms` | Session | Session history search |
+| 4 | `ccms` | Session | Session history search _(currently disabled)_ |
 | 5 | `ccusage` | Session | API usage statistics |
 | 6 | `ccburn` | Session | Token burn analysis |
 | 7 | `ccstatusline` | Session | Terminal statusline |

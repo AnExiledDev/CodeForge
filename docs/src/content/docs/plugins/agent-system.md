@@ -72,7 +72,7 @@ Each redirect is a strict improvement. The custom agents carry capabilities that
 The redirect is fully transparent to you and to Claude. Using either name works — `Explore` and `explorer` both resolve to the same enhanced agent.
 
 :::note[The Seventh Agent Type]
-Claude Code has a seventh built-in agent type, `magic-docs`, used internally for documentation updates. This agent is **not** redirected — it runs natively. All other six built-in types are intercepted and replaced.
+Claude Code has a seventh built-in agent type, `magic-docs`, which handles internal documentation generation tasks within Claude Code itself. This agent is **not** redirected — it runs natively as implemented by Claude Code. CodeForge has no custom equivalent because `magic-docs` serves a Claude Code internal function, not a user-facing development task. All other six built-in types are intercepted and replaced.
 :::
 
 ## Safety Mechanisms

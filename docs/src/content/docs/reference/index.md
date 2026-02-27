@@ -25,7 +25,7 @@ This section is a lookup resource for CodeForge internals. Use it when you need 
 | `cc` | Start Claude Code with full CodeForge configuration |
 | `ccw` | Start Claude Code in writing mode |
 | `ccraw` | Start vanilla Claude Code (no plugins or custom prompt) |
-| `ccms "query"` | Search session history |
+| `ccms "query"` | Search session history _(currently disabled — replacement pending)_ |
 | `check-setup` | Verify your installation is healthy |
 
 ### Key Paths
@@ -70,7 +70,7 @@ These are the files you will interact with most often when configuring CodeForge
 | Component | Count | Details |
 |-----------|-------|---------|
 | DevContainer features | 22 | Runtimes, CLI tools, monitoring |
-| Plugins | 14 | Safety, quality, workflow, intelligence |
+| Plugins | 14 (13 local + 1 official) | Safety, quality, workflow, intelligence |
 | Agents | 21 | Specialized personas from explorer to security-auditor |
 | Skills | 38 | On-demand knowledge across coding, testing, frameworks |
 | Built-in rules | 3 | Workspace scope, spec workflow, session search |

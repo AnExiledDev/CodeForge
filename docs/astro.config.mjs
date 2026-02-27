@@ -92,6 +92,14 @@ export default defineConfig({
 							{ label: "Requirements", slug: "getting-started/requirements" },
 							{ label: "Installation", slug: "getting-started/installation" },
 							{
+								label: "DevContainer CLI",
+								slug: "getting-started/devcontainer-cli",
+							},
+							{
+								label: "Migrating to v2",
+								slug: "getting-started/migrating-to-v2",
+							},
+							{
 								label: "Your First Session",
 								slug: "getting-started/first-session",
 							},

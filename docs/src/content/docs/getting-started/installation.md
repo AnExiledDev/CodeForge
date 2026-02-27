@@ -78,25 +78,15 @@ You can watch the build progress in the "Dev Containers" output channel in the t
 </TabItem>
 <TabItem label="DevContainer CLI">
 
-Install the CLI if you haven't already:
+Install the CLI and build the container:
 
 ```bash
 npm install -g @devcontainers/cli
-```
-
-Build and start the container:
-
-```bash
 devcontainer up --workspace-folder .
+devcontainer exec --workspace-folder . zsh
 ```
 
-Then connect to the running container:
-
-```bash
-docker exec -it <container-name> zsh
-```
-
-Use `docker ps` to find the container name. For port forwarding outside VS Code, see the [Port Forwarding reference](../reference/port-forwarding/).
+For the full CLI workflow — connecting, port forwarding, rebuilding, and tips — see the dedicated [DevContainer CLI guide](./devcontainer-cli/).
 
 </TabItem>
 <TabItem label="JetBrains">
@@ -123,7 +113,7 @@ No local Docker installation required. Port forwarding is handled automatically 
 The first container build takes several minutes (typically 3-8 minutes depending on your internet speed and hardware). Here's what's happening behind the scenes:
 
 1. **Base image pull** — downloads the Python 3.14 DevContainer image from Microsoft's registry
-2. **Feature installation** — installs 21 DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Rust, Bun, Claude Code, and all custom features
+2. **Feature installation** — installs DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Bun, Claude Code, and all custom features
 3. **Post-start setup** — deploys configuration files, sets up shell aliases, and configures plugins
 
 :::caution[Don't interrupt the first build]
@@ -157,8 +147,8 @@ A healthy installation shows all of these as available:
 | Category | Tools |
 |----------|-------|
 | Claude Code | `claude`, `cc`, `ccw`, `ccraw` |
-| Session tools | `ccms`, `ccusage`, `ccburn`, `claude-monitor` |
-| Languages | `node`, `python`, `rustc`, `bun` |
+| Session tools | `ccusage`, `ccburn`, `claude-monitor` (`ccms` currently disabled) |
+| Languages | `node`, `python`, `bun` (`rustc` opt-in) |
 | Code intelligence | `ast-grep`, `tree-sitter`, `pyright`, `typescript-language-server` |
 | Linters/Formatters | `ruff`, `biome` |
 | Utilities | `gh`, `docker`, `git`, `jq`, `tmux` |
@@ -173,7 +163,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 
 - **Python 3.14** — the container's base image, with `uv` as the package manager
 - **Node.js LTS** — installed via nvm, with npm included
-- **Rust** — latest stable via rustup
+- **Rust** — latest stable via rustup _(opt-in — uncomment in `devcontainer.json`)_
 - **Bun** — fast JavaScript/TypeScript runtime and package manager
 - **Go** — available as an opt-in (uncomment in `devcontainer.json`)
 
@@ -182,7 +172,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 - **GitHub CLI** (`gh`) — repository management, PR creation, issue tracking
 - **Docker** (Docker-outside-of-Docker) — container operations from inside the DevContainer
 - **tmux** — terminal multiplexing for parallel Claude Code sessions
-- **ccms** — search your Claude Code session history
+- **ccms** — search your Claude Code session history _(currently disabled — replacement pending)_
 - **ccusage** / **ccburn** — token usage analysis and burn rate tracking
 - **ccstatusline** — session status in your terminal prompt
 - **claude-monitor** — real-time session monitoring
@@ -224,94 +214,18 @@ Use `git diff .devcontainer/` after updating to review what changed before commi
 
 ## Troubleshooting
 
-### Container fails to build
+Having trouble with the build, authentication, or missing tools? See the [Troubleshooting reference](../reference/troubleshooting/) for solutions to common issues including:
 
-**Symptoms:** VS Code shows a build error, or the container exits immediately.
-
-**Common causes and fixes:**
-
-- **Docker not running** — start Docker Desktop or the Docker daemon
-- **Insufficient resources** — open Docker Desktop settings and allocate at least 4 GB RAM and 20 GB disk to the VM
-- **Network issues** — the first build downloads several GB of images and tools; check your internet connection
-- **Cached partial build** — use **Dev Containers: Rebuild Container Without Cache** to start clean
-
-### Tools not found after build
-
-**Symptoms:** Commands like `cc` or `ccms` return "command not found."
-
-- Run `check-setup` to identify which tools are missing
-- Check that the post-start script completed successfully (look for errors in the terminal output)
-- Rebuild the container to trigger a fresh install
-
-### Claude Code authentication issues
-
-**Symptoms:** Running `cc` or `claude` prompts for authentication or returns an error.
-
-- Claude Code authenticates on first launch — follow the prompts to sign in
-- If authentication was previously completed but stopped working, try `claude auth` to re-authenticate
-- Ensure your Claude subscription is active
-
-### Slow container startup
-
-**Symptoms:** The container takes a long time to start after the initial build.
-
-- Subsequent starts should be fast (under 30 seconds) because Docker caches built layers
-- If starts are consistently slow, check Docker resource allocation
-- The `postStartCommand` runs on every start to deploy configuration files — this is normal and should complete in a few seconds
-
-### `npx codeforge-dev` fails
-
-**Symptoms:** The installer command errors out before creating `.devcontainer/`.
-
-- **Node.js not installed** — the installer requires Node.js 18+ and npm. Run `node --version` to check; install from [nodejs.org](https://nodejs.org/) if missing
-- **Network issues** — npm needs to reach the registry to download the package. Check your connection or try `npm config set registry https://registry.npmjs.org/`
-- **Permission errors** — on some systems, global npm installs need `sudo`. Try `npx --yes codeforge-dev` or install globally with `sudo npm install -g codeforge-dev`
-
-### VS Code doesn't show "Reopen in Container"
-
-**Symptoms:** You opened the project in VS Code but never see the DevContainer prompt.
-
-- **Extension not installed** — install `ms-vscode-remote.remote-containers` from the Extensions marketplace, then reload VS Code
-- **`.devcontainer/` not at repo root** — VS Code looks for `.devcontainer/` in the workspace root folder. If your project is inside a subfolder, open that subfolder directly
-
-:::note[Using a different client?]
-Not using VS Code? The DevContainer CLI, JetBrains Gateway, DevPod, and Codespaces all read the same `devcontainer.json`. See [Step 2](#step-2-open-in-a-devcontainer-client) for client-specific instructions.
-:::
-- **VS Code version** — DevContainers requires VS Code 1.85 or later. Check **Help → About** and update if needed
-
-### Docker permission errors (Linux)
-
-**Symptoms:** `docker: permission denied` or `Cannot connect to the Docker daemon` errors.
-
-- Add your user to the `docker` group: `sudo usermod -aG docker $USER`, then log out and back in
-- Verify with `docker ps` — it should run without `sudo`
-- If using Docker rootless mode, ensure the socket path is set correctly in VS Code settings
-
-### WSL 2 integration issues (Windows)
-
-**Symptoms:** Container fails to start, or Docker commands hang inside WSL.
-
-- Open Docker Desktop → **Settings → Resources → WSL Integration** and enable integration for your WSL distro
-- Ensure WSL 2 (not WSL 1) is active: run `wsl -l -v` in PowerShell and check the VERSION column
-- Restart Docker Desktop after changing WSL settings
-
-### Port conflicts
-
-**Symptoms:** The claude-dashboard or other tools fail to bind their port.
-
-- CodeForge's session dashboard uses **port 7847** by default. If another service uses that port, change it in `devcontainer.json` under `forwardPorts`
-- To find what's using a port: `lsof -i :7847` (macOS/Linux) or `netstat -ano | findstr 7847` (Windows)
-
-### Container rebuilds are slow
-
-**Symptoms:** Rebuilding the container takes as long as the first build.
-
-- **Use "Rebuild Container"** (not "Rebuild Without Cache") for routine rebuilds — Docker reuses cached layers for unchanged steps
-- **Prune unused images** to free disk space: `docker system prune -a` removes all unused images (confirm you don't need them first)
-- **Check disk space** — Docker needs headroom for layer storage. If your disk is nearly full, builds may fail or slow down significantly
+- Container build failures and slow builds
+- `npx codeforge-dev` installation errors
+- VS Code not showing the DevContainer prompt
+- Claude Code authentication problems
+- Docker permissions on Linux and WSL 2 integration on Windows
+- Port conflicts
 
 ## Next Steps
 
+- [DevContainer CLI](./devcontainer-cli/) — terminal-only workflow without VS Code
 - [First Session](./first-session/) — start using CodeForge with Claude Code
 - [Configuration](../customization/configuration/) — customize settings
 - [Plugins Overview](../plugins/) — understand what each plugin does

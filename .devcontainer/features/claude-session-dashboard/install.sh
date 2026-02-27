@@ -76,6 +76,7 @@ echo "[claude-session-dashboard] Installing for user: ${USERNAME}"
 # === INSTALL VIA NPM ===
 echo "[claude-session-dashboard] Installing claude-session-dashboard@${DASHBOARD_VERSION} globally..."
 npm install -g "claude-session-dashboard@${DASHBOARD_VERSION}"
+npm cache clean --force 2>/dev/null || true
 
 # === PERSISTENCE SYMLINK (POSTSTART HOOK) ===
 # Settings/cache live at ~/.claude-dashboard, which is ephemeral (/home/vscode).

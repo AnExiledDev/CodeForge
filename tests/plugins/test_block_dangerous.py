@@ -114,7 +114,7 @@ class TestForcePush:
         ],
     )
     def test_bare_force_push(self, cmd: str) -> None:
-        assert_blocked(cmd, substr="bare force push")
+        assert_blocked(cmd, substr="force push")
 
 
 # ---------------------------------------------------------------------------
@@ -236,20 +236,38 @@ class TestSafeCommands:
 
 
 # ---------------------------------------------------------------------------
-# Known source bugs (documented, asserting current behavior)
+# 10b. Force push with lease (intentionally blocked)
 # ---------------------------------------------------------------------------
 
 
-class TestKnownSourceBugs:
-    def test_force_with_lease_false_positive(self) -> None:
-        """BUG: --force-with-lease is safe but blocked because the regex
-        \\bgit\\s+push\\s+--force\\b matches the '--force' prefix in
-        '--force-with-lease' (\\b fires at the 'e'/'-' boundary).
-
-        This test documents the current (incorrect) behavior. If the source
-        is fixed, update this test to use assert_allowed().
-        """
+class TestForceWithLease:
+    def test_force_with_lease_blocked(self) -> None:
+        """--force-with-lease is intentionally blocked alongside all force
+        push variants to prevent agents from using it as a workaround."""
         assert_blocked(
             "git push --force-with-lease origin feature",
             substr="force push",
+        )
+
+
+# ---------------------------------------------------------------------------
+# 11. Remote branch deletion
+# ---------------------------------------------------------------------------
+
+
+class TestRemoteBranchDeletion:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "git push origin --delete feature-branch",
+            "git push --delete feature-branch",
+        ],
+    )
+    def test_push_delete_blocked(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="deleting remote branches")
+
+    def test_colon_refspec_blocked(self) -> None:
+        assert_blocked(
+            "git push origin :feature-branch",
+            substr="colon-refspec",
         )

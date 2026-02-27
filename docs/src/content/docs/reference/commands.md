@@ -35,7 +35,7 @@ Commands for session analysis, usage tracking, and system monitoring.
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `ccms` | Search Claude Code session history. Supports boolean queries, role filtering, time scoping, and project isolation. | `ccms --project "$(pwd)" "auth approach"` |
+| `ccms` | Search Claude Code session history. Supports boolean queries, role filtering, time scoping, and project isolation. _(currently disabled — replacement pending)_ | `ccms --project "$(pwd)" "auth approach"` |
 | `ccusage` | View Claude API usage statistics | `ccusage` |
 | `ccburn` | Analyze token burn rate and consumption patterns with pace indicators | `ccburn` |
 | `ccstatusline` | Terminal status line displaying session metrics, git state, token usage, and burn rate | (runs automatically) |
@@ -45,32 +45,6 @@ Commands for session analysis, usage tracking, and system monitoring.
 | `check-setup` | Verify CodeForge installation health -- checks tools, config, and aliases | `check-setup` |
 | `cc-tools` | List all installed CodeForge CLI tools with version info | `cc-tools` |
 | `dbr` | Dynamic port forwarding via devcontainer-bridge (container↔host) | `dbr` |
-
-### ccms Usage
-
-`ccms` is the most feature-rich analysis command. Key flags:
-
-```bash
-# Basic search
-ccms "error handling"
-
-# Project-scoped (recommended)
-ccms --project "$(pwd)" "auth approach"
-
-# Filter by role
-ccms -r assistant "what was decided"
-ccms -r user "please fix"
-
-# Boolean queries
-ccms "error AND connection"
-ccms "(auth OR authentication) AND NOT test"
-
-# Time-scoped
-ccms --since "1 day ago" "recent work"
-
-# JSON output
-ccms -f json "query" -n 10
-```
 
 ## Code Quality Commands
 
@@ -195,7 +169,7 @@ These additional commands are available in the container environment:
 | `jq` | JSON processing and filtering |
 | `tmux` | Terminal multiplexer for Agent Teams split-pane sessions |
 | `bun` | Fast JavaScript runtime and package manager |
-| `cargo` | Rust package manager (used by ccms) |
+| `cargo` | Rust package manager _(opt-in — Rust toolchain is commented out by default)_ |
 | `uv` | Fast Python package installer |
 
 ## Command Sources
@@ -206,9 +180,9 @@ Commands come from different sources in the CodeForge setup:
 |--------|----------|-------------|
 | Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | Shell functions | `cc-tools` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
-| DevContainer features | `ccms`, `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
+| DevContainer features | `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
 | Slash commands | `/spec-new`, `/ticket:new`, `/ship`, `/pr:review`, `/ps`, etc. | Skill SKILL.md files in plugin directories |
-| External features | `gh`, `docker`, `node`, `bun`, `cargo` | Installed via `devcontainer.json` features |
+| External features | `gh`, `docker`, `node`, `bun` | Installed via `devcontainer.json` features |
 
 :::tip[Listing All Tools]
 Run `cc-tools` to see every installed tool and its version. This is the quickest way to verify what is available in your container.

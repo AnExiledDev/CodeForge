@@ -56,11 +56,11 @@ See the [Plugins Overview](../plugins/) for the full list and detailed documenta
 
 CodeForge installs a comprehensive toolchain so you never have to stop and install something mid-session:
 
-- **Language Runtimes** — Python 3.14, Node.js LTS, Rust, Bun, with Go available as an opt-in
+- **Language Runtimes** — Python 3.14, Node.js LTS, Bun, with Rust and Go available as opt-ins
 - **Package Managers** — uv (Python), npm, Bun, pip/pipx
 - **Code Intelligence** — tree-sitter, ast-grep, Pyright, TypeScript LSP
 - **Linters and Formatters** — Ruff, Biome, shfmt, ShellCheck, hadolint, dprint
-- **CLI Utilities** — GitHub CLI, Docker, jq, tmux, and CodeForge-specific tools like ccms, ccusage, and ccburn
+- **CLI Utilities** — GitHub CLI, Docker, jq, tmux, and CodeForge-specific tools like ccusage and ccburn (ccms currently disabled — replacement pending)
 
 See the [Features Overview](../features/) for the complete reference.
 
@@ -97,6 +97,8 @@ The environment is designed to stay out of your way while quietly making everyth
 
 - [System Requirements](./requirements/) — verify your system is ready
 - [Installation Guide](./installation/) — detailed setup instructions
+- [DevContainer CLI](./devcontainer-cli/) — run CodeForge from the terminal without VS Code
+- [Migrating to v2](./migrating-to-v2/) — upgrade from v1.x to the new `.codeforge/` directory structure
 - [First Session](./first-session/) — walk through your first Claude Code session
 - [Plugins Overview](../plugins/) — explore the plugin ecosystem
 - [Features Overview](../features/) — browse available agents, skills, and tools

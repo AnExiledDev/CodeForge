@@ -31,9 +31,15 @@ def run_main(stdin_data: str) -> tuple[int, str]:
         try:
             redirect_builtin_agents.main()
         except SystemExit as exc:
-            return (exc.code, mock_stdout.getvalue())
+            if exc.code is None:
+                code = 0
+            elif isinstance(exc.code, int):
+                code = exc.code
+            else:
+                code = 1
+            return (code, mock_stdout.getvalue())
     # If main() returns without sys.exit (shouldn't happen, but handle it)
-    return (None, mock_stdout.getvalue())
+    return (0, mock_stdout.getvalue())
 
 
 def make_input(subagent_type: str, **extra_fields) -> str:

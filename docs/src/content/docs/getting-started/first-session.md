@@ -2,7 +2,7 @@
 title: First Session
 description: Walkthrough of your first Claude Code session inside a CodeForge DevContainer.
 sidebar:
-  order: 4
+  order: 6
 ---
 
 You've installed CodeForge and the container is running. Now it's time to launch your first Claude Code session and see everything in action. This guide walks you through what happens when you start a session, what to try first, and how the different systems work together.
@@ -24,6 +24,7 @@ The `cc` command is a CodeForge alias that launches Claude Code with the correct
 | `cc` | Full CodeForge session with system prompt, plugins, and all configuration |
 | `claude` | Same as `cc` — an alias for convenience |
 | `ccw` | Writing-focused session using the writing system prompt (great for documentation) |
+| `cc-orc` | Orchestrator mode — delegation-first approach, useful for complex multi-agent tasks |
 | `ccraw` | Raw Claude Code session with no CodeForge configuration — useful for debugging |
 
 :::tip[When to use ccraw]
@@ -84,8 +85,8 @@ From the terminal (not inside a Claude session), you can verify what's available
 # List all installed tools and their versions
 cc-tools
 
-# Search past session history
-ccms "what did we work on"
+# Search past session history (ccms is currently disabled — replacement pending)
+# ccms "what did we work on"
 
 # Check API token usage
 ccusage

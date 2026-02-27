@@ -82,8 +82,8 @@ Variables that configure individual tools within the container.
 
 | Variable | Tool | Description |
 |----------|------|-------------|
-| `CCMS_PROJECT` | ccms | Default project scope for session search |
-| `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) |
+| `CCMS_PROJECT` | ccms | Default project scope for session search _(only when ccms is enabled)_ |
+| `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) _(only when ccms is enabled)_ |
 | `RUFF_CONFIG` | ruff | Path to ruff configuration file |
 | `BIOME_CONFIG_PATH` | biome | Path to biome configuration file |
 
@@ -94,7 +94,7 @@ These variables live in `.devcontainer/.env` and control what `setup.sh` does on
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Where Claude Code config files are stored |
-| `CODEFORGE_DIR` | (auto-detected) | Source directory for user-customizable config files (`.codeforge/`) |
+| `CODEFORGE_DIR` | (auto-detected) | Source directory for user-customizable config files (`.codeforge/`). Replaces the deprecated `CONFIG_SOURCE_DIR` from v1.x. |
 | `SETUP_CONFIG` | `true` | Copy config files per `file-manifest.json` |
 | `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw`/`cc-tools` aliases to shell |
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |

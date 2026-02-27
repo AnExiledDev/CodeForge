@@ -188,7 +188,7 @@ The `setup-projects.sh` script scans `.worktrees/` directories at depth 3. Workt
 
 ### Agent Isolation
 
-Four CodeForge agents use `isolation: worktree` in their frontmatter — refactorer, test-writer, migrator, and doc-writer. When spawned via the `Task` tool, these agents automatically get their own worktree copy of the repository. The worktree is cleaned up after the agent finishes (removed if no changes; kept if changes exist).
+Five CodeForge agents use `isolation: worktree` in their frontmatter — refactorer, test-writer, migrator, documenter, and implementer. When spawned via the `Task` tool, these agents automatically get their own worktree copy of the repository. The worktree is cleaned up after the agent finishes (removed if no changes; kept if changes exist).
 
 ### Workspace Scope Guard
 

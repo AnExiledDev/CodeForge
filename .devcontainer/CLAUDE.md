@@ -80,7 +80,7 @@ git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 | `ccraw` | Vanilla Claude Code (bypasses config) |
 | `ccw` | Claude Code with writing system prompt |
 | `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
-| `ccms` | Search session history (project-scoped) |
+| ~~`ccms`~~ | _(commented out — replacement pending)_ |
 | `ccusage` / `ccburn` | Token usage analysis / burn rate |
 | `agent-browser` | Headless Chromium (Playwright-based) |
 | `check-setup` | Verify CodeForge setup health |

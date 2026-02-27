@@ -14,7 +14,8 @@ Inspects every Bash command Claude attempts to run against a set of dangerous pa
 | Privileged deletion | `sudo rm` |
 | World-writable permissions | `chmod 777`, `chmod -R 777` |
 | Force push to main/master | `git push --force origin main`, `git push -f origin master` |
-| Bare force push | `git push -f`, `git push --force` (no branch specified) |
+| Bare force push | `git push -f`, `git push --force`, `git push --force-with-lease` |
+| Remote branch deletion | `git push origin --delete`, `git push origin :branch` |
 | Git history destruction | `git reset --hard origin/main`, `git clean -f` |
 | System directory writes | `> /usr/`, `> /etc/`, `> /bin/`, `> /sbin/` |
 | Disk formatting | `mkfs.*`, `dd of=/dev/` |
@@ -47,7 +48,7 @@ Claude calls the Bash tool
 ### Error Handling
 
 - **JSON parse failure**: Fails closed (exit 2) — if the input can't be read, the command is blocked
-- **Other exceptions**: Fails open (exit 0) — logs the error to stderr but does not block
+- **Other exceptions**: Fails closed (exit 2) — logs the error to stderr and blocks
 
 ### Timeout
 

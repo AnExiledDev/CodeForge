@@ -95,7 +95,7 @@ On macOS and Windows, Docker Desktop runs inside a VM with its own resource limi
 **During initial setup**, internet access is required to:
 
 - Pull the base container image (`mcr.microsoft.com/devcontainers/python:3.14`)
-- Install DevContainer features (Node.js, Rust, Bun, uv, and 20+ custom features)
+- Install DevContainer features (Node.js, Bun, uv, and 20+ custom features; Rust is opt-in)
 - Download CLI tools and language servers
 
 The first build downloads roughly 2-4 GB depending on what's cached. Subsequent container starts are much faster because Docker caches the built layers.
