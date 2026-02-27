@@ -163,9 +163,9 @@ if [ "$SETUP_POSTSTART" = "true" ]; then
 fi
 
 # Fix Bun PATH — external feature only adds to ~/.bashrc (misses non-interactive shells)
-if [ -d "/home/vscode/.bun/bin" ] && [ ! -f /etc/profile.d/bun.sh ]; then
+if [ -d "$HOME/.bun/bin" ] && [ ! -f /etc/profile.d/bun.sh ]; then
     sudo tee /etc/profile.d/bun.sh > /dev/null <<'BUNEOF'
-export BUN_INSTALL="/home/vscode/.bun"
+export BUN_INSTALL="$HOME/.bun"
 case ":${PATH}:" in
     *:"${BUN_INSTALL}/bin":*) ;;
     *) export PATH="${BUN_INSTALL}/bin:${PATH}" ;;
