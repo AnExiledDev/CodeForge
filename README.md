@@ -109,7 +109,7 @@ CodeForge operates in three layers, each building on the one below:
 
 **Claude Code** — The AI assistant, executing tools and coordinating work. CodeForge enhances it through configuration — replacing built-in subagents, adding safety guardrails, and wiring up quality checks that run automatically.
 
-For the full architecture breakdown — hook pipeline, agent routing, skill loading, and design principles — see the [Architecture Reference](https://anexileddev.github.io/CodeForge/reference/architecture/).
+For the full architecture breakdown — hook pipeline, agent routing, skill loading, and design principles — see the [Architecture Reference](https://codeforge.core-directive.com/reference/architecture/).
 
 ## Configuration
 
@@ -127,7 +127,7 @@ All configuration lives in `.devcontainer/` and deploys automatically on contain
 
 Config files use SHA-256 change detection — your edits persist across container rebuilds unless the source changes. Set a file's overwrite mode to `"never"` in `file-manifest.json` to permanently preserve your customizations.
 
-For the complete configuration guide, see the [documentation site](https://anexileddev.github.io/CodeForge/customization/configuration/).
+For the complete configuration guide, see the [documentation site](https://codeforge.core-directive.com/customization/configuration/).
 
 ## Quick Start
 

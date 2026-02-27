@@ -432,7 +432,7 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 ## Troubleshooting
 
-Common issues and solutions. For detailed troubleshooting, see the [Troubleshooting](https://anexileddev.github.io/CodeForge/reference/troubleshooting/) page on the docs site.
+Common issues and solutions. For detailed troubleshooting, see the [Troubleshooting](https://codeforge.core-directive.com/reference/troubleshooting/) page on the docs site.
 
 | Problem | Solution |
 |---------|----------|
@@ -447,11 +447,11 @@ Common issues and solutions. For detailed troubleshooting, see the [Troubleshoot
 ## Further Reading
 
 **CodeForge Documentation**:
-- [Configuration Reference](https://anexileddev.github.io/CodeForge/customization/configuration/) — all env vars and config options
-- [Plugin System](https://anexileddev.github.io/CodeForge/plugins/) — plugin architecture and per-plugin docs
-- [Optional Features](https://anexileddev.github.io/CodeForge/customization/optional-features/) — mcp-qdrant and other optional components, disabling features
-- [Keybinding Customization](https://anexileddev.github.io/CodeForge/customization/keybindings/) — resolving VS Code conflicts
-- [Troubleshooting](https://anexileddev.github.io/CodeForge/reference/troubleshooting/) — common issues and solutions
+- [Configuration Reference](https://codeforge.core-directive.com/customization/configuration/) — all env vars and config options
+- [Plugin System](https://codeforge.core-directive.com/plugins/) — plugin architecture and per-plugin docs
+- [Optional Features](https://codeforge.core-directive.com/customization/optional-features/) — mcp-qdrant and other optional components, disabling features
+- [Keybinding Customization](https://codeforge.core-directive.com/customization/keybindings/) — resolving VS Code conflicts
+- [Troubleshooting](https://codeforge.core-directive.com/reference/troubleshooting/) — common issues and solutions
 
 **External**:
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)

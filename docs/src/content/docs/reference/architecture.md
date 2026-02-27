@@ -171,6 +171,8 @@ CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflo
 |   +-- connect-external-terminal.sh   # External terminal connection (Linux/macOS)
 |   +-- connect-external-terminal.ps1  # External terminal connection (Windows)
 +-- .codeforge-preserve            # Lists additional files to preserve during updates
++-- .checksums/                    # File hashes for change detection (gitignored)
++-- .markers/                      # Migration state markers (gitignored)
 ```
 
 ## Design Principles

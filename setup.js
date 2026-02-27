@@ -532,14 +532,37 @@ function configApply() {
 			);
 		}
 
-		const srcPath = path.join(codeforgeDir, entry.src);
+		const codeforgeRoot = path.resolve(codeforgeDir);
+		const srcPath = path.resolve(codeforgeRoot, entry.src);
+		if (!srcPath.startsWith(codeforgeRoot + path.sep)) {
+			console.log("  Skip: " + entry.src + " (source path escapes .codeforge/)");
+			skipped++;
+			continue;
+		}
 		if (!fs.existsSync(srcPath)) {
 			console.log("  Skip: " + entry.src + " (not found)");
 			skipped++;
 			continue;
 		}
 
-		const destDir = expandVars(entry.dest);
+		const homeDir = path.resolve(process.env.HOME || "/home/vscode");
+		const allowedDestRoots = [
+			path.resolve(claudeConfigDir),
+			homeDir,
+			"/usr/local",
+		];
+		const destDir = path.resolve(expandVars(entry.dest));
+		const destAllowed = allowedDestRoots.some(
+			(root) => destDir === root || destDir.startsWith(root + path.sep),
+		);
+		if (!destAllowed) {
+			console.log(
+				"  Skip: " + entry.dest + " (destination outside allowed directories)",
+			);
+			skipped++;
+			continue;
+		}
+
 		const filename = entry.destFilename || path.basename(entry.src);
 		const destPath = path.join(destDir, filename);
 		fs.mkdirSync(destDir, { recursive: true });

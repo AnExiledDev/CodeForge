@@ -201,4 +201,4 @@ Three mechanisms handle port access depending on your client:
 
 VS Code auto-detects all ports opened inside the container (configured via `portsAttributes` in `devcontainer.json`). Outside VS Code, `dbr` provides dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
 
-For full setup instructions, see the [Port Forwarding reference](https://anexileddev.github.io/CodeForge/reference/port-forwarding/) in the docs.
+For full setup instructions, see the [Port Forwarding reference](https://codeforge.core-directive.com/reference/port-forwarding/) in the docs.

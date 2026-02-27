@@ -130,15 +130,17 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 - Subsequent starts skip unchanged config files (SHA-256 comparison).
 - Disable steps you don't need via `.env` (e.g., `SETUP_PROJECTS=false`). See [Environment Variables — Setup Variables](./environment/#setup-variables-env).
 
-## How to Reset to Defaults
+## How to Reset
 
-1. **Reset config files** — delete `~/.claude/` and restart the container. `setup-config.sh` will recopy all files from `.codeforge/config/`. Note that `--reset` preserves `.codeforge/` user modifications (only `.devcontainer/` is wiped).
+1. **Reset runtime config** — delete `~/.claude/` and restart the container. `setup-config.sh` will redeploy all files from `.codeforge/config/`. This resets the deployed copies but preserves your `.codeforge/` source files (user modifications remain intact).
 
-2. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash /workspaces/.devcontainer/scripts/setup-aliases.sh`.
+2. **Restore default config sources** — run `git checkout .codeforge/config/` to discard any local edits to the source files, then restart the container to redeploy.
 
-3. **Full reset** — rebuild the container from scratch (VS Code: **Dev Containers: Rebuild Container**).
+3. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash /workspaces/.devcontainer/scripts/setup-aliases.sh`.
 
-4. **Reset a single feature** — set it to `"version": "none"`, rebuild, then set it back to the desired version and rebuild again.
+4. **Full reset** — rebuild the container from scratch (VS Code: **Dev Containers: Rebuild Container**). This recreates everything but still preserves `.codeforge/` user modifications since they live in the repository.
+
+5. **Reset a single feature** — set it to `"version": "none"`, rebuild, then set it back to the desired version and rebuild again.
 
 ## Related
 
