@@ -1,10 +1,15 @@
-# Optional Features
+---
+title: Optional Features
+description: Non-default features available in CodeForge — how to enable and configure them.
+sidebar:
+  order: 7
+---
 
-CodeForge includes several features that are available but not enabled by default. This guide covers how to enable and configure them.
+CodeForge includes several features that are available but not enabled by default. This page covers how to enable and configure them.
 
 ## mcp-qdrant (Vector Memory for Claude)
 
-Adds persistent vector memory to Claude Code via a Qdrant MCP server. Claude can store and retrieve information across sessions.
+Adds persistent vector memory to Claude Code via a Qdrant MCP server. Claude can store and retrieve information across sessions using `qdrant-store` and `qdrant-find` tools.
 
 ### Enabling
 
@@ -29,14 +34,10 @@ Add to `devcontainer.json` under `"features"`:
 
 ### Supported Embedding Models
 
-- `all-MiniLM-L6-v2` (default, smallest, fastest)
+- `all-MiniLM-L6-v2` — default, smallest, fastest
 - `BAAI/bge-small-en-v1.5`
 - `BAAI/bge-base-en-v1.5`
 - `sentence-transformers/all-mpnet-base-v2`
-
-### Prerequisites
-
-Already met by default container: Python 3.14 and uv are pre-installed.
 
 ### How It Works
 
@@ -50,7 +51,9 @@ Already met by default container: Python 3.14 and uv are pre-installed.
 uvx mcp-server-qdrant --help
 ```
 
----
+:::note[Prerequisites]
+Python 3.14 and uv are pre-installed in the default container — no additional setup required.
+:::
 
 ## Disabling Default Features
 
@@ -62,3 +65,13 @@ Any feature can be disabled without removing it from `devcontainer.json` by sett
 ```
 
 The feature entry stays in the config for easy re-enabling — just remove `"version": "none"` or set it to `"latest"`.
+
+:::tip[When to Disable Features]
+Disabling unused features speeds up container builds and reduces memory usage. If you don't use Go, for example, disabling the Go language server saves resources.
+:::
+
+## Related
+
+- [Configuration](./configuration/) — settings.json and devcontainer.json reference
+- [Plugins](../plugins/) — plugin system overview and per-plugin configuration
+- [Troubleshooting](../reference/troubleshooting/) — solutions for build and feature issues

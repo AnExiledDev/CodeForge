@@ -142,6 +142,8 @@ export default defineConfig({
 								{ label: 'System Prompts', slug: 'customization/system-prompts' },
 								{ label: 'Rules', slug: 'customization/rules' },
 								{ label: 'Hooks', slug: 'customization/hooks' },
+								{ label: 'Keybindings', slug: 'customization/keybindings' },
+								{ label: 'Optional Features', slug: 'customization/optional-features' },
 							],
 						},
 						{
@@ -155,6 +157,7 @@ export default defineConfig({
 								{ label: 'Environment Variables', slug: 'reference/environment' },
 								{ label: 'Architecture', slug: 'reference/architecture' },
 								{ label: 'Port Forwarding', slug: 'reference/port-forwarding' },
+								{ label: 'Troubleshooting', slug: 'reference/troubleshooting' },
 							],
 						},
 					],

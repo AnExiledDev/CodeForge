@@ -87,6 +87,28 @@ Variables that configure individual tools within the container.
 | `RUFF_CONFIG` | ruff | Path to ruff configuration file |
 | `BIOME_CONFIG_PATH` | biome | Path to biome configuration file |
 
+## Setup Variables (.env)
+
+These variables live in `.devcontainer/.env` and control what `setup.sh` does on each container start. Copy `.env.example` to `.env` and customize.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Where Claude Code config files are stored |
+| `CONFIG_SOURCE_DIR` | (auto-detected) | Source directory for config defaults |
+| `SETUP_CONFIG` | `true` | Copy config files per `file-manifest.json` |
+| `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw`/`cc-tools` aliases to shell |
+| `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |
+| `SETUP_PLUGINS` | `true` | Install Anthropic plugins and register local marketplace |
+| `SETUP_UPDATE_CLAUDE` | `true` | Background-update Claude Code CLI binary |
+| `SETUP_TERMINAL` | `true` | Configure VS Code <kbd>Shift</kbd>+<kbd>Enter</kbd> keybinding for Claude Code terminal |
+| `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
+| `SETUP_POSTSTART` | `true` | Run post-start hooks from `/usr/local/devcontainer-poststart.d/` |
+| `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip during installation |
+
+:::tip[Disabling Setup Steps]
+Set any flag to `false` to skip that step. For example, `SETUP_PROJECTS=false` disables project auto-detection if you manage the Project Manager list manually.
+:::
+
 ## Language Runtime Variables
 
 Variables for language runtimes installed in the container.
