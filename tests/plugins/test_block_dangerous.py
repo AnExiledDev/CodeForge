@@ -1,0 +1,255 @@
+"""Tests for the dangerous-command-blocker plugin.
+
+Verifies that check_command() correctly identifies dangerous shell commands
+and allows safe commands through without false positives.
+"""
+
+import pytest
+
+from tests.conftest import block_dangerous
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def assert_blocked(command: str, *, substr: str | None = None) -> None:
+    """Assert the command is blocked, optionally checking the message."""
+    is_dangerous, message = block_dangerous.check_command(command)
+    assert is_dangerous is True, f"Expected blocked: {command!r}"
+    assert message, f"Blocked command should have a message: {command!r}"
+    if substr:
+        assert substr.lower() in message.lower(), (
+            f"Expected {substr!r} in message {message!r}"
+        )
+
+
+def assert_allowed(command: str) -> None:
+    """Assert the command is allowed (not dangerous)."""
+    is_dangerous, message = block_dangerous.check_command(command)
+    assert is_dangerous is False, f"Expected allowed: {command!r} (got: {message})"
+    assert message == "", f"Allowed command should have empty message: {command!r}"
+
+
+# ---------------------------------------------------------------------------
+# 1. Destructive rm patterns
+# ---------------------------------------------------------------------------
+
+
+class TestDestructiveRm:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "rm -rf /",
+            "rm -rf ~",
+            "rm -rf ../",
+            "rm -fr /",
+            "rm -rfi /",
+        ],
+    )
+    def test_rm_rf_dangerous_paths(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="rm")
+
+
+# ---------------------------------------------------------------------------
+# 2. sudo rm
+# ---------------------------------------------------------------------------
+
+
+class TestSudoRm:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "sudo rm file.txt",
+            "sudo rm -rf /var",
+            "sudo rm -r dir",
+        ],
+    )
+    def test_sudo_rm_blocked(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="sudo rm")
+
+
+# ---------------------------------------------------------------------------
+# 3. chmod 777
+# ---------------------------------------------------------------------------
+
+
+class TestChmod777:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "chmod 777 file.txt",
+            "chmod -R 777 /var/www",
+            "chmod 777 .",
+        ],
+    )
+    def test_chmod_777_blocked(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="chmod 777")
+
+
+# ---------------------------------------------------------------------------
+# 4. Force push to main/master
+# ---------------------------------------------------------------------------
+
+
+class TestForcePush:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "git push --force origin main",
+            "git push -f origin master",
+            "git push --force origin master",
+            "git push -f origin main",
+        ],
+    )
+    def test_force_push_to_main_master(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="force push")
+
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "git push -f",
+            "git push --force",
+        ],
+    )
+    def test_bare_force_push(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="bare force push")
+
+
+# ---------------------------------------------------------------------------
+# 5. System directory writes
+# ---------------------------------------------------------------------------
+
+
+class TestSystemDirectoryWrites:
+    @pytest.mark.parametrize(
+        "cmd,dir_name",
+        [
+            ("> /usr/foo", "/usr"),
+            ("> /etc/foo", "/etc"),
+            ("> /bin/foo", "/bin"),
+            ("> /sbin/foo", "/sbin"),
+        ],
+    )
+    def test_redirect_to_system_dir(self, cmd: str, dir_name: str) -> None:
+        assert_blocked(cmd, substr=dir_name)
+
+
+# ---------------------------------------------------------------------------
+# 6. Disk operations
+# ---------------------------------------------------------------------------
+
+
+class TestDiskOperations:
+    def test_mkfs(self) -> None:
+        assert_blocked("mkfs.ext4 /dev/sda1", substr="disk formatting")
+
+    def test_dd_to_device(self) -> None:
+        assert_blocked("dd if=/dev/zero of=/dev/sda bs=1M", substr="dd")
+
+
+# ---------------------------------------------------------------------------
+# 7. Git history destruction
+# ---------------------------------------------------------------------------
+
+
+class TestGitHistoryDestruction:
+    def test_git_reset_hard_origin_main(self) -> None:
+        assert_blocked("git reset --hard origin/main", substr="hard reset")
+
+    def test_git_reset_hard_origin_master(self) -> None:
+        assert_blocked("git reset --hard origin/master", substr="hard reset")
+
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "git clean -f",
+            "git clean -fd",
+            "git clean -fdx",
+        ],
+    )
+    def test_git_clean_blocked(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="git clean")
+
+
+# ---------------------------------------------------------------------------
+# 8. Docker dangerous operations
+# ---------------------------------------------------------------------------
+
+
+class TestDockerDangerous:
+    def test_docker_run_privileged(self) -> None:
+        assert_blocked("docker run --privileged ubuntu", substr="privileged")
+
+    def test_docker_run_mount_root(self) -> None:
+        assert_blocked("docker run -v /:/host ubuntu", substr="root filesystem")
+
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "docker stop my-container",
+            "docker rm my-container",
+            "docker kill my-container",
+            "docker rmi my-image",
+        ],
+    )
+    def test_docker_destructive_ops(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="docker operation")
+
+
+# ---------------------------------------------------------------------------
+# 9. Find delete
+# ---------------------------------------------------------------------------
+
+
+class TestFindDelete:
+    def test_find_exec_rm(self) -> None:
+        assert_blocked("find . -exec rm {} \\;", substr="find")
+
+    def test_find_delete(self) -> None:
+        assert_blocked("find /tmp -name '*.log' -delete", substr="find")
+
+
+# ---------------------------------------------------------------------------
+# 10. Safe commands (false positive checks)
+# ---------------------------------------------------------------------------
+
+
+class TestSafeCommands:
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "rm file.txt",
+            "git push origin feature-branch",
+            "chmod 644 file",
+            "docker ps",
+            "docker logs container",
+            "ls /usr/bin",
+            "cat /etc/hosts",
+            "echo hello",
+            "git status",
+        ],
+    )
+    def test_safe_commands_allowed(self, cmd: str) -> None:
+        assert_allowed(cmd)
+
+
+# ---------------------------------------------------------------------------
+# Known source bugs (documented, asserting current behavior)
+# ---------------------------------------------------------------------------
+
+
+class TestKnownSourceBugs:
+    def test_force_with_lease_false_positive(self) -> None:
+        """BUG: --force-with-lease is safe but blocked because the regex
+        \\bgit\\s+push\\s+--force\\b matches the '--force' prefix in
+        '--force-with-lease' (\\b fires at the 'e'/'-' boundary).
+
+        This test documents the current (incorrect) behavior. If the source
+        is fixed, update this test to use assert_allowed().
+        """
+        assert_blocked(
+            "git push --force-with-lease origin feature",
+            substr="force push",
+        )

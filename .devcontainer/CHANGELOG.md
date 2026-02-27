@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+
+#### Testing
+- **Plugin test suite** — 241 pytest tests covering 6 critical plugin scripts that previously had zero tests:
+  - `block-dangerous.py` (46 tests) — all 22 dangerous command patterns with positive/negative/edge cases
+  - `guard-workspace-scope.py` (40 tests) — blacklist, scope, allowlist, bash enforcement layers, primary command extraction
+  - `guard-protected.py` (55 tests) — all protected file patterns (secrets, locks, keys, credentials, auth dirs)
+  - `guard-protected-bash.py` (24 tests) — write target extraction and protected path integration
+  - `guard-readonly-bash.py` (63 tests) — general-readonly and git-readonly modes, bypass prevention
+  - `redirect-builtin-agents.py` (13 tests) — redirect mapping, passthrough, output structure
+- Added `test:plugins` and `test:all` npm scripts for running plugin tests
+
 ### Changed
 
 #### Port Forwarding
