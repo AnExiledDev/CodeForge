@@ -13,7 +13,7 @@ The DevContainer CLI lets you build and run CodeForge containers without VS Code
 npm install -g @devcontainers/cli
 ```
 
-Requires Node.js 18+. Verify the installation with `devcontainer --version`.
+Requires Node.js 16.13+ or 18+ (when installing via npm). Verify the installation with `devcontainer --version`.
 
 ## Build and Start
 

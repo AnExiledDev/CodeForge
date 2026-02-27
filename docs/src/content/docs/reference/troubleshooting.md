@@ -13,7 +13,7 @@ Solutions for common issues with the CodeForge devcontainer. If your problem isn
 
 - **Node.js not installed** — the installer requires Node.js 18+ and npm. Run `node --version` to check; install from [nodejs.org](https://nodejs.org/) if missing.
 - **Network issues** — npm needs to reach the registry. Check your connection or try `npm config set registry https://registry.npmjs.org/`.
-- **Permission errors** — on some systems, global npm installs need `sudo`. Try `npx --yes codeforge-dev` or install globally with `sudo npm install -g codeforge-dev`.
+- **Permission errors** — prefer `npx --yes codeforge-dev` to avoid global install permission issues. If you need global installs, configure your npm prefix or use a Node version manager (e.g., nvm) instead of `sudo`.
 
 **Problem: VS Code doesn't show "Reopen in Container".**
 

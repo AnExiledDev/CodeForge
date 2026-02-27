@@ -30,7 +30,7 @@ CodeForge **entirely replaces** all six built-in agents with enhanced custom spe
 
 The redirect is fully transparent — you can use either the built-in name or the custom name interchangeably. Asking Claude to "explore the codebase" triggers the same enhanced explorer agent whether the system selects the `Explore` type or the `explorer` type.
 
-Beyond the six replacements, CodeForge adds **15 entirely new specialists** that have no built-in equivalent: architect, debug-logs, dependency-analyst, doc-writer, documenter, git-archaeologist, implementer, investigator, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, tester, and test-writer. These are available only in CodeForge.
+Beyond the six replacements, CodeForge adds **15 entirely new specialists** that have no built-in equivalent: debug-logs, dependency-analyst, doc-writer, documenter, git-archaeologist, implementer, investigator, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, tester, and test-writer. These are available only in CodeForge.
 
 :::tip[Why This Matters]
 The redirect happens at the hook level, not the prompt level. This means the upgrade is enforced — not suggested. Even if Claude's internal routing tries to use a stock Explore agent, the hook intercepts the call and swaps in the enhanced explorer before any code executes. The result is a strictly better agent every time, with zero user effort.
