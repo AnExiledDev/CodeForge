@@ -8,9 +8,10 @@ description: >-
   "review auth security", "find hardcoded credentials", "OWASP review",
   "security check", "code review for security", "check for injection",
   "review access control", or needs a security assessment of code patterns,
-  auth flows, or input handling. Focuses primarily on CODE-LEVEL security.
-  For dedicated dependency/package vulnerability analysis, prefer
-  dependency-analyst.
+  auth flows, or input handling. Focuses primarily on CODE-LEVEL security
+  and includes basic dependency scanning as part of comprehensive audits.
+  For dedicated dependency analysis or supply-chain investigations,
+  prefer dependency-analyst.
   Reports findings with severity ratings and remediation guidance without
   modifying any files. Do not use for fixing vulnerabilities or
   implementing security changes — audit and reporting only.
