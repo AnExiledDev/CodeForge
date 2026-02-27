@@ -8,6 +8,8 @@
 	},
 	"scripts": {
 		"test": "node test.js",
+		"test:plugins": "pytest tests/ -v",
+		"test:all": "npm test && pytest tests/ -v",
 		"prepublishOnly": "npm test",
 		"docs:dev": "npm run dev --prefix docs",
 		"docs:build": "npm run build --prefix docs",
