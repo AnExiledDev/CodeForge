@@ -125,7 +125,18 @@ function readChecksums(codeforgeDir) {
 	}
 
 	const latest = files[files.length - 1];
-	return JSON.parse(fs.readFileSync(path.join(checksumsDir, latest), "utf-8"));
+	try {
+		return JSON.parse(
+			fs.readFileSync(path.join(checksumsDir, latest), "utf-8"),
+		);
+	} catch {
+		console.log(
+			"  Warning: Could not read checksums from " +
+				latest +
+				", treating as fresh install.",
+		);
+		return { files: {} };
+	}
 }
 
 // ── syncCodeforgeDirectory ───────────────────────────────────────
@@ -447,7 +458,7 @@ function main() {
 
 			if (fs.existsSync(codeforgeSrc)) {
 				copyDirectory(codeforgeSrc, codeforgeDest);
-				const checksums = generateChecksums(codeforgeDest);
+				const checksums = generateChecksums(codeforgeSrc);
 				writeChecksums(codeforgeDest, packageVersion, checksums);
 			}
 
@@ -483,9 +494,9 @@ function configApply() {
 
 	function expandVars(val) {
 		return val
-			.replace("${CLAUDE_CONFIG_DIR}", claudeConfigDir)
-			.replace("${WORKSPACE_ROOT}", workspaceRoot)
-			.replace("${HOME}", process.env.HOME || "/home/vscode");
+			.replace(/\$\{CLAUDE_CONFIG_DIR\}/g, claudeConfigDir)
+			.replace(/\$\{WORKSPACE_ROOT\}/g, workspaceRoot)
+			.replace(/\$\{HOME\}/g, process.env.HOME || "/home/vscode");
 	}
 
 	console.log("");

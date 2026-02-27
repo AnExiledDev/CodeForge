@@ -67,8 +67,6 @@ node_modules/
 .*
 !.devcontainer/
 !.devcontainer/**/.claude-plugin/
-!.devcontainer/
-!.devcontainer/**/.claude-plugin/**/.claude-plugin/
 !.codeforge/
 !.git/
 !.github/
@@ -81,8 +79,6 @@ node_modules/
 .codeforge/.markers/
 # Un-ignore .codeforge-preserve (user-editable, should be tracked)
 !.codeforge/.codeforge-preserve
-.devcontainer/config/claude/output-styles/strict-development.md
-.devcontainer/config/claude/mcp.json
 
 # Docs
 docs/node_modules/

@@ -161,6 +161,7 @@ CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflo
 |   +-- settings.json              # Claude Code settings (model, plugins, env vars)
 |   +-- keybindings.json           # Keyboard shortcuts
 |   +-- main-system-prompt.md      # Development system prompt
+|   +-- orchestrator-system-prompt.md  # Orchestrator mode system prompt
 |   +-- writing-system-prompt.md   # Writing mode system prompt
 |   +-- rules/                     # Default rules deployed to .claude/rules/
 |       +-- spec-workflow.md
@@ -206,14 +207,15 @@ devcontainer.json
      |
      v
 [postStartCommand] setup.sh orchestrates:
-  1. setup-migrate-claude.sh -- Migrate Claude config from old location
-  2. setup-auth.sh           -- Git/NPM authentication
-  3. setup-config.sh         -- Deploy settings, prompts, rules via file-manifest.json
-  4. setup-aliases.sh        -- Write shell aliases to .bashrc/.zshrc
-  5. setup-plugins.sh        -- Sync plugins from marketplace
-  6. setup-projects.sh       -- Detect projects, configure Project Manager
-  7. setup-terminal.sh       -- Configure terminal settings
-  8. setup-update-claude.sh  -- Update Claude Code if needed (background)
+  1. setup-migrate-claude.sh    -- Migrate Claude config from old location
+  2. setup-migrate-codeforge.sh -- Migrate legacy config to .codeforge/
+  3. setup-auth.sh              -- Git/NPM authentication
+  4. setup-config.sh            -- Deploy settings, prompts, rules via file-manifest.json
+  5. setup-aliases.sh           -- Write shell aliases to .bashrc/.zshrc
+  6. setup-plugins.sh           -- Sync plugins from marketplace
+  7. setup-projects.sh          -- Detect projects, configure Project Manager
+  8. setup-terminal.sh          -- Configure terminal settings
+  9. setup-update-claude.sh     -- Update Claude Code if needed (background)
 ```
 
 ### Session Lifecycle

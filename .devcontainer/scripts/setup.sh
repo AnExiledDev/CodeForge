@@ -47,6 +47,7 @@ if [ "$CONFIG_SOURCE_DIR" = "$DEVCONTAINER_DIR/config" ] || [ "$CONFIG_SOURCE_DI
     echo "[setup] WARNING: CONFIG_SOURCE_DIR pointing to .devcontainer/config is deprecated (moved to .codeforge in v2.0)"
     echo "[setup]   Redirecting to .codeforge."
     CODEFORGE_DIR="${WORKSPACE_ROOT:?}/.codeforge"
+    unset CONFIG_SOURCE_DIR
     if [ -f "$ENV_FILE" ]; then
         sed -i 's|^CONFIG_SOURCE_DIR=.*\.devcontainer/config.*|# CONFIG_SOURCE_DIR removed (v2.0: now uses .codeforge)|' "$ENV_FILE"
         echo "[setup]   .env updated — CONFIG_SOURCE_DIR line commented out."
@@ -55,8 +56,8 @@ fi
 
 # Apply defaults for any unset variables
 : "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
-: "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"
 : "${CODEFORGE_DIR:=${WORKSPACE_ROOT:?}/.codeforge}"
+: "${CONFIG_SOURCE_DIR:=$CODEFORGE_DIR}"
 : "${SETUP_CONFIG:=true}"
 : "${SETUP_ALIASES:=true}"
 : "${SETUP_AUTH:=true}"

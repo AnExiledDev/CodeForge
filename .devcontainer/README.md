@@ -432,7 +432,7 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 ## Troubleshooting
 
-Common issues and solutions. For detailed troubleshooting, see [docs/troubleshooting.md](docs/troubleshooting.md).
+Common issues and solutions. For detailed troubleshooting, see the [Troubleshooting](https://anexileddev.github.io/CodeForge/reference/troubleshooting/) page on the docs site.
 
 | Problem | Solution |
 |---------|----------|
@@ -447,11 +447,11 @@ Common issues and solutions. For detailed troubleshooting, see [docs/troubleshoo
 ## Further Reading
 
 **CodeForge Documentation**:
-- [Configuration Reference](docs/configuration-reference.md) — all env vars and config options
-- [Plugin System](docs/plugins.md) — plugin architecture and per-plugin docs
-- [Optional Features](docs/optional-features.md) — mcp-qdrant and other optional components, disabling features
-- [Keybinding Customization](docs/keybindings.md) — resolving VS Code conflicts
-- [Troubleshooting](docs/troubleshooting.md) — common issues and solutions
+- [Configuration Reference](https://anexileddev.github.io/CodeForge/customization/configuration/) — all env vars and config options
+- [Plugin System](https://anexileddev.github.io/CodeForge/plugins/) — plugin architecture and per-plugin docs
+- [Optional Features](https://anexileddev.github.io/CodeForge/customization/optional-features/) — mcp-qdrant and other optional components, disabling features
+- [Keybinding Customization](https://anexileddev.github.io/CodeForge/customization/keybindings/) — resolving VS Code conflicts
+- [Troubleshooting](https://anexileddev.github.io/CodeForge/reference/troubleshooting/) — common issues and solutions
 
 **External**:
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
