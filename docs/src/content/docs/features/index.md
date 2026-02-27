@@ -64,7 +64,7 @@ CodeForge pre-installs **22 tools and utilities** covering session management, c
 Highlights include:
 
 - **`cc`** — Launch Claude Code with full CodeForge configuration (plugins, system prompt, agents)
-- **`ccms`** — Search your Claude Code session history with boolean queries, role filtering, and time scoping
+- **`ccms`** — Search your Claude Code session history with boolean queries, role filtering, and time scoping _(currently disabled — replacement pending)_
 - **`ccusage`** / **`ccburn`** — Track your Claude API token usage and burn rate
 - **`ruff`**, **`biome`**, **`shellcheck`** — Code quality tools for Python, JS/TS, and Shell
 - **`sg`** (ast-grep), **`tree-sitter`** — Structural code search and syntax tree operations

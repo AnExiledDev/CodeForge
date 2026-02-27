@@ -50,7 +50,7 @@ Key requirements:
 
 ### Session Search (`session-search.md`)
 
-Configures the `ccms` session history search tool. Mandates project-scoped searches to prevent cross-project information leakage, and requires CLI mode (no interactive TUI) for automation compatibility.
+Configures the `ccms` session history search tool. Mandates project-scoped searches to prevent cross-project information leakage, and requires CLI mode (no interactive TUI) for automation compatibility. _(Note: `ccms` is currently disabled in the default container build. This rule remains deployed so it takes effect if ccms is re-enabled.)_
 
 Key requirements:
 - Always pass `--project <current-project-dir>` to scope results

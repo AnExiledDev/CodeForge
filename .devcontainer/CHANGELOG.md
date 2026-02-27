@@ -4,6 +4,12 @@
 
 ### Changed
 
+#### Performance
+- Commented out Rust toolchain feature — saves ~1.23 GB image size; uncomment in `devcontainer.json` if needed
+- Commented out ccms feature pending replacement tool (requires Rust)
+- Updated Bun feature to install latest version (was pinned to outdated 1.3.9)
+- Added npm cache cleanup to 6 features: agent-browser, ast-grep, biome, claude-session-dashboard, lsp-servers, tree-sitter (saves ~96 MB runtime disk)
+
 #### Port Forwarding
 - Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
 
@@ -22,6 +28,9 @@
 - **Fixed docs site URL** — updated `site` to `https://codeforge.core-directive.com` and removed `/CodeForge` base path (custom domain serves from root)
 
 ### Fixed
+
+#### Bun
+- Bun PATH not available in non-interactive shells — Bun is now accessible in all shell contexts
 
 #### Session Context Plugin
 - **Commit reminder** no longer blocks Claude from stopping — switched from `decision: "block"` to advisory `systemMessage` wrapped in `<system-reminder>` tags

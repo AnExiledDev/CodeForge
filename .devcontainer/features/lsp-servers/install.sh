@@ -84,6 +84,8 @@ install_npm_package "typescript" "typescript" "${TS_VERSION}"
 # Install TypeScript Language Server
 install_npm_package "typescript-language-server" "typescript-language-server" "${TSLSP_VERSION}"
 
+npm cache clean --force 2>/dev/null || true
+
 # Install gopls (Go LSP) - uses go install since it's a Go package
 echo "[lsp-servers] Installing gopls..."
 if command -v go &>/dev/null; then

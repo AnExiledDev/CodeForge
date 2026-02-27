@@ -46,12 +46,11 @@
 		}
 	},
 
-	// Feature install order: external runtimes first (Node, uv, Rust, Bun),
+	// Feature install order: external runtimes first (Node, uv, Bun),
 	// then Claude Code native binary (no Node dependency), then custom features.
 	// npm-dependent features (agent-browser, ccusage, ccburn, claude-session-dashboard,
 	// biome, lsp-servers) must come after Node. uv-dependent features (ruff, claude-monitor) must
-	// come after uv. cargo-dependent features (ccms) must come after Rust.
-	// notify-hook is second-to-last (lightweight, no dependencies).
+	// come after uv. notify-hook is second-to-last (lightweight, no dependencies).
 	// dbr (devcontainer-bridge) is last — standalone binary, no dependencies.
 	"overrideFeatureInstallOrder": [
 		"ghcr.io/devcontainers/features/node",
@@ -59,7 +58,6 @@
 		"ghcr.io/devcontainers/features/docker-outside-of-docker",
 		"ghcr.io/devcontainers-extra/features/uv",
 		"ghcr.io/rails/devcontainer/features/bun",
-		"ghcr.io/devcontainers/features/rust",
 		"./features/claude-code-native",
 		"./features/tmux",
 		"./features/agent-browser",
@@ -67,7 +65,6 @@
 		"./features/ccusage",
 		"./features/ccburn",
 		"./features/ccstatusline",
-		"./features/ccms",
 		"./features/claude-session-dashboard",
 		"./features/ast-grep",
 		"./features/tree-sitter",
@@ -94,10 +91,13 @@
 			"moby": false
 		},
 		"ghcr.io/devcontainers-extra/features/uv:1.0": {},
-		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {},
-		"ghcr.io/devcontainers/features/rust:1.5.0": {
+		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {
 			"version": "latest"
 		},
+		// Uncomment to add Rust toolchain:
+		// "ghcr.io/devcontainers/features/rust:1.5.0": {
+		// 	"version": "latest"
+		// },
 		// Uncomment to add Go runtime (not installed by default):
 		// "ghcr.io/devcontainers/features/go:1": {},
 		"./features/claude-code-native": {},
@@ -120,7 +120,8 @@
 		"./features/ccstatusline": {
 			"username": "automatic"
 		},
-		"./features/ccms": {},
+		// Uncomment to add ccms (requires Rust):
+		// "./features/ccms": {},
 		"./features/claude-session-dashboard": {
 			"version": "latest",
 			"port": "7847",

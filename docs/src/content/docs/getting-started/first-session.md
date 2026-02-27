@@ -84,8 +84,8 @@ From the terminal (not inside a Claude session), you can verify what's available
 # List all installed tools and their versions
 cc-tools
 
-# Search past session history
-ccms "what did we work on"
+# Search past session history (ccms is currently disabled — replacement pending)
+# ccms "what did we work on"
 
 # Check API token usage
 ccusage

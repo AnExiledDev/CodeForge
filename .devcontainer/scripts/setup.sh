@@ -162,6 +162,27 @@ if [ "$SETUP_POSTSTART" = "true" ]; then
     run_poststart_hooks
 fi
 
+# Fix Bun PATH — external feature only adds to ~/.bashrc (misses non-interactive shells)
+if [ -d "$HOME/.bun/bin" ]; then
+    # Symlink bun binaries into /usr/local/bin for non-login, non-interactive shells (bash -c, exec)
+    for bin in bun bunx; do
+        if [ -x "$HOME/.bun/bin/$bin" ] && [ ! -e "/usr/local/bin/$bin" ]; then
+            sudo ln -sf "$HOME/.bun/bin/$bin" "/usr/local/bin/$bin"
+        fi
+    done
+    # Profile script sets BUN_INSTALL for login/interactive shells (content-idempotent)
+    if [ ! -f /etc/profile.d/bun.sh ] || ! grep -q 'BUN_INSTALL="\$HOME/.bun"' /etc/profile.d/bun.sh; then
+        sudo tee /etc/profile.d/bun.sh > /dev/null <<'BUNEOF'
+export BUN_INSTALL="$HOME/.bun"
+case ":${PATH}:" in
+    *:"${BUN_INSTALL}/bin":*) ;;
+    *) export PATH="${BUN_INSTALL}/bin:${PATH}" ;;
+esac
+BUNEOF
+        sudo chmod 0644 /etc/profile.d/bun.sh
+    fi
+fi
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Setup Summary"

@@ -82,8 +82,8 @@ Variables that configure individual tools within the container.
 
 | Variable | Tool | Description |
 |----------|------|-------------|
-| `CCMS_PROJECT` | ccms | Default project scope for session search |
-| `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) |
+| `CCMS_PROJECT` | ccms | Default project scope for session search _(only when ccms is enabled)_ |
+| `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) _(only when ccms is enabled)_ |
 | `RUFF_CONFIG` | ruff | Path to ruff configuration file |
 | `BIOME_CONFIG_PATH` | biome | Path to biome configuration file |
 
