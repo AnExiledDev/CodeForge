@@ -4,7 +4,13 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { copyDirectory, main } = require("./setup.js");
+const {
+	copyDirectory,
+	computeChecksum,
+	generateChecksums,
+	syncCodeforgeDirectory,
+	main,
+} = require("./setup.js");
 
 function runTests() {
 	console.log("🧪 Running CodeForge package tests...\n");
@@ -22,7 +28,8 @@ function runTests() {
 		"README.md",
 		".devcontainer/devcontainer.json",
 		".devcontainer/scripts/setup.sh",
-		".devcontainer/config/defaults/settings.json",
+		".codeforge/config/settings.json",
+		".codeforge/file-manifest.json",
 	];
 
 	let allFilesExist = true;
@@ -69,9 +76,68 @@ function runTests() {
 		setupExecutable = false;
 	}
 
+	// Test 6: New checksum and sync functions exist
+	let checksumFunctionsExist = true;
+	if (typeof computeChecksum === "function") {
+		console.log("✓ Test 6.1: computeChecksum function exists");
+	} else {
+		console.log("❌ Test 6.1: computeChecksum function missing");
+		checksumFunctionsExist = false;
+	}
+	if (typeof generateChecksums === "function") {
+		console.log("✓ Test 6.2: generateChecksums function exists");
+	} else {
+		console.log("❌ Test 6.2: generateChecksums function missing");
+		checksumFunctionsExist = false;
+	}
+	if (typeof syncCodeforgeDirectory === "function") {
+		console.log("✓ Test 6.3: syncCodeforgeDirectory function exists");
+	} else {
+		console.log("❌ Test 6.3: syncCodeforgeDirectory function missing");
+		checksumFunctionsExist = false;
+	}
+
+	// Test 7: generateChecksums produces expected structure
+	let checksumStructureValid = true;
+	const codeforgeDir = path.join(__dirname, ".codeforge");
+	if (fs.existsSync(codeforgeDir)) {
+		const checksums = generateChecksums(codeforgeDir);
+		if (typeof checksums === "object" && checksums !== null) {
+			const keys = Object.keys(checksums);
+			if (keys.length > 0) {
+				const firstValue = checksums[keys[0]];
+				if (typeof firstValue === "string" && firstValue.length === 64) {
+					console.log(
+						"✓ Test 7: generateChecksums returns valid SHA-256 hex map",
+					);
+				} else {
+					console.log(
+						"❌ Test 7: generateChecksums values are not SHA-256 hex strings",
+					);
+					checksumStructureValid = false;
+				}
+			} else {
+				console.log("❌ Test 7: generateChecksums returned empty map");
+				checksumStructureValid = false;
+			}
+		} else {
+			console.log("❌ Test 7: generateChecksums did not return an object");
+			checksumStructureValid = false;
+		}
+	} else {
+		console.log("❌ Test 7: .codeforge directory not found, skipping");
+		checksumStructureValid = false;
+	}
+
 	// Summary
 	console.log("\n📊 Test Results:");
-	if (allFilesExist && packageValid && setupExecutable) {
+	if (
+		allFilesExist &&
+		packageValid &&
+		setupExecutable &&
+		checksumFunctionsExist &&
+		checksumStructureValid
+	) {
 		console.log("🎉 All tests passed! Package is ready for distribution.");
 		process.exit(0);
 	} else {

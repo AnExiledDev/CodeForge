@@ -72,9 +72,9 @@ Direct model interaction via the Claude API (formerly Anthropic API). Covers Mes
 .claude/main-system-prompt.md # Active system prompt
 CLAUDE.md                    # Project instructions
 
-# DevContainer configuration
-.devcontainer/config/defaults/settings.json          # Default settings
-.devcontainer/config/defaults/main-system-prompt.md   # Default system prompt
+# User-customizable configuration
+.codeforge/config/settings.json                       # Default settings
+.codeforge/config/main-system-prompt.md               # Default system prompt
 
 # Plugin directory
 .devcontainer/plugins/devs-marketplace/plugins/  # All plugins
@@ -142,7 +142,7 @@ If the question involves configuration or SDK usage, provide a complete, runnabl
 
 **Agent approach**:
 1. WebFetch the Claude Code documentation for environment variable reference
-2. Read local `.devcontainer/config/defaults/settings.json` to show which are currently configured
+2. Read local `.codeforge/config/settings.json` to show which are currently configured
 3. Summarize the most important variables with their effects
 
 **Output includes**: Answer with a categorized list of environment variables (model selection, behavior, performance, experimental features), Documentation References to the official docs, Related Features noting the `settings.json` `env` field as an alternative to shell environment variables.

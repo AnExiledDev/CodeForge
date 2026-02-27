@@ -78,7 +78,7 @@ The rule is loaded automatically on the next session. See [Rules](./rules/) for 
 
 ### Adjust Claude's Coding Style
 
-Edit the main system prompt at `.devcontainer/config/defaults/main-system-prompt.md`. Changes to this file are deployed to `.claude/` on container start. See [System Prompts](./system-prompts/) for guidance on effective prompt customization.
+Edit the main system prompt at `.codeforge/config/main-system-prompt.md`. Changes to this file are deployed to `.claude/` on container start. See [System Prompts](./system-prompts/) for guidance on effective prompt customization.
 
 ### Add a Custom Hook
 

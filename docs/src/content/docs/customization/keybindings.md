@@ -67,7 +67,7 @@ Common command IDs:
 
 ### Option 3: Custom Claude Code Keybindings
 
-Edit `.devcontainer/config/defaults/keybindings.json` to remap Claude Code actions to non-conflicting shortcuts:
+Edit `.codeforge/config/keybindings.json` to remap Claude Code actions to non-conflicting shortcuts:
 
 ```json
 {

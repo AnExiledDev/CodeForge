@@ -9,7 +9,7 @@ CodeForge configuration is spread across three files that each control a differe
 
 ## settings.json
 
-The primary configuration file lives at `.devcontainer/config/defaults/settings.json`. It is deployed to `~/.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
+The primary configuration file lives at `.codeforge/config/settings.json`. It is deployed to `~/.claude/settings.json` on every container start and controls Claude Code's runtime behavior.
 
 ### Core Settings
 
@@ -116,24 +116,24 @@ The `statusLine` block configures the terminal status bar:
 
 ## file-manifest.json
 
-The file manifest at `.devcontainer/config/file-manifest.json` controls which configuration files are deployed to `~/.claude/` and how they are updated. Each entry specifies a source file, a destination, and an overwrite strategy:
+The file manifest at `.codeforge/file-manifest.json` controls which configuration files are deployed to `~/.claude/` and how they are updated. Each entry specifies a source file, a destination, and an overwrite strategy:
 
 ```json
 [
   {
-    "src": "defaults/settings.json",
+    "src": "config/settings.json",
     "dest": "${CLAUDE_CONFIG_DIR}",
     "enabled": true,
     "overwrite": "if-changed"
   },
   {
-    "src": "defaults/main-system-prompt.md",
+    "src": "config/main-system-prompt.md",
     "dest": "${CLAUDE_CONFIG_DIR}",
     "enabled": true,
     "overwrite": "if-changed"
   },
   {
-    "src": "defaults/rules/spec-workflow.md",
+    "src": "config/rules/spec-workflow.md",
     "dest": "${CLAUDE_CONFIG_DIR}/rules",
     "enabled": true,
     "overwrite": "if-changed"
@@ -157,8 +157,8 @@ If you customize a deployed file (like `settings.json` or the system prompt) and
 
 To deploy a new file to `~/.claude/` automatically:
 
-1. Place the file in `.devcontainer/config/defaults/`
-2. Add an entry to `file-manifest.json`
+1. Place the file in `.codeforge/config/`
+2. Add an entry to `.codeforge/file-manifest.json`
 3. Rebuild the container
 
 ## devcontainer.json
@@ -251,7 +251,7 @@ The `.secrets` file is listed in `.gitignore`. Never commit it to version contro
 When the same setting is defined at multiple levels, the most specific value wins:
 
 1. **Environment variables** (per-session or shell profile) -- highest precedence
-2. **Project settings** (`.devcontainer/config/` in the current project)
+2. **Project settings** (`.codeforge/config/` in the current project)
 3. **Default settings** (shipped with CodeForge)
 
 For example, setting `ANTHROPIC_MODEL=claude-sonnet-4-5-20250929` in your shell overrides whatever is configured in `settings.json`.

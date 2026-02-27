@@ -117,6 +117,7 @@ cc-tools() {
 }
 
 alias check-setup='bash ${DEVCONTAINER_SCRIPTS}/check-setup.sh'
+alias codeforge='node \${WORKSPACE_ROOT}/setup.js'
 ${BLOCK_END}
 BLOCK_EOF
 

@@ -47,9 +47,95 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
-## Unreleased
+## [Unreleased]
+
+### Changed
+
+#### Port Forwarding
+- Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
+
+#### Documentation
+- Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
+- Added tabbed client-specific instructions on the installation page
+- Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
+- **Ported `.devcontainer/docs/` to docs site** — merged 5 legacy reference docs into the Starlight documentation site:
+  - New **Keybindings** page (Customization) — VS Code/Claude Code shortcut conflicts and resolution options
+  - New **Troubleshooting** page (Reference) — 12+ problem/solution entries for build, auth, plugins, and performance issues
+  - New **Optional Features** page (Customization) — mcp-qdrant vector memory setup guide
+  - Merged setup variables (`.env` flags) into the Environment Variables reference
+  - Merged `.secrets` file authentication docs into the Configuration page
+- Removed `.devcontainer/docs/` directory — all content now lives in the docs site
 
 ### Fixed
+
+#### Session Context Plugin
+- **Commit reminder** no longer blocks Claude from stopping — switched from `decision: "block"` to advisory `systemMessage` wrapped in `<system-reminder>` tags
+- **Commit reminder** now uses tiered logic: meaningful changes (3+ files, 2+ source files, or test files) get an advisory suggestion; small changes are silent
+- **Commit reminder** only fires when the session actually modified files (via new PostToolUse edit tracker), preventing false reminders during read-only sessions
+
+#### Auto Code Quality Plugin
+- **Advisory test runner** now reads from the correct tmp file prefix (`claude-cq-edited` instead of `claude-edited-files`), fixing a mismatch that prevented it from ever finding edited files
+
+#### Docs
+- Removed stale merge conflict marker in first-session docs page
+
+### Added
+
+#### Startup
+- **Container runtime pre-flight check** — validates Docker or Podman is installed and running before attempting to build the devcontainer; aborts with OS-specific remediation guidance (Windows/WSL, macOS, Linux) instead of a cryptic Docker client error
+
+#### README
+- **"Why CodeForge?" section** — motivation and value proposition explaining the project's origins as a power user's personal setup
+- **Architecture overview** — three-layer diagram (DevContainer → CodeForge Layer → Claude Code) with brief descriptions and link to full architecture docs
+- **Configuration summary** — table of key config files with links to the documentation site
+
+#### Public Repo Quality
+- **CI workflow** (`.github/workflows/ci.yml`) — test and lint jobs on PRs and pushes to main (Node 18, `npm test` + Biome check)
+- **CodeQL security analysis** (`.github/workflows/codeql.yml`) — JavaScript scanning on PRs, pushes, and weekly schedule
+- **Dependabot** (`.github/dependabot.yml`) — weekly updates for npm (root + docs) and GitHub Actions
+- **Bug report template** (`.github/ISSUE_TEMPLATE/bug-report.yml`) — YAML form with version, environment, and repro steps
+- **Feature request template** (`.github/ISSUE_TEMPLATE/feature-request.yml`) — YAML form with problem/solution/alternatives
+- **Issue template config** (`.github/ISSUE_TEMPLATE/config.yml`) — commercial licensing contact link
+- **Pull request template** (`.github/pull_request_template.md`) — description, type of change, and checklist
+- **CONTRIBUTING.md** — contribution guidelines with GPL-3.0 licensing and CLA requirement
+- **CLA.md** — Individual Contributor License Agreement enabling dual licensing
+- **Dual licensing notice** — added to README.md (Contributing + License sections) and LICENSE.txt (header)
+- **CI badge** — added to README.md badge row
+- **SPDX copyright headers** — `GPL-3.0-only` identifier and `Copyright (c) 2026 Marcus Krueger` added to all 36 source files (setup.js, test.js, 34 shell scripts)
+
+#### Docs
+- **CLAUDE.md** — new "Status Bar Widgets" section documenting widget properties, token color conventions, label fusion pattern, and available widget types
+
+#### Skills
+- **worktree** — New skill for git worktree creation, management, and cleanup. Covers `EnterWorktree` tool, `--worktree` CLI flag, `.worktreeinclude` setup, worktree naming conventions, cleanup lifecycle, and CodeForge integration (Project Manager auto-detection, agent isolation). Includes two reference files: manual worktree commands and parallel workflow patterns.
+
+#### Claude Code Installation
+- **Post-start onboarding hook** (`99-claude-onboarding.sh`) — ensures `hasCompletedOnboarding: true` in `.claude.json` when token auth is configured; catches overwrites from Claude Code CLI/extension that race with `postStartCommand`
+
+#### Git Workflow Plugin
+- **`/ship`** — Combined commit/push/PR command with full code review, commit message approval, and AskUserQuestion confirmation before PR creation; optionally links to tickets if context exists
+- **`/pr:review`** — Review any PR by number/URL or auto-detect from current branch; posts findings as PR comment with severity ratings; never approves or merges
+
+#### Features
+- **devcontainer-bridge (dbr)** — Ports opened inside the container are now automatically discovered and forwarded to the host, even outside VS Code. Requires `dbr host-daemon` running on the host. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)
+
+#### Orchestrator Mode
+- **`cc-orc` alias** — new Claude Code entry point using `orchestrator-system-prompt.md` for delegation-first operation; orchestrator decomposes tasks, delegates to agents, surfaces questions, and synthesizes results without performing direct implementation work
+- **`orchestrator-system-prompt.md`** — slim system prompt (~250 lines) containing only delegation model, agent catalog, question surfacing protocol, planning gates, spec enforcement, and action safety; all code standards, testing standards, and implementation details live in agent prompts
+
+#### Workhorse Agents
+- **`investigator`** — consolidated read-only research agent (sonnet) merging the domains of researcher, explorer, dependency-analyst, git-archaeologist, debug-logs, and perf-profiler; handles codebase search, web research, git forensics, dependency auditing, log analysis, and performance profiling
+- **`implementer`** — consolidated read-write implementation agent (opus, worktree) merging generalist, refactorer, and migrator; handles all code modifications with embedded code standards, execution discipline, and Stop hook regression testing
+- **`tester`** — enhanced test agent (opus, worktree) with full testing standards, framework-specific guidance, and Stop hook verification; creates and verifies test suites
+- **`documenter`** — consolidated documentation and specification agent (opus) merging doc-writer and spec-writer; handles README, API docs, docstrings, and the full spec lifecycle (create, refine, build, review, update, check)
+- **Question Surfacing Protocol** — all 4 workhorse agents carry an identical protocol requiring them to STOP and return `## BLOCKED: Questions` sections when hitting ambiguities, ensuring no assumptions are made without user input
+
+### Fixed
+
+#### CCStatusLine Deployment
+- **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
+- **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start
+- **Silent copy failures** — `setup-config.sh` now reports warnings when file deployment fails instead of logging success after a failed `cp`
 
 #### Post-Integration Review Fixes
 - **skill-engine** — worktree skill definition uses weighted tuples (was plain strings, caused crash)
@@ -63,12 +149,42 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **Documentation** — remove merge conflict marker from first-session.md
 - **Documentation** — update architecture.md directory tree with new plugins
 
+#### CodeRabbit Review Fixes
+- **`implementer.md`** — changed PostToolUse hook (fires every Edit) to Stop hook (fires once at task end) with 120s timeout; prevents redundant test runs during multi-file tasks
+- **`tester.md`** — increased Stop hook timeout from 30s to 120s to accommodate larger test suites
+- **`setup-aliases.sh`** — added `cc-orc` to `cc-tools` discovery loop so it appears in tool audit
+- **`CLAUDE.md`** — added missing `keybindings.json`, `orchestrator-system-prompt.md`, and `writing-system-prompt.md` to directory structure tree
+- **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
+- **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
+- **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
+
 ### Changed
+
+#### Skill Engine: Auto-Suggestion
+- **Weighted scoring** — Skill suggestion phrases now carry confidence weights (0.0–1.0) instead of binary match/no-match. Specific phrases like "build a fastapi app" score 1.0; ambiguous phrases like "start building" score 0.2
+- **Negative patterns** — Skills can define substrings that instantly disqualify them. Prevents `fastapi` from triggering when discussing `pydantic-ai`, and `docker` from triggering for `docker-py` prompts
+- **Context guards** — Low-confidence matches (score < 0.6) require a confirming context word elsewhere in the prompt. "health check" only suggests `docker` if "docker", "container", or "compose" also appears
+- **Ranked results, capped at 3** — Suggestions are sorted by score (then priority tier), and only the top 3 are returned. Eliminates 6+ skill suggestion floods
+- **Priority tiers** — Explicit commands (priority 10) outrank technology skills (7), which outrank patterns (5) and generic skills (3) when scores tie
+
+#### Claude Code Installation
+- **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
+- **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues
+
+#### System Prompt
+- **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
 
 #### Configuration
 - Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
 - Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
 - `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+- `file-manifest.json` — added deployment entry for `orchestrator-system-prompt.md`
+- `setup-aliases.sh` — added `cc-orc` alias alongside existing `cc`, `claude`, `ccw`, `ccraw`
+- `CLAUDE.md` — documented `cc-orc` command and orchestrator system prompt in key configuration table
+
+#### Agent System
+- Agent count increased from 17 to 21 (4 workhorse + 17 specialist)
+- Agent-system README updated with workhorse agent table, per-agent hooks for implementer and tester, and updated plugin structure
 
 #### Authentication
 - Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
@@ -81,15 +197,44 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - Auth token value is now JSON-escaped before writing to `.credentials.json`
 - Credential directory created with restrictive umask (700) matching credential file permissions (600)
 
+#### Status Bar
+- **ccstatusline line 1** — distinct background colors for each token widget (blue=input, magenta=output, yellow=cached, green=total), bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget to strip "Model:" prefix, restored spacing between token segments
+
 #### Scripts
 - Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
 - Auto-migrates from `/workspaces/.claude/` if `.credentials.json` present
 - `chown` in mcp-qdrant poststart hooks now uses resolved `_USERNAME` instead of hardcoded `vscode` or `$(id -un)`
+- **Migration script hardened** — switched from `cp -rn` to `cp -a` (archive mode); added marker-based idempotency, critical file verification, ownership fixup, and old-directory rename
+- **`.env` deprecation guard** — `setup.sh` detects stale `CLAUDE_CONFIG_DIR=/workspaces/.claude` in `.env`, overrides to `$HOME/.claude`, and auto-comments the line on disk
 
 #### Documentation
 - All docs now reference `~/.claude` as default config path
 - Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
 - ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
+
+### Fixed
+
+#### Claude Code Installation
+- **Update script no longer silently discards errors** — background update output now captured to log file instead of being discarded via `&>/dev/null`
+- **Update script simplified to native-binary-only** — removed npm fallback and `claude install` bootstrap code; added 60s timeout and transitional npm cleanup
+- **Alias resolution simplified** — `_CLAUDE_BIN` now resolves directly to native binary path (removed npm and `/usr/local/bin` fallbacks)
+- **POSIX redirect** — replaced `&>/dev/null` with `>/dev/null 2>&1` in dependency check for portability
+- **Installer shell** — changed `sh -s` to `bash -s` when piping the official installer (it requires bash)
+- **Unquoted `${TARGET}`** — quoted variable in `su -c` command to prevent word splitting
+- **Directory prep** — added `~/.local/state` and `~/.claude` pre-creation; consolidated `chown` to cover entire `~/.local` tree
+
+#### Plugin Marketplace
+- **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
+
+#### ChromaTerm
+- **Regex lookbehinds** — replaced alternation inside lookbehinds (`(?<=[\s(]|^)` and `(?<=commit |merge |...)`) with non-capturing groups containing individual lookbehinds (`(?:(?<=[\s(])|^)` and `(?:(?<=commit )|(?<=merge )|...)`) for PCRE2 compatibility
+
+#### Terminal Color Support
+- **devcontainer.json** — added `TERM` and `COLORTERM=truecolor` to `remoteEnv`; Docker defaults to `TERM=xterm` (8 colors) which caused Claude Code and other CLI tools to downgrade rendering
+- **devcontainer.json** — `TERM` uses `${localEnv:TERM:xterm-256color}` to forward the host terminal type (e.g., `xterm-kitty`) instead of unconditionally overriding it
+- **setup-aliases.sh** — added terminal color defaults to managed shell block so tmux panes, `docker exec`, and SSH sessions also get 256-color and truecolor support
+- **kitty-terminfo/README.md** — updated documentation to reflect `localEnv` forwarding and clarify behavior across VS Code vs non-VS Code entry points
+- **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
 
 ### Removed
 
@@ -99,11 +244,44 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
 
----
+## v2.0.0
+
+**Release date:** 2026-02-26
+
+### Added
+
+#### .codeforge/ User Customization Directory
+- New `.codeforge/` directory centralizes all user-customizable configuration files
+- Checksum-based modification detection preserves user changes during updates
+- `codeforge config apply` CLI command deploys config files to `~/.claude/` (same as container start)
+- Auto-migration from `.devcontainer/config/defaults/` to `.codeforge/config/` for existing users
+- `.codeforge/.codeforge-preserve` for listing additional files to preserve during updates
+
+### Changed
+
+#### Configuration
+- Config files moved from `.devcontainer/config/defaults/` to `.codeforge/config/`
+- File manifest moved from `.devcontainer/config/file-manifest.json` to `.codeforge/file-manifest.json`
+- Terminal connection scripts moved from `.devcontainer/` to `.codeforge/scripts/`
+- `CONFIG_SOURCE_DIR` env var deprecated in favor of `CODEFORGE_DIR`
+- `--force` updates now use checksum comparison for `.codeforge/` files (writes `.default` instead of `.codeforge-new`)
+- `--reset` preserves `.codeforge/` user modifications (only `.devcontainer/` is wiped)
+
+#### Migration
+- v2 migration marker moved to `.codeforge/.markers/v2-migrated`
+- Container start auto-migrates `.devcontainer/config/defaults/` to `.codeforge/config/` if needed
 
 ## v1.14.2
 
 **Release date:** 2026-02-24
+
+### Added
+
+#### Prompt Snippets Plugin
+- **New plugin: `prompt-snippets`** — single `/ps` slash command for quick behavioral mode switches (noaction, brief, plan, go, review, ship, deep, hold, recall, wait)
+- Snippets inject short directives that persist for the conversation (e.g., `/ps noaction` → "Investigate and report only. Take no action.")
+- Composable: `/ps noaction brief` applies multiple snippets at once
+- Isolated from skill-engine auto-suggestion (`disable-model-invocation: true`) and independently toggleable via `enabledPlugins`
 
 ### Changed
 

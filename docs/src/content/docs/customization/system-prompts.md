@@ -11,7 +11,7 @@ System prompts define how Claude Code behaves during your sessions -- its coding
 
 The main system prompt is loaded for every `cc` or `claude` session. It is the single most influential file in shaping how Claude works with your code.
 
-**Location:** `.devcontainer/config/defaults/main-system-prompt.md`
+**Location:** `.codeforge/config/main-system-prompt.md`
 **Deployed to:** `~/.claude/main-system-prompt.md`
 
 ### What It Controls
@@ -52,7 +52,7 @@ Each section is self-contained. You can edit, remove, or add sections independen
 
 The writing system prompt is activated when you launch Claude with the `ccw` command. It replaces the development-focused prompt with one tuned for creative fiction writing.
 
-**Location:** `.devcontainer/config/defaults/writing-system-prompt.md`
+**Location:** `.codeforge/config/writing-system-prompt.md`
 **Deployed to:** `~/.claude/writing-system-prompt.md`
 
 ### Key Differences from Main Prompt
@@ -70,7 +70,7 @@ Use `cc` for coding sessions and `ccw` for writing sessions. Both are shell alia
 
 ### Editing the Main Prompt
 
-To change development behavior, edit `.devcontainer/config/defaults/main-system-prompt.md`. Your changes are deployed to `~/.claude/` on the next container start via the file manifest.
+To change development behavior, edit `.codeforge/config/main-system-prompt.md`. Your changes are deployed to `~/.claude/` on the next container start via the file manifest.
 
 For changes to take effect immediately (without restarting the container), edit the deployed copy at `~/.claude/main-system-prompt.md` directly. Be aware that this copy will be overwritten on the next container rebuild unless you change the overwrite mode in `file-manifest.json`.
 
@@ -169,7 +169,7 @@ Both system prompts are listed in `file-manifest.json` and deployed to `~/.claud
 
 ```json
 {
-  "src": "defaults/main-system-prompt.md",
+  "src": "config/main-system-prompt.md",
   "dest": "${CLAUDE_CONFIG_DIR}",
   "enabled": true,
   "overwrite": "if-changed"
@@ -179,7 +179,7 @@ Both system prompts are listed in `file-manifest.json` and deployed to `~/.claud
 The `if-changed` mode means your deployed copy is only overwritten when the source file's SHA-256 hash changes. If you want to make persistent local edits to the deployed prompt, change the overwrite mode to `"never"` so your changes survive container rebuilds.
 
 :::note[Two Copies]
-The source file at `.devcontainer/config/defaults/main-system-prompt.md` is the canonical version. The deployed copy at `~/.claude/main-system-prompt.md` is what Claude Code actually loads. Edits to the source are deployed on next container start. Edits to the deployed copy take effect immediately but may be overwritten.
+The source file at `.codeforge/config/main-system-prompt.md` is the canonical version. The deployed copy at `~/.claude/main-system-prompt.md` is what Claude Code actually loads. Edits to the source are deployed on next container start. Edits to the deployed copy take effect immediately but may be overwritten.
 :::
 
 ## Related

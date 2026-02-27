@@ -41,9 +41,23 @@ if [ "$CONFIG_SOURCE_DIR" = "/workspaces/.claude" ]; then
     fi
 fi
 
+# Deprecation guard: CONFIG_SOURCE_DIR may still point to .devcontainer/config
+# (pre-v2.0 default). Redirect to .codeforge.
+if [ "$CONFIG_SOURCE_DIR" = "$DEVCONTAINER_DIR/config" ] || [ "$CONFIG_SOURCE_DIR" = "/workspaces/.devcontainer/config" ]; then
+    echo "[setup] WARNING: CONFIG_SOURCE_DIR pointing to .devcontainer/config is deprecated (moved to .codeforge in v2.0)"
+    echo "[setup]   Redirecting to .codeforge."
+    : "${CODEFORGE_DIR:=${WORKSPACE_ROOT:?}/.codeforge}"
+    unset CONFIG_SOURCE_DIR
+    if [ -f "$ENV_FILE" ]; then
+        sed -i 's|^CONFIG_SOURCE_DIR=.*\.devcontainer/config.*|# CONFIG_SOURCE_DIR removed (v2.0: now uses .codeforge)|' "$ENV_FILE"
+        echo "[setup]   .env updated — CONFIG_SOURCE_DIR line commented out."
+    fi
+fi
+
 # Apply defaults for any unset variables
 : "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
-: "${CONFIG_SOURCE_DIR:=$DEVCONTAINER_DIR/config}"
+: "${CODEFORGE_DIR:=${WORKSPACE_ROOT:?}/.codeforge}"
+: "${CONFIG_SOURCE_DIR:=$CODEFORGE_DIR}"
 : "${SETUP_CONFIG:=true}"
 : "${SETUP_ALIASES:=true}"
 : "${SETUP_AUTH:=true}"
@@ -53,7 +67,7 @@ fi
 : "${SETUP_TERMINAL:=true}"
 : "${SETUP_POSTSTART:=true}"
 
-export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
+export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR CODEFORGE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
 
 # Fix named volume ownership — Docker creates named volumes as root:root
 # regardless of remoteUser. This is the only setup script requiring sudo.
@@ -124,6 +138,7 @@ run_poststart_hooks() {
 }
 
 run_script "$SCRIPT_DIR/setup-migrate-claude.sh" "true"
+run_script "$SCRIPT_DIR/setup-migrate-codeforge.sh" "true"
 run_script "$SCRIPT_DIR/setup-auth.sh" "$SETUP_AUTH"
 run_script "$SCRIPT_DIR/setup-config.sh" "$SETUP_CONFIG"
 run_script "$SCRIPT_DIR/setup-aliases.sh" "$SETUP_ALIASES"

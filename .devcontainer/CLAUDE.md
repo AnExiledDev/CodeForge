@@ -8,34 +8,39 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 .devcontainer/
 ├── devcontainer.json          # Container definition
 ├── .env                       # Setup flags (SETUP_CONFIG, SETUP_ALIASES, etc.)
-├── config/
-│   ├── file-manifest.json     # Declarative config file deployment
-│   └── defaults/              # Source files deployed on start via file-manifest
-│       ├── settings.json      # Model, permissions, plugins, env vars
-│       ├── keybindings.json   # Keyboard shortcuts
-│       ├── main-system-prompt.md
-│       ├── orchestrator-system-prompt.md
-│       ├── writing-system-prompt.md
-│       ├── ccstatusline-settings.json  # Status bar widget layout
-│       └── rules/             # Deployed to .claude/rules/
 ├── features/                  # Custom devcontainer features
 ├── plugins/devs-marketplace/  # Local plugin marketplace
 └── scripts/                   # Setup scripts (run via postStartCommand)
+
+.codeforge/
+├── file-manifest.json         # Declarative config file deployment
+├── config/                    # Source files deployed on start via file-manifest
+│   ├── settings.json          # Model, permissions, plugins, env vars
+│   ├── keybindings.json       # Keyboard shortcuts
+│   ├── main-system-prompt.md
+│   ├── orchestrator-system-prompt.md
+│   ├── writing-system-prompt.md
+│   ├── ccstatusline-settings.json  # Status bar widget layout
+│   └── rules/                 # Deployed to .claude/rules/
+├── scripts/                   # Terminal connection scripts
+│   ├── connect-external-terminal.sh
+│   └── connect-external-terminal.ps1
+└── .codeforge-preserve        # Lists additional files to preserve during updates
 ```
 
 ## Key Configuration
 
 | File | Purpose |
 |------|---------|
-| `config/defaults/settings.json` | Model, tokens, permissions, plugins, env vars |
-| `config/defaults/main-system-prompt.md` | System prompt defining assistant behavior |
-| `config/defaults/orchestrator-system-prompt.md` | Orchestrator mode prompt (delegation-first) |
-| `config/defaults/ccstatusline-settings.json` | Status bar widget layout (deployed to ~/.config/ccstatusline/) |
-| `config/file-manifest.json` | Controls which config files deploy and when |
+| `.codeforge/config/settings.json` | Model, tokens, permissions, plugins, env vars |
+| `.codeforge/config/main-system-prompt.md` | System prompt defining assistant behavior |
+| `.codeforge/config/orchestrator-system-prompt.md` | Orchestrator mode prompt (delegation-first) |
+| `.codeforge/config/ccstatusline-settings.json` | Status bar widget layout (deployed to ~/.config/ccstatusline/) |
+| `.codeforge/file-manifest.json` | Controls which config files deploy and when |
 | `devcontainer.json` | Container definition: image, features, mounts |
 | `.env` | Boolean flags controlling setup steps |
 
-Config files deploy via `file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
+Config files deploy via `.codeforge/file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
 
 ## Worktrees
 
@@ -70,6 +75,8 @@ git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
 | Command | Purpose |
 |---------|---------|
 | `cc` / `claude` | Run Claude Code with auto-configuration |
+| `codeforge config apply` | Deploy config files to `~/.claude/` (same as container start) |
+| `codeforge` | CLI for CodeForge management commands |
 | `ccraw` | Vanilla Claude Code (bypasses config) |
 | `ccw` | Claude Code with writing system prompt |
 | `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
@@ -102,11 +109,11 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
 ## Rules System
 
-Rules in `config/defaults/rules/` deploy to `.claude/rules/` on every container start. They load into ALL sessions automatically.
+Rules in `.codeforge/config/rules/` deploy to `.claude/rules/` on every container start. They load into ALL sessions automatically.
 
 **Current rules:** `spec-workflow.md`, `workspace-scope.md`, `session-search.md`
 
-**Adding rules:** Create `.md` in `config/defaults/rules/`, add a manifest entry in `file-manifest.json`.
+**Adding rules:** Create `.md` in `.codeforge/config/rules/`, add a manifest entry in `.codeforge/file-manifest.json`.
 
 ## Environment
 
@@ -129,17 +136,17 @@ The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude
 
 ## Modifying Behavior
 
-1. **Change model**: Edit `config/defaults/settings.json` → `"model"` field
-2. **Change system prompt**: Edit `config/defaults/main-system-prompt.md`
-3. **Add config file**: Add entry to `config/file-manifest.json`
+1. **Change model**: Edit `.codeforge/config/settings.json` → `"model"` field
+2. **Change system prompt**: Edit `.codeforge/config/main-system-prompt.md`
+3. **Add config file**: Place in `.codeforge/config/`, add entry to `.codeforge/file-manifest.json`
 4. **Add features**: Add to `"features"` in `devcontainer.json`
 5. **Disable features**: Set `"version": "none"` in the feature's config
 6. **Disable setup steps**: Set flags to `false` in `.env`
-7. **Customize status bar**: Edit `config/defaults/ccstatusline-settings.json` (see below)
+7. **Customize status bar**: Edit `.codeforge/config/ccstatusline-settings.json` (see below)
 
 ## Status Bar Widgets
 
-The status bar is configured in `config/defaults/ccstatusline-settings.json` (deploys to `~/.config/ccstatusline/settings.json`). Each widget is a JSON object in a line array.
+The status bar is configured in `.codeforge/config/ccstatusline-settings.json` (deploys to `~/.config/ccstatusline/settings.json`). Each widget is a JSON object in a line array.
 
 ### Widget Properties
 
@@ -194,4 +201,4 @@ Three mechanisms handle port access depending on your client:
 
 VS Code auto-detects all ports opened inside the container (configured via `portsAttributes` in `devcontainer.json`). Outside VS Code, `dbr` provides dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
 
-For full setup instructions, see the [Port Forwarding reference](https://anexileddev.github.io/CodeForge/reference/port-forwarding/) in the docs.
+For full setup instructions, see the [Port Forwarding reference](https://codeforge.core-directive.com/reference/port-forwarding/) in the docs.

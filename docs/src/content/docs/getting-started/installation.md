@@ -22,7 +22,7 @@ If your project already has a `.devcontainer/` directory, the installer will war
 ```bash
 npx codeforge-dev --force
 ```
-The `--force` flag uses an intelligent sync — it preserves files you've customized (creating `.codeforge-new` diff files for review) rather than blindly overwriting everything.
+The `--force` flag uses an intelligent sync — it preserves files you've customized (writing `.default` copies of new defaults in `.codeforge/` for review) rather than blindly overwriting everything.
 :::
 
 ### Alternative Installation Methods
@@ -45,12 +45,13 @@ your-project/
 ├── .devcontainer/
 │   ├── devcontainer.json       # Container definition and feature list
 │   ├── .env                    # Setup flags
-│   ├── config/
-│   │   ├── file-manifest.json  # Controls config file deployment
-│   │   └── defaults/           # System prompts, settings, rules
 │   ├── features/               # 22 custom DevContainer features
 │   ├── plugins/                # 14 plugins with hooks and scripts
 │   └── scripts/                # Setup and verification scripts
+├── .codeforge/
+│   ├── file-manifest.json      # Controls config file deployment
+│   ├── config/                 # System prompts, settings, rules
+│   └── scripts/                # Terminal connection scripts
 └── ... (your existing files)
 ```
 
@@ -198,9 +199,9 @@ All 14 plugins are installed and active by default. They're configured through `
 CodeForge works out of the box, but everything is customizable:
 
 - **`devcontainer.json`** — container image, features, resource limits, port forwarding
-- **`config/defaults/settings.json`** — model selection, permissions, enabled plugins, environment variables
-- **`config/defaults/main-system-prompt.md`** — Claude Code's behavioral guidelines
-- **`config/defaults/rules/`** — rules loaded into every session automatically
+- **`.codeforge/config/settings.json`** — model selection, permissions, enabled plugins, environment variables
+- **`.codeforge/config/main-system-prompt.md`** — Claude Code's behavioral guidelines
+- **`.codeforge/config/rules/`** — rules loaded into every session automatically
 
 See the [Customization section](../customization/) for full details on each configuration surface.
 

@@ -110,6 +110,11 @@
 - **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
 - **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
 - **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
+- **`setup.js` path traversal** — `configApply()` now validates that source paths resolve within `.codeforge/` and destination paths resolve within allowed directories (`CLAUDE_CONFIG_DIR`, `HOME`, `/usr/local/`), preventing directory traversal via `../` in manifest entries
+- **`setup.sh` CODEFORGE_DIR** — deprecation guard now uses default-assignment semantics (`:=`) instead of unconditional overwrite, preserving any user-defined `CODEFORGE_DIR` from `.env`
+- **Docs site URLs** — replaced `anexileddev.github.io/CodeForge/` with custom domain `codeforge.core-directive.com/` across README.md, CLAUDE.md, and .devcontainer/README.md
+- **Architecture docs** — added `.checksums/` and `.markers/` directories to the `.codeforge/` tree in architecture.md
+- **Troubleshooting docs** — renamed "Reset to Defaults" to "How to Reset" and clarified that `--reset` preserves `.codeforge/` user modifications; added step for restoring default config sources
 
 ### Changed
 
@@ -196,6 +201,31 @@
 
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
+
+## [v2.0.0] - 2026-02-26
+
+### Added
+
+#### .codeforge/ User Customization Directory
+- New `.codeforge/` directory centralizes all user-customizable configuration files
+- Checksum-based modification detection preserves user changes during updates
+- `codeforge config apply` CLI command deploys config files to `~/.claude/` (same as container start)
+- Auto-migration from `.devcontainer/config/defaults/` to `.codeforge/config/` for existing users
+- `.codeforge/.codeforge-preserve` for listing additional files to preserve during updates
+
+### Changed
+
+#### Configuration
+- Config files moved from `.devcontainer/config/defaults/` to `.codeforge/config/`
+- File manifest moved from `.devcontainer/config/file-manifest.json` to `.codeforge/file-manifest.json`
+- Terminal connection scripts moved from `.devcontainer/` to `.codeforge/scripts/`
+- `CONFIG_SOURCE_DIR` env var deprecated in favor of `CODEFORGE_DIR`
+- `--force` updates now use checksum comparison for `.codeforge/` files (writes `.default` instead of `.codeforge-new`)
+- `--reset` preserves `.codeforge/` user modifications (only `.devcontainer/` is wiped)
+
+#### Migration
+- v2 migration marker moved to `.codeforge/.markers/v2-migrated`
+- Container start auto-migrates `.devcontainer/config/defaults/` to `.codeforge/config/` if needed
 
 ## [v1.14.2] - 2026-02-24
 

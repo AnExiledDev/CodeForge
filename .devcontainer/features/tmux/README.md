@@ -23,17 +23,17 @@ The VS Code integrated terminal does **not** support tmux split panes. To use sp
 
 ### Option 1: Helper Scripts (Recommended)
 
-Use the provided helper scripts in the `.devcontainer/` folder:
+Use the provided helper scripts in the `.codeforge/scripts/` folder:
 
 **Linux/macOS:**
 ```bash
-cd /path/to/your/project/.devcontainer
+cd /path/to/your/project/.codeforge/scripts
 ./connect-external-terminal.sh
 ```
 
 **Windows (PowerShell):**
 ```powershell
-cd C:\path\to\your\project\.devcontainer
+cd C:\path\to\your\project\.codeforge\scripts
 .\connect-external-terminal.ps1
 ```
 

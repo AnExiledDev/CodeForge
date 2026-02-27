@@ -132,7 +132,7 @@ GitHub CLI credentials are automatically persisted across container rebuilds. Th
 
 ### The `cc` Command
 
-The `cc` command is an alias that launches Claude Code with the project's system prompt and plan-mode permissions. For Agent Teams split-pane support, use the **"Claude Teams (tmux)"** terminal profile in VS Code (dropdown next to the `+` button) or connect via `connect-external-terminal.sh`.
+The `cc` command is an alias that launches Claude Code with the project's system prompt and plan-mode permissions. For Agent Teams split-pane support, use the **"Claude Teams (tmux)"** terminal profile in VS Code (dropdown next to the `+` button) or connect via `.codeforge/scripts/connect-external-terminal.sh`.
 
 ```bash
 cc                    # Start Claude Code in current directory
@@ -225,7 +225,7 @@ Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
 
 ### Claude Code Settings
 
-Default settings are in `.devcontainer/config/defaults/settings.json`. File copying is controlled by `config/file-manifest.json`, which specifies per-file overwrite behavior (`"if-changed"`, `"always"`, or `"never"`).
+Default settings are in `.codeforge/config/settings.json`. File copying is controlled by `.codeforge/file-manifest.json`, which specifies per-file overwrite behavior (`"if-changed"`, `"always"`, or `"never"`).
 
 To add a custom config file, append an entry to `file-manifest.json`:
 ```json
@@ -243,7 +243,7 @@ Key defaults:
 
 ### Keybindings
 
-Default keybindings are in `.devcontainer/config/defaults/keybindings.json` (empty by default — Claude Code defaults apply). Customize by adding entries to the `bindings` array.
+Default keybindings are in `.codeforge/config/keybindings.json` (empty by default — Claude Code defaults apply). Customize by adding entries to the `bindings` array.
 
 **VS Code Terminal Passthrough**: `Ctrl+P` and `Ctrl+F` are configured to pass through to the terminal (via `terminal.integrated.commandsToSkipShell`) so Claude Code receives them. Other VS Code shortcuts that conflict with Claude Code:
 
@@ -260,7 +260,7 @@ For conflicting shortcuts, use Meta (Alt) variants or add custom keybindings.
 
 ### System Prompt
 
-The default system prompt is in `.devcontainer/config/defaults/main-system-prompt.md`. Override it by creating a `.claude/main-system-prompt.md` in your project directory.
+The default system prompt is in `.codeforge/config/main-system-prompt.md`. Override it by creating a `.claude/main-system-prompt.md` in your project directory.
 
 ## Custom Features
 
@@ -426,20 +426,20 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 - **Authentication required**: Run `claude` once to authenticate before using `cc`
 - **Plan mode default**: The container starts in "plan" mode, which prompts for approval before making changes
-- **Config is managed by manifest**: `config/file-manifest.json` controls which files are copied and when — default `overwrite: "if-changed"` uses sha256 comparison. Persistent changes go in `.devcontainer/config/defaults/settings.json`
+- **Config is managed by manifest**: `.codeforge/file-manifest.json` controls which files are copied and when — default `overwrite: "if-changed"` uses sha256 comparison. Persistent changes go in `.codeforge/config/settings.json`
 - **GitHub auth persists**: Run `gh auth login` once or configure `.secrets`; credentials survive container rebuilds
-- **Agent Teams needs tmux**: Split panes only work inside tmux. Use the "Claude Teams (tmux)" VS Code terminal profile or `connect-external-terminal.sh` from WezTerm/iTerm2
+- **Agent Teams needs tmux**: Split panes only work inside tmux. Use the "Claude Teams (tmux)" VS Code terminal profile or `.codeforge/scripts/connect-external-terminal.sh` from WezTerm/iTerm2
 
 ## Troubleshooting
 
-Common issues and solutions. For detailed troubleshooting, see [docs/troubleshooting.md](docs/troubleshooting.md).
+Common issues and solutions. For detailed troubleshooting, see the [Troubleshooting](https://codeforge.core-directive.com/reference/troubleshooting/) page on the docs site.
 
 | Problem | Solution |
 |---------|----------|
 | `cc: command not found` | Run `source ~/.bashrc` or open a new terminal |
 | `claude` fails during startup | Background update may be in progress — wait 10s and retry |
 | GitHub push fails | Run `gh auth status` to check authentication |
-| Plugin not loading | Check `enabledPlugins` in `config/defaults/settings.json` |
+| Plugin not loading | Check `enabledPlugins` in `.codeforge/config/settings.json` |
 | Feature not installed | Check `devcontainer.json` for `"version": "none"` |
 | Tool version/status | Run `cc-tools` to list all tools with version info |
 | Full health check | Run `check-setup` to verify setup status |
@@ -447,11 +447,11 @@ Common issues and solutions. For detailed troubleshooting, see [docs/troubleshoo
 ## Further Reading
 
 **CodeForge Documentation**:
-- [Configuration Reference](docs/configuration-reference.md) — all env vars and config options
-- [Plugin System](docs/plugins.md) — plugin architecture and per-plugin docs
-- [Optional Features](docs/optional-features.md) — mcp-qdrant and other optional components, disabling features
-- [Keybinding Customization](docs/keybindings.md) — resolving VS Code conflicts
-- [Troubleshooting](docs/troubleshooting.md) — common issues and solutions
+- [Configuration Reference](https://codeforge.core-directive.com/customization/configuration/) — all env vars and config options
+- [Plugin System](https://codeforge.core-directive.com/plugins/) — plugin architecture and per-plugin docs
+- [Optional Features](https://codeforge.core-directive.com/customization/optional-features/) — mcp-qdrant and other optional components, disabling features
+- [Keybinding Customization](https://codeforge.core-directive.com/customization/keybindings/) — resolving VS Code conflicts
+- [Troubleshooting](https://codeforge.core-directive.com/reference/troubleshooting/) — common issues and solutions
 
 **External**:
 - [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)

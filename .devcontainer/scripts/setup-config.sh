@@ -3,12 +3,20 @@
 # Copyright (c) 2026 Marcus Krueger
 # Copy configuration files to workspace based on file-manifest.json
 
-CONFIG_DIR="${CONFIG_SOURCE_DIR:?CONFIG_SOURCE_DIR not set}"
-MANIFEST="$CONFIG_DIR/file-manifest.json"
-
 log() { echo "[setup-config] $*"; }
 warn() { echo "[setup-config] WARNING: $*"; }
 err() { echo "[setup-config] ERROR: $*" >&2; }
+
+CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT:?}/.codeforge}"
+CONFIG_DIR="$CODEFORGE_DIR"
+MANIFEST="$CODEFORGE_DIR/file-manifest.json"
+
+# Legacy fallback: if .codeforge/ doesn't exist but old config dir does, warn and use old path
+if [ ! -d "$CODEFORGE_DIR" ] && [ -d "${WORKSPACE_ROOT}/.devcontainer/config/defaults" ]; then
+	warn ".codeforge/ not found — falling back to .devcontainer/config/defaults (deprecated)"
+	CONFIG_DIR="${WORKSPACE_ROOT}/.devcontainer/config"
+	MANIFEST="$CONFIG_DIR/file-manifest.json"
+fi
 
 # Deprecation notice if legacy OVERWRITE_CONFIG is still set
 if [ -n "${OVERWRITE_CONFIG+x}" ]; then
@@ -20,7 +28,7 @@ legacy_copy() {
 	local target_dir="${CLAUDE_CONFIG_DIR:?CLAUDE_CONFIG_DIR not set}"
 	warn "file-manifest.json not found, falling back to legacy copy"
 	mkdir -p "$target_dir"
-	for file in defaults/settings.json defaults/keybindings.json defaults/main-system-prompt.md; do
+	for file in config/settings.json config/keybindings.json config/main-system-prompt.md; do
 		if [ -f "$CONFIG_DIR/$file" ]; then
 			local basename="${file##*/}"
 			cp "$CONFIG_DIR/$file" "$target_dir/$basename"
