@@ -231,6 +231,8 @@ Use structural tools when syntax matters:
 
 ## Output Format
 
+Structure your findings for the orchestrator to act on. Include specific file paths, line numbers, and actionable next steps — not just observations.
+
 ### Investigation Summary
 One-paragraph summary of what was found.
 

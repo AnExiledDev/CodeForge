@@ -22,6 +22,28 @@
 - Updated Bun feature to install latest version (was pinned to outdated 1.3.9)
 - Added npm cache cleanup to 6 features: agent-browser, ast-grep, biome, claude-session-dashboard, lsp-servers, tree-sitter (saves ~96 MB runtime disk)
 
+#### System Prompts
+- **Main system prompt redesigned** — reorganized from 672 to 462 lines with new section order prioritizing personality, core directives, and response guidelines at the top
+- **Added personality section** — defines communication style (casual-professional, direct, terse), humor rules, honesty approach, AuDHD-aware patterns, and good/bad response examples; replaces the empty `<identity>` tag
+- **Compressed specification management** — reduced from 98 to 28 lines; full template and enforcement workflow moved to loadable skills
+- **Compressed code standards** — removed textbook principle recitations (SOLID, DRY/KISS/YAGNI by name); kept only concrete actionable rules
+- **Removed browser automation section** — moved to loadable skill (relevant in <10% of sessions)
+- **Removed git worktrees section** — moved to loadable skill; EnterWorktree and `--worktree` flag documented in CLAUDE.md
+- **Added context-passing protocol** to orchestration — mandatory instructions for including gathered context, file paths, and constraints when spawning subagents
+- **Absorbed `<assumption_surfacing>` into `<core_directives>`** — key rules preserved, wrapper removed
+- **Absorbed `<professional_objectivity>` into `<personality>`** — technical accuracy stance woven into personality definition
+- **Deduplicated team composition examples** — consolidated into orchestration section only
+- **Consolidated "no filler" instructions** — previously stated three different ways across three sections
+
+#### Agent System
+- **All 21 agents now have communication protocols** — read-only agents get "Handling Uncertainty" (make best judgment, flag assumptions); write-capable agents get "Question Surfacing Protocol" (BLOCKED + return for ambiguity)
+- **Architect agent: anti-fluff enforcement** — explicit banned patterns ("This approach follows best practices...", restating the problem, explaining why the approach is good), good/bad plan line examples
+- **Architect agent: team orchestration planning** — can now plan teammate composition, file ownership, task dependencies, and worktree usage when tasks warrant parallel work
+- **Architect agent: strengthened output format** — team plan section added, edit ordering section added, file references must be specific
+- **Generalist agent rewritten as last-resort** — description changed to "LAST RESORT agent. Only use when NO specialist agent matches", identity paragraph flags when a specialist might have been better
+- **Investigator agent: structured output guidance** — added instruction to include actionable next steps, not just observations
+- **Added Bash guard hooks** to researcher, debug-logs, and perf-profiler agents — prevents accidental state-changing commands in read-only agents
+
 #### Port Forwarding
 - Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
 
