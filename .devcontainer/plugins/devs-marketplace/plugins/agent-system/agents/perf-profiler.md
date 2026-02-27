@@ -5,11 +5,12 @@ description: >-
   performance, identifies bottlenecks, interprets profiler output, and
   recommends targeted optimizations backed by data. Use when the user asks
   "profile this", "why is this slow", "find the bottleneck", "benchmark this",
-  "measure performance", "optimize the build", "check response times",
-  "profile the database queries", "find memory leaks", or needs any
-  performance measurement, bottleneck identification, or optimization
-  guidance backed by profiling data. Do not use for implementing
-  optimizations or modifying code — measurement and analysis only.
+  "measure performance", "check response times", "find N+1 queries",
+  "profile the database queries", "find memory leaks", "create a flamegraph",
+  "measure latency", "check for hot paths", or needs any performance
+  measurement, bottleneck identification, or optimization guidance backed by
+  profiling data. Do not use for implementing optimizations or modifying
+  code — measurement and analysis only.
 tools: Read, Bash, Glob, Grep
 model: sonnet
 color: yellow

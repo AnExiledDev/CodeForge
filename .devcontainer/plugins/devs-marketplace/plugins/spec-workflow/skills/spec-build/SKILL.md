@@ -74,13 +74,13 @@ Decompose work into parallel workstreams and recommend team composition using th
 
 | Spec Type | Teammates |
 |-----------|-----------|
-| Full-stack feature | researcher + test-writer + doc-writer |
+| Full-stack feature | researcher + test-writer + documenter |
 | Backend-heavy | researcher + test-writer |
 | Security-sensitive | security-auditor + test-writer |
 | Refactoring work | refactorer + test-writer |
 | Multi-service | researcher per service + test-writer |
 
-**Available specialist agents:** `architect`, `bash-exec`, `claude-guide`, `debug-logs`, `dependency-analyst`, `doc-writer`, `explorer`, `generalist`, `git-archaeologist`, `migrator`, `perf-profiler`, `refactorer`, `researcher`, `security-auditor`, `spec-writer`, `statusline-config`, `test-writer`
+**Available specialist agents:** `architect`, `bash-exec`, `claude-guide`, `debug-logs`, `dependency-analyst`, `documenter`, `explorer`, `generalist`, `git-archaeologist`, `migrator`, `perf-profiler`, `refactorer`, `researcher`, `security-auditor`, `spec-writer`, `statusline-config`, `test-writer`
 
 Use `generalist` only when no specialist matches the workstream. Hard limit: 3-5 active teammates maximum.
 

@@ -331,7 +331,7 @@ Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` pro
 | `claude-guide` | Claude Code feature guidance |
 | `debug-logs` | Log analysis and error diagnosis |
 | `dependency-analyst` | Dependency analysis and upgrades |
-| `doc-writer` | Documentation authoring |
+| `documenter` | Documentation, specs, and spec lifecycle |
 | `explorer` | Fast codebase search and navigation |
 | `generalist` | General-purpose multi-step tasks |
 | `git-archaeologist` | Git history forensics |

@@ -79,7 +79,7 @@ Before diving into git history, clarify what you are looking for:
 - **When?** — A known time range, or open-ended ("sometime in the last 6 months").
 - **Why?** — Bug introduction, feature removal, authorship question, or lost code recovery.
 
-If the user's question is vague (e.g., "What happened to this code?"), ask clarifying questions or state your interpretation before proceeding.
+If the user's question is vague (e.g., "What happened to this code?"), state your interpretation in an `## Assumptions` section and proceed with your best judgment (per "Handling Uncertainty" above). Do not ask clarifying questions directly — you are a subagent without user access.
 
 ### Step 2: Choose the Right Tool
 
