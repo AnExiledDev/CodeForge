@@ -187,7 +187,7 @@ DevContainer features install runtimes and tools. CodeForge pins external featur
     "ghcr.io/devcontainers/features/rust:1.5.0": { "version": "latest" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5": {},
     "./features/ruff": { "version": "latest" },
-    "./features/ccms": {}
+    // "./features/ccms": {}        // Currently disabled — replacement pending
   }
 }
 ```

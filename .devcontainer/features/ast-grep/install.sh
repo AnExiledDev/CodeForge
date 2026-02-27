@@ -55,5 +55,6 @@ npm install -g "${NPM_PACKAGE}" 2>/dev/null || {
     echo "[ast-grep] WARNING: Global install failed, trying user install"
     su - "${USERNAME}" -c "npm install -g ${NPM_PACKAGE}" 2>/dev/null || true
 }
+npm cache clean --force 2>/dev/null || true
 
 echo "[ast-grep] Installed: $(ast-grep --version 2>/dev/null || echo 'unknown')"

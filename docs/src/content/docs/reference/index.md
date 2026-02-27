@@ -25,7 +25,7 @@ This section is a lookup resource for CodeForge internals. Use it when you need 
 | `cc` | Start Claude Code with full CodeForge configuration |
 | `ccw` | Start Claude Code in writing mode |
 | `ccraw` | Start vanilla Claude Code (no plugins or custom prompt) |
-| `ccms "query"` | Search session history |
+| `ccms "query"` | Search session history _(currently disabled — replacement pending)_ |
 | `check-setup` | Verify your installation is healthy |
 
 ### Key Paths

@@ -170,6 +170,8 @@ if [ "${NEED_PYTHON}" = "true" ]; then
     echo "[tree-sitter] Python bindings installed"
 fi
 
+npm cache clean --force 2>/dev/null || true
+
 # === SUMMARY ===
 echo ""
 echo "[tree-sitter] Installation complete!"

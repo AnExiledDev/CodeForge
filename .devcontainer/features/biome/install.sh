@@ -33,6 +33,7 @@ if [ "${VERSION}" = "latest" ]; then
 else
     npm install -g "@biomejs/biome@${VERSION}"
 fi
+npm cache clean --force 2>/dev/null || true
 
 # Verify installation
 biome --version

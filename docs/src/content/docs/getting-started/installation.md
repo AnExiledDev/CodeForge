@@ -123,7 +123,7 @@ No local Docker installation required. Port forwarding is handled automatically 
 The first container build takes several minutes (typically 3-8 minutes depending on your internet speed and hardware). Here's what's happening behind the scenes:
 
 1. **Base image pull** — downloads the Python 3.14 DevContainer image from Microsoft's registry
-2. **Feature installation** — installs 21 DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Rust, Bun, Claude Code, and all custom features
+2. **Feature installation** — installs DevContainer features in dependency order: Node.js and uv first (other tools depend on them), then Bun, Claude Code, and all custom features
 3. **Post-start setup** — deploys configuration files, sets up shell aliases, and configures plugins
 
 :::caution[Don't interrupt the first build]
@@ -157,8 +157,8 @@ A healthy installation shows all of these as available:
 | Category | Tools |
 |----------|-------|
 | Claude Code | `claude`, `cc`, `ccw`, `ccraw` |
-| Session tools | `ccms`, `ccusage`, `ccburn`, `claude-monitor` |
-| Languages | `node`, `python`, `rustc`, `bun` |
+| Session tools | `ccusage`, `ccburn`, `claude-monitor` (`ccms` currently disabled) |
+| Languages | `node`, `python`, `bun` (`rustc` opt-in) |
 | Code intelligence | `ast-grep`, `tree-sitter`, `pyright`, `typescript-language-server` |
 | Linters/Formatters | `ruff`, `biome` |
 | Utilities | `gh`, `docker`, `git`, `jq`, `tmux` |
@@ -173,7 +173,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 
 - **Python 3.14** — the container's base image, with `uv` as the package manager
 - **Node.js LTS** — installed via nvm, with npm included
-- **Rust** — latest stable via rustup
+- **Rust** — latest stable via rustup _(opt-in — uncomment in `devcontainer.json`)_
 - **Bun** — fast JavaScript/TypeScript runtime and package manager
 - **Go** — available as an opt-in (uncomment in `devcontainer.json`)
 
@@ -182,7 +182,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 - **GitHub CLI** (`gh`) — repository management, PR creation, issue tracking
 - **Docker** (Docker-outside-of-Docker) — container operations from inside the DevContainer
 - **tmux** — terminal multiplexing for parallel Claude Code sessions
-- **ccms** — search your Claude Code session history
+- **ccms** — search your Claude Code session history _(currently disabled — replacement pending)_
 - **ccusage** / **ccburn** — token usage analysis and burn rate tracking
 - **ccstatusline** — session status in your terminal prompt
 - **claude-monitor** — real-time session monitoring
@@ -237,7 +237,7 @@ Use `git diff .devcontainer/` after updating to review what changed before commi
 
 ### Tools not found after build
 
-**Symptoms:** Commands like `cc` or `ccms` return "command not found."
+**Symptoms:** Commands like `cc` return "command not found." (Note: `ccms` is currently disabled by default.)
 
 - Run `check-setup` to identify which tools are missing
 - Check that the post-start script completed successfully (look for errors in the terminal output)
