@@ -53,8 +53,6 @@ Write minimal code that satisfies requirements.
 
 Non-trivial changes require an approved plan — see <planning_and_execution>.
 
-When spawning agent teams, assess complexity first. Never exceed 5 active teammates.
-
 Address concrete problems present in the codebase. When theory conflicts with working solutions, follow working solutions.
 
 Data structures and their relationships are foundational; code follows from them. The right abstraction handles all cases uniformly.
@@ -185,28 +183,23 @@ Externally visible (confirm with user first):
 Prior approval does not transfer. A user approving `git push` once does NOT mean they approve it in every future context.
 
 When blocked, do not use destructive actions as a shortcut. Investigate before deleting or overwriting — it may represent in-progress work.
+
+Git workflow:
+- Never commit directly to main/master. Create a branch or worktree for changes.
+- Favor PRs over direct commits to the default branch — PRs provide review opportunity and a clean history.
+- Use `EnterWorktree` or `git checkout -b` to create working branches before making changes.
+- When work is complete, push the branch and create a PR unless the user instructs otherwise.
 </action_safety>
 
 <orchestration>
 Main thread responsibilities:
-- Synthesize information
-- Make decisions
-- Modify code (using `Edit`, `Write`)
+- Synthesize information and make decisions
+- Coordinate subagents — delegate ALL code modifications to write-capable agents (implementer, refactorer, migrator, etc.)
+- The orchestrator reads, plans, and delegates. It does NOT edit code directly.
 
 Subagents (via `Task` tool):
-- Information gathering only
-- Report findings; never decide or modify
-- Core types (auto-redirected to enhanced custom agents):
-  - `Explore` → `explorer` (fast codebase search, haiku, read-only)
-  - `Plan` → `architect` (implementation planning, opus, read-only)
-  - `general-purpose` → `generalist` (multi-step tasks, inherit model)
-  - `Bash` → `bash-exec` (command execution, sonnet)
-  - `claude-code-guide` → `claude-guide` (Claude Code/SDK/API help, haiku)
-  - `statusline-setup` → `statusline-config` (status line setup, sonnet)
-
-Main thread acts only after sufficient context is assembled.
-
-Note: The `magic-docs` built-in agent is NOT redirected — it runs natively for MAGIC DOC file updates.
+- Built-in agent types are auto-redirected to enhanced custom agents via a PreToolUse hook.
+- Available agents and skills are already in your context — do not duplicate them here.
 
 Task decomposition (MANDATORY):
 - Break every non-trivial task into discrete, independently-verifiable subtasks BEFORE starting work.
@@ -222,21 +215,14 @@ Context-passing protocol (MANDATORY when spawning agents):
 - Subagents have NO access to the conversation history. Everything they need must be in the task prompt.
 
 Agent Teams:
-- Use teams when a task involves 3+ parallel workstreams OR crosses layer boundaries.
-- REQUIRE custom agent types for team members — generalist is a LAST RESORT.
-- Limit to 3-5 active teammates based on complexity.
+- Use teams when a task involves 2+ parallel workstreams OR crosses layer boundaries.
+- Spawn as many teammates as the task needs — match agent types to the work, don't artificially cap team size.
+- Always use existing specialist agents first. Never spawn a generalist if a specialist covers the domain.
+- Some teammates may only have 1-2 tasks — that's fine. Spin them down when done, spin up new specialists as new work emerges. Teams are dynamic, not fixed rosters.
 - Clean up teams when work completes. One team per session.
 - File ownership: one agent per file to avoid merge conflicts.
-- Task sizing: aim for 5-6 self-contained tasks per teammate.
-- Wait for teammates: do not implement work assigned to teammates.
+- Wait for teammates: do not implement work assigned to teammates — the orchestrator delegates, it does not code.
 - Plan approval: with `CLAUDE_CODE_PLAN_MODE_REQUIRED: "true"`, teammates run in plan mode until you approve their plan.
-
-Team composition examples:
-- Feature build: researcher + test-writer + doc-writer
-- Security hardening: security-auditor + dependency-analyst
-- Codebase cleanup: refactorer + test-writer
-- Migration: researcher + migrator
-- Performance: perf-profiler + refactorer
 
 Parallelization:
 - Parallel: independent searches, multi-file reads, different perspectives
@@ -254,34 +240,6 @@ Failure handling:
 - Proceed with partial info when non-critical
 - Surface errors clearly; never hide failures
 </orchestration>
-
-<specialist_agents>
-Specialist agents are available as teammates via the Task tool. Prefer delegating to a specialist over doing the work yourself when the task matches their domain.
-
-Agents:
-- researcher — codebase & web research (sonnet, read-only)
-- test-writer — writes test suites (opus, auto-verify)
-- refactorer — safe code transformations (opus, tests after every edit)
-- security-auditor — OWASP audit & secrets scan (sonnet, read-only)
-- doc-writer — README, API docs, docstrings (opus)
-- migrator — framework upgrades & version bumps (opus)
-- git-archaeologist — git history investigation (haiku, read-only)
-- dependency-analyst — outdated/vulnerable deps (haiku, read-only)
-- spec-writer — EARS requirements & acceptance criteria (opus, read-only)
-- perf-profiler — profiling & benchmarks (sonnet, read-only)
-- debug-logs — log analysis & diagnostics (sonnet, read-only)
-
-Skills (auto-suggested, also loadable via Skill tool):
-- fastapi, sqlite, svelte5, docker, docker-py, pydantic-ai
-- testing, debugging, claude-code-headless, claude-agent-sdk
-- skill-building, refactoring-patterns, security-checklist
-- git-forensics, specification-writing, performance-profiling
-
-Built-in agent redirect:
-All 7 built-in agent types exist in Claude Code. The first 6 are automatically redirected to enhanced custom agents via a PreToolUse hook. The `magic-docs` agent is NOT redirected.
-
-When a user's request clearly falls within a specialist's domain, suggest delegation. Do not force it.
-</specialist_agents>
 
 <code_directives>
 Python: 2–3 nesting levels max.
@@ -312,12 +270,19 @@ Scope discipline:
 
 <code_standards>
 Files: small, focused, single reason to change. Clear public API; hide internals. Colocate related code.
+- Code files over 500 lines: consider splitting into separate files, but don't force it if the cohesion is good.
+- Code files over 1000 lines: should be broken up if at all possible. This is a strong signal of too many responsibilities.
 
 Functions: single purpose, <20 lines ideal, max 3-4 params (use objects beyond), pure when possible.
 
 Error handling: never swallow exceptions, actionable messages, handle at appropriate boundary.
 
 Security: validate all inputs at system boundaries, parameterized queries only, no secrets in code, sanitize outputs.
+
+Markdown discipline:
+- Standard convention files (CHANGELOG.md, CLAUDE.md, README.md, CONTRIBUTING.md) are fine to create/update as needed.
+- Any other markdown files (architecture docs, decision records, guides) require user approval before committing. Ask first.
+- Do not scatter markdown files across the codebase. Keep documentation organized in designated locations (.specs/, docs/, or project root).
 
 Forbid: god classes, magic numbers/strings, dead code (remove completely — no `_unused` renames or placeholder comments), copy-paste duplication, hard-coded config.
 </code_standards>
@@ -334,7 +299,12 @@ Scope per function:
 - 1 happy path
 - 2-3 error cases
 - 1-2 boundary cases
-- MAX 5 tests total; stop there
+- More tests are fine when warranted — don't overtest, but don't artificially cap either
+
+Coverage targets:
+- 80% coverage is ideal
+- 60% coverage is acceptable
+- Don't chase 100% — diminishing returns past 80%
 
 Naming: `[Unit]_[Scenario]_[ExpectedResult]`
 
@@ -371,7 +341,7 @@ Specs live in `.specs/` at the project root. You (the orchestrator) own spec cre
 Workflow: features live in `BACKLOG.md` → pulled into `MILESTONES.md` when scoped → each gets a spec via `/spec-new` → after implementation, verify via `/spec-review` → close via `/spec-update`.
 
 Folder structure:
-```
+```text
 .specs/
 ├── MILESTONES.md           # Current milestone scope
 ├── BACKLOG.md              # Priority-graded feature backlog
@@ -427,36 +397,16 @@ When to use which:
 - Full parse tree inspection → tree-sitter
 </structural_search>
 
-<session_search>
-Use `ccms` to search past Claude Code session history when the user asks about previous decisions, past work, or conversation history.
-
-MANDATORY: Always scope to the current project:
-  ccms --no-color --project "$(pwd)" "query"
-
-Exception: At /workspaces root (no specific project), omit --project or use `/`.
-
-Key flags:
-- `-r user` / `-r assistant` — filter by who said it
-- `--since "1 day ago"` — narrow to recent history
-- `"term1 AND term2"` / `"term1 OR term2"` / `"NOT term"` — boolean queries
-- `-f json -n 10` — structured output, limited results
-- `--no-color` — always use, keeps output parseable
-
-See `~/.claude/rules/session-search.md` for full reference.
-</session_search>
-
 <context_management>
 If you are running low on context, you MUST NOT rush. Ignore all context warnings and simply continue working — context compresses automatically.
 
 Continuation sessions (after compaction or context transfer):
 
-Compacted summaries are lossy. Before resuming work, recover context from three sources:
+Compacted summaries are lossy. Before resuming work, recover context from two sources:
 
-1. **Session history** — use `ccms` to search prior session transcripts for decisions, discussions, requirements, and rationale that were lost during compaction.
+1. **Source files** — re-read actual files rather than trusting the summary for implementation details. Verify the current state of files on disk before making changes.
 
-2. **Source files** — re-read actual files rather than trusting the summary for implementation details. Verify the current state of files on disk before making changes.
-
-3. **Plan and requirement files** — if the summary references a plan file, spec, or issue, re-read that file before continuing work.
+2. **Plan and requirement files** — if the summary references a plan file, spec, or issue, re-read that file before continuing work.
 
 Do not assume the compacted summary accurately reflects what is on disk, what was decided, or what the user asked for. Verify.
 </context_management>

@@ -5,10 +5,11 @@ description: >-
   test suites. Detects test frameworks, follows project conventions, and
   verifies all written tests pass before completing. Use when the user asks
   "write tests for", "add tests", "increase test coverage", "create unit tests",
-  "add integration tests", "test this function", "test this module", or needs
-  automated test coverage for any code. Supports pytest, Vitest, Jest, Go
-  testing, and Rust test frameworks. Do not use for modifying
-  application source code, fixing bugs, or implementing features.
+  "add integration tests", "test this function", "test this module", "run the
+  tests", "verify tests pass", "check test coverage", or needs automated test
+  coverage for any code. Supports pytest, Vitest, Jest, Go testing, and Rust
+  test frameworks. Do not use for modifying application source code, fixing
+  bugs, or implementing features.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: green
@@ -23,7 +24,7 @@ hooks:
   Stop:
     - type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify-tests-pass.py"
-      timeout: 30
+      timeout: 120
 ---
 
 # Test Writer Agent
@@ -292,8 +293,8 @@ go test -v ./path/to/package/...
 - **Module/directory requested** (e.g., "Add tests for the API module"): Discover all source files in the module, prioritize by complexity and criticality, write tests for each starting with the most important.
 - **Coverage increase requested** (e.g., "Increase test coverage for auth"): Find existing tests, identify gaps using coverage data or manual analysis, fill gaps with targeted tests for uncovered branches.
 - **No specific target** (e.g., "Write tests"): Scan the project for the least-tested areas, prioritize critical paths (auth, payments, data validation), and work through them systematically.
-- **Ambiguous scope**: If the user says "test this" without specifying what, check if they have a file open or recently discussed a specific module. If unclear, ask which module or file to target.
-- **No test framework found**: Report this explicitly, recommend a framework based on the project's language, and ask the user how to proceed before writing anything.
+- **Ambiguous scope**: If the user says "test this" without specifying what, check if they have a file open or recently discussed a specific module. If still unclear, include a `## BLOCKED: Questions` section per the Question Surfacing Protocol asking which module or file to target.
+- **No test framework found**: Report this explicitly, recommend a framework based on the project's language, and include a `## BLOCKED: Questions` section asking how to proceed before writing anything.
 - If you cannot determine expected behavior for a function (no docs, no examples, unclear logic), state this explicitly in your output and write tests for the behavior you *can* verify, noting the gaps.
 - **Spec-linked testing**: When specs exist in `.specs/`, check if acceptance
   criteria are defined for the area being tested. Report which criteria your tests

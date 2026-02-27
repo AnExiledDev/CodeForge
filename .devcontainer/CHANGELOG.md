@@ -43,6 +43,38 @@
 - **Generalist agent rewritten as last-resort** — description changed to "LAST RESORT agent. Only use when NO specialist agent matches", identity paragraph flags when a specialist might have been better
 - **Investigator agent: structured output guidance** — added instruction to include actionable next steps, not just observations
 - **Added Bash guard hooks** to researcher, debug-logs, and perf-profiler agents — prevents accidental state-changing commands in read-only agents
+- **Architect agent: major plan quality improvements** — complexity scaling framework (simple/moderate/complex), 20+ banned fluff patterns, concrete edit ordering (Models→Services→Routes→Tests→Config), rollback strategy requirement for schema/API changes, schema change detection, verification criteria per phase, 3 new examples (migration, multi-agent refactoring, ambiguous requirement)
+- **Merged tester agent into test-writer** — test-writer is now the single test agent; tester.md removed (test-writer was more comprehensive with better examples and Question Surfacing Protocol)
+- **Merged doc-writer agent into documenter** — documenter is now the single documentation agent with full spec lifecycle AND rich documentation patterns (README 5-question structure, API docs format, language-specific docstring examples, architectural docs, style guide); doc-writer.md removed
+- **Narrowed investigator description** — repositioned from catch-all "all read-only analysis" to "cross-domain investigations spanning 2+ specialist areas"; prevents over-selection when a focused specialist (explorer, researcher, git-archaeologist, etc.) is the better fit
+- **Improved agent descriptions for routing accuracy** — added missing trigger phrases to explorer, researcher, debug-logs, dependency-analyst, security-auditor, perf-profiler, refactorer, and test-writer; clarified overlap boundaries between security-auditor (code-level) and dependency-analyst (package-level), explorer (codebase-only) and researcher (web+code)
+- **Resolved communication protocol contradictions** — aligned all "ask the user/caller" instructions in agent behavioral rules with the new Handling Uncertainty / Question Surfacing Protocol sections, eliminating conflicting guidance about direct user interaction
+
+#### Skill Engine: Auto-Suggestion
+- **Weighted scoring** — Skill suggestion phrases now carry confidence weights (0.0–1.0) instead of binary match/no-match. Specific phrases like "build a fastapi app" score 1.0; ambiguous phrases like "start building" score 0.2
+- **Negative patterns** — Skills can define substrings that instantly disqualify them. Prevents `fastapi` from triggering when discussing `pydantic-ai`, and `docker` from triggering for `docker-py` prompts
+- **Context guards** — Low-confidence matches (score < 0.6) require a confirming context word elsewhere in the prompt. "health check" only suggests `docker` if "docker", "container", or "compose" also appears
+- **Ranked results, capped at 3** — Suggestions are sorted by score (then priority tier), and only the top 3 are returned. Eliminates 6+ skill suggestion floods
+- **Priority tiers** — Explicit commands (priority 10) outrank technology skills (7), which outrank patterns (5) and generic skills (3) when scores tie
+
+#### Claude Code Installation
+- **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
+- **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues
+
+#### System Prompt
+- **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
+
+#### Configuration
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+- `file-manifest.json` — added deployment entry for `orchestrator-system-prompt.md`
+- `setup-aliases.sh` — added `cc-orc` alias alongside existing `cc`, `claude`, `ccw`, `ccraw`
+- `CLAUDE.md` — documented `cc-orc` command and orchestrator system prompt in key configuration table
+
+#### Agent System (previous)
+- Agent count increased from 17 to 21 (4 workhorse + 17 specialist)
+- Agent-system README updated with workhorse agent table, per-agent hooks for implementer and tester, and updated plugin structure
 
 #### Port Forwarding
 - Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
@@ -190,34 +222,6 @@
 - **`tester`** — enhanced test agent (opus, worktree) with full testing standards, framework-specific guidance, and Stop hook verification; creates and verifies test suites
 - **`documenter`** — consolidated documentation and specification agent (opus) merging doc-writer and spec-writer; handles README, API docs, docstrings, and the full spec lifecycle (create, refine, build, review, update, check)
 - **Question Surfacing Protocol** — all 4 workhorse agents carry an identical protocol requiring them to STOP and return `## BLOCKED: Questions` sections when hitting ambiguities, ensuring no assumptions are made without user input
-
-### Changed
-
-#### Skill Engine: Auto-Suggestion
-- **Weighted scoring** — Skill suggestion phrases now carry confidence weights (0.0–1.0) instead of binary match/no-match. Specific phrases like "build a fastapi app" score 1.0; ambiguous phrases like "start building" score 0.2
-- **Negative patterns** — Skills can define substrings that instantly disqualify them. Prevents `fastapi` from triggering when discussing `pydantic-ai`, and `docker` from triggering for `docker-py` prompts
-- **Context guards** — Low-confidence matches (score < 0.6) require a confirming context word elsewhere in the prompt. "health check" only suggests `docker` if "docker", "container", or "compose" also appears
-- **Ranked results, capped at 3** — Suggestions are sorted by score (then priority tier), and only the top 3 are returned. Eliminates 6+ skill suggestion floods
-- **Priority tiers** — Explicit commands (priority 10) outrank technology skills (7), which outrank patterns (5) and generic skills (3) when scores tie
-
-#### Claude Code Installation
-- **Claude Code now installs as a native binary** — uses Anthropic's official installer (`https://claude.ai/install.sh`) via new `./features/claude-code-native` feature, replacing the npm-based `ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5`
-- **In-session auto-updater now works without root** — native binary at `~/.local/bin/claude` is owned by the container user, so `claude update` succeeds without permission issues
-
-#### System Prompt
-- **`<git_worktrees>` section** — Updated to document Claude Code native worktree convention (`<repo>/.claude/worktrees/`) as the recommended approach alongside the legacy `.worktrees/` convention. Added `EnterWorktree` tool guidance, `.worktreeinclude` file documentation, and path convention comparison table.
-
-#### Configuration
-- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
-- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
-- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
-- `file-manifest.json` — added deployment entry for `orchestrator-system-prompt.md`
-- `setup-aliases.sh` — added `cc-orc` alias alongside existing `cc`, `claude`, `ccw`, `ccraw`
-- `CLAUDE.md` — documented `cc-orc` command and orchestrator system prompt in key configuration table
-
-#### Agent System
-- Agent count increased from 17 to 21 (4 workhorse + 17 specialist)
-- Agent-system README updated with workhorse agent table, per-agent hooks for implementer and tester, and updated plugin structure
 
 #### Authentication
 - Added `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`

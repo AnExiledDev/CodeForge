@@ -6,11 +6,13 @@ description: >-
   dependencies, and license compliance issues. Use when the user asks
   "check for outdated dependencies", "scan for vulnerabilities", "find unused
   packages", "audit dependencies", "check dependency health", "license check",
-  "are my dependencies up to date", "npm audit", "pip audit", or needs any
-  dependency analysis across Node.js, Python, Rust, or Go ecosystems.
-  Reports findings without modifying any files. Do not use for
-  installing, upgrading, or modifying dependencies — analysis and
-  advisory reporting only.
+  "are my dependencies up to date", "npm audit", "pip audit", "cargo audit",
+  "supply chain risk", "check for CVEs", or needs any dependency analysis
+  across Node.js, Python, Rust, or Go ecosystems. Focuses on PACKAGES and
+  their versions — for code-level security review (injection, auth, secrets),
+  use security-auditor instead. Reports findings without modifying any files.
+  Do not use for installing, upgrading, or modifying dependencies — analysis
+  and advisory reporting only.
 tools: Read, Bash, Glob, Grep
 model: haiku
 color: blue

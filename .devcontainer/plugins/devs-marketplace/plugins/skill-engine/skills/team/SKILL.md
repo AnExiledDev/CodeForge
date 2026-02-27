@@ -165,7 +165,7 @@ Choose the agent whose domain matches the work. **Generalist is a last resort.**
 | `researcher` | Codebase & web research | Read-only |
 | `test-writer` | Write test suites | Read + Write + Bash |
 | `refactorer` | Safe code transformations | Read + Write + Bash |
-| `doc-writer` | README, API docs, docstrings | Read + Write |
+| `documenter` | README, API docs, docstrings | Read + Write |
 | `migrator` | Framework upgrades, version bumps | Read + Write + Bash |
 | `security-auditor` | OWASP audit, secrets scan | Read-only |
 | `git-archaeologist` | Git history investigation | Read-only + Bash |
@@ -198,14 +198,14 @@ Prefix with `agent-system:` when spawning (e.g., `agent-system:test-writer`).
 
 | Purpose | Recommended Team |
 |---------|-----------------|
-| Feature build | `researcher` + `test-writer` + `doc-writer` |
+| Feature build | `researcher` + `test-writer` + `documenter` |
 | Security hardening | `security-auditor` + `dependency-analyst` |
 | Codebase cleanup | `refactorer` + `test-writer` |
 | Migration project | `researcher` + `migrator` |
 | Performance work | `perf-profiler` + `refactorer` |
 | Full-stack feature | `architect` + `generalist` (backend) + `generalist` (frontend) + `test-writer` |
 | Code audit | `security-auditor` + `dependency-analyst` + `perf-profiler` |
-| Documentation sprint | `researcher` + `doc-writer` |
+| Documentation sprint | `researcher` + `documenter` |
 
 ---
 
@@ -230,7 +230,7 @@ Prefix with `agent-system:` when spawning (e.g., `agent-system:test-writer`).
 - **Wait for teammates to finish** — leads sometimes start implementing work that teammates are handling. If you notice this, redirect yourself to monitoring and coordination.
 - **Start with research and review** — for first-time team use, prefer tasks with clear boundaries that don't require code changes: reviewing PRs, researching libraries, investigating bugs.
 - **Monitor and steer** — check progress via `TaskList`, redirect failing approaches, synthesize findings. Unattended teams risk wasted effort.
-- **Avoid file conflicts** — break work so each teammate owns different files. Agents with `isolation: worktree` (test-writer, refactorer, doc-writer, migrator) get automatic file isolation via git worktrees.
+- **Avoid file conflicts** — break work so each teammate owns different files. Agents with `isolation: worktree` (test-writer, refactorer, documenter, migrator) get automatic file isolation via git worktrees.
 
 ---
 
