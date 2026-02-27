@@ -77,8 +77,6 @@ node_modules/
 # .codeforge per-installation state (not tracked)
 .codeforge/.checksums/
 .codeforge/.markers/
-# Un-ignore .codeforge-preserve (user-editable, should be tracked)
-!.codeforge/.codeforge-preserve
 
 # Docs
 docs/node_modules/
