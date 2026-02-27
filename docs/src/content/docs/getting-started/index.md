@@ -97,6 +97,8 @@ The environment is designed to stay out of your way while quietly making everyth
 
 - [System Requirements](./requirements/) — verify your system is ready
 - [Installation Guide](./installation/) — detailed setup instructions
+- [DevContainer CLI](./devcontainer-cli/) — run CodeForge from the terminal without VS Code
+- [Migrating to v2](./migrating-to-v2/) — upgrade from v1.x to the new `.codeforge/` directory structure
 - [First Session](./first-session/) — walk through your first Claude Code session
 - [Plugins Overview](../plugins/) — explore the plugin ecosystem
 - [Features Overview](../features/) — browse available agents, skills, and tools

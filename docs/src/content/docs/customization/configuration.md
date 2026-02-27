@@ -94,6 +94,8 @@ The `enabledPlugins` section controls which plugins are active:
     "notify-hook@devs-marketplace": true,
     "ticket-workflow@devs-marketplace": true,
     "codeforge-lsp@devs-marketplace": true,
+    "git-workflow@devs-marketplace": true,
+    "prompt-snippets@devs-marketplace": true,
     "frontend-design@claude-plugins-official": true
   }
 }

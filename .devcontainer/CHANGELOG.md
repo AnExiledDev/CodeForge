@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+
+#### Documentation
+- **DevContainer CLI guide** — dedicated Getting Started page for terminal-only workflows without VS Code
+- **v2 Migration Guide** — path changes, automatic migration, manual steps, breaking changes, and troubleshooting
+- Documented 4 previously undocumented agents in agents.md: implementer, investigator, tester, documenter
+- Added missing git-workflow and prompt-snippets to configuration.md enabledPlugins example
+- Added CONFIG_SOURCE_DIR deprecation note in environment variables reference
+- Added cc-orc orchestrator command to first-session launch commands table
+- Tabbed client-specific instructions on the installation page
+- Dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
+
 ### Changed
 
 #### Performance
@@ -14,9 +26,14 @@
 - Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
 
 #### Documentation
+- Updated **Port Forwarding reference** — VS Code dependency warning, devcontainer-bridge platform support matrix, CLI guide cross-link
+- Slimmed **Installation page** — moved troubleshooting to dedicated reference page, CLI details to new CLI guide
+- Full documentation review — accuracy, consistency, and completeness fixes across all 30+ pages
+- Trimmed disabled ccms usage section from commands reference
+- Clarified codeforge-lsp plugin description (declarative config, not "no configuration")
+- Improved magic-docs agent explanation in agent-system plugin docs
+- Clarified plugin count as "13 local + 1 official" in reference index
 - Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
-- Added tabbed client-specific instructions on the installation page
-- Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
 - **Ported `.devcontainer/docs/` to docs site** — migrated content from 5 legacy reference docs into the Starlight documentation site:
   - New **Keybindings** page (Customization) — VS Code/Claude Code shortcut conflicts and resolution options
   - New **Troubleshooting** page (Reference) — 12+ problem/solution entries for build, auth, plugins, and performance issues

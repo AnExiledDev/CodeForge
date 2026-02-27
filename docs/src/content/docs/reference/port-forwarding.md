@@ -24,6 +24,10 @@ VS Code automatically detects ports opened inside the container and forwards the
 
 No setup required — ports appear in the VS Code **Ports** panel as services start. Click the local address to open in your browser.
 
+:::caution[Requires VS Code to be running]
+Port forwarding only works while VS Code is open and connected to the devcontainer. If you close VS Code or disconnect, all forwarded ports become inaccessible. For persistent port forwarding that doesn't depend on your editor, use [devcontainer-bridge](#devcontainer-bridge-dbr).
+:::
+
 :::note
 This only works inside VS Code and GitHub Codespaces. The `devcontainer` CLI, JetBrains Gateway, and DevPod ignore `portsAttributes` in `devcontainer.json`.
 :::
@@ -66,6 +70,18 @@ python -m http.server 8080
 curl http://localhost:8080
 ```
 
+### Platform Support
+
+| Platform | Host Daemon | Auto-Forward | Status |
+|----------|-------------|--------------|--------|
+| macOS    | Supported   | Expected to work | Not fully confirmed |
+| Linux    | Supported   | Expected to work | Not fully confirmed |
+| Windows  | Not yet supported | — | Future fix planned |
+
+:::note
+devcontainer-bridge auto-forwarding on macOS and Linux has not been fully validated across all configurations. If you encounter issues, fall back to SSH tunneling and [report the issue](https://github.com/bradleybeddoes/devcontainer-bridge/issues). Windows host daemon support is planned for a future release.
+:::
+
 ## SSH Tunneling
 
 For one-off port forwarding or environments where `dbr` isn't available, use SSH tunneling directly:
@@ -85,7 +101,7 @@ This requires SSH access to the container, which is available when connecting vi
 | If you use... | Recommended mechanism |
 |---------------|----------------------|
 | VS Code | Auto-detect (built-in, zero config) |
-| DevContainer CLI | `dbr` (dynamic, automatic) |
+| DevContainer CLI | `dbr` (dynamic, automatic) — see the [CLI guide](/getting-started/devcontainer-cli/) |
 | JetBrains Gateway | Gateway's built-in forwarding, or `dbr` as fallback |
 | Codespaces | Auto-detect (built-in to Codespaces) |
 | DevPod | DevPod's built-in SSH tunneling, or `dbr` |

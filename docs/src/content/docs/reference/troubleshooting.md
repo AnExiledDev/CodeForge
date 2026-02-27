@@ -7,6 +7,24 @@ sidebar:
 
 Solutions for common issues with the CodeForge devcontainer. If your problem isn't listed here, check [GitHub Issues](https://github.com/AnExiledDev/CodeForge/issues) or open a new one.
 
+## Installation Issues
+
+**Problem: `npx codeforge-dev` fails.**
+
+- **Node.js not installed** — the installer requires Node.js 18+ and npm. Run `node --version` to check; install from [nodejs.org](https://nodejs.org/) if missing.
+- **Network issues** — npm needs to reach the registry. Check your connection or try `npm config set registry https://registry.npmjs.org/`.
+- **Permission errors** — prefer `npx --yes codeforge-dev` to avoid global install permission issues. If you need global installs, configure your npm prefix or use a Node version manager (e.g., nvm) instead of `sudo`.
+
+**Problem: VS Code doesn't show "Reopen in Container".**
+
+- **Extension not installed** — install `ms-vscode-remote.remote-containers` from the Extensions marketplace, then reload VS Code.
+- **`.devcontainer/` not at repo root** — VS Code looks for `.devcontainer/` in the workspace root. If your project is inside a subfolder, open that subfolder directly.
+- **VS Code version** — DevContainers requires VS Code 1.85 or later. Check **Help → About** and update if needed.
+
+:::note[Using a different client?]
+Not using VS Code? The DevContainer CLI, JetBrains Gateway, DevPod, and Codespaces all read the same `devcontainer.json`. See the [Installation guide](/getting-started/installation/#step-2-open-in-a-devcontainer-client) for client-specific instructions.
+:::
+
 ## Container Build Failures
 
 **Problem: Container fails to build during feature installation.**
@@ -15,6 +33,8 @@ Solutions for common issues with the CodeForge devcontainer. If your problem isn
 - If a specific feature fails, disable it temporarily by setting `"version": "none"` in `devcontainer.json`.
 - Check internet connectivity — most features download binaries from GitHub releases.
 - If hitting GitHub API rate limits during build, set `GH_TOKEN` or `GITHUB_TOKEN` as an environment variable.
+- **Docker not running** — start Docker Desktop or the Docker daemon.
+- **Cached partial build** — use **Dev Containers: Rebuild Container Without Cache** (VS Code) or `devcontainer up --workspace-folder . --remove-existing-container` (CLI) to start clean.
 
 **Problem: Build is slow or hangs.**
 
@@ -129,6 +149,37 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 - First start is slower due to `postStartCommand` running all setup scripts.
 - Subsequent starts skip unchanged config files (SHA-256 comparison).
 - Disable steps you don't need via `.env` (e.g., `SETUP_PROJECTS=false`). See [Environment Variables — Setup Variables](./environment/#setup-variables-env).
+
+## Docker Permission Errors (Linux)
+
+**Problem: `docker: permission denied` or `Cannot connect to the Docker daemon`.**
+
+- Add your user to the `docker` group: `sudo usermod -aG docker $USER`, then log out and back in.
+- Verify with `docker ps` — it should run without `sudo`.
+- If using Docker rootless mode, ensure the socket path is set correctly in VS Code settings.
+
+## WSL 2 Integration Issues (Windows)
+
+**Problem: Container fails to start, or Docker commands hang inside WSL.**
+
+- Open Docker Desktop → **Settings → Resources → WSL Integration** and enable integration for your WSL distro.
+- Ensure WSL 2 (not WSL 1) is active: run `wsl -l -v` in PowerShell and check the VERSION column.
+- Restart Docker Desktop after changing WSL settings.
+
+## Port Conflicts
+
+**Problem: The claude-dashboard or other tools fail to bind their port.**
+
+- CodeForge's session dashboard uses **port 7847** by default. If another service uses that port, change it in `devcontainer.json` under `forwardPorts`.
+- To find what's using a port: `lsof -i :7847` (macOS/Linux) or `netstat -ano | findstr 7847` (Windows).
+
+## Slow Rebuilds
+
+**Problem: Rebuilding the container takes as long as the first build.**
+
+- **Use "Rebuild Container"** (not "Rebuild Without Cache") for routine rebuilds — Docker reuses cached layers for unchanged steps.
+- **Prune unused images** to free disk space: `docker system prune -a` removes all unused images (confirm you don't need them first).
+- **Check disk space** — Docker needs headroom for layer storage. If your disk is nearly full, builds may fail or slow down significantly.
 
 ## How to Reset
 

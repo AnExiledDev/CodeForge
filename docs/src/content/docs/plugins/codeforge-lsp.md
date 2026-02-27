@@ -9,7 +9,7 @@ The CodeForge LSP plugin gives Claude access to the same code intelligence that 
 
 ## How It Works
 
-This is a purely declarative plugin -- it has no hooks and no scripts. It registers LSP server configurations in `plugin.json`, and Claude Code launches each server at startup if its binary is available on PATH. Missing servers are silently skipped, so the plugin never fails on a missing tool.
+This is a purely declarative plugin -- it has no hook scripts and no shell scripts. All configuration lives in `plugin.json`, where it registers LSP server definitions. Claude Code launches each server at startup if its binary is available on PATH. Missing servers are silently skipped, so the plugin never fails on a missing tool.
 
 When Claude opens a file matching a registered extension, the corresponding LSP server provides rich language features for that file.
 
@@ -87,7 +87,7 @@ If a server binary isn't installed, the plugin silently skips it. You can regist
 
 ## Plugin Structure
 
-Unlike most CodeForge plugins, the LSP plugin contains no scripts or hooks -- just configuration:
+Unlike most CodeForge plugins, the LSP plugin contains no hook scripts or shell scripts -- just declarative configuration:
 
 ```
 codeforge-lsp/
