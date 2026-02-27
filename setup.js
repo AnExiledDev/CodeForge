@@ -118,7 +118,15 @@ function readChecksums(codeforgeDir) {
 	const files = fs
 		.readdirSync(checksumsDir)
 		.filter((f) => f.endsWith(".json"))
-		.sort();
+		.sort((a, b) => {
+			const pa = a.replace(".json", "").split(".").map(Number);
+			const pb = b.replace(".json", "").split(".").map(Number);
+			for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+				const diff = (pa[i] || 0) - (pb[i] || 0);
+				if (diff !== 0) return diff;
+			}
+			return 0;
+		});
 
 	if (files.length === 0) {
 		return { files: {} };
@@ -506,10 +514,22 @@ function configApply() {
 	let deployed = 0;
 	let skipped = 0;
 
+	const validOverwrite = ["always", "if-changed", "never"];
+
 	for (const entry of entries) {
 		if (entry.enabled === false) {
 			skipped++;
 			continue;
+		}
+
+		if (entry.overwrite && !validOverwrite.includes(entry.overwrite)) {
+			console.log(
+				'  Warning: Unknown overwrite value "' +
+					entry.overwrite +
+					'" for ' +
+					entry.src +
+					', defaulting to "always"',
+			);
 		}
 
 		const srcPath = path.join(codeforgeDir, entry.src);
