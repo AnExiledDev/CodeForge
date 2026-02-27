@@ -11,6 +11,13 @@ import json
 import re
 import sys
 
+FORCE_PUSH_SUGGESTION = (
+    "Blocked: force push is not allowed. "
+    "If you rebased and need to update a remote branch, use "
+    "`git merge origin/main` instead of `git rebase` to avoid "
+    "diverged history that requires force push."
+)
+
 DANGEROUS_PATTERNS = [
     # Destructive filesystem deletion
     (
@@ -79,15 +86,29 @@ DANGEROUS_PATTERNS = [
     (r"\brm\s+.*-[^\s]*r[^\s]*f[^\s]*\s+\.\./", "Blocked: rm -rf on parent directory"),
     (r"\bfind\s+.*-exec\s+rm\b", "Blocked: find -exec rm is dangerous"),
     (r"\bfind\s+.*-delete\b", "Blocked: find -delete is dangerous"),
-    # Git history destruction
-    (r"\bgit\s+push\s+-f\b", "Blocked: bare force push - specify remote and branch"),
-    (
-        r"\bgit\s+push\s+--force\b",
-        "Blocked: bare force push - specify remote and branch",
-    ),
+    # Git history destruction — force push (all variants)
+    (r"\bgit\s+push\s+-f\b", FORCE_PUSH_SUGGESTION),
+    (r"\bgit\s+push\s+--force\b", FORCE_PUSH_SUGGESTION),
+    (r"\bgit\s+push\s+--force-with-lease\b", FORCE_PUSH_SUGGESTION),
     (
         r"\bgit\s+clean\s+-[^\s]*f",
         "Blocked: git clean -f removes untracked files permanently",
+    ),
+    # Remote branch deletion — closes open PRs and destroys remote history
+    (
+        r"\bgit\s+push\s+\S+\s+--delete\b",
+        "Blocked: deleting remote branches closes any associated pull requests. "
+        "Do not delete remote branches as a workaround for force push blocks.",
+    ),
+    (
+        r"\bgit\s+push\s+--delete\b",
+        "Blocked: deleting remote branches closes any associated pull requests. "
+        "Do not delete remote branches as a workaround for force push blocks.",
+    ),
+    (
+        r"\bgit\s+push\s+\S+\s+:\S",
+        "Blocked: push with colon-refspec deletes remote branches and closes "
+        "associated pull requests. Do not use as a workaround for force push blocks.",
     ),
 ]
 
