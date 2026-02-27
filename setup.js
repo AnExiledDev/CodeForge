@@ -535,7 +535,9 @@ function configApply() {
 		const codeforgeRoot = path.resolve(codeforgeDir);
 		const srcPath = path.resolve(codeforgeRoot, entry.src);
 		if (!srcPath.startsWith(codeforgeRoot + path.sep)) {
-			console.log("  Skip: " + entry.src + " (source path escapes .codeforge/)");
+			console.log(
+				"  Skip: " + entry.src + " (source path escapes .codeforge/)",
+			);
 			skipped++;
 			continue;
 		}
