@@ -34,6 +34,64 @@
 #### Docs
 - Removed stale merge conflict marker in first-session docs page
 
+
+#### CI/CD
+- **Release workflow** — switched from auto-publish on `package.json` change to tag-triggered (`v*` tags only); prevents accidental releases when PRs include version bumps. Tag must match `package.json` version or the workflow fails.
+
+#### CCStatusLine Deployment
+- **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
+- **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start
+- **Silent copy failures** — `setup-config.sh` now reports warnings when file deployment fails instead of logging success after a failed `cp`
+
+#### Post-Integration Review Fixes
+- **skill-engine** — worktree skill definition uses weighted tuples (was plain strings, caused crash)
+- **dangerous-command-blocker** — fail closed on unexpected exceptions (was fail-open)
+- **ticket-workflow** — remove redundant `ValueError` from exception handlers
+- **workspace-scope-guard** — use maxsplit in variable assignment detection
+- **Shell scripts** — add executable bit to `check-setup.sh`, quote `PLUGIN_BLACKLIST` variable, add `set -uo pipefail` to tmux installer, replace deprecated `which` with `command -v`, normalize `&>` redirects in setup scripts
+- **Documentation** — update agent count to 21, skill count to 38, plugin count to 14 across all docs site pages
+- **Documentation** — add missing plugin pages for git-workflow and prompt-snippets
+- **Documentation** — add `cc-orc` and `dbr` to commands reference
+- **Documentation** — remove merge conflict marker from first-session.md
+- **Documentation** — update architecture.md directory tree with new plugins
+
+#### CodeRabbit Review Fixes
+- **`implementer.md`** — changed PostToolUse hook (fires every Edit) to Stop hook (fires once at task end) with 120s timeout; prevents redundant test runs during multi-file tasks
+- **`tester.md`** — increased Stop hook timeout from 30s to 120s to accommodate larger test suites
+- **`setup-aliases.sh`** — added `cc-orc` to `cc-tools` discovery loop so it appears in tool audit
+- **`CLAUDE.md`** — added missing `keybindings.json`, `orchestrator-system-prompt.md`, and `writing-system-prompt.md` to directory structure tree
+- **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
+- **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
+- **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
+- **`setup.js` path traversal** — `configApply()` now validates that source paths resolve within `.codeforge/` and destination paths resolve within allowed directories (`CLAUDE_CONFIG_DIR`, `HOME`, `/usr/local/`), preventing directory traversal via `../` in manifest entries
+- **`setup.sh` CODEFORGE_DIR** — deprecation guard now uses default-assignment semantics (`:=`) instead of unconditional overwrite, preserving any user-defined `CODEFORGE_DIR` from `.env`
+- **Docs site URLs** — replaced `anexileddev.github.io/CodeForge/` with custom domain `codeforge.core-directive.com/` across README.md, CLAUDE.md, and .devcontainer/README.md
+- **Architecture docs** — added `.checksums/` and `.markers/` directories to the `.codeforge/` tree in architecture.md
+- **Troubleshooting docs** — renamed "Reset to Defaults" to "How to Reset" and clarified that `--reset` preserves `.codeforge/` user modifications; added step for restoring default config sources
+
+
+#### Claude Code Installation
+- **Update script no longer silently discards errors** — background update output now captured to log file instead of being discarded via `&>/dev/null`
+- **Update script simplified to native-binary-only** — removed npm fallback and `claude install` bootstrap code; added 60s timeout and transitional npm cleanup
+- **Alias resolution simplified** — `_CLAUDE_BIN` now resolves directly to native binary path (removed npm and `/usr/local/bin` fallbacks)
+- **POSIX redirect** — replaced `&>/dev/null` with `>/dev/null 2>&1` in dependency check for portability
+- **Installer shell** — changed `sh -s` to `bash -s` when piping the official installer (it requires bash)
+- **Unquoted `${TARGET}`** — quoted variable in `su -c` command to prevent word splitting
+- **Directory prep** — added `~/.local/state` and `~/.claude` pre-creation; consolidated `chown` to cover entire `~/.local` tree
+
+#### Plugin Marketplace
+- **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
+
+#### ChromaTerm
+- **Regex lookbehinds** — replaced alternation inside lookbehinds (`(?<=[\s(]|^)` and `(?<=commit |merge |...)`) with non-capturing groups containing individual lookbehinds (`(?:(?<=[\s(])|^)` and `(?:(?<=commit )|(?<=merge )|...)`) for PCRE2 compatibility
+
+#### Terminal Color Support
+- **devcontainer.json** — added `TERM` and `COLORTERM=truecolor` to `remoteEnv`; Docker defaults to `TERM=xterm` (8 colors) which caused Claude Code and other CLI tools to downgrade rendering
+- **devcontainer.json** — `TERM` uses `${localEnv:TERM:xterm-256color}` to forward the host terminal type (e.g., `xterm-kitty`) instead of unconditionally overriding it
+- **setup-aliases.sh** — added terminal color defaults to managed shell block so tmux panes, `docker exec`, and SSH sessions also get 256-color and truecolor support
+- **kitty-terminfo/README.md** — updated documentation to reflect `localEnv` forwarding and clarify behavior across VS Code vs non-VS Code entry points
+- **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
+
 ### Added
 
 #### Startup
@@ -84,42 +142,6 @@
 - **`tester`** — enhanced test agent (opus, worktree) with full testing standards, framework-specific guidance, and Stop hook verification; creates and verifies test suites
 - **`documenter`** — consolidated documentation and specification agent (opus) merging doc-writer and spec-writer; handles README, API docs, docstrings, and the full spec lifecycle (create, refine, build, review, update, check)
 - **Question Surfacing Protocol** — all 4 workhorse agents carry an identical protocol requiring them to STOP and return `## BLOCKED: Questions` sections when hitting ambiguities, ensuring no assumptions are made without user input
-
-### Fixed
-
-#### CI/CD
-- **Release workflow** — switched from auto-publish on `package.json` change to tag-triggered (`v*` tags only); prevents accidental releases when PRs include version bumps. Tag must match `package.json` version or the workflow fails.
-
-#### CCStatusLine Deployment
-- **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
-- **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start
-- **Silent copy failures** — `setup-config.sh` now reports warnings when file deployment fails instead of logging success after a failed `cp`
-
-#### Post-Integration Review Fixes
-- **skill-engine** — worktree skill definition uses weighted tuples (was plain strings, caused crash)
-- **dangerous-command-blocker** — fail closed on unexpected exceptions (was fail-open)
-- **ticket-workflow** — remove redundant `ValueError` from exception handlers
-- **workspace-scope-guard** — use maxsplit in variable assignment detection
-- **Shell scripts** — add executable bit to `check-setup.sh`, quote `PLUGIN_BLACKLIST` variable, add `set -uo pipefail` to tmux installer, replace deprecated `which` with `command -v`, normalize `&>` redirects in setup scripts
-- **Documentation** — update agent count to 21, skill count to 38, plugin count to 14 across all docs site pages
-- **Documentation** — add missing plugin pages for git-workflow and prompt-snippets
-- **Documentation** — add `cc-orc` and `dbr` to commands reference
-- **Documentation** — remove merge conflict marker from first-session.md
-- **Documentation** — update architecture.md directory tree with new plugins
-
-#### CodeRabbit Review Fixes
-- **`implementer.md`** — changed PostToolUse hook (fires every Edit) to Stop hook (fires once at task end) with 120s timeout; prevents redundant test runs during multi-file tasks
-- **`tester.md`** — increased Stop hook timeout from 30s to 120s to accommodate larger test suites
-- **`setup-aliases.sh`** — added `cc-orc` to `cc-tools` discovery loop so it appears in tool audit
-- **`CLAUDE.md`** — added missing `keybindings.json`, `orchestrator-system-prompt.md`, and `writing-system-prompt.md` to directory structure tree
-- **`agent-system/README.md`** — updated `verify-no-regression.py` comment to list both consumers (implementer, refactorer); hyphenated "question-surfacing protocol"
-- **`orchestrator-system-prompt.md`** — clarified plan mode allows investigator delegation for research; added catch-all entry in selection criteria pointing to the full specialist catalog
-- **MD040 compliance** — added `text` language specifiers to 7 fenced code blocks across `investigator.md`, `tester.md`, and `documenter.md`
-- **`setup.js` path traversal** — `configApply()` now validates that source paths resolve within `.codeforge/` and destination paths resolve within allowed directories (`CLAUDE_CONFIG_DIR`, `HOME`, `/usr/local/`), preventing directory traversal via `../` in manifest entries
-- **`setup.sh` CODEFORGE_DIR** — deprecation guard now uses default-assignment semantics (`:=`) instead of unconditional overwrite, preserving any user-defined `CODEFORGE_DIR` from `.env`
-- **Docs site URLs** — replaced `anexileddev.github.io/CodeForge/` with custom domain `codeforge.core-directive.com/` across README.md, CLAUDE.md, and .devcontainer/README.md
-- **Architecture docs** — added `.checksums/` and `.markers/` directories to the `.codeforge/` tree in architecture.md
-- **Troubleshooting docs** — renamed "Reset to Defaults" to "How to Reset" and clarified that `--reset` preserves `.codeforge/` user modifications; added step for restoring default config sources
 
 ### Changed
 
@@ -174,30 +196,6 @@
 - All docs now reference `~/.claude` as default config path
 - Added `CLAUDE_AUTH_TOKEN` setup flow to README, configuration reference, and troubleshooting
 - ccstatusline README verification commands now respect `CLAUDE_CONFIG_DIR`
-
-### Fixed
-
-#### Claude Code Installation
-- **Update script no longer silently discards errors** — background update output now captured to log file instead of being discarded via `&>/dev/null`
-- **Update script simplified to native-binary-only** — removed npm fallback and `claude install` bootstrap code; added 60s timeout and transitional npm cleanup
-- **Alias resolution simplified** — `_CLAUDE_BIN` now resolves directly to native binary path (removed npm and `/usr/local/bin` fallbacks)
-- **POSIX redirect** — replaced `&>/dev/null` with `>/dev/null 2>&1` in dependency check for portability
-- **Installer shell** — changed `sh -s` to `bash -s` when piping the official installer (it requires bash)
-- **Unquoted `${TARGET}`** — quoted variable in `su -c` command to prevent word splitting
-- **Directory prep** — added `~/.local/state` and `~/.claude` pre-creation; consolidated `chown` to cover entire `~/.local` tree
-
-#### Plugin Marketplace
-- **`marketplace.json` schema fix** — changed all 11 plugin `source` fields from bare names (e.g., `"codeforge-lsp"`) to relative paths (`"./plugins/codeforge-lsp"`) so `claude plugin marketplace add` passes schema validation and all plugins register correctly
-
-#### ChromaTerm
-- **Regex lookbehinds** — replaced alternation inside lookbehinds (`(?<=[\s(]|^)` and `(?<=commit |merge |...)`) with non-capturing groups containing individual lookbehinds (`(?:(?<=[\s(])|^)` and `(?:(?<=commit )|(?<=merge )|...)`) for PCRE2 compatibility
-
-#### Terminal Color Support
-- **devcontainer.json** — added `TERM` and `COLORTERM=truecolor` to `remoteEnv`; Docker defaults to `TERM=xterm` (8 colors) which caused Claude Code and other CLI tools to downgrade rendering
-- **devcontainer.json** — `TERM` uses `${localEnv:TERM:xterm-256color}` to forward the host terminal type (e.g., `xterm-kitty`) instead of unconditionally overriding it
-- **setup-aliases.sh** — added terminal color defaults to managed shell block so tmux panes, `docker exec`, and SSH sessions also get 256-color and truecolor support
-- **kitty-terminfo/README.md** — updated documentation to reflect `localEnv` forwarding and clarify behavior across VS Code vs non-VS Code entry points
-- **CLAUDE.md** — documented `TERM` and `COLORTERM` environment variables in the Environment section
 
 ### Removed
 
