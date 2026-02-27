@@ -46,36 +46,6 @@ Commands for session analysis, usage tracking, and system monitoring.
 | `cc-tools` | List all installed CodeForge CLI tools with version info | `cc-tools` |
 | `dbr` | Dynamic port forwarding via devcontainer-bridge (container↔host) | `dbr` |
 
-### ccms Usage
-
-:::caution[Currently Disabled]
-The `ccms` feature is currently commented out in `devcontainer.json`. A replacement tool is pending. The documentation below is preserved for reference.
-:::
-
-`ccms` is the most feature-rich analysis command. Key flags:
-
-```bash
-# Basic search
-ccms "error handling"
-
-# Project-scoped (recommended)
-ccms --project "$(pwd)" "auth approach"
-
-# Filter by role
-ccms -r assistant "what was decided"
-ccms -r user "please fix"
-
-# Boolean queries
-ccms "error AND connection"
-ccms "(auth OR authentication) AND NOT test"
-
-# Time-scoped
-ccms --since "1 day ago" "recent work"
-
-# JSON output
-ccms -f json "query" -n 10
-```
-
 ## Code Quality Commands
 
 Pre-installed tools for linting, formatting, and code analysis.

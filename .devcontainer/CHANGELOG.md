@@ -14,6 +14,19 @@
 - Dynamic port forwarding for all ports in VS Code — previously only port 7847 was statically forwarded; now all ports auto-forward with notification
 
 #### Documentation
+- Added **DevContainer CLI guide** — dedicated Getting Started page for terminal-only workflows without VS Code
+- Added **v2 Migration Guide** — path changes, automatic migration, manual steps, breaking changes, and troubleshooting
+- Updated **Port Forwarding reference** — VS Code dependency warning, devcontainer-bridge platform support matrix, CLI guide cross-link
+- Slimmed **Installation page** — moved troubleshooting to dedicated reference page, CLI details to new CLI guide
+- Full documentation review — accuracy, consistency, and completeness fixes across all 30+ pages
+- Documented 4 previously undocumented agents in agents.md: implementer, investigator, tester, documenter
+- Trimmed disabled ccms usage section from commands reference
+- Clarified codeforge-lsp plugin description (declarative config, not "no configuration")
+- Improved magic-docs agent explanation in agent-system plugin docs
+- Clarified plugin count as "13 local + 1 official" in reference index
+- Added missing git-workflow and prompt-snippets to configuration.md enabledPlugins example
+- Added CONFIG_SOURCE_DIR deprecation note in environment variables reference
+- Added cc-orc orchestrator command to first-session launch commands table
 - Updated prerequisites and installation docs to support all DevContainer clients (VS Code, CLI, JetBrains Gateway, DevPod, Codespaces)
 - Added tabbed client-specific instructions on the installation page
 - Added dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling

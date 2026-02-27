@@ -94,7 +94,7 @@ These variables live in `.devcontainer/.env` and control what `setup.sh` does on
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Where Claude Code config files are stored |
-| `CODEFORGE_DIR` | (auto-detected) | Source directory for user-customizable config files (`.codeforge/`) |
+| `CODEFORGE_DIR` | (auto-detected) | Source directory for user-customizable config files (`.codeforge/`). Replaces the deprecated `CONFIG_SOURCE_DIR` from v1.x. |
 | `SETUP_CONFIG` | `true` | Copy config files per `file-manifest.json` |
 | `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw`/`cc-tools` aliases to shell |
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |
