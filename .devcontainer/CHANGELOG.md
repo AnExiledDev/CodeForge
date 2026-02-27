@@ -85,6 +85,9 @@
 
 ### Fixed
 
+#### CI/CD
+- **Release workflow** — switched from auto-publish on `package.json` change to tag-triggered (`v*` tags only); prevents accidental releases when PRs include version bumps. Tag must match `package.json` version or the workflow fails.
+
 #### CCStatusLine Deployment
 - **`CONFIG_SOURCE_DIR` deprecation guard** — `setup.sh` now detects stale `CONFIG_SOURCE_DIR=/workspaces/.claude` in `.env`, overrides to `$DEVCONTAINER_DIR/config`, and auto-comments the line on disk; the wrong path caused `setup-config.sh` to skip the file manifest entirely, leaving ccstatusline (and all manifest-based configs) undeployed
 - **System template directory permissions** — `install.sh` now chowns `/usr/local/share/ccstatusline/` to the target user so `setup-config.sh` can write the template file during post-start

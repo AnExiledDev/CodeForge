@@ -2,34 +2,29 @@ name: Release
 
 on:
   push:
-    branches: [main]
-    paths: ['package.json']
+    tags: ['v*']
 
 jobs:
-  check-version:
+  validate:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.check.outputs.version }}
-      changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.extract.outputs.version }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
 
-      - id: check
+      - id: extract
+        name: Extract and validate version
         run: |
-          CURRENT=$(node -p "require('./package.json').version")
-          PREVIOUS=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version" || echo "0.0.0")
-          echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
+          TAG="${GITHUB_REF#refs/tags/v}"
+          PKG=$(node -p "require('./package.json').version")
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag v${TAG} does not match package.json version ${PKG}"
+            exit 1
           fi
 
   publish-and-release:
-    needs: check-version
-    if: needs.check-version.outputs.changed == 'true'
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,16 +44,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create git tag
-        run: |
-          VERSION="v${{ needs.check-version.outputs.version }}"
-          git tag "$VERSION"
-          git push origin "$VERSION"
-
       - name: Extract changelog section
         id: changelog
         run: |
-          VERSION="${{ needs.check-version.outputs.version }}"
+          VERSION="${{ needs.validate.outputs.version }}"
           NOTES=$(sed -n "/^## \[v${VERSION}\]/,/^## \[v/{ /^## \[v${VERSION}\]/d; /^## \[v/d; p; }" .devcontainer/CHANGELOG.md)
           if [ -z "$NOTES" ]; then
             NOTES="Release v${VERSION}"
@@ -69,7 +58,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="v${{ needs.check-version.outputs.version }}"
+          VERSION="v${{ needs.validate.outputs.version }}"
           gh release create "$VERSION" \
             --title "$VERSION" \
             --notes-file /tmp/release-notes.md
