@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+
+#### Dangerous Command Blocker
+- **Force push block now suggests `git merge` as workaround** — error message explains how to avoid diverged history instead of leaving the agent to improvise destructive workarounds
+- **Block `--force-with-lease`** — was slipping through regex; all force push variants now blocked uniformly
+- **Block remote branch deletion** — `git push origin --delete` and colon-refspec deletion (`git push origin :branch`) now blocked; deleting remote branches closes associated PRs
+- **Fixed README** — error handling was documented as "fails open" but code actually fails closed; corrected to match behavior
+
 ### Added
 
 #### Documentation
