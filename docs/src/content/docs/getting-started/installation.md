@@ -18,11 +18,16 @@ npx codeforge-dev
 This creates a `.devcontainer/` directory containing the full CodeForge configuration — all plugins, features, agents, skills, system prompts, and settings. Your existing project files are not modified.
 
 :::tip[Already have a .devcontainer?]
-If your project already has a `.devcontainer/` directory, the installer will warn you and exit. Use the `--force` flag to perform a smart sync that preserves your user configuration:
+If your project already has a `.devcontainer/` directory, the installer will warn you and exit. Two flags handle this:
+
 ```bash
-npx codeforge-dev --force
+npx codeforge-dev --force    # Smart update (preserves your customizations)
+npx codeforge-dev --reset    # Fresh install (wipes .devcontainer, keeps .codeforge)
 ```
-The `--force` flag uses an intelligent sync — it preserves files you've customized (writing `.default` copies of new defaults in `.codeforge/` for review) rather than blindly overwriting everything.
+
+**`--force`** uses an intelligent sync — it preserves files you've customized (writing `.default` copies of new defaults in `.codeforge/` for review) rather than blindly overwriting everything. Use this for routine updates.
+
+**`--reset`** deletes `.devcontainer/` entirely and copies clean defaults from the package. Your `.codeforge/` user configuration is always preserved. Use this when `.devcontainer/` is corrupted or you want a clean slate.
 :::
 
 ### Alternative Installation Methods
@@ -33,7 +38,7 @@ npm install -g codeforge-dev
 codeforge-dev
 
 # Pin a specific version
-npx codeforge-dev@1.14.0
+npx codeforge-dev@2.0.0
 ```
 
 ### What the Installer Creates

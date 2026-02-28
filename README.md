@@ -30,8 +30,9 @@ This copies the `.devcontainer/` directory to your project. Then open in VS Code
 ### Options
 
 ```bash
-npx codeforge-dev --force    # Overwrite existing .devcontainer directory
+npx codeforge-dev --force    # Smart update (preserves your customizations)
 npx codeforge-dev -f         # Short form
+npx codeforge-dev --reset    # Fresh install (wipes .devcontainer, keeps .codeforge)
 ```
 
 ### Alternative Install Methods
