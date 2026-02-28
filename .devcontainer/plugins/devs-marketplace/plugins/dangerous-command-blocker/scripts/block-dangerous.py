@@ -110,18 +110,71 @@ DANGEROUS_PATTERNS = [
         "Blocked: push with colon-refspec deletes remote branches and closes "
         "associated pull requests. Do not use as a workaround for force push blocks.",
     ),
+    # Symbolic chmod equivalents of 777
+    (
+        r"\bchmod\s+a=rwx\b",
+        "Blocked: chmod a=rwx is equivalent to 777 — security vulnerability",
+    ),
+    (
+        r"\bchmod\s+0777\b",
+        "Blocked: chmod 0777 creates security vulnerability",
+    ),
+    # SetUID/SetGID bits
+    (
+        r"\bchmod\s+u\+s\b",
+        "Blocked: chmod u+s sets SetUID bit — privilege escalation risk",
+    ),
+    (
+        r"\bchmod\s+g\+s\b",
+        "Blocked: chmod g+s sets SetGID bit — privilege escalation risk",
+    ),
+    # Destructive Docker operations (additional)
+    (
+        r"\bdocker\s+system\s+prune\b",
+        "Blocked: docker system prune removes all unused data",
+    ),
+    (
+        r"\bdocker\s+volume\s+rm\b",
+        "Blocked: docker volume rm destroys persistent data",
+    ),
+    # Git history rewriting
+    (
+        r"\bgit\s+filter-branch\b",
+        "Blocked: git filter-branch rewrites repository history",
+    ),
+    # Plus-refspec force push (git push origin +main)
+    (
+        r"\bgit\s+push\s+\S+\s+\+\S",
+        "Blocked: plus-refspec push (+ref) is a force push that destroys history",
+    ),
+    # Force push variant: --force-if-includes
+    (r"\bgit\s+push\s+.*--force-if-includes\b", FORCE_PUSH_SUGGESTION),
 ]
 
 
-def check_command(command: str) -> tuple[bool, str]:
-    """Check if command matches any dangerous pattern.
+def strip_command_prefixes(command: str) -> str:
+    """Strip common command prefixes that bypass word-boundary matching.
 
-    Returns:
-        (is_dangerous, message)
+    Handles: backslash prefix (\\rm), command prefix, env prefix.
     """
-    for pattern, message in DANGEROUS_PATTERNS:
-        if re.search(pattern, command, re.IGNORECASE):
-            return True, message
+    stripped = command
+    # Strip leading backslash from commands (e.g. \rm -> rm)
+    stripped = re.sub(r"(?:^|(?<=\s))\\(?=\w)", "", stripped)
+    # Strip 'command' prefix (e.g. 'command rm' -> 'rm')
+    stripped = re.sub(r"\bcommand\s+", "", stripped)
+    # Strip 'env' prefix with optional VAR=val args (e.g. 'env VAR=x rm' -> 'rm')
+    stripped = re.sub(r"\benv\s+(?:\w+=\S+\s+)*", "", stripped)
+    return stripped
+
+
+def check_command(command: str) -> tuple[bool, str]:
+    """Check if command matches any dangerous pattern."""
+    stripped = strip_command_prefixes(command)
+    # Check both original and stripped versions
+    for cmd in (command, stripped):
+        for pattern, message in DANGEROUS_PATTERNS:
+            if re.search(pattern, cmd, re.IGNORECASE):
+                return True, message
     return False, ""
 
 

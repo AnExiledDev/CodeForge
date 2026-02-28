@@ -265,6 +265,11 @@ class TestGitReadonlyBlocked:
         cmd = "git stash drop"
         assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
 
+    def test_bare_stash_blocked(self) -> None:
+        """Bare 'git stash' (no subcommand) is equivalent to 'git stash push'."""
+        cmd = "git stash"
+        assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
     def test_config_without_get_blocked(self) -> None:
         cmd = "git config user.name foo"
         assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
@@ -298,6 +303,7 @@ class TestGitReadonlyAllowed:
             "git config --get user.name",
             "git config --list",
             "git stash list",
+            "git stash show",
             "cat file | grep pattern",
             "git -C /path --no-pager log",
             "sed 's/a/b/' file",
@@ -310,6 +316,7 @@ class TestGitReadonlyAllowed:
             "config-get",
             "config-list",
             "stash-list",
+            "stash-show",
             "cat-pipe-grep",
             "global-flags",
             "sed-without-i",

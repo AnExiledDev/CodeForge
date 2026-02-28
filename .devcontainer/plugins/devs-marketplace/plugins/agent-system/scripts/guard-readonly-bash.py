@@ -550,7 +550,9 @@ def check_git_readonly(command: str) -> str | None:
 
                     elif sub == "stash":
                         # Only allow "stash list" and "stash show"
-                        if len(words) > 2 and words[2] not in ("list", "show"):
+                        if len(words) <= 2:
+                            return "Blocked: bare 'git stash' (equivalent to push) is not allowed in read-only mode"
+                        if words[2] not in ("list", "show"):
                             return f"Blocked: 'git stash {words[2]}' is not allowed in read-only mode"
 
                     else:

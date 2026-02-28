@@ -30,8 +30,8 @@ BLACKLISTED_PREFIXES = [
 # Paths always allowed regardless of working directory
 _home = os.environ.get("HOME", "/home/vscode")
 ALLOWED_PREFIXES = [
-    f"{_home}/.claude/",     # Claude config, plans, rules
-    "/tmp/",                 # System scratch
+    f"{_home}/.claude/",  # Claude config, plans, rules
+    "/tmp/",  # System scratch
 ]
 
 WRITE_TOOLS = {"Write", "Edit", "NotebookEdit"}
@@ -54,27 +54,27 @@ PATH_FIELDS = {
 # ---------------------------------------------------------------------------
 WRITE_PATTERNS = [
     # --- Ported from guard-protected-bash.py ---
-    r"(?:>|>>)\s*([^\s;&|]+)",                                              # > file, >> file
-    r"\btee\s+(?:-a\s+)?([^\s;&|]+)",                                       # tee file
-    r"\b(?:cp|mv)\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",                  # cp/mv src dest
+    r"(?:>>|>)\s*([^\s;&|]+)",  # >> file, > file
+    r"\btee\s+(?:-a\s+)?([^\s;&|]+)",  # tee file
+    r"\b(?:cp|mv)\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # cp/mv src dest
     r'\bsed\s+-i[^\s]*\s+(?:\'[^\']*\'\s+|"[^"]*"\s+|[^\s]+\s+)*([^\s;&|]+)',  # sed -i
-    r"\bcat\s+(?:<<[^\s]*\s+)?>\s*([^\s;&|]+)",                            # cat > file
+    r"\bcat\s+(?:<<[^\s]*\s+)?>\s*([^\s;&|]+)",  # cat > file
     # --- New patterns ---
-    r"\btouch\s+(?:-[^\s]+\s+)*([^\s;&|]+)",                               # touch file
-    r"\bmkdir\s+(?:-[^\s]+\s+)*([^\s;&|]+)",                               # mkdir [-p] dir
-    r"\brm\s+(?:-[^\s]+\s+)*([^\s;&|]+)",                                  # rm [-rf] path
-    r"\bln\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",                         # ln [-s] src dest
-    r"\binstall\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",                    # install src dest
-    r"\brsync\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",                      # rsync src dest
-    r"\bchmod\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",                      # chmod mode path
-    r"\bchown\s+(?:-[^\s]+\s+)*[^\s:]+(?::[^\s]+)?\s+([^\s;&|]+)",         # chown owner[:group] path
-    r"\bdd\b[^;|&]*\bof=([^\s;&|]+)",                                      # dd of=path
-    r"\bwget\s+(?:-[^\s]+\s+)*-O\s+([^\s;&|]+)",                           # wget -O path
-    r"\bcurl\s+(?:-[^\s]+\s+)*-o\s+([^\s;&|]+)",                           # curl -o path
-    r"\btar\s+(?:-[^\s]+\s+)*-C\s+([^\s;&|]+)",                            # tar -C dir
-    r"\bunzip\s+(?:-[^\s]+\s+)*-d\s+([^\s;&|]+)",                          # unzip -d dir
+    r"\btouch\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # touch file
+    r"\bmkdir\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # mkdir [-p] dir
+    r"\brm\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # rm [-rf] path
+    r"\bln\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # ln [-s] src dest
+    r"\binstall\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # install src dest
+    r"\brsync\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # rsync src dest
+    r"\bchmod\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # chmod mode path
+    r"\bchown\s+(?:-[^\s]+\s+)*[^\s:]+(?::[^\s]+)?\s+([^\s;&|]+)",  # chown owner[:group] path
+    r"\bdd\b[^;|&]*\bof=([^\s;&|]+)",  # dd of=path
+    r"\bwget\s+(?:-[^\s]+\s+)*-O\s+([^\s;&|]+)",  # wget -O path
+    r"\bcurl\s+(?:-[^\s]+\s+)*-o\s+([^\s;&|]+)",  # curl -o path
+    r"\btar\s+(?:-[^\s]+\s+)*-C\s+([^\s;&|]+)",  # tar -C dir
+    r"\bunzip\s+(?:-[^\s]+\s+)*-d\s+([^\s;&|]+)",  # unzip -d dir
     r"\b(?:gcc|g\+\+|cc|c\+\+|clang)\s+(?:-[^\s]+\s+)*-o\s+([^\s;&|]+)",  # gcc -o out
-    r"\bsqlite3\s+([^\s;&|]+)",                                            # sqlite3 dbpath
+    r"\bsqlite3\s+([^\s;&|]+)",  # sqlite3 dbpath
 ]
 
 # ---------------------------------------------------------------------------
@@ -86,15 +86,42 @@ WORKSPACE_PATH_RE = re.compile(r'/workspaces/[^\s;|&>)<\'"]+')
 # ---------------------------------------------------------------------------
 # System command exemption (Layer 1 only)
 # ---------------------------------------------------------------------------
-SYSTEM_COMMANDS = frozenset({
-    "git", "pip", "pip3", "npm", "npx", "yarn", "pnpm",
-    "apt-get", "apt", "cargo", "go", "docker", "make", "cmake",
-    "node", "python3", "python", "ruby", "gem", "bundle",
-})
+SYSTEM_COMMANDS = frozenset(
+    {
+        "git",
+        "pip",
+        "pip3",
+        "npm",
+        "npx",
+        "yarn",
+        "pnpm",
+        "apt-get",
+        "apt",
+        "cargo",
+        "go",
+        "docker",
+        "make",
+        "cmake",
+        "node",
+        "python3",
+        "python",
+        "ruby",
+        "gem",
+        "bundle",
+    }
+)
 
 SYSTEM_PATH_PREFIXES = (
-    "/usr/", "/bin/", "/sbin/", "/lib/", "/opt/",
-    "/proc/", "/sys/", "/dev/", "/var/", "/etc/",
+    "/usr/",
+    "/bin/",
+    "/sbin/",
+    "/lib/",
+    "/opt/",
+    "/proc/",
+    "/sys/",
+    "/dev/",
+    "/var/",
+    "/etc/",
 )
 
 
@@ -102,10 +129,12 @@ SYSTEM_PATH_PREFIXES = (
 # Core check functions
 # ---------------------------------------------------------------------------
 
+
 def is_blacklisted(resolved_path: str) -> bool:
     """Check if resolved_path is under a permanently blocked directory."""
-    return (resolved_path == "/workspaces/.devcontainer"
-            or resolved_path.startswith("/workspaces/.devcontainer/"))
+    return resolved_path == "/workspaces/.devcontainer" or resolved_path.startswith(
+        "/workspaces/.devcontainer/"
+    )
 
 
 def is_in_scope(resolved_path: str, cwd: str) -> bool:
@@ -135,6 +164,7 @@ def get_target_path(tool_name: str, tool_input: dict) -> str | None:
 # Bash enforcement
 # ---------------------------------------------------------------------------
 
+
 def extract_write_targets(command: str) -> list[str]:
     """Extract file paths that the command writes to (Layer 1)."""
     targets = []
@@ -157,7 +187,11 @@ def extract_primary_command(command: str) -> str:
     while i < len(tokens):
         tok = tokens[i]
         # Skip inline variable assignments: VAR=value
-        if "=" in tok and not tok.startswith("-") and tok.split("=", 1)[0].isidentifier():
+        if (
+            "=" in tok
+            and not tok.startswith("-")
+            and tok.split("=", 1)[0].isidentifier()
+        ):
             i += 1
             continue
         # Skip sudo and its flags
@@ -243,7 +277,9 @@ def check_bash_scope(command: str, cwd: str) -> None:
             # Override: if ANY target is under /workspaces/ outside cwd → NOT exempt
             if skip_layer1:
                 for _, resolved in resolved_targets:
-                    if resolved.startswith("/workspaces/") and not is_in_scope(resolved, cwd):
+                    if resolved.startswith("/workspaces/") and not is_in_scope(
+                        resolved, cwd
+                    ):
                         skip_layer1 = False
                         break
 
@@ -272,6 +308,7 @@ def check_bash_scope(command: str, cwd: str) -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main():
     try:
