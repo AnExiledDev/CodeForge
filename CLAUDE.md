@@ -6,6 +6,13 @@ See `.devcontainer/CLAUDE.md` for full devcontainer documentation.
 
 ## Development Rules
 
+### Branching Strategy
+
+- **`main`** — production/release branch. Only updated via PRs from `staging`.
+- **`staging`** — integration branch. All feature/fix branches target `staging` for PRs.
+- Feature and fix branches should be created from `staging` and PRed back to `staging`.
+- PRs from `staging` to `main` are used for releases.
+
 ### Changelog
 
 Every change MUST have a corresponding entry in `.devcontainer/CHANGELOG.md`.
