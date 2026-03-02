@@ -10,6 +10,7 @@ Exit code 0 allows the command to proceed.
 
 import json
 import re
+import shlex
 import sys
 
 # Same patterns as guard-protected.py
@@ -86,6 +87,59 @@ WRITE_PATTERNS = [
 ]
 
 
+# Commands where all trailing non-flag arguments are file targets
+_MULTI_TARGET_CMDS = frozenset({"rm", "touch", "mkdir"})
+# Commands where the first non-flag arg is NOT a file (mode/owner), rest are
+_SKIP_FIRST_ARG_CMDS = frozenset({"chmod", "chown"})
+
+
+def _extract_multi_targets(command: str) -> list[str]:
+    """Extract all file targets from commands that accept multiple operands."""
+    try:
+        tokens = shlex.split(command)
+    except ValueError:
+        return []
+    if not tokens:
+        return []
+
+    # Handle prefixes like sudo, env, etc.
+    prefixes = {"sudo", "env", "nohup", "nice", "command"}
+    i = 0
+    while i < len(tokens) and tokens[i] in prefixes:
+        i += 1
+        # Skip sudo flags like -u root
+        if i > 0 and tokens[i - 1] == "sudo":
+            while i < len(tokens) and tokens[i].startswith("-"):
+                i += 1
+                if i < len(tokens) and not tokens[i].startswith("-"):
+                    i += 1  # skip flag argument
+        # Skip env VAR=val
+        if i > 0 and tokens[i - 1] == "env":
+            while i < len(tokens) and "=" in tokens[i]:
+                i += 1
+    if i >= len(tokens):
+        return []
+    cmd = tokens[i]
+
+    if cmd not in _MULTI_TARGET_CMDS and cmd not in _SKIP_FIRST_ARG_CMDS:
+        return []
+
+    # Collect non-flag arguments
+    args = []
+    j = i + 1
+    while j < len(tokens):
+        if tokens[j].startswith("-"):
+            j += 1
+            continue
+        args.append(tokens[j])
+        j += 1
+
+    if cmd in _SKIP_FIRST_ARG_CMDS and args:
+        args = args[1:]  # First arg is mode/owner, not a file
+
+    return args
+
+
 def extract_write_targets(command: str) -> list[str]:
     """Extract file paths that the command writes to."""
     targets = []
@@ -94,6 +148,10 @@ def extract_write_targets(command: str) -> list[str]:
             target = match.group(1).strip("'\"")
             if target:
                 targets.append(target)
+    # Supplement with multi-target extraction for commands like rm, touch, chmod
+    for target in _extract_multi_targets(command):
+        if target not in targets:
+            targets.append(target)
     return targets
 
 

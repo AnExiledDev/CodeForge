@@ -42,9 +42,7 @@ LOG_FILE = "/tmp/agent-redirect.log"
 
 
 def log(message: str) -> None:
-    """Append a timestamped log entry if logging is enabled."""
-    if not LOG_FILE:
-        return
+    """Append a timestamped log entry."""
     try:
         with open(LOG_FILE, "a") as f:
             ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")

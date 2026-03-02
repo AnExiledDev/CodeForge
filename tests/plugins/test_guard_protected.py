@@ -262,6 +262,5 @@ class TestFailClosed:
             text=True,
         )
         assert result.returncode == 2, (
-            f"Expected exit code 2, got {result.returncode}. "
-            f"stderr: {result.stderr}"
+            f"Expected exit code 2, got {result.returncode}. stderr: {result.stderr}"
         )

@@ -284,9 +284,59 @@ class TestExtractWriteTargetsExtended:
         targets = guard_protected_bash.extract_write_targets(command)
         assert expected_target in targets
         is_protected, message = guard_protected_bash.check_path(expected_target)
-        assert is_protected is True, (
-            f"Expected '{expected_target}' to be protected"
+        assert is_protected is True, f"Expected '{expected_target}' to be protected"
+        assert message != ""
+
+
+# ---------------------------------------------------------------------------
+# Multi-target extraction
+# ---------------------------------------------------------------------------
+
+
+class TestMultiTargetExtraction:
+    """Commands with multiple file operands should check all targets."""
+
+    @pytest.mark.parametrize(
+        "command, expected_target",
+        [
+            ("rm safe.txt .env", ".env"),
+            ("touch a.txt .secrets", ".secrets"),
+            ("chmod 644 safe.txt .env", ".env"),
+            ("rm -rf safe/ .env", ".env"),
+            ("mkdir safe_dir .ssh/keys", ".ssh/keys"),
+        ],
+        ids=[
+            "rm-multi-catches-env",
+            "touch-multi-catches-secrets",
+            "chmod-multi-catches-env",
+            "rm-rf-multi-catches-env",
+            "mkdir-multi-catches-ssh",
+        ],
+    )
+    def test_multi_target_extracts_protected(self, command, expected_target):
+        targets = guard_protected_bash.extract_write_targets(command)
+        assert expected_target in targets, (
+            f"Expected '{expected_target}' in extracted targets {targets}"
         )
+
+    @pytest.mark.parametrize(
+        "command, expected_target",
+        [
+            ("rm safe.txt .env", ".env"),
+            ("touch a.txt .secrets", ".secrets"),
+            ("chmod 644 safe.txt .env", ".env"),
+        ],
+        ids=[
+            "rm-blocks-env",
+            "touch-blocks-secrets",
+            "chmod-blocks-env",
+        ],
+    )
+    def test_multi_target_blocks_protected(self, command, expected_target):
+        targets = guard_protected_bash.extract_write_targets(command)
+        assert expected_target in targets
+        is_protected, message = guard_protected_bash.check_path(expected_target)
+        assert is_protected is True
         assert message != ""
 
 
@@ -324,6 +374,5 @@ class TestFailClosed:
             text=True,
         )
         assert result.returncode == 2, (
-            f"Expected exit code 2, got {result.returncode}. "
-            f"stderr: {result.stderr}"
+            f"Expected exit code 2, got {result.returncode}. stderr: {result.stderr}"
         )
