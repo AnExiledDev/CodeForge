@@ -1,6 +1,23 @@
 # CodeForge Devcontainer Changelog
 
-## v2.0.0 — 2026-02-26
+## [v2.0.1] — 2026-03-02
+
+### Added
+#### Official Plugins
+- **Expanded Anthropic official plugins** — added `code-review`, `feature-dev`, and `pr-review-toolkit` from `anthropics/claude-code`
+- **Migrated plugin identifiers** — switched from `@claude-plugins-official` to `@anthropics/claude-code` format
+
+### Changed
+#### Protected Files Guard
+- **Allowed `.env.example` edits** — `.env.example` is no longer blocked by the `.env.*` pattern; actual secret files (`.env.local`, `.env.production`, etc.) remain protected
+
+### Fixed
+- Plugin count updated 14→17 across all docs pages and README
+- Agent/skill counts corrected in README (17→21 agents, 35→38 skills)
+- Protected-files-guard README error handling table: "fails open" → "fails closed"
+- Merged stale `[Unreleased]` changelog entries into v2.0.0; updated test counts (241→289)
+
+## [v2.0.0] — 2026-02-26
 
 ### .codeforge/ Configuration System
 - New `.codeforge/` directory centralizes all user-customizable configuration files

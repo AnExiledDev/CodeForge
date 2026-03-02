@@ -1,6 +1,6 @@
 {
 	"name": "codeforge-dev",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
 	"main": "setup.js",
 	"bin": {
