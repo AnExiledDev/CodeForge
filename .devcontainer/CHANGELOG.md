@@ -1,47 +1,5 @@
 # CodeForge Devcontainer Changelog
 
-## [Unreleased]
-
-### Security
-- Removed environment variable injection vector in agent redirect log path (S2-01)
-- Narrowed config deployment allowed destinations from `/usr/local` to `/usr/local/share` (S2-09)
-- Protected files guard now fails closed on unexpected errors instead of failing open (S2-04)
-
-### Testing
-- **Plugin test suite** — 289 pytest tests covering 6 critical plugin scripts that previously had zero tests:
-  - `block-dangerous.py` (62 tests) — all 33 dangerous command patterns with positive/negative/edge cases
-  - `guard-workspace-scope.py` (40 tests) — blacklist, scope, allowlist, bash enforcement layers, primary command extraction
-  - `guard-protected.py` (56 tests) — all protected file patterns (secrets, locks, keys, credentials, auth dirs)
-  - `guard-protected-bash.py` (49 tests) — write target extraction, multi-target commands, and protected path integration
-  - `guard-readonly-bash.py` (69 tests) — general-readonly and git-readonly modes, bypass prevention, global flag handling
-  - `redirect-builtin-agents.py` (13 tests) — redirect mapping, passthrough, output structure
-- Added `test:plugins` and `test:all` npm scripts for running plugin tests
-- Python plugin tests (`pytest`) added to CI pipeline (Q3-08)
-
-### Dangerous Command Blocker
-- **Force push block now suggests `git merge` as workaround** — error message explains how to avoid diverged history instead of leaving the agent to improvise destructive workarounds
-- **Block `--force-with-lease`** — was slipping through regex; all force push variants now blocked uniformly
-- **Block remote branch deletion** — `git push origin --delete` and colon-refspec deletion (`git push origin :branch`) now blocked; deleting remote branches closes associated PRs
-- **Fixed README** — error handling was documented as "fails open" but code actually fails closed; corrected to match behavior
-- Dangerous command blocker handles prefix bypasses (`\rm`, `command rm`, `env rm`) and symbolic chmod (S2-03)
-
-### Guards
-- Fixed greedy alternation in write-target regex — `>>` now matched before `>` (Q3-01)
-- Unified write-target extraction patterns across guards — protected-files bash guard expanded from 5 to 20 patterns (C1-02)
-- Multi-target command support — `rm`, `touch`, `mkdir`, `chmod`, `chown` with multiple file operands now check all targets
-- Bare `git stash` (equivalent to push) now blocked in read-only mode (Q3-04)
-- Fixed git global flag handling — `git -C /path stash list` no longer misidentifies the stash subcommand
-
-### Documentation
-- **DevContainer CLI guide** — dedicated Getting Started page for terminal-only workflows without VS Code
-- **v2 Migration Guide** — path changes, automatic migration, manual steps, breaking changes, and troubleshooting
-- Documented 4 previously undocumented agents in agents.md: implementer, investigator, tester, documenter
-- Added missing git-workflow and prompt-snippets to configuration.md enabledPlugins example
-- Added CONFIG_SOURCE_DIR deprecation note in environment variables reference
-- Added cc-orc orchestrator command to first-session launch commands table
-- Tabbed client-specific instructions on the installation page
-- Dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
-
 ## v2.0.0 — 2026-02-26
 
 ### .codeforge/ Configuration System
@@ -100,6 +58,8 @@
 - **worktree skill** — git worktree creation, management, cleanup, `EnterWorktree` tool, `.worktreeinclude` setup
 
 ### Plugins
+- **Expanded Anthropic official plugins** — added `code-review`, `feature-dev`, and `pr-review-toolkit` from `anthropics/claude-code`
+- **Migrated plugin identifiers** — switched from `@claude-plugins-official` to `@anthropics/claude-code` format
 - **Git workflow** — `/ship` (commit/push/PR with code review and approval) and `/pr:review` (PR review by number/URL, posts findings as comment)
 - **Prompt snippets** — `/ps` command for quick behavioral mode switches (noaction, brief, plan, go, review, ship, deep, hold, recall, wait); composable (`/ps noaction brief`)
 
@@ -113,9 +73,10 @@
 - POSIX redirect, bash-required installer shell, quoted `${TARGET}`, directory pre-creation
 
 ### Testing
-- **241 pytest tests** covering 6 critical plugin scripts (previously zero tests):
-  - `block-dangerous.py` (46), `guard-workspace-scope.py` (40), `guard-protected.py` (55), `guard-protected-bash.py` (24), `guard-readonly-bash.py` (63), `redirect-builtin-agents.py` (13)
+- **289 pytest tests** covering 6 critical plugin scripts (previously zero tests):
+  - `block-dangerous.py` (62), `guard-workspace-scope.py` (40), `guard-protected.py` (56), `guard-protected-bash.py` (49), `guard-readonly-bash.py` (69), `redirect-builtin-agents.py` (13)
 - `test:plugins` and `test:all` npm scripts
+- Python plugin tests (`pytest`) added to CI pipeline (Q3-08)
 
 ### Authentication
 - `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
@@ -123,6 +84,9 @@
 - `CLAUDE_AUTH_TOKEN` in devcontainer.json secrets declaration
 
 ### Security
+- Removed environment variable injection vector in agent redirect log path (S2-01)
+- Narrowed config deployment allowed destinations from `/usr/local` to `/usr/local/share` (S2-09)
+- Protected files guard now fails closed on unexpected errors instead of failing open (S2-04)
 - Protected-files-guard blocks `.credentials.json` modifications
 - Replaced `eval` tilde expansion with `getent passwd` lookup (prevents shell injection)
 - Auth token JSON-escaped before writing; credential directory with restrictive umask (700)
@@ -153,7 +117,16 @@
 - Force push block now suggests `git merge` as workaround
 - Block `--force-with-lease` — all force push variants now blocked uniformly
 - Block remote branch deletion (`git push origin --delete`, colon-refspec `git push origin :branch`)
+- Handles prefix bypasses (`\rm`, `command rm`, `env rm`) and symbolic chmod (S2-03)
 - Fixed README — error handling documented as "fails open" but code actually fails closed
+
+### Guards
+- **Allowed `.env.example` edits** — `.env.example` is no longer blocked by the `.env.*` pattern; actual secret files (`.env.local`, `.env.production`, etc.) remain protected
+- Fixed greedy alternation in write-target regex — `>>` now matched before `>` (Q3-01)
+- Unified write-target extraction patterns across guards — protected-files bash guard expanded from 5 to 20 patterns (C1-02)
+- Multi-target command support — `rm`, `touch`, `mkdir`, `chmod`, `chown` with multiple file operands now check all targets
+- Bare `git stash` (equivalent to push) now blocked in read-only mode (Q3-04)
+- Fixed git global flag handling — `git -C /path stash list` no longer misidentifies the stash subcommand
 
 ### Session Context & Code Quality
 - **Commit reminder** — switched to advisory (was blocking); tiered logic for meaningful changes; only fires when session modified files
@@ -198,6 +171,8 @@
 - Missing plugin pages for git-workflow and prompt-snippets
 - Port Forwarding reference, CLI guide cross-link, slimmed Installation page
 - Documented 4 workhorse agents, cc-orc command, CONFIG_SOURCE_DIR deprecation, CLAUDE_AUTH_TOKEN setup
+- Added missing git-workflow and prompt-snippets to configuration.md enabledPlugins example
+- Tabbed client-specific instructions on the installation page
 - MD040 compliance (language specifiers on fenced code blocks)
 - Architecture docs — `.checksums/` and `.markers/` in `.codeforge/` tree
 - Troubleshooting — "Reset to Defaults" renamed to "How to Reset", clarified `--reset` behavior

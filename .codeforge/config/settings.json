@@ -53,7 +53,10 @@
 		"command": "/usr/local/bin/ccstatusline-wrapper"
 	},
 	"enabledPlugins": {
-		"frontend-design@claude-plugins-official": true,
+		"frontend-design@anthropics/claude-code": true,
+		"code-review@anthropics/claude-code": true,
+		"feature-dev@anthropics/claude-code": true,
+		"pr-review-toolkit@anthropics/claude-code": true,
 		"codeforge-lsp@devs-marketplace": true,
 		"ticket-workflow@devs-marketplace": true,
 		"notify-hook@devs-marketplace": true,

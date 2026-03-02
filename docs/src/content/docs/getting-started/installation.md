@@ -51,7 +51,7 @@ your-project/
 │   ├── devcontainer.json       # Container definition and feature list
 │   ├── .env                    # Setup flags
 │   ├── features/               # 22 custom DevContainer features
-│   ├── plugins/                # 14 plugins with hooks and scripts
+│   ├── plugins/                # 17 plugins with hooks and scripts
 │   └── scripts/                # Setup and verification scripts
 ├── .codeforge/
 │   ├── file-manifest.json      # Controls config file deployment
@@ -187,7 +187,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 
 ### Plugins
 
-All 14 plugins are installed and active by default. They're configured through `settings.json` and managed by the plugin system. See the [Plugins Overview](../plugins/) for details on each plugin and how to enable or disable them.
+All 17 plugins are installed and active by default. They're configured through `settings.json` and managed by the plugin system. See the [Plugins Overview](../plugins/) for details on each plugin and how to enable or disable them.
 
 ## Configuration
 

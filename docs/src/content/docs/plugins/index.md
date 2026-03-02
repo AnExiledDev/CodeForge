@@ -131,7 +131,10 @@ These plugins connect CodeForge to external tools and add quality-of-life featur
 | [Session Context](./session-context/) | Injects git state, harvests TODOs, and reminds about uncommitted work |
 | [Notify Hook](./notify-hook/) | Desktop notifications when tasks complete |
 | [CodeForge LSP](./codeforge-lsp/) | Language server protocol integration for Python, TypeScript, and Go |
-| [Frontend Design](./frontend-design/) | Frontend design patterns and UI component skills (external Anthropic plugin) |
+| [Frontend Design](./frontend-design/) | Frontend design patterns and UI component skills (Anthropic official) |
+| Code Review | Automated code review skill (Anthropic official) |
+| Feature Dev | Feature development guidance skill (Anthropic official) |
+| PR Review Toolkit | PR review commands and agents (Anthropic official) |
 
 ## Enabling and Disabling Plugins
 
@@ -151,7 +154,10 @@ Plugins are declared in `settings.json` under the `enabledPlugins` key. Every pl
     "codeforge-lsp",
     "ticket-workflow",
     "notify-hook",
-    "frontend-design"
+    "frontend-design",
+    "code-review",
+    "feature-dev",
+    "pr-review-toolkit"
   ]
 }
 ```

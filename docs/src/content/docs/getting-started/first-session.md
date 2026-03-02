@@ -36,7 +36,7 @@ If something isn't working as expected in a CodeForge session, try `ccraw` to se
 When your session starts, several systems activate behind the scenes. You don't need to configure any of this — it just works.
 
 - **System prompt** — gives Claude context about your project, coding standards, and how to communicate. Customizable via [System Prompts](../customization/system-prompts/).
-- **Plugin hooks** — 14 plugins fire automatically at key moments: blocking dangerous commands, guarding workspace scope, injecting git state, running code quality checks, and more. See the [Plugins Overview](../plugins/) for details on each one.
+- **Plugin hooks** — 17 plugins fire automatically at key moments: blocking dangerous commands, guarding workspace scope, injecting git state, running code quality checks, and more. See the [Plugins Overview](../plugins/) for details on each one.
 - **Session context** — Claude always knows your current branch, uncommitted changes, recent commits, and active TODOs without you having to explain it.
 
 ## What to Try First
