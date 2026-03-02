@@ -22,10 +22,8 @@ fi
 echo "[setup-plugins] Installing plugins..."
 
 # --- Official Anthropic Plugins ---
-OFFICIAL_PLUGINS=(
-    "frontend-design@claude-plugins-official"
-    "svelte@sveltejs/mcp"
-)
+DEFAULT_OFFICIAL_PLUGINS="frontend-design@claude-plugins-official svelte@sveltejs/mcp"
+IFS=' ' read -ra OFFICIAL_PLUGINS <<< "${OFFICIAL_PLUGINS:-$DEFAULT_OFFICIAL_PLUGINS}"
 
 for plugin in "${OFFICIAL_PLUGINS[@]}"; do
     echo "[setup-plugins] Installing $plugin..."

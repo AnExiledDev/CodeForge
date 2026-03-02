@@ -2,32 +2,6 @@
 
 CodeForge devcontainer for AI-assisted development with Claude Code.
 
-## Directory Structure
-
-```
-.devcontainer/
-├── devcontainer.json          # Container definition
-├── .env                       # Setup flags (SETUP_CONFIG, SETUP_ALIASES, etc.)
-├── features/                  # Custom devcontainer features
-├── plugins/devs-marketplace/  # Local plugin marketplace
-└── scripts/                   # Setup scripts (run via postStartCommand)
-
-.codeforge/
-├── file-manifest.json         # Declarative config file deployment
-├── config/                    # Source files deployed on start via file-manifest
-│   ├── settings.json          # Model, permissions, plugins, env vars
-│   ├── keybindings.json       # Keyboard shortcuts
-│   ├── main-system-prompt.md
-│   ├── orchestrator-system-prompt.md
-│   ├── writing-system-prompt.md
-│   ├── ccstatusline-settings.json  # Status bar widget layout
-│   └── rules/                 # Deployed to .claude/rules/
-├── scripts/                   # Terminal connection scripts
-│   ├── connect-external-terminal.sh
-│   └── connect-external-terminal.ps1
-└── .codeforge-preserve        # Lists additional files to preserve during updates
-```
-
 ## Key Configuration
 
 | File | Purpose |
@@ -42,50 +16,21 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 
 Config files deploy via `.codeforge/file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
 
-## Worktrees
-
-Git worktrees allow checking out multiple branches simultaneously, each in its own directory.
-
-**Native (recommended for Claude Code sessions):**
-- **In-session:** `EnterWorktree` tool — creates worktree at `<repo>/.claude/worktrees/<name>/`, branch `worktree-<name>`, auto-cleaned if no changes
-- **New session:** `claude --worktree <name>` — starts Claude in its own worktree; combine with `--tmux` for background work
-
-**Manual (legacy convention):**
-```bash
-mkdir -p /workspaces/projects/.worktrees
-git worktree add /workspaces/projects/.worktrees/<branch-name> -b <branch>
-```
-
-**Environment files:** Place a `.worktreeinclude` file at the project root listing `.gitignore`-excluded files to copy into new worktrees (e.g., `.env`). Uses `.gitignore` pattern syntax; only files matching both `.worktreeinclude` and `.gitignore` are copied.
-
-**Management:**
-
-| Command | Purpose |
-|---------|---------|
-| `git worktree list` | Show all active worktrees |
-| `git worktree remove <path>` | Remove a worktree (destructive — confirm first) |
-| `git worktree prune` | Clean up stale references (destructive — confirm first) |
-
-**Path conventions:**
-- **Native:** `<repo>/.claude/worktrees/<name>/` — used by `--worktree` flag and `EnterWorktree`
-- **Legacy:** `.worktrees/` as sibling to the main repo — used for manual `git worktree add` and Project Manager integration
-
 ## Commands
 
 | Command | Purpose |
 |---------|---------|
 | `cc` / `claude` | Run Claude Code with auto-configuration |
 | `codeforge config apply` | Deploy config files to `~/.claude/` (same as container start) |
-| `codeforge` | CLI for CodeForge management commands |
 | `ccraw` | Vanilla Claude Code (bypasses config) |
 | `ccw` | Claude Code with writing system prompt |
 | `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
-| ~~`ccms`~~ | _(commented out — replacement pending)_ |
+| `ccms` | Session history search _(disabled — requires Rust toolchain; uncomment in devcontainer.json to enable)_ |
 | `ccusage` / `ccburn` | Token usage analysis / burn rate |
 | `agent-browser` | Headless Chromium (Playwright-based) |
 | `check-setup` | Verify CodeForge setup health |
 | `claude-dashboard` | Session analytics dashboard (port 7847) |
-| `dbr` | Dynamic port forwarding (devcontainer-bridge) |
+| `dbr` | Dynamic port forwarding ([devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)) |
 | `cc-tools` | List all installed tools with versions |
 
 ## Plugins
@@ -115,19 +60,6 @@ Rules in `.codeforge/config/rules/` deploy to `.claude/rules/` on every containe
 
 **Adding rules:** Create `.md` in `.codeforge/config/rules/`, add a manifest entry in `.codeforge/file-manifest.json`.
 
-## Environment
-
-| Variable | Value |
-|----------|-------|
-| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` |
-| `CLAUDE_AUTH_TOKEN` | Long-lived token from `claude setup-token` (optional, via `.secrets` or Codespaces secrets) |
-| `ANTHROPIC_MODEL` | `claude-opus-4-6` |
-| `WORKSPACE_ROOT` | `/workspaces` |
-| `TERM` | `${localEnv:TERM:xterm-256color}` (via `remoteEnv` — forwards host TERM, falls back to 256-color) |
-| `COLORTERM` | `truecolor` (via `remoteEnv` — enables 24-bit color support) |
-
-All experimental feature flags are in `settings.json` under `env`. Setup steps controlled by boolean flags in `.env`.
-
 ## Authentication & Persistence
 
 The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude-config-${devcontainerId}`), persisting config, credentials, and session data across container rebuilds. Each devcontainer instance gets an isolated volume.
@@ -142,63 +74,4 @@ The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude
 4. **Add features**: Add to `"features"` in `devcontainer.json`
 5. **Disable features**: Set `"version": "none"` in the feature's config
 6. **Disable setup steps**: Set flags to `false` in `.env`
-7. **Customize status bar**: Edit `.codeforge/config/ccstatusline-settings.json` (see below)
-
-## Status Bar Widgets
-
-The status bar is configured in `.codeforge/config/ccstatusline-settings.json` (deploys to `~/.config/ccstatusline/settings.json`). Each widget is a JSON object in a line array.
-
-### Widget Properties
-
-| Property | Purpose |
-|----------|---------|
-| `id` | Unique identifier (UUID or descriptive string) |
-| `type` | Widget type (see below) |
-| `backgroundColor` | Background color: `bgBlue`, `bgMagenta`, `bgYellow`, `bgGreen`, `bgRed`, etc. |
-| `color` | Text color: `brightWhite`, `black`, `cyan`, `yellow`, etc. |
-| `rawValue` | `true` to strip type-specific prefixes (e.g., removes "Model:" from model widget) |
-| `bold` | `true` for bold text |
-| `merge` | `"no-padding"` fuses this widget to the next (no separator/space between them) |
-| `customText` | Static text content (only for `custom-text` type) |
-
-### Token Widgets
-
-Each token metric uses a distinct background color for at-a-glance identification:
-
-| Type | Color | Label |
-|------|-------|-------|
-| `tokens-input` | Blue (`bgBlue`) | **In** |
-| `tokens-output` | Magenta (`bgMagenta`) | **Ou** |
-| `tokens-cached` | Yellow (`bgYellow`) | **Ca** |
-| `tokens-total` | Green (`bgGreen`) | **Tt** |
-
-Labels are `custom-text` widgets with `merge: "no-padding"` so they fuse visually to their data widget:
-
-```json
-{ "id": "lbl-tokens-input", "type": "custom-text", "customText": "In",
-  "backgroundColor": "bgBlue", "color": "brightWhite", "bold": true, "merge": "no-padding" },
-{ "id": "5", "type": "tokens-input",
-  "backgroundColor": "bgBlue", "color": "brightWhite", "rawValue": true }
-```
-
-### Other Widget Types
-
-`model`, `context-length`, `context-percentage-usable`, `git-branch`, `git-changes`, `git-worktree`, `session-clock`, `session-cost`, `block-timer`, `version`, `custom-command`
-
-## Features
-
-Custom features in `./features/` follow the [devcontainer feature spec](https://containers.dev/implementors/features/). Every local feature supports `"version": "none"` to skip installation. Claude Code is installed as a native binary via `./features/claude-code-native` (uses Anthropic's official installer at `https://claude.ai/install.sh`).
-
-## Port Forwarding
-
-Three mechanisms handle port access depending on your client:
-
-| Mechanism | Client | Discovery |
-|-----------|--------|-----------|
-| VS Code auto-detect | VS Code only | Dynamic — all ports auto-forwarded with notification |
-| devcontainer-bridge (`dbr`) | Any terminal client | Dynamic — polls `/proc/net/tcp` |
-| SSH tunneling | Any SSH client | Manual — `ssh -L localPort:localhost:remotePort` |
-
-VS Code auto-detects all ports opened inside the container (configured via `portsAttributes` in `devcontainer.json`). Outside VS Code, `dbr` provides dynamic port discovery via a reverse connection model (container→host). The container daemon auto-starts and is inert without the host daemon (`dbr host-daemon`). Both mechanisms coexist. See [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge).
-
-For full setup instructions, see the [Port Forwarding reference](https://codeforge.core-directive.com/reference/port-forwarding/) in the docs.
+7. **Customize status bar**: Edit `.codeforge/config/ccstatusline-settings.json`
