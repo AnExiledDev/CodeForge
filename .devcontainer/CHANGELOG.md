@@ -289,30 +289,171 @@
 #### VS Code Extensions
 - **Todo+** (`fabiospampinato.vscode-todo-plus`) — removed from devcontainer extensions
 
-## [v2.0.0] - 2026-02-26
+## v2.0.0 — 2026-02-26
 
-### Added
-
-#### .codeforge/ User Customization Directory
+### .codeforge/ Configuration System
 - New `.codeforge/` directory centralizes all user-customizable configuration files
 - Checksum-based modification detection preserves user changes during updates
 - `codeforge config apply` CLI command deploys config files to `~/.claude/` (same as container start)
 - Auto-migration from `.devcontainer/config/defaults/` to `.codeforge/config/` for existing users
 - `.codeforge/.codeforge-preserve` for listing additional files to preserve during updates
-
-### Changed
-
-#### Configuration
 - Config files moved from `.devcontainer/config/defaults/` to `.codeforge/config/`
 - File manifest moved from `.devcontainer/config/file-manifest.json` to `.codeforge/file-manifest.json`
 - Terminal connection scripts moved from `.devcontainer/` to `.codeforge/scripts/`
 - `CONFIG_SOURCE_DIR` env var deprecated in favor of `CODEFORGE_DIR`
 - `--force` updates now use checksum comparison for `.codeforge/` files (writes `.default` instead of `.codeforge-new`)
 - `--reset` preserves `.codeforge/` user modifications (only `.devcontainer/` is wiped)
-
-#### Migration
 - v2 migration marker moved to `.codeforge/.markers/v2-migrated`
 - Container start auto-migrates `.devcontainer/config/defaults/` to `.codeforge/config/` if needed
+- Moved `.claude` directory from `/workspaces/.claude` to `~/.claude` (home directory)
+- Added Docker named volume for persistence across rebuilds (per-instance isolation via `${devcontainerId}`)
+- `CLAUDE_CONFIG_DIR` now defaults to `~/.claude`
+
+### System Prompts
+- **Main system prompt redesigned** — reorganized from 672 to 462 lines; personality, core directives, and response guidelines at the top
+- **Personality section** — communication style (casual-professional, direct, terse), humor rules, honesty approach, AuDHD-aware patterns, good/bad response examples; replaces the empty `<identity>` tag
+- **Compressed specification management** — 98 to 28 lines; full template and enforcement workflow moved to loadable skills
+- **Compressed code standards** — removed textbook principle recitations (SOLID, DRY/KISS/YAGNI by name); kept only concrete actionable rules
+- **Browser automation** and **git worktrees** sections moved to loadable skills
+- **Context-passing protocol** in orchestration — mandatory instructions for including gathered context, file paths, and constraints when spawning subagents
+- Absorbed `<assumption_surfacing>` into `<core_directives>`, `<professional_objectivity>` into `<personality>`
+- Deduplicated team composition examples; consolidated "no filler" instructions
+- **`<git_worktrees>` section** — updated for Claude Code native worktree convention (`<repo>/.claude/worktrees/`), `EnterWorktree` tool guidance, `.worktreeinclude` documentation
+
+### Orchestrator Mode
+- **`cc-orc` alias** — new Claude Code entry point using `orchestrator-system-prompt.md` for delegation-first operation
+- **`orchestrator-system-prompt.md`** — slim prompt (~250 lines) with delegation model, agent catalog, question surfacing protocol, planning gates, spec enforcement, and action safety
+
+### Agent System
+- **4 workhorse agents** — `investigator` (consolidated read-only research, sonnet), `implementer` (consolidated read-write implementation, opus/worktree), `tester` (enhanced test agent, opus/worktree), `documenter` (consolidated docs + specs, opus)
+- **Question Surfacing Protocol** — all 4 workhorse agents STOP and return `## BLOCKED: Questions` on ambiguities
+- **All 21 agents now have communication protocols** — read-only: "Handling Uncertainty"; write-capable: "Question Surfacing Protocol"
+- **Architect agent overhaul** — anti-fluff enforcement (20+ banned patterns), team orchestration planning, complexity scaling (simple/moderate/complex), concrete edit ordering (Models→Services→Routes→Tests→Config), rollback strategy for schema/API changes, 3 new examples
+- **Generalist rewritten as last-resort** — description explicitly warns when a specialist might be better
+- **Investigator narrowed** — repositioned from catch-all to "cross-domain investigations spanning 2+ specialist areas"
+- **Agent merges** — tester→test-writer (single test agent), doc-writer→documenter (single docs agent)
+- **Bash guard hooks** added to researcher, debug-logs, perf-profiler (prevents state-changing commands in read-only agents)
+- **Improved agent descriptions for routing accuracy** — trigger phrases, overlap boundaries between security-auditor/dependency-analyst, explorer/researcher
+- **Resolved communication protocol contradictions** across all agent behavioral rules
+- Agent count increased from 17 to 21 (4 workhorse + 17 specialist)
+- Agent-system README updated with workhorse agent table, per-agent hooks, plugin structure
+
+### Skill Engine
+- **Weighted scoring** — suggestion phrases carry confidence weights (0.0–1.0) instead of binary match
+- **Negative patterns** — substrings that instantly disqualify skills (prevents fastapi triggering for pydantic-ai)
+- **Context guards** — low-confidence matches (< 0.6) require confirming context word
+- **Ranked results capped at 3** — sorted by score then priority tier; eliminates suggestion floods
+- **Priority tiers** — explicit commands (10) > technology skills (7) > patterns (5) > generic (3)
+- **worktree skill** — git worktree creation, management, cleanup, `EnterWorktree` tool, `.worktreeinclude` setup
+
+### Plugins
+- **Git workflow** — `/ship` (commit/push/PR with code review and approval) and `/pr:review` (PR review by number/URL, posts findings as comment)
+- **Prompt snippets** — `/ps` command for quick behavioral mode switches (noaction, brief, plan, go, review, ship, deep, hold, recall, wait); composable (`/ps noaction brief`)
+
+### Claude Code Installation
+- **Native binary** via Anthropic's official installer (`https://claude.ai/install.sh`) replacing npm-based feature
+- **Auto-updater works without root** — native binary at `~/.local/bin/claude` owned by container user
+- **Post-start onboarding hook** (`99-claude-onboarding.sh`) — ensures `hasCompletedOnboarding: true` when token auth configured
+- Update script captures errors to log (was discarding via `&>/dev/null`)
+- Simplified to native-binary-only (removed npm fallback, `claude install` bootstrap)
+- Alias resolution simplified — `_CLAUDE_BIN` resolves directly to native binary
+- POSIX redirect, bash-required installer shell, quoted `${TARGET}`, directory pre-creation
+
+### Testing
+- **241 pytest tests** covering 6 critical plugin scripts (previously zero tests):
+  - `block-dangerous.py` (46), `guard-workspace-scope.py` (40), `guard-protected.py` (55), `guard-protected-bash.py` (24), `guard-readonly-bash.py` (63), `redirect-builtin-agents.py` (13)
+- `test:plugins` and `test:all` npm scripts
+
+### Authentication
+- `CLAUDE_AUTH_TOKEN` support in `.secrets` for long-lived tokens from `claude setup-token`
+- Auto-creates `.credentials.json` from token on container start (idempotent)
+- `CLAUDE_AUTH_TOKEN` in devcontainer.json secrets declaration
+
+### Security
+- Protected-files-guard blocks `.credentials.json` modifications
+- Replaced `eval` tilde expansion with `getent passwd` lookup (prevents shell injection)
+- Auth token JSON-escaped before writing; credential directory with restrictive umask (700)
+- `setup.js` path traversal prevention — `configApply()` validates source/destination paths
+
+### Performance
+- Commented out Rust toolchain feature — saves ~1.23 GB image size
+- Commented out ccms feature (requires Rust)
+- Updated Bun to latest (was pinned to 1.3.9)
+- npm cache cleanup across 6 features: agent-browser, ast-grep, biome, claude-session-dashboard, lsp-servers, tree-sitter (saves ~96 MB)
+
+### Port Forwarding
+- Dynamic forwarding for all ports in VS Code (was only port 7847)
+- **devcontainer-bridge (dbr)** — automatic port discovery and forwarding outside VS Code via [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)
+
+### Terminal & Color
+- `TERM` and `COLORTERM=truecolor` in `remoteEnv` (Docker defaults to 8-color `xterm`)
+- `TERM` forwards host terminal type via `${localEnv:TERM:xterm-256color}` (e.g., `xterm-kitty`)
+- Terminal color defaults in managed shell block for tmux panes, `docker exec`, SSH sessions
+- kitty-terminfo docs updated for `localEnv` forwarding
+
+### Status Bar
+- Distinct background colors per token widget (blue=input, magenta=output, yellow=cached, green=total)
+- Bold 2-char labels (In, Ou, Ca, Tt) fused to data widgets, `rawValue: true` on model widget
+- CLAUDE.md "Status Bar Widgets" section with widget properties and conventions
+
+### Dangerous Command Blocker
+- Force push block now suggests `git merge` as workaround
+- Block `--force-with-lease` — all force push variants now blocked uniformly
+- Block remote branch deletion (`git push origin --delete`, colon-refspec `git push origin :branch`)
+- Fixed README — error handling documented as "fails open" but code actually fails closed
+
+### Session Context & Code Quality
+- **Commit reminder** — switched to advisory (was blocking); tiered logic for meaningful changes; only fires when session modified files
+- **Advisory test runner** — reads from correct tmp file prefix (`claude-cq-edited` instead of `claude-edited-files`)
+
+### Scripts & Migration
+- Replaced `setup-symlink-claude.sh` with `setup-migrate-claude.sh` (one-time migration)
+- Migration script hardened — `cp -a` archive mode, marker-based idempotency, critical file verification, ownership fixup
+- `.env` deprecation guard — `setup.sh` detects stale `CLAUDE_CONFIG_DIR=/workspaces/.claude`, overrides and auto-comments
+- `setup.sh` `CODEFORGE_DIR` uses default-assignment (`:=`) to preserve user-defined values
+- Container runtime pre-flight check — validates Docker/Podman before build, OS-specific remediation
+
+### CI/CD & Public Repo
+- **Tag-triggered release workflow** (`v*` tags only) — prevents accidental releases from version bumps in PRs
+- CI workflow (Node 18, `npm test` + Biome check), CodeQL security analysis, Dependabot (weekly npm + GitHub Actions)
+- Bug report + feature request templates, PR template, issue template config
+- CONTRIBUTING.md, CLA.md, dual licensing notice, CI badge, SPDX headers on all 36 source files
+
+### Bug Fixes
+- Bun PATH in non-interactive shells
+- ChromaTerm regex lookbehinds — PCRE2 compatibility
+- CCStatusLine `CONFIG_SOURCE_DIR` deprecation guard, template directory permissions, silent copy failure reporting
+- `marketplace.json` schema — plugin `source` fields changed from bare names to relative paths
+- skill-engine worktree skill weighted tuples (was plain strings, caused crash)
+- dangerous-command-blocker fail closed on exceptions (was fail-open)
+- ticket-workflow redundant `ValueError` removed
+- workspace-scope-guard maxsplit in variable assignment detection
+- Shell scripts — executable bit on `check-setup.sh`, quoted `PLUGIN_BLACKLIST`, `set -uo pipefail` in tmux installer, `command -v` replacing deprecated `which`, normalized `&>` redirects
+- `implementer.md` — PostToolUse hook changed to Stop hook with 120s timeout
+- `tester.md` — Stop hook timeout 30s→120s
+- Stale merge conflict marker in first-session docs
+
+### Documentation
+- **DevContainer CLI guide** — dedicated Getting Started page for terminal-only workflows
+- **v2 Migration Guide** — path changes, automatic migration, manual steps, breaking changes, troubleshooting
+- **Ported `.devcontainer/docs/` to docs site** — Keybindings page, Troubleshooting page (12+ entries), Optional Features page, merged env vars and .secrets docs
+- Versioned docs infrastructure (starlight-versions plugin)
+- Fixed docs site URL to `https://codeforge.core-directive.com` (custom domain, no base path)
+- Replaced `anexileddev.github.io/CodeForge/` URLs with custom domain across all files
+- README: "Why CodeForge?" section, architecture overview, configuration summary
+- Agent/skill/plugin count updates (21 agents, 38 skills, 14 plugins) across all docs pages
+- Missing plugin pages for git-workflow and prompt-snippets
+- Port Forwarding reference, CLI guide cross-link, slimmed Installation page
+- Documented 4 workhorse agents, cc-orc command, CONFIG_SOURCE_DIR deprecation, CLAUDE_AUTH_TOKEN setup
+- MD040 compliance (language specifiers on fenced code blocks)
+- Architecture docs — `.checksums/` and `.markers/` in `.codeforge/` tree
+- Troubleshooting — "Reset to Defaults" renamed to "How to Reset", clarified `--reset` behavior
+- Removed `.devcontainer/docs/` directory (all content migrated to docs site)
+- All docs reference `~/.claude` as default config path
+
+### Removed
+- `setup-symlink-claude.sh` — replaced by `setup-migrate-claude.sh`
+- **Todo+** VS Code extension (`fabiospampinato.vscode-todo-plus`)
 
 ## [v1.14.2] - 2026-02-24
 

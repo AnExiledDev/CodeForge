@@ -14,7 +14,7 @@ PID_FILE="/tmp/project-watcher.pid"
 LOG_PREFIX="[setup-projects]"
 
 # Directories to exclude from project detection (hidden/config dirs)
-EXCLUDED_DIRS=".claude .gh .tmp .devcontainer .config node_modules .git"
+EXCLUDED_DIRS="${PROJECT_EXCLUDE_DIRS:-.claude .gh .tmp .devcontainer .config node_modules .git}"
 
 # --- Helpers ---
 
