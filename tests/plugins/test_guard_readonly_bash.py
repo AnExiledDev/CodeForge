@@ -265,6 +265,11 @@ class TestGitReadonlyBlocked:
         cmd = "git stash drop"
         assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
 
+    def test_bare_stash_blocked(self) -> None:
+        """Bare 'git stash' (no subcommand) is equivalent to 'git stash push'."""
+        cmd = "git stash"
+        assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
     def test_config_without_get_blocked(self) -> None:
         cmd = "git config user.name foo"
         assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
@@ -298,6 +303,7 @@ class TestGitReadonlyAllowed:
             "git config --get user.name",
             "git config --list",
             "git stash list",
+            "git stash show",
             "cat file | grep pattern",
             "git -C /path --no-pager log",
             "sed 's/a/b/' file",
@@ -310,6 +316,7 @@ class TestGitReadonlyAllowed:
             "config-get",
             "config-list",
             "stash-list",
+            "stash-show",
             "cat-pipe-grep",
             "global-flags",
             "sed-without-i",
@@ -317,3 +324,28 @@ class TestGitReadonlyAllowed:
     )
     def test_readonly_commands_allowed(self, cmd: str) -> None:
         assert_allowed(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
+
+# ---------------------------------------------------------------------------
+# 10. check_git_readonly - global flags with stash subcommand
+# ---------------------------------------------------------------------------
+
+
+class TestGitReadonlyGlobalFlagsStash:
+    """Ensure git global flags (-C, etc.) don't break stash sub-action detection."""
+
+    def test_stash_list_with_global_flag_allowed(self) -> None:
+        cmd = "git -C /some/path stash list"
+        assert_allowed(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
+    def test_stash_show_with_global_flag_allowed(self) -> None:
+        cmd = "git -C /some/path stash show"
+        assert_allowed(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
+    def test_stash_push_with_global_flag_blocked(self) -> None:
+        cmd = "git -C /some/path stash push"
+        assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)
+
+    def test_stash_drop_with_global_flag_blocked(self) -> None:
+        cmd = "git -C /some/path stash drop"
+        assert_blocked(guard_readonly_bash.check_git_readonly(cmd), cmd)

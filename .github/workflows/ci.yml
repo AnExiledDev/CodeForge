@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
-    branches: [main]
+    branches: [main, staging]
 
 jobs:
   test:
@@ -24,3 +24,13 @@ jobs:
         with:
           node-version: 18
       - run: npx @biomejs/biome check setup.js test.js
+
+  test-plugins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: pip install pytest
+      - run: pytest tests/ -v

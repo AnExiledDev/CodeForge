@@ -6,13 +6,19 @@ See `.devcontainer/CLAUDE.md` for full devcontainer documentation.
 
 ## Development Rules
 
+### Branching Strategy
+
+- **`main`** — production/release branch. Only updated via PRs from `staging`.
+- **`staging`** — integration branch. All feature/fix branches target `staging` for PRs.
+- Feature and fix branches should be created from `staging` and PRed back to `staging`.
+- PRs from `staging` to `main` are used for releases.
+
 ### Changelog
 
 Every change MUST have a corresponding entry in `.devcontainer/CHANGELOG.md`.
 
 - New features, enhancements, fixes, and removals each get their own bullet
-- Group related changes under the appropriate `### Added`, `### Changed`, `### Fixed`, or `### Removed` heading
-- Use sub-headings (`####`) to organize by area (e.g., Workspace Scope Guard, Features, Configuration)
+- Group related changes under domain headings (`###`) by area (e.g., `### Security`, `### Agent System`, `### Documentation`, `### Configuration`)
 - If an unreleased version section doesn't exist, add changes to the current version's section
 - Write entries from the user's perspective — what changed, not how it was implemented
 

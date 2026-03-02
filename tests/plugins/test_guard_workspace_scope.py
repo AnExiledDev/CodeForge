@@ -66,10 +66,10 @@ class TestIsAllowlisted:
     @pytest.mark.parametrize(
         "path, expected",
         [
-            ("/home/vscode/.claude/rules/foo.md", True),
+            (f"{guard_workspace_scope._home}/.claude/rules/foo.md", True),
             ("/tmp/scratch.txt", True),
             ("/workspaces/proj/file", False),
-            ("/home/vscode/.ssh/id_rsa", False),
+            (f"{guard_workspace_scope._home}/.ssh/id_rsa", False),
         ],
         ids=[
             "claude_config_dir",

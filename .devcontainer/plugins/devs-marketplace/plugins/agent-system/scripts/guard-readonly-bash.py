@@ -513,8 +513,9 @@ def check_git_readonly(command: str) -> str | None:
                 # Resolve git global flags to find the real subcommand
                 # e.g. git -C /path --no-pager log -> subcommand is "log"
                 sub = None
+                sub_idx = 0
                 skip_next = False
-                for w in words[1:]:
+                for idx, w in enumerate(words[1:], start=1):
                     if skip_next:
                         skip_next = False
                         continue
@@ -524,6 +525,7 @@ def check_git_readonly(command: str) -> str | None:
                     if w.startswith("-"):
                         continue
                     sub = w
+                    sub_idx = idx
                     break
 
                 if sub is None:
@@ -545,16 +547,18 @@ def check_git_readonly(command: str) -> str | None:
                             "-l",
                             "--get-regexp",
                         }
-                        if not (set(words[2:]) & safe_flags):
+                        if not (set(words[sub_idx + 1 :]) & safe_flags):
                             return "Blocked: 'git config' is only allowed with --get or --list"
 
                     elif sub == "stash":
                         # Only allow "stash list" and "stash show"
-                        if len(words) > 2 and words[2] not in ("list", "show"):
-                            return f"Blocked: 'git stash {words[2]}' is not allowed in read-only mode"
+                        if len(words) <= sub_idx + 1:
+                            return "Blocked: bare 'git stash' (equivalent to push) is not allowed in read-only mode"
+                        if words[sub_idx + 1] not in ("list", "show"):
+                            return f"Blocked: 'git stash {words[sub_idx + 1]}' is not allowed in read-only mode"
 
                     else:
-                        for w in words[2:]:
+                        for w in words[sub_idx + 1 :]:
                             if w in restricted:
                                 return f"Blocked: 'git {sub} {w}' is not allowed in read-only mode"
 

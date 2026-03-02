@@ -551,7 +551,7 @@ function configApply() {
 		const allowedDestRoots = [
 			path.resolve(claudeConfigDir),
 			homeDir,
-			"/usr/local",
+			"/usr/local/share",
 		];
 		const destDir = path.resolve(expandVars(entry.dest));
 		const destAllowed = allowedDestRoots.some(

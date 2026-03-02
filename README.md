@@ -177,7 +177,7 @@ npm publish
 
 ## Changelog
 
-See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **1.14.0** (2026-02-23).
+See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **2.0.0**.
 
 ## Further Reading
 

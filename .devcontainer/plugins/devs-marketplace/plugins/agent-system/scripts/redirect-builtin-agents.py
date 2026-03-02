@@ -18,7 +18,6 @@ Exit 0: No redirect needed (passthrough) or redirect applied (with JSON output)
 """
 
 import json
-import os
 import sys
 from datetime import datetime, timezone
 
@@ -39,13 +38,11 @@ PLUGIN_PREFIX = "agent-system"
 # Handles cases where the model uses the short name directly
 UNQUALIFIED_MAP = {v: f"{PLUGIN_PREFIX}:{v}" for v in REDIRECT_MAP.values()}
 
-LOG_FILE = os.environ.get("AGENT_REDIRECT_LOG", "/tmp/agent-redirect.log")
+LOG_FILE = "/tmp/agent-redirect.log"
 
 
 def log(message: str) -> None:
-    """Append a timestamped log entry if logging is enabled."""
-    if not LOG_FILE:
-        return
+    """Append a timestamped log entry."""
     try:
         with open(LOG_FILE, "a") as f:
             ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
