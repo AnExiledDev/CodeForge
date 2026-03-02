@@ -57,8 +57,8 @@ PROTECTED_PATTERNS = [
 # Patterns that indicate a bash command is writing to a file
 # Each captures the target file path for checking against PROTECTED_PATTERNS
 WRITE_PATTERNS = [
-    # Redirect: > file, >> file
-    r"(?:>|>>)\s*([^\s;&|]+)",
+    # Redirect: >> file, > file (>> before > to avoid greedy match)
+    r"(?:>>|>)\s*([^\s;&|]+)",
     # tee: tee file, tee -a file
     r"\btee\s+(?:-a\s+)?([^\s;&|]+)",
     # cp/mv: cp src dest, mv src dest
@@ -67,6 +67,22 @@ WRITE_PATTERNS = [
     r'\bsed\s+-i[^\s]*\s+(?:\'[^\']*\'\s+|"[^"]*"\s+|[^\s]+\s+)*([^\s;&|]+)',
     # cat > file (heredoc style)
     r"\bcat\s+(?:<<[^\s]*\s+)?>\s*([^\s;&|]+)",
+    # --- Extended patterns (unified with guard-workspace-scope.py) ---
+    r"\btouch\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # touch file
+    r"\bmkdir\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # mkdir [-p] dir
+    r"\brm\s+(?:-[^\s]+\s+)*([^\s;&|]+)",  # rm [-rf] path
+    r"\bln\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # ln [-s] src dest
+    r"\binstall\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # install src dest
+    r"\brsync\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # rsync src dest
+    r"\bchmod\s+(?:-[^\s]+\s+)*[^\s]+\s+([^\s;&|]+)",  # chmod mode path
+    r"\bchown\s+(?:-[^\s]+\s+)*[^\s:]+(?::[^\s]+)?\s+([^\s;&|]+)",  # chown owner[:group] path
+    r"\bdd\b[^;|&]*\bof=([^\s;&|]+)",  # dd of=path
+    r"\bwget\s+(?:-[^\s]+\s+)*-O\s+([^\s;&|]+)",  # wget -O path
+    r"\bcurl\s+(?:-[^\s]+\s+)*-o\s+([^\s;&|]+)",  # curl -o path
+    r"\btar\s+(?:-[^\s]+\s+)*-C\s+([^\s;&|]+)",  # tar -C dir
+    r"\bunzip\s+(?:-[^\s]+\s+)*-d\s+([^\s;&|]+)",  # unzip -d dir
+    r"\b(?:gcc|g\+\+|cc|c\+\+|clang)\s+(?:-[^\s]+\s+)*-o\s+([^\s;&|]+)",  # gcc -o out
+    r"\bsqlite3\s+([^\s;&|]+)",  # sqlite3 dbpath
 ]
 
 
@@ -113,9 +129,9 @@ def main():
         # Fail closed: can't parse means can't verify safety
         sys.exit(2)
     except Exception as e:
-        # Log error but don't block on hook failure
+        # Fail closed: unexpected errors should block, not allow
         print(f"Hook error: {e}", file=sys.stderr)
-        sys.exit(0)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

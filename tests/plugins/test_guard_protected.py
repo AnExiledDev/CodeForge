@@ -4,6 +4,11 @@ Validates that check_path correctly identifies protected file paths
 and allows safe paths through.
 """
 
+import json
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
 
 from tests.conftest import guard_protected
@@ -221,3 +226,42 @@ class TestEdgeCases:
     )
     def test_case_insensitive_matching(self, path: str) -> None:
         assert_protected(path)
+
+
+# ---------------------------------------------------------------------------
+# Fail-closed behavior (exception → exit code 2)
+# ---------------------------------------------------------------------------
+
+
+class TestFailClosed:
+    """Verify that unexpected errors cause the guard to exit with code 2."""
+
+    def test_exception_causes_exit_code_2(self):
+        """Feed input that triggers an exception in the main logic.
+
+        We send valid JSON but with tool_input set to a non-dict value,
+        which will cause an AttributeError when main() calls
+        tool_input.get("file_path", "").
+        """
+        script_path = (
+            Path(__file__).resolve().parent.parent.parent
+            / ".devcontainer"
+            / "plugins"
+            / "devs-marketplace"
+            / "plugins"
+            / "protected-files-guard"
+            / "scripts"
+            / "guard-protected.py"
+        )
+        # tool_input is a string instead of dict — causes AttributeError
+        payload = json.dumps({"tool_input": "not-a-dict"})
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            input=payload,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 2, (
+            f"Expected exit code 2, got {result.returncode}. "
+            f"stderr: {result.stderr}"
+        )

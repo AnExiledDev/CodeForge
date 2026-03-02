@@ -271,3 +271,93 @@ class TestRemoteBranchDeletion:
             "git push origin :feature-branch",
             substr="colon-refspec",
         )
+
+
+# ---------------------------------------------------------------------------
+# 12. Command prefix bypass vectors
+# ---------------------------------------------------------------------------
+
+
+class TestCommandPrefixBypass:
+    """Prefixes like backslash, 'command', and 'env' should not bypass blocks."""
+
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "\\rm -rf /",
+            "command rm -rf /",
+            "env rm -rf /",
+            "env VAR=x rm -rf /",
+        ],
+        ids=[
+            "backslash-prefix",
+            "command-prefix",
+            "env-prefix",
+            "env-with-variable",
+        ],
+    )
+    def test_prefix_bypass_still_blocked(self, cmd: str) -> None:
+        assert_blocked(cmd, substr="rm")
+
+
+# ---------------------------------------------------------------------------
+# 13. Symbolic chmod and setuid/setgid patterns
+# ---------------------------------------------------------------------------
+
+
+class TestChmodExtended:
+    @pytest.mark.parametrize(
+        "cmd, substr",
+        [
+            ("chmod a=rwx file", "chmod a=rwx"),
+            ("chmod 0777 file", "chmod 0777"),
+            ("chmod u+s /usr/bin/something", "SetUID"),
+            ("chmod g+s /usr/bin/something", "SetGID"),
+        ],
+        ids=[
+            "symbolic-a-equals-rwx",
+            "octal-0777",
+            "setuid-bit",
+            "setgid-bit",
+        ],
+    )
+    def test_chmod_variants_blocked(self, cmd: str, substr: str) -> None:
+        assert_blocked(cmd, substr=substr)
+
+
+# ---------------------------------------------------------------------------
+# 14. Docker system/volume destructive operations
+# ---------------------------------------------------------------------------
+
+
+class TestDockerExtended:
+    def test_docker_system_prune(self) -> None:
+        assert_blocked("docker system prune -af", substr="docker system prune")
+
+    def test_docker_volume_rm(self) -> None:
+        assert_blocked("docker volume rm myvolume", substr="docker volume rm")
+
+
+# ---------------------------------------------------------------------------
+# 15. Git history rewriting and force push variants
+# ---------------------------------------------------------------------------
+
+
+class TestGitExtended:
+    def test_git_filter_branch(self) -> None:
+        assert_blocked(
+            "git filter-branch --tree-filter 'rm -f passwords.txt' HEAD",
+            substr="filter-branch",
+        )
+
+    def test_plus_refspec_push(self) -> None:
+        assert_blocked(
+            "git push origin +main",
+            substr="plus-refspec",
+        )
+
+    def test_force_if_includes(self) -> None:
+        assert_blocked(
+            "git push --force-if-includes origin main",
+            substr="force push",
+        )

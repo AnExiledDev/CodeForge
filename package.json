@@ -1,6 +1,6 @@
 {
 	"name": "codeforge-dev",
-	"version": "1.14.2",
+	"version": "2.0.0",
 	"description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
 	"main": "setup.js",
 	"bin": {
@@ -10,7 +10,7 @@
 		"test": "node test.js",
 		"test:plugins": "pytest tests/ -v",
 		"test:all": "npm test && pytest tests/ -v",
-		"prepublishOnly": "npm test",
+		"prepublishOnly": "npm run test:all",
 		"docs:dev": "npm run dev --prefix docs",
 		"docs:build": "npm run build --prefix docs",
 		"docs:preview": "npm run preview --prefix docs"

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Security
+- Removed environment variable injection vector in agent redirect log path (S2-01)
+- Narrowed config deployment allowed destinations from `/usr/local` to `/usr/local/share` (S2-09)
+
 ### Added
 
 #### Testing
@@ -13,6 +17,7 @@
   - `guard-readonly-bash.py` (63 tests) — general-readonly and git-readonly modes, bypass prevention
   - `redirect-builtin-agents.py` (13 tests) — redirect mapping, passthrough, output structure
 - Added `test:plugins` and `test:all` npm scripts for running plugin tests
+- Python plugin tests (`pytest`) added to CI pipeline (Q3-08)
 
 ### Fixed
 
@@ -21,6 +26,12 @@
 - **Block `--force-with-lease`** — was slipping through regex; all force push variants now blocked uniformly
 - **Block remote branch deletion** — `git push origin --delete` and colon-refspec deletion (`git push origin :branch`) now blocked; deleting remote branches closes associated PRs
 - **Fixed README** — error handling was documented as "fails open" but code actually fails closed; corrected to match behavior
+- Dangerous command blocker handles prefix bypasses (`\rm`, `command rm`, `env rm`) and symbolic chmod (S2-03)
+- Fixed greedy alternation in write-target regex — `>>` now matched before `>` (Q3-01)
+- Bare `git stash` (equivalent to push) now blocked in read-only mode (Q3-04)
+
+#### Protected Files Guard
+- Protected files guard now fails closed on unexpected errors instead of failing open (S2-04)
 
 #### Documentation
 - **DevContainer CLI guide** — dedicated Getting Started page for terminal-only workflows without VS Code
@@ -33,6 +44,9 @@
 - Dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
 
 ### Changed
+
+#### Guards
+- Unified write-target extraction patterns across guards — protected-files bash guard expanded from 5 to 18 patterns (C1-02)
 
 #### Performance
 - Commented out Rust toolchain feature — saves ~1.23 GB image size; uncomment in `devcontainer.json` if needed
