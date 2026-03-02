@@ -11,14 +11,17 @@ Only fires when a .specs/ directory exists (project uses the spec system).
 Reads hook input from stdin (JSON). Returns JSON on stdout.
 Blocks with decision/reason so Claude addresses the spec gap
 before finishing. The stop_hook_active guard prevents infinite loops.
+A 5-minute cooldown prevents repeated firing in agent/team scenarios.
 """
 
 import json
 import os
 import subprocess
 import sys
+import time
 
 GIT_CMD_TIMEOUT = 5
+COOLDOWN_SECS = 300  # 5 minutes between reminders per session
 
 # Directories whose changes should trigger the spec reminder
 CODE_DIRS = (
@@ -38,6 +41,26 @@ CODE_DIRS = (
     "pages/",
     "routes/",
 )
+
+
+def _is_on_cooldown(session_id: str) -> bool:
+    """Check if the reminder fired recently. Returns True to suppress."""
+    cooldown_path = f"/tmp/claude-spec-reminder-cooldown-{session_id}"
+    try:
+        mtime = os.path.getmtime(cooldown_path)
+        return (time.time() - mtime) < COOLDOWN_SECS
+    except OSError:
+        return False
+
+
+def _touch_cooldown(session_id: str) -> None:
+    """Mark the cooldown as active."""
+    cooldown_path = f"/tmp/claude-spec-reminder-cooldown-{session_id}"
+    try:
+        with open(cooldown_path, "w") as f:
+            f.write("")
+    except OSError:
+        pass
 
 
 def _run_git(args: list[str]) -> str | None:
@@ -64,6 +87,11 @@ def main():
 
     # Skip if another Stop hook is already blocking
     if input_data.get("stop_hook_active"):
+        sys.exit(0)
+
+    # Cooldown — suppress if fired within the last 5 minutes
+    session_id = input_data.get("session_id", "")
+    if session_id and _is_on_cooldown(session_id):
         sys.exit(0)
 
     cwd = os.getcwd()
@@ -116,6 +144,8 @@ def main():
         "or /spec-refine if the spec is still in draft status."
     )
 
+    if session_id:
+        _touch_cooldown(session_id)
     json.dump({"decision": "block", "reason": message}, sys.stdout)
     sys.exit(0)
 

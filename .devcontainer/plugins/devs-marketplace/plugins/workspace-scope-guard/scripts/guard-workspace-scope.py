@@ -5,6 +5,7 @@ Nuclear workspace scope enforcement.
 Blocks ALL operations (read, write, bash) outside the current working directory.
 Permanently blacklists /workspaces/.devcontainer/ — no exceptions, no bypass.
 Bash enforcement via two-layer detection: write target extraction + workspace path scan.
+Worktree-aware: detects .claude/worktrees/ in CWD and expands scope to project root.
 Fails closed on any error.
 
 Exit code 2 blocks the operation with an error message.
@@ -148,6 +149,25 @@ def is_allowlisted(resolved_path: str) -> bool:
     return any(resolved_path.startswith(prefix) for prefix in ALLOWED_PREFIXES)
 
 
+# Worktree path segment used to detect worktree CWDs
+_WORKTREE_SEGMENT = "/.claude/worktrees/"
+
+
+def resolve_scope_root(cwd: str) -> str:
+    """Resolve CWD to the effective scope root.
+
+    When CWD is inside a .claude/worktrees/<id> directory, the scope root
+    is the project root (the parent of .claude/worktrees/). This allows
+    sibling worktrees and the main project directory to remain in-scope.
+
+    Returns cwd unchanged when not in a worktree.
+    """
+    idx = cwd.find(_WORKTREE_SEGMENT)
+    if idx != -1:
+        return cwd[:idx]
+    return cwd
+
+
 def get_target_path(tool_name: str, tool_input: dict) -> str | None:
     """Extract the target path from tool input.
 
@@ -286,8 +306,9 @@ def check_bash_scope(command: str, cwd: str) -> None:
         if not skip_layer1:
             for target, resolved in resolved_targets:
                 if not is_in_scope(resolved, cwd) and not is_allowlisted(resolved):
+                    detail = f" (resolved: {resolved})" if resolved != target else ""
                     print(
-                        f"Blocked: Bash command writes to '{target}' which is "
+                        f"Blocked: Bash command writes to '{target}'{detail} which is "
                         f"outside the working directory ({cwd}).",
                         file=sys.stderr,
                     )
@@ -297,8 +318,9 @@ def check_bash_scope(command: str, cwd: str) -> None:
     for path_str in workspace_paths:
         resolved = os.path.realpath(path_str)
         if not is_in_scope(resolved, cwd) and not is_allowlisted(resolved):
+            detail = f" (resolved: {resolved})" if resolved != path_str else ""
             print(
-                f"Blocked: Bash command references '{path_str}' which is "
+                f"Blocked: Bash command references '{path_str}'{detail} which is "
                 f"outside the working directory ({cwd}).",
                 file=sys.stderr,
             )
@@ -316,11 +338,14 @@ def main():
         tool_name = input_data.get("tool_name", "")
         tool_input = input_data.get("tool_input", {})
 
-        cwd = os.getcwd()
+        # Resolve CWD with realpath for consistent comparison with resolved targets
+        cwd = os.path.realpath(os.getcwd())
+        # Expand scope to project root when running inside a worktree
+        scope_root = resolve_scope_root(cwd)
 
         # --- Bash tool: separate code path ---
         if tool_name == "Bash":
-            check_bash_scope(tool_input.get("command", ""), cwd)
+            check_bash_scope(tool_input.get("command", ""), scope_root)
             sys.exit(0)
 
         # --- File tools ---
@@ -350,11 +375,11 @@ def main():
             sys.exit(2)
 
         # cwd=/workspaces bypass (blacklist already checked)
-        if cwd == "/workspaces":
+        if scope_root == "/workspaces":
             sys.exit(0)
 
         # In-scope check
-        if is_in_scope(resolved, cwd):
+        if is_in_scope(resolved, scope_root):
             sys.exit(0)
 
         # Allowlist check
@@ -362,9 +387,15 @@ def main():
             sys.exit(0)
 
         # Out of scope — BLOCK for ALL tools
+        detail = f" (resolved: {resolved})" if resolved != target_path else ""
+        scope_info = (
+            f"scope root ({scope_root})"
+            if scope_root != cwd
+            else f"working directory ({scope_root})"
+        )
         print(
-            f"Blocked: {tool_name} targets '{target_path}' which is outside "
-            f"the working directory ({cwd}). Move to that project's directory "
+            f"Blocked: {tool_name} targets '{target_path}'{detail} which is outside "
+            f"the {scope_info}. Move to that project's directory "
             f"first or work from /workspaces.",
             file=sys.stderr,
         )

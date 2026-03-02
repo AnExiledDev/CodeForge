@@ -8,21 +8,39 @@ Uses tiered logic: meaningful changes (3+ files, 2+ source files, or test
 files touched) get an advisory suggestion; small changes are silent.
 
 Output is a systemMessage wrapped in <system-reminder> tags — advisory only,
-never blocks. The stop_hook_active guard prevents loops.
+never blocks. The stop_hook_active guard prevents loops. A 5-minute cooldown
+prevents repeated firing in agent/team scenarios where Stop events are frequent.
 """
 
 import json
 import os
 import subprocess
 import sys
+import time
 
 GIT_CMD_TIMEOUT = 5
+COOLDOWN_SECS = 300  # 5 minutes between reminders per session
 
 # Extensions considered source code (not config/docs)
-SOURCE_EXTS = frozenset((
-    ".py", ".ts", ".tsx", ".js", ".jsx", ".go", ".rs",
-    ".java", ".kt", ".rb", ".svelte", ".vue", ".c", ".cpp", ".h",
-))
+SOURCE_EXTS = frozenset(
+    (
+        ".py",
+        ".ts",
+        ".tsx",
+        ".js",
+        ".jsx",
+        ".go",
+        ".rs",
+        ".java",
+        ".kt",
+        ".rb",
+        ".svelte",
+        ".vue",
+        ".c",
+        ".cpp",
+        ".h",
+    )
+)
 
 # Patterns that indicate test files
 TEST_PATTERNS = ("test_", "_test.", ".test.", ".spec.", "/tests/", "/test/")
@@ -75,6 +93,26 @@ def _is_test_file(path: str) -> bool:
     return any(pattern in lower for pattern in TEST_PATTERNS)
 
 
+def _is_on_cooldown(session_id: str) -> bool:
+    """Check if the reminder fired recently. Returns True to suppress."""
+    cooldown_path = f"/tmp/claude-commit-reminder-cooldown-{session_id}"
+    try:
+        mtime = os.path.getmtime(cooldown_path)
+        return (time.time() - mtime) < COOLDOWN_SECS
+    except OSError:
+        return False
+
+
+def _touch_cooldown(session_id: str) -> None:
+    """Mark the cooldown as active."""
+    cooldown_path = f"/tmp/claude-commit-reminder-cooldown-{session_id}"
+    try:
+        with open(cooldown_path, "w") as f:
+            f.write("")
+    except OSError:
+        pass
+
+
 def _is_meaningful(edited_files: list[str]) -> bool:
     """Determine if the session's edits are meaningful enough to suggest committing.
 
@@ -109,6 +147,10 @@ def main():
     # Only fire if this session actually edited files
     session_id = input_data.get("session_id", "")
     if not session_id:
+        sys.exit(0)
+
+    # Cooldown — suppress if fired within the last 5 minutes
+    if _is_on_cooldown(session_id):
         sys.exit(0)
 
     edited_files = _read_session_edits(session_id)
@@ -162,6 +204,7 @@ def main():
         "</system-reminder>"
     )
 
+    _touch_cooldown(session_id)
     json.dump({"systemMessage": message}, sys.stdout)
     sys.exit(0)
 

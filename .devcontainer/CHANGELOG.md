@@ -1,5 +1,18 @@
 # CodeForge Devcontainer Changelog
 
+## v2.0.2 — 2026-03-02
+
+### Security
+
+- Workspace scope guard now resolves CWD with `os.path.realpath()` for consistent comparison with target paths, preventing false positives from symlinks and bind mounts
+- Scope guard detects `.claude/worktrees/` in CWD and expands scope to project root, allowing sibling worktrees and the main project directory to remain in-scope
+- Improved scope guard error messages to include resolved paths and scope root for easier debugging of false positives
+- CWD context injector now references the project root when running inside a worktree
+
+### Agent System
+
+- Commit reminder and spec reminder now have a 5-minute per-session cooldown, preventing repeated firing in team/agent scenarios where Stop events are frequent
+
 ## v2.0.0 — 2026-02-26
 
 ### .codeforge/ Configuration System

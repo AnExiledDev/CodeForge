@@ -30,6 +30,21 @@ These paths are always permitted regardless of working directory:
 | `~/.claude/` | Claude config, plans, rules |
 | `/tmp/` | System temp directory |
 
+### Worktree Support
+
+When CWD is inside a `.claude/worktrees/<id>` directory (e.g., when an agent runs in a git worktree), the guard automatically expands scope to the **project root** — the parent of `.claude/worktrees/`.
+
+This means:
+- Sibling worktrees under the same project are **in-scope**
+- The main project directory is **in-scope**
+- Other projects remain **out-of-scope**
+
+Example: if CWD is `/workspaces/projects/MyApp/.claude/worktrees/agent-abc123`, the scope root becomes `/workspaces/projects/MyApp/`. All paths under that root are permitted.
+
+### Path Resolution
+
+Both CWD and target paths are resolved via `os.path.realpath()` before comparison. This prevents false positives when paths involve symlinks or bind mounts.
+
 ### CWD Context Injection
 
 The plugin injects working directory awareness on four hook events:
@@ -40,6 +55,8 @@ The plugin injects working directory awareness on four hook events:
 | UserPromptSubmit | Remind scope on every prompt |
 | PreToolUse | Context alongside scope enforcement |
 | SubagentStart | Ensure subagents know their scope |
+
+When in a worktree, the injected context references the project root as the scope boundary.
 
 ## How It Works
 
@@ -52,13 +69,15 @@ Claude calls Read, Write, Edit, NotebookEdit, Glob, or Grep
        │
        └─→ guard-workspace-scope.py
             │
+            ├─→ Resolve CWD via os.path.realpath()
+            ├─→ Resolve scope root (worktree → project root)
             ├─→ Extract target path from tool input
-            ├─→ Resolve via os.path.realpath() (handles symlinks)
+            ├─→ Resolve target via os.path.realpath() (handles symlinks)
             ├─→ BLACKLIST check (first!) → exit 2 if blacklisted
-            ├─→ cwd is /workspaces? → allow (bypass, blacklist already checked)
-            ├─→ Path within cwd? → allow
+            ├─→ scope root is /workspaces? → allow (bypass, blacklist already checked)
+            ├─→ Path within scope root? → allow
             ├─→ Path on allowlist? → allow
-            └─→ Out of scope → exit 2 (block)
+            └─→ Out of scope → exit 2 (block with resolved path details)
 ```
 
 ### Hook Lifecycle (Bash)
@@ -70,10 +89,11 @@ Claude calls Bash
        │
        └─→ guard-workspace-scope.py
             │
+            ├─→ Resolve CWD + scope root (worktree-aware)
             ├─→ Extract write targets (Layer 1) + workspace paths (Layer 2)
             ├─→ BLACKLIST check on ALL extracted paths → exit 2 if any blacklisted
-            ├─→ cwd is /workspaces? → allow (bypass, blacklist already checked)
-            ├─→ Layer 1: Check write targets against scope
+            ├─→ scope root is /workspaces? → allow (bypass, blacklist already checked)
+            ├─→ Layer 1: Check write targets against scope root
             │    ├─→ System command exemption (only if ALL targets are system paths)
             │    └─→ exit 2 if any write target out of scope
             └─→ Layer 2: Scan ALL /workspaces/ paths in command (ALWAYS runs)
