@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-CodeForge is a DevContainer configuration that transforms your development environment into an AI-powered workspace. It bundles 14 plugins, 22 tools, 21 specialized agents, and 38 skills into a single `npx codeforge-dev` install.
+CodeForge is a DevContainer configuration that transforms your development environment into an AI-powered workspace. It bundles 17 plugins, 22 tools, 21 specialized agents, and 38 skills into a single `npx codeforge-dev` install.
 
 ## What is CodeForge?
 

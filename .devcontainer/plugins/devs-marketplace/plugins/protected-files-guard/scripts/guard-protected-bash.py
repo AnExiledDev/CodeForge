@@ -17,7 +17,7 @@ import sys
 PROTECTED_PATTERNS = [
     (r"(^|/)\.env$", "Blocked: .env contains secrets - edit manually if needed"),
     (
-        r"(^|/)\.env\.[^/]+$",
+        r"(^|/)\.env\.(?!example$)[^/]+$",
         "Blocked: .env.* files contain secrets - edit manually if needed",
     ),
     (r"(^|/)\.git(/|$)", "Blocked: .git is managed by git"),

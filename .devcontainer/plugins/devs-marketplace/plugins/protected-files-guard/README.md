@@ -10,7 +10,7 @@ Intercepts file operations and checks target paths against a set of protected pa
 
 | Category | Patterns | Reason |
 |----------|----------|--------|
-| Environment secrets | `.env`, `.env.*` | Contains secrets |
+| Environment secrets | `.env`, `.env.*` (except `.env.example`) | Contains secrets |
 | Git internals | `.git/` | Managed by git |
 | Lock files | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `poetry.lock`, `Cargo.lock`, `composer.lock`, `uv.lock` | Must be modified via package manager |
 | Certificates & keys | `.pem`, `.key`, `.crt`, `.p12`, `.pfx` | Sensitive cryptographic material |
@@ -60,7 +60,7 @@ The Bash guard parses commands for write-indicating patterns and extracts the ta
 | Scenario | Behavior |
 |----------|----------|
 | JSON parse failure | Fails closed (exit 2) — blocks the operation |
-| Other exceptions | Fails open (exit 0) — logs error, allows the operation |
+| Other exceptions | Fails closed (exit 2) — logs error, blocks the operation |
 
 ### Timeout
 

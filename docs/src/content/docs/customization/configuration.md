@@ -96,7 +96,10 @@ The `enabledPlugins` section controls which plugins are active:
     "codeforge-lsp@devs-marketplace": true,
     "git-workflow@devs-marketplace": true,
     "prompt-snippets@devs-marketplace": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@anthropics/claude-code": true,
+    "code-review@anthropics/claude-code": true,
+    "feature-dev@anthropics/claude-code": true,
+    "pr-review-toolkit@anthropics/claude-code": true
   }
 }
 ```

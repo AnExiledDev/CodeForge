@@ -16,7 +16,7 @@ PROTECTED_PATTERNS = [
     # Environment secrets
     (r"(^|/)\.env$", "Blocked: .env contains secrets - edit manually if needed"),
     (
-        r"(^|/)\.env\.[^/]+$",
+        r"(^|/)\.env\.(?!example$)[^/]+$",
         "Blocked: .env.* files contain secrets - edit manually if needed",
     ),
     # Git internals

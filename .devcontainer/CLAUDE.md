@@ -50,6 +50,9 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 - **git-workflow** — Standalone ship (commit/push/PR) + PR review
 - **notify-hook** — Desktop notifications on completion
 - **frontend-design** (Anthropic official) — UI/frontend design skill
+- **code-review** (Anthropic official) — Code review skill
+- **feature-dev** (Anthropic official) — Feature development skill
+- **pr-review-toolkit** (Anthropic official) — PR review commands + agents
 - **prompt-snippets** — Quick behavioral mode switches via /ps command
 
 ## Rules System
