@@ -17,7 +17,7 @@ Out of the box, CodeForge gives you:
 - **38 domain knowledge packs** (skills) for frameworks, patterns, and workflows
 - **22 CLI tools** for session management, code quality, and development
 - **3 layers of code intelligence** — AST-based search, syntax parsing, and LSP semantic analysis
-- **14 plugins** that wire everything together with hooks, guards, and automation
+- **17 plugins** that wire everything together with hooks, guards, and automation
 
 All of these features work together. An agent can load skills for domain expertise, use CLI tools for code quality checks, and leverage code intelligence for precise navigation — all orchestrated automatically.
 

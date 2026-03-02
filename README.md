@@ -106,7 +106,7 @@ CodeForge operates in three layers, each building on the one below:
 
 **DevContainer** — The foundation. A Python 3.14 container with Node.js, Rust, and Bun runtimes, plus 22 custom features that install development tools (ast-grep, tree-sitter, biome, ruff, and others).
 
-**CodeForge Layer** — The intelligence. 13 plugins register hooks that validate commands, inject context, and enforce safety. 17 agents provide specialized personas. 35 skills offer on-demand reference material. System prompts and rules shape behavior.
+**CodeForge Layer** — The intelligence. 17 plugins register hooks that validate commands, inject context, and enforce safety. 21 agents provide specialized personas. 38 skills offer on-demand reference material. System prompts and rules shape behavior.
 
 **Claude Code** — The AI assistant, executing tools and coordinating work. CodeForge enhances it through configuration — replacing built-in subagents, adding safety guardrails, and wiring up quality checks that run automatically.
 

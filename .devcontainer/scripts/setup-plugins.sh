@@ -22,7 +22,7 @@ fi
 echo "[setup-plugins] Installing plugins..."
 
 # --- Official Anthropic Plugins ---
-DEFAULT_OFFICIAL_PLUGINS="frontend-design@claude-plugins-official svelte@sveltejs/mcp"
+DEFAULT_OFFICIAL_PLUGINS="frontend-design@anthropics/claude-code code-review@anthropics/claude-code feature-dev@anthropics/claude-code pr-review-toolkit@anthropics/claude-code svelte@sveltejs/mcp"
 IFS=' ' read -ra OFFICIAL_PLUGINS <<< "${OFFICIAL_PLUGINS:-$DEFAULT_OFFICIAL_PLUGINS}"
 
 for plugin in "${OFFICIAL_PLUGINS[@]}"; do
