@@ -5,6 +5,7 @@ on every session start, user prompt, tool call, and subagent spawn.
 
 Worktree-aware: when CWD is inside .claude/worktrees/, injects the project
 root as the scope boundary instead of the worktree-specific path.
+Git-root-aware: walks up from CWD to find .git, expanding scope to repository root.
 
 Fires on: SessionStart, UserPromptSubmit, PreToolUse, SubagentStart
 Always exits 0 (advisory, never blocking).
@@ -19,10 +20,32 @@ _WORKTREE_SEGMENT = "/.claude/worktrees/"
 
 
 def resolve_scope_root(cwd: str) -> str:
-    """Resolve CWD to project root when inside a worktree."""
+    """Resolve CWD to the effective scope root.
+
+    Priority:
+    1. Worktree detection: if CWD is inside .claude/worktrees/<id>, scope root
+       is the project root (parent of .claude/worktrees/).
+    2. Git root detection: walk up from CWD looking for .git directory/file.
+       Stops at / or /workspaces to prevent scope from escaping the workspace.
+    3. Fallback: CWD unchanged (non-git directories).
+    """
+    # 1. Worktree detection
     idx = cwd.find(_WORKTREE_SEGMENT)
     if idx != -1:
         return cwd[:idx]
+
+    # 2. Git root detection — walk up looking for .git
+    current = cwd
+    while True:
+        if os.path.exists(os.path.join(current, ".git")):
+            return current
+        parent = os.path.dirname(current)
+        # Safety ceiling: stop at filesystem root or /workspaces
+        if parent == current or current == "/workspaces":
+            break
+        current = parent
+
+    # 3. Fallback — no git root found
     return cwd
 
 

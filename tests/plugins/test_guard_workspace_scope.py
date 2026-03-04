@@ -1,14 +1,71 @@
 """Tests for workspace scope guard plugin.
 
 Covers: is_blacklisted, is_in_scope, is_allowlisted, get_target_path,
-        extract_primary_command, extract_write_targets, check_bash_scope.
+        extract_primary_command, extract_write_targets, check_bash_scope,
+        resolve_scope_root.
 """
 
+import os
 from unittest.mock import patch
 
 import pytest
 
 from tests.conftest import guard_workspace_scope
+
+
+# ---------------------------------------------------------------------------
+# resolve_scope_root
+# ---------------------------------------------------------------------------
+class TestResolveScopeRoot:
+    @pytest.mark.parametrize(
+        "cwd, git_at, expected",
+        [
+            (
+                "/workspaces/projects/MyApp/src/components",
+                "/workspaces/projects/MyApp",
+                "/workspaces/projects/MyApp",
+            ),
+            (
+                "/workspaces/projects/MyApp/src/deeply/nested",
+                "/workspaces/projects/MyApp",
+                "/workspaces/projects/MyApp",
+            ),
+            (
+                "/workspaces/projects/MyApp",
+                "/workspaces/projects/MyApp",
+                "/workspaces/projects/MyApp",
+            ),
+            (
+                "/workspaces/projects/MyApp/src",
+                None,
+                "/workspaces/projects/MyApp/src",
+            ),
+            (
+                "/workspaces/projects/MyApp/.claude/worktrees/abc/src",
+                "/workspaces/projects/MyApp",
+                "/workspaces/projects/MyApp",
+            ),
+        ],
+        ids=[
+            "subdirectory_finds_git_root",
+            "deeply_nested_finds_git_root",
+            "already_at_git_root",
+            "no_git_fallback_to_cwd",
+            "worktree_takes_priority",
+        ],
+    )
+    def test_resolve_scope_root(self, cwd, git_at, expected):
+        original_exists = os.path.exists
+
+        def mock_exists(path):
+            if git_at and path == os.path.join(git_at, ".git"):
+                return True
+            if path.endswith("/.git"):
+                return False
+            return original_exists(path)
+
+        with patch("os.path.exists", side_effect=mock_exists):
+            assert guard_workspace_scope.resolve_scope_root(cwd) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +267,8 @@ class TestCheckBashScope:
             ("echo x > /workspaces/other/file", "/workspaces"),
             ("echo x > /tmp/scratch", "/workspaces/proj"),
             ("", "/workspaces/proj"),
+            ("ls /workspaces/proj/other-dir", "/workspaces/proj"),
+            ("cat /workspaces/proj/README.md", "/workspaces/proj"),
         ],
         ids=[
             "write_inside_scope",
@@ -217,6 +276,8 @@ class TestCheckBashScope:
             "cwd_is_workspaces_bypass",
             "allowlisted_tmp",
             "empty_command",
+            "sibling_dir_in_scope",
+            "project_root_file_in_scope",
         ],
     )
     def test_allowed(self, command, cwd):

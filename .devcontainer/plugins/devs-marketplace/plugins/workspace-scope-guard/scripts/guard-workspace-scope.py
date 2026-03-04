@@ -6,6 +6,7 @@ Blocks ALL operations (read, write, bash) outside the current working directory.
 Permanently blacklists /workspaces/.devcontainer/ — no exceptions, no bypass.
 Bash enforcement via two-layer detection: write target extraction + workspace path scan.
 Worktree-aware: detects .claude/worktrees/ in CWD and expands scope to project root.
+Git-root-aware: walks up from CWD to find .git, expanding scope to repository root.
 Fails closed on any error.
 
 Exit code 2 blocks the operation with an error message.
@@ -156,15 +157,30 @@ _WORKTREE_SEGMENT = "/.claude/worktrees/"
 def resolve_scope_root(cwd: str) -> str:
     """Resolve CWD to the effective scope root.
 
-    When CWD is inside a .claude/worktrees/<id> directory, the scope root
-    is the project root (the parent of .claude/worktrees/). This allows
-    sibling worktrees and the main project directory to remain in-scope.
-
-    Returns cwd unchanged when not in a worktree.
+    Priority:
+    1. Worktree detection: if CWD is inside .claude/worktrees/<id>, scope root
+       is the project root (parent of .claude/worktrees/).
+    2. Git root detection: walk up from CWD looking for .git directory/file.
+       Stops at / or /workspaces to prevent scope from escaping the workspace.
+    3. Fallback: CWD unchanged (non-git directories).
     """
+    # 1. Worktree detection
     idx = cwd.find(_WORKTREE_SEGMENT)
     if idx != -1:
         return cwd[:idx]
+
+    # 2. Git root detection — walk up looking for .git
+    current = cwd
+    while True:
+        if os.path.exists(os.path.join(current, ".git")):
+            return current
+        parent = os.path.dirname(current)
+        # Safety ceiling: stop at filesystem root or /workspaces
+        if parent == current or current == "/workspaces":
+            break
+        current = parent
+
+    # 3. Fallback — no git root found
     return cwd
 
 

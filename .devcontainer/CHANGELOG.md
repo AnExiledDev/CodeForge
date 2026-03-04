@@ -1,5 +1,11 @@
 # CodeForge Devcontainer Changelog
 
+## v2.0.3 — 2026-03-03
+
+### Workspace Scope Guard
+
+- Fix scope guard blocking project root access from subdirectory CWDs — now detects git repository root and uses it as scope boundary
+
 ## v2.0.2 — 2026-03-02
 
 ### Security

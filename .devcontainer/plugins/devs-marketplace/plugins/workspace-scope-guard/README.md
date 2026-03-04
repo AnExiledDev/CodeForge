@@ -41,6 +41,17 @@ This means:
 
 Example: if CWD is `/workspaces/projects/MyApp/.claude/worktrees/agent-abc123`, the scope root becomes `/workspaces/projects/MyApp/`. All paths under that root are permitted.
 
+### Git Root Detection
+
+When CWD is a subdirectory of a git repository, the guard automatically expands scope to the **repository root** (the directory containing `.git`). This prevents false positives when working in subdirectories like `src/`, `cli/`, or `tests/`.
+
+The walk stops at `/workspaces` or the filesystem root as a safety ceiling — scope never expands beyond the workspace boundary.
+
+Priority order:
+1. **Worktree detection** — `.claude/worktrees/` in CWD → project root
+2. **Git root detection** — walk up to `.git` → repository root
+3. **Fallback** — CWD unchanged (non-git directories)
+
 ### Path Resolution
 
 Both CWD and target paths are resolved via `os.path.realpath()` before comparison. This prevents false positives when paths involve symlinks or bind mounts.
