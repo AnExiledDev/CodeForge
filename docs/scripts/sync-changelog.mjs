@@ -11,7 +11,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const source = resolve(__dirname, '../../.devcontainer/CHANGELOG.md');
+const source = resolve(__dirname, '../../container/.devcontainer/CHANGELOG.md');
 const dest = resolve(__dirname, '../src/content/docs/reference/changelog.md');
 
 const content = readFileSync(source, 'utf-8');
@@ -31,7 +31,7 @@ sidebar:
 ---
 
 :::note[Auto-Generated]
-This page mirrors [\`.devcontainer/CHANGELOG.md\`](https://github.com/AnExiledDev/CodeForge/blob/main/.devcontainer/CHANGELOG.md) and is regenerated on every build. Do not edit directly — update the source file instead.
+This page mirrors [\`container/.devcontainer/CHANGELOG.md\`](https://github.com/AnExiledDev/CodeForge/blob/main/container/.devcontainer/CHANGELOG.md) and is regenerated on every build. Do not edit directly — update the source file instead.
 :::
 
 ## Versioning Policy
@@ -75,4 +75,4 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 `;
 
 writeFileSync(dest, frontmatter + cleaned);
-console.log('✓ Changelog synced from .devcontainer/CHANGELOG.md');
+console.log('✓ Changelog synced from container/.devcontainer/CHANGELOG.md');
