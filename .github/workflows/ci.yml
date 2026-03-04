@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [main, staging]
+    paths: ['container/**']
   pull_request:
     branches: [main, staging]
+    paths: ['container/**']
 
 jobs:
   test:
@@ -15,6 +17,7 @@ jobs:
         with:
           node-version: 18
       - run: npm test
+        working-directory: container
 
   lint:
     runs-on: ubuntu-latest
@@ -24,6 +27,7 @@ jobs:
         with:
           node-version: 18
       - run: npx @biomejs/biome check setup.js test.js
+        working-directory: container
 
   test-plugins:
     runs-on: ubuntu-latest
@@ -34,3 +38,14 @@ jobs:
           python-version: "3.x"
       - run: pip install pytest
       - run: pytest tests/ -v
+        working-directory: container
+
+  test-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+        working-directory: cli
+      - run: bun test
+        working-directory: cli

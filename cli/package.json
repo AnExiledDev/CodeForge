@@ -25,5 +25,14 @@
 		"node": ">=18.0.0"
 	},
 	"license": "GPL-3.0",
-	"author": "AnExiledDev"
+	"author": "AnExiledDev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AnExiledDev/CodeForge.git",
+		"directory": "cli"
+	},
+	"homepage": "https://github.com/AnExiledDev/CodeForge/tree/main/cli#readme",
+	"bugs": {
+		"url": "https://github.com/AnExiledDev/CodeForge/issues"
+	}
 }

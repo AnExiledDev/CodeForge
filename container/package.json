@@ -10,10 +10,7 @@
 		"test": "node test.js",
 		"test:plugins": "pytest tests/ -v",
 		"test:all": "npm test && pytest tests/ -v",
-		"prepublishOnly": "npm run test:all",
-		"docs:dev": "npm run dev --prefix docs",
-		"docs:build": "npm run build --prefix docs",
-		"docs:preview": "npm run preview --prefix docs"
+		"prepublishOnly": "npm run test:all"
 	},
 	"keywords": [
 		"devcontainer",
@@ -41,7 +38,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/AnExiledDev/CodeForge.git"
+		"url": "git+https://github.com/AnExiledDev/CodeForge.git",
+		"directory": "container"
 	},
 	"homepage": "https://github.com/AnExiledDev/CodeForge#readme",
 	"bugs": {

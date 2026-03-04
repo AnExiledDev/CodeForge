@@ -16,7 +16,7 @@ jobs:
         name: Extract and validate version
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
-          PKG=$(node -p "require('./package.json').version")
+          PKG=$(node -p "require('./container/package.json').version")
           echo "version=$TAG" >> "$GITHUB_OUTPUT"
           if [ "$TAG" != "$PKG" ]; then
             echo "::error::Tag v${TAG} does not match package.json version ${PKG}"
@@ -38,9 +38,11 @@ jobs:
 
       - name: Run tests
         run: npm test
+        working-directory: container
 
       - name: Publish to npm
         run: npm publish
+        working-directory: container
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -48,7 +50,7 @@ jobs:
         id: changelog
         run: |
           VERSION="${{ needs.validate.outputs.version }}"
-          NOTES=$(sed -n "/^## \[v${VERSION}\]/,/^## \[v/{ /^## \[v${VERSION}\]/d; /^## \[v/d; p; }" .devcontainer/CHANGELOG.md)
+          NOTES=$(sed -n "/^## \[v${VERSION}\]/,/^## \[v/{ /^## \[v${VERSION}\]/d; /^## \[v/d; p; }" container/.devcontainer/CHANGELOG.md)
           if [ -z "$NOTES" ]; then
             NOTES="Release v${VERSION}"
           fi

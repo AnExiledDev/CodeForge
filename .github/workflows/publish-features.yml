@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.devcontainer/features/**']
+    paths: ['container/.devcontainer/features/**']
 
 jobs:
   publish:
@@ -19,7 +19,7 @@ jobs:
         uses: devcontainers/action@v1
         with:
           publish-features: "true"
-          base-path-to-features: "./.devcontainer/features"
+          base-path-to-features: "./container/.devcontainer/features"
           generate-docs: "false"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,7 +2,7 @@ name: Docs CI
 
 on:
   pull_request:
-    paths: ['docs/**', '.devcontainer/CHANGELOG.md']
+    paths: ['docs/**', 'container/.devcontainer/CHANGELOG.md']
 
 jobs:
   build:
