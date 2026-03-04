@@ -1,84 +1,64 @@
-# CodeForge Git Ignore
-
-# Environment files with API keys
+# Shared
+node_modules/
+dist/
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# DevContainer build cache
-.devcontainer/.dockercache/
-
-# IDE files
-.vscode/settings.json
-*.swp
-*.swo
-*~
+.env.*
+!.env.example
+!.env.*.example
+*.log
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+coverage/
+*.lcov
+.nyc_output
 
 # Temporary files
 *.tmp
 *.temp
-.DS_Store
-Thumbs.db
+*.swp
+*.swo
+*~
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-logs
-dev-debug.log
-# Python bytecode
-__pycache__/
-*.pyc
-
-# Dependency directories
-node_modules/
-# Environment variables
-# Editor directories and files
-.idea
-.vscode
+# IDE
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-# OS specific
 
-# Claude Code directory (user-specific)
-.claude/
+# Runtime
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# All hidden directories except devcontainer and codeforge
-.*
-!.devcontainer/
-!.devcontainer/**/.claude-plugin/
-!.codeforge/
-!.git/
-!.github/
-!.gitignore
-!.gitattributes
-!.npmignore
+# Container-specific
+container/.claude/
+container/.tmp/
+container/.codeforge/.checksums/
+container/.codeforge/.markers/
+container/.devcontainer/.env
+container/.devcontainer/.secrets
+container/.devcontainer/state/
+container/.devcontainer/config/backups/
+container/.devcontainer/.dockercache/
+container/.devcontainer/**/*.codeforge-new
+container/.devcontainer/**/*.bak
+container/.devcontainer/.codeforge-preserve
 
-# .codeforge per-installation state (not tracked)
-.codeforge/.checksums/
-.codeforge/.markers/
+# CLI-specific
+cli/.pytest_cache/
+cli/.ruff_cache/
 
-# Docs
-docs/node_modules/
-docs/dist/
+# Docs-specific
 docs/.astro/
+
+# OS-generated
+logs/
+dev-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
