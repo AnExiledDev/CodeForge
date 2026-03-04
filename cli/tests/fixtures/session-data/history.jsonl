@@ -1,0 +1,4 @@
+{"display":"What is the project structure?","sessionId":"aaaa1111-1111-1111-1111-111111111111","project":"/workspaces/projects/TestProject","timestamp":"2026-03-01T10:00:00.000Z"}
+{"display":"Fix the auth bug","sessionId":"bbbb2222-2222-2222-2222-222222222222","project":"/workspaces/projects/TestProject","timestamp":"2026-03-01T11:00:00.000Z"}
+{"display":"Refactor database layer","sessionId":"cccc3333-3333-3333-3333-333333333333","project":"/workspaces/projects/OtherProject","timestamp":"2026-03-02T09:00:00.000Z"}
+{"display":"Add new feature","sessionId":"aaaa1111-1111-1111-1111-111111111111","project":"/workspaces/projects/TestProject","timestamp":"2026-03-01T10:05:00.000Z"}

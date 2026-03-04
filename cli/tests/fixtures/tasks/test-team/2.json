@@ -1,0 +1,8 @@
+{
+	"id": "2",
+	"subject": "Add logout button",
+	"description": "Implement logout functionality",
+	"status": "pending",
+	"blocks": [],
+	"blockedBy": ["1"]
+}
