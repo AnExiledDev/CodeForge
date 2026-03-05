@@ -1,5 +1,17 @@
 # CodeForge Devcontainer Changelog
 
+## Unreleased
+
+### Scope Guard
+
+- Fix false positives blocking writes to system paths (`/dev/null`, `/usr/`, `/etc/`, `$HOME/`) — scope guard now only enforces isolation between workspace projects
+- Remove complex system-command exemption logic (no longer needed)
+
+### CLI Integration
+
+- Add codeforge-cli devcontainer feature — installs the CodeForge CLI (`codeforge` command) globally via npm
+- Remove dead `codeforge` alias from setup-aliases.sh (was pointing to obsolete `setup.js`)
+
 ## v2.0.3 — 2026-03-03
 
 ### Workspace Scope Guard

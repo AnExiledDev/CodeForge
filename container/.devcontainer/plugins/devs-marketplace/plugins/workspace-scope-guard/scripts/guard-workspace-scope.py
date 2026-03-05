@@ -22,18 +22,11 @@ import sys
 # ---------------------------------------------------------------------------
 # BLACKLIST — checked FIRST, overrides everything.
 # Nothing touches these paths. Ever. No exceptions.
-# Checked before allowlist, before scope check, before cwd bypass.
+# Checked before scope check, before cwd bypass.
 # ---------------------------------------------------------------------------
 BLACKLISTED_PREFIXES = [
     "/workspaces/.devcontainer/",
     "/workspaces/.devcontainer",  # exact match (no trailing slash)
-]
-
-# Paths always allowed regardless of working directory
-_home = os.environ.get("HOME", "/home/vscode")
-ALLOWED_PREFIXES = [
-    f"{_home}/.claude/",  # Claude config, plans, rules
-    "/tmp/",  # System scratch
 ]
 
 WRITE_TOOLS = {"Write", "Edit", "NotebookEdit"}
@@ -85,47 +78,6 @@ WRITE_PATTERNS = [
 # ---------------------------------------------------------------------------
 WORKSPACE_PATH_RE = re.compile(r'/workspaces/[^\s;|&>)<\'"]+')
 
-# ---------------------------------------------------------------------------
-# System command exemption (Layer 1 only)
-# ---------------------------------------------------------------------------
-SYSTEM_COMMANDS = frozenset(
-    {
-        "git",
-        "pip",
-        "pip3",
-        "npm",
-        "npx",
-        "yarn",
-        "pnpm",
-        "apt-get",
-        "apt",
-        "cargo",
-        "go",
-        "docker",
-        "make",
-        "cmake",
-        "node",
-        "python3",
-        "python",
-        "ruby",
-        "gem",
-        "bundle",
-    }
-)
-
-SYSTEM_PATH_PREFIXES = (
-    "/usr/",
-    "/bin/",
-    "/sbin/",
-    "/lib/",
-    "/opt/",
-    "/proc/",
-    "/sys/",
-    "/dev/",
-    "/var/",
-    "/etc/",
-)
-
 
 # ---------------------------------------------------------------------------
 # Core check functions
@@ -145,9 +97,15 @@ def is_in_scope(resolved_path: str, cwd: str) -> bool:
     return resolved_path == cwd or resolved_path.startswith(cwd_prefix)
 
 
-def is_allowlisted(resolved_path: str) -> bool:
-    """Check if resolved_path falls under an allowed prefix."""
-    return any(resolved_path.startswith(prefix) for prefix in ALLOWED_PREFIXES)
+def is_outside_workspace(resolved_path: str) -> bool:
+    """Check if resolved_path is outside /workspaces/.
+
+    Paths outside the workspace are not this guard's jurisdiction —
+    system paths (/dev/, /usr/, /tmp/, $HOME/) are handled by other guards.
+    """
+    return not (
+        resolved_path == "/workspaces" or resolved_path.startswith("/workspaces/")
+    )
 
 
 # Worktree path segment used to detect worktree CWDs
@@ -295,45 +253,23 @@ def check_bash_scope(command: str, cwd: str) -> None:
         return
 
     # --- Layer 1: Write target scope check ---
-    if write_targets:
-        primary_cmd = extract_primary_command(command)
-        is_system_cmd = primary_cmd in SYSTEM_COMMANDS
-
-        resolved_targets = [
-            (t, os.path.realpath(t.strip("'\""))) for t in write_targets
-        ]
-
-        # System command exemption: skip Layer 1 ONLY if ALL targets are system paths
-        skip_layer1 = False
-        if is_system_cmd:
-            skip_layer1 = all(
-                any(r.startswith(sp) for sp in SYSTEM_PATH_PREFIXES)
-                for _, r in resolved_targets
+    for target in write_targets:
+        resolved = os.path.realpath(target.strip("'\""))
+        if is_outside_workspace(resolved):
+            continue  # Not under /workspaces/ — not this guard's jurisdiction
+        if not is_in_scope(resolved, cwd):
+            detail = f" (resolved: {resolved})" if resolved != target else ""
+            print(
+                f"Blocked: Bash command writes to '{target}'{detail} which is "
+                f"outside the working directory ({cwd}).",
+                file=sys.stderr,
             )
-            # Override: if ANY target is under /workspaces/ outside cwd → NOT exempt
-            if skip_layer1:
-                for _, resolved in resolved_targets:
-                    if resolved.startswith("/workspaces/") and not is_in_scope(
-                        resolved, cwd
-                    ):
-                        skip_layer1 = False
-                        break
-
-        if not skip_layer1:
-            for target, resolved in resolved_targets:
-                if not is_in_scope(resolved, cwd) and not is_allowlisted(resolved):
-                    detail = f" (resolved: {resolved})" if resolved != target else ""
-                    print(
-                        f"Blocked: Bash command writes to '{target}'{detail} which is "
-                        f"outside the working directory ({cwd}).",
-                        file=sys.stderr,
-                    )
-                    sys.exit(2)
+            sys.exit(2)
 
     # --- Layer 2: Workspace path scan (ALWAYS runs, never exempt) ---
     for path_str in workspace_paths:
         resolved = os.path.realpath(path_str)
-        if not is_in_scope(resolved, cwd) and not is_allowlisted(resolved):
+        if not is_in_scope(resolved, cwd):
             detail = f" (resolved: {resolved})" if resolved != path_str else ""
             print(
                 f"Blocked: Bash command references '{path_str}'{detail} which is "
@@ -398,8 +334,8 @@ def main():
         if is_in_scope(resolved, scope_root):
             sys.exit(0)
 
-        # Allowlist check
-        if is_allowlisted(resolved):
+        # Outside workspace — not this guard's jurisdiction
+        if is_outside_workspace(resolved):
             sys.exit(0)
 
         # Out of scope — BLOCK for ALL tools

@@ -1,6 +1,6 @@
 """Tests for workspace scope guard plugin.
 
-Covers: is_blacklisted, is_in_scope, is_allowlisted, get_target_path,
+Covers: is_blacklisted, is_in_scope, is_outside_workspace, get_target_path,
         extract_primary_command, extract_write_targets, check_bash_scope,
         resolve_scope_root.
 """
@@ -117,26 +117,32 @@ class TestIsInScope:
 
 
 # ---------------------------------------------------------------------------
-# is_allowlisted
+# is_outside_workspace
 # ---------------------------------------------------------------------------
-class TestIsAllowlisted:
+class TestIsOutsideWorkspace:
     @pytest.mark.parametrize(
         "path, expected",
         [
-            (f"{guard_workspace_scope._home}/.claude/rules/foo.md", True),
-            ("/tmp/scratch.txt", True),
+            ("/dev/null", True),
+            ("/usr/lib/node_modules/foo", True),
+            ("/home/vscode/.config/foo", True),
+            ("/tmp/scratch", True),
             ("/workspaces/proj/file", False),
-            (f"{guard_workspace_scope._home}/.ssh/id_rsa", False),
+            ("/workspaces", False),
+            ("/workspaces/.devcontainer/foo", False),
         ],
         ids=[
-            "claude_config_dir",
-            "tmp_file",
-            "project_file",
-            "ssh_key",
+            "dev_null",
+            "usr_lib",
+            "home_config",
+            "tmp_scratch",
+            "workspace_project_file",
+            "workspaces_root_exact",
+            "devcontainer_under_workspace",
         ],
     )
-    def test_allowlisted(self, path, expected):
-        assert guard_workspace_scope.is_allowlisted(path) is expected
+    def test_outside_workspace(self, path, expected):
+        assert guard_workspace_scope.is_outside_workspace(path) is expected
 
 
 # ---------------------------------------------------------------------------
@@ -265,7 +271,8 @@ class TestCheckBashScope:
             ("echo x > /workspaces/proj/out.txt", "/workspaces/proj"),
             ("echo hello", "/workspaces/proj"),
             ("echo x > /workspaces/other/file", "/workspaces"),
-            ("echo x > /tmp/scratch", "/workspaces/proj"),
+            ("command 2>/dev/null", "/workspaces/proj"),
+            ("echo x > /usr/local/bin/foo", "/workspaces/proj"),
             ("", "/workspaces/proj"),
             ("ls /workspaces/proj/other-dir", "/workspaces/proj"),
             ("cat /workspaces/proj/README.md", "/workspaces/proj"),
@@ -274,7 +281,8 @@ class TestCheckBashScope:
             "write_inside_scope",
             "no_paths",
             "cwd_is_workspaces_bypass",
-            "allowlisted_tmp",
+            "redirect_to_dev_null",
+            "write_to_system_path",
             "empty_command",
             "sibling_dir_in_scope",
             "project_root_file_in_scope",
