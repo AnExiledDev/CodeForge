@@ -6,22 +6,25 @@
  * source of truth — never edit the generated docs page directly.
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const source = resolve(__dirname, '../../container/.devcontainer/CHANGELOG.md');
-const dest = resolve(__dirname, '../src/content/docs/reference/changelog.md');
+const source = resolve(__dirname, "../../container/.devcontainer/CHANGELOG.md");
+const dest = resolve(__dirname, "../src/content/docs/reference/changelog.md");
 
-const content = readFileSync(source, 'utf-8');
+const content = readFileSync(source, "utf-8");
 
 // Strip the H1 heading — Starlight generates one from the frontmatter title
-const body = content.replace(/^# .+\n+/, '');
+const body = content.replace(/^# .+\n+/, "");
 
 // Convert [vX.Y.Z] link-style headings to plain ## vX.Y.Z headings
 // Source uses ## [v1.14.0] - 2026-02-24, docs need ## v1.14.0
-const cleaned = body.replace(/^(##) \[v([\d.]+)\] - (\d{4}-\d{2}-\d{2})/gm, '$1 v$2\n\n**Release date:** $3');
+const cleaned = body.replace(
+	/^(##) \[v([\d.]+)\] - (\d{4}-\d{2}-\d{2})/gm,
+	"$1 v$2\n\n**Release date:** $3",
+);
 
 const frontmatter = `---
 title: Changelog
@@ -75,4 +78,4 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 `;
 
 writeFileSync(dest, frontmatter + cleaned);
-console.log('✓ Changelog synced from container/.devcontainer/CHANGELOG.md');
+console.log("✓ Changelog synced from container/.devcontainer/CHANGELOG.md");

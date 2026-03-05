@@ -18,7 +18,7 @@ export async function loadPlans(): Promise<PlanMeta[]> {
 
 				// Extract title from first heading line
 				let title = slug;
-				for (const line of content.split("\n")) {
+				for (const line of content.split(/\r?\n/)) {
 					if (line.startsWith("# ")) {
 						title = line.slice(2).trim();
 						break;

@@ -1,6 +1,5 @@
 import { statSync } from "fs";
-import { homedir } from "os";
-import { resolve } from "path";
+import { getHome, resolveNormalized } from "./platform.js";
 
 const DEFAULT_PATTERN = "**/*.jsonl";
 const DEFAULT_BASE_DIR = ".claude/projects";
@@ -14,10 +13,10 @@ export async function discoverSessionFiles(
 	if (pattern) {
 		// Expand ~ to home directory
 		const expanded = pattern.startsWith("~")
-			? pattern.replace(/^~/, process.env.HOME || homedir())
+			? pattern.replace(/^~/, getHome())
 			: pattern;
 		// Resolve to absolute path
-		globPattern = resolve(expanded);
+		globPattern = resolveNormalized(expanded);
 
 		// Split into base directory and glob portion
 		// Find the first segment containing a glob character
@@ -37,8 +36,8 @@ export async function discoverSessionFiles(
 		scanPath = baseparts.join("/") || "/";
 		globPattern = globParts.join("/") || "**/*.jsonl";
 	} else {
-		const home = process.env.HOME || homedir();
-		scanPath = resolve(home, DEFAULT_BASE_DIR);
+		const home = getHome();
+		scanPath = resolveNormalized(home, DEFAULT_BASE_DIR);
 		globPattern = DEFAULT_PATTERN;
 	}
 

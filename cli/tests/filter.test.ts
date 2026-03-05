@@ -73,6 +73,73 @@ describe("createFilter", () => {
 		});
 	});
 
+	describe("project filter — Windows paths", () => {
+		test("matches when cwd uses backslashes", () => {
+			const filter = createFilter({
+				project: "/workspaces/projects/CodeForge",
+			});
+			expect(
+				filter(
+					makeMessage({
+						cwd: "\\workspaces\\projects\\CodeForge",
+					}),
+				),
+			).toBe(true);
+		});
+
+		test("matches when project uses backslashes", () => {
+			const filter = createFilter({
+				project: "C:\\Users\\dev\\project",
+			});
+			expect(
+				filter(
+					makeMessage({
+						cwd: "C:/Users/dev/project/subdir",
+					}),
+				),
+			).toBe(true);
+		});
+
+		test("matches when both use backslashes", () => {
+			const filter = createFilter({
+				project: "C:\\Users\\dev\\project",
+			});
+			expect(
+				filter(
+					makeMessage({
+						cwd: "C:\\Users\\dev\\project",
+					}),
+				),
+			).toBe(true);
+		});
+
+		test("rejects non-matching Windows paths", () => {
+			const filter = createFilter({
+				project: "C:\\Users\\dev\\project",
+			});
+			expect(
+				filter(
+					makeMessage({
+						cwd: "C:\\Users\\dev\\other",
+					}),
+				),
+			).toBe(false);
+		});
+
+		test("handles trailing backslash in project", () => {
+			const filter = createFilter({
+				project: "C:\\Users\\dev\\project\\",
+			});
+			expect(
+				filter(
+					makeMessage({
+						cwd: "C:\\Users\\dev\\project",
+					}),
+				),
+			).toBe(true);
+		});
+	});
+
 	describe("time filter (after)", () => {
 		test("includes messages at or after the date", () => {
 			const filter = createFilter({ after: new Date("2026-03-01T10:00:00Z") });

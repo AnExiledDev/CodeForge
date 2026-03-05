@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import type { Command } from "commander";
+import { basename } from "path";
 import { loadHistory } from "../../loaders/history-loader.js";
 import { extractSessionMeta } from "../../loaders/session-meta.js";
 import {
@@ -57,8 +58,7 @@ export function registerListCommand(parent: Command): void {
 				const filesBySessionId = new Map<string, string>();
 				for (const filePath of sessionFiles) {
 					// Extract session ID from filename (basename without extension)
-					const parts = filePath.split("/");
-					const filename = parts[parts.length - 1];
+					const filename = basename(filePath);
 					const id = filename.replace(/\.jsonl$/, "");
 					filesBySessionId.set(id, filePath);
 				}
