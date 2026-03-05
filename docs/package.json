@@ -26,7 +26,7 @@
     "starlight-scroll-to-top": "^0.4.0",
     "starlight-sidebar-topics": "^0.6.2",
     "starlight-tags": "^0.4.0",
-    "starlight-versions": "^0.7.0",
+    "starlight-versions": "^0.7.1",
     "tailwindcss": "^4.2.1"
   }
 }
