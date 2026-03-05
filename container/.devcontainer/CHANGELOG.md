@@ -7,6 +7,10 @@
 - Fix false positives blocking writes to system paths (`/dev/null`, `/usr/`, `/etc/`, `$HOME/`) — scope guard now only enforces isolation between workspace projects
 - Remove complex system-command exemption logic (no longer needed)
 
+### Dangerous Command Blocker
+
+- Remove system directory write redirect blocks (`> /usr/`, `> /etc/`, `> /bin/`, `> /sbin/`) — caused false positives on text content in command arguments (e.g. PR body text containing paths); write location enforcement is the scope guard's responsibility
+
 ### CLI Integration
 
 - Add codeforge-cli devcontainer feature — installs the CodeForge CLI (`codeforge` command) globally via npm

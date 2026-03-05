@@ -118,26 +118,7 @@ class TestForcePush:
 
 
 # ---------------------------------------------------------------------------
-# 5. System directory writes
-# ---------------------------------------------------------------------------
-
-
-class TestSystemDirectoryWrites:
-    @pytest.mark.parametrize(
-        "cmd,dir_name",
-        [
-            ("> /usr/foo", "/usr"),
-            ("> /etc/foo", "/etc"),
-            ("> /bin/foo", "/bin"),
-            ("> /sbin/foo", "/sbin"),
-        ],
-    )
-    def test_redirect_to_system_dir(self, cmd: str, dir_name: str) -> None:
-        assert_blocked(cmd, substr=dir_name)
-
-
-# ---------------------------------------------------------------------------
-# 6. Disk operations
+# 5. Disk operations
 # ---------------------------------------------------------------------------
 
 
@@ -229,6 +210,9 @@ class TestSafeCommands:
             "cat /etc/hosts",
             "echo hello",
             "git status",
+            "echo '> /usr/local/bin/foo' | gh pr create --body-file -",
+            "echo x > /usr/local/bin/tool",
+            "echo x > /etc/myconfig",
         ],
     )
     def test_safe_commands_allowed(self, cmd: str) -> None:

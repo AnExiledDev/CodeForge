@@ -55,11 +55,6 @@ DANGEROUS_PATTERNS = [
         r"\bgit\s+push\s+--force\s+(origin\s+)?(main|master)\b",
         "Blocked: force push to main/master destroys history",
     ),
-    # System directory modification
-    (r">\s*/usr/", "Blocked: writing to /usr system directory"),
-    (r">\s*/etc/", "Blocked: writing to /etc system directory"),
-    (r">\s*/bin/", "Blocked: writing to /bin system directory"),
-    (r">\s*/sbin/", "Blocked: writing to /sbin system directory"),
     # Disk formatting
     (r"\bmkfs\.\w+", "Blocked: disk formatting command"),
     (r"\bdd\s+.*of=/dev/", "Blocked: dd writing to device"),
