@@ -103,7 +103,7 @@ cc-tools() {
   echo "━━━━━━━━━━━━━━━━━━━━━━━━"
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
-  for cmd in claude cc ccw ccraw cc-orc ccusage ccburn claude-monitor \\
+  for cmd in claude cc ccw ccraw cc-orc codeforge ccusage ccburn claude-monitor \\
              ccms ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
              agent-browser gh docker git jq tmux bun go infocmp; do
@@ -117,7 +117,6 @@ cc-tools() {
 }
 
 alias check-setup='bash ${DEVCONTAINER_SCRIPTS}/check-setup.sh'
-alias codeforge='node \${WORKSPACE_ROOT}/setup.js'
 ${BLOCK_END}
 BLOCK_EOF
 

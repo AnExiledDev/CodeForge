@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches: [main, staging]
-    paths: ['container/**']
+    paths: ['container/**', 'cli/**']
   pull_request:
     branches: [main, staging]
-    paths: ['container/**']
+    paths: ['container/**', 'cli/**']
 
 jobs:
   test:
@@ -41,7 +41,10 @@ jobs:
         working-directory: container
 
   test-cli:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2

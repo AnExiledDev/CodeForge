@@ -1,0 +1,71 @@
+name: Release CLI
+
+on:
+  push:
+    tags: ['cli-v*']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: extract
+        name: Extract and validate version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/cli-v}"
+          PKG=$(node -p "require('./cli/package.json').version")
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag cli-v${TAG} does not match cli/package.json version ${PKG}"
+            exit 1
+          fi
+
+  publish-and-release:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: cli
+
+      - name: Run tests
+        run: bun test
+        working-directory: cli
+
+      - name: Build
+        run: bun run build
+        working-directory: cli
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+
+      - name: Publish to npm
+        run: npm publish
+        working-directory: cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          NOTES=$(sed -n "/^## v${VERSION}/,/^## v/{ /^## v${VERSION}/d; /^## v/d; p; }" cli/CHANGELOG.md)
+          [ -z "$NOTES" ] && NOTES="CLI Release v${VERSION}"
+          echo "$NOTES" > /tmp/release-notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="cli-v${{ needs.validate.outputs.version }}"
+          gh release create "$VERSION" --title "$VERSION" --notes-file /tmp/release-notes.md

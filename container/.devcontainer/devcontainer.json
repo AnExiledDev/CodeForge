@@ -58,6 +58,7 @@
 		"ghcr.io/devcontainers/features/docker-outside-of-docker",
 		"ghcr.io/devcontainers-extra/features/uv",
 		"ghcr.io/rails/devcontainer/features/bun",
+		"./features/codeforge-cli",
 		"./features/claude-code-native",
 		"./features/tmux",
 		"./features/agent-browser",
@@ -149,6 +150,7 @@
 		"./features/shellcheck": { "version": "none" },
 		"./features/hadolint": { "version": "none" },
 		"./features/biome": {},
+		"./features/codeforge-cli": {},
 		"./features/notify-hook": {
 			"enableBell": true,
 			"enableOsc": true
