@@ -72,14 +72,14 @@ export async function* readLines(filePath: string): AsyncGenerator<string> {
 		// Keep the last partial line in the buffer
 		buffer = lines.pop() || "";
 		for (const line of lines) {
-			if (line.trim()) yield line;
+			if (line.trim()) yield line.replace(/\r$/, "");
 		}
 	}
 
 	// Flush remaining buffer
 	const remaining = buffer + decoder.decode();
 	if (remaining.trim()) {
-		yield remaining;
+		yield remaining.replace(/\r$/, "");
 	}
 }
 

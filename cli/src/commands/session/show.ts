@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import type { Command } from "commander";
 import { homedir } from "os";
-import { resolve } from "path";
+import { basename, resolve } from "path";
 import { extractSessionMeta } from "../../loaders/session-meta.js";
 import { loadTasks } from "../../loaders/task-loader.js";
 import {
@@ -44,8 +44,7 @@ export function registerShowCommand(parent: Command): void {
 
 				// Try UUID prefix match first
 				for (const filePath of sessionFiles) {
-					const parts = filePath.split("/");
-					const filename = parts[parts.length - 1];
+					const filename = basename(filePath);
 					const id = filename.replace(/\.jsonl$/, "");
 					if (id.startsWith(identifier)) {
 						targetFile = filePath;
@@ -86,7 +85,7 @@ export function registerShowCommand(parent: Command): void {
 						if (await planFile.exists()) {
 							const content = await planFile.text();
 							let title = meta.slug;
-							for (const line of content.split("\n")) {
+							for (const line of content.split(/\r?\n/)) {
 								if (line.startsWith("# ")) {
 									title = line.slice(2).trim();
 									break;

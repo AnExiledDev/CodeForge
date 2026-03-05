@@ -1,4 +1,5 @@
 import type { SearchableMessage } from "../schemas/session-message.js";
+import { normalizePath } from "../utils/platform.js";
 
 export interface FilterOptions {
 	role?: string;
@@ -19,11 +20,11 @@ export function createFilter(
 	}
 
 	if (options.project) {
-		// Normalize: strip trailing slash for consistent comparison
-		const project = options.project.replace(/\/+$/, "");
+		// Normalize: convert backslashes and strip trailing separators
+		const project = normalizePath(options.project).replace(/[/\\]+$/, "");
 		filters.push((msg) => {
 			if (!msg.cwd) return false;
-			const dir = msg.cwd.replace(/\/+$/, "");
+			const dir = normalizePath(msg.cwd).replace(/[/\\]+$/, "");
 			return dir === project || dir.startsWith(project + "/");
 		});
 	}
