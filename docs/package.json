@@ -13,7 +13,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/starlight": "^0.37.6",
-    "@astrojs/starlight-tailwind": "^4.0.2",
+    "@astrojs/starlight-tailwind": "^5.0.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@tailwindcss/vite": "^4.2.1",
     "astro": "^5.18.0",
