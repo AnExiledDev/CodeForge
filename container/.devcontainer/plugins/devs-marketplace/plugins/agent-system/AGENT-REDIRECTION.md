@@ -207,7 +207,6 @@ agent-system/
 │   └── hooks.json             # Hook registrations
 └── scripts/
     ├── redirect-builtin-agents.py   # The redirection hook
-    ├── inject-cwd.py                # CWD injection for subagents
     └── guard-readonly-bash.py       # Read-only bash enforcement
 ```
 

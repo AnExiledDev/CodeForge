@@ -1,6 +1,6 @@
 {
 	"name": "agent-system",
-	"description": "17 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
+	"description": "19 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
 	"author": {
 		"name": "AnExiledDev"
 	}

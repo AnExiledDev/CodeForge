@@ -174,6 +174,35 @@ codeforge container ls
 
 When run outside the container, commands auto-proxy into the running devcontainer. Use `--local` to run against the host filesystem.
 
+### codeforge proxy — API Traffic Inspection
+
+Launch Claude Code through mitmproxy to inspect API traffic between Claude and the Anthropic API. Useful for debugging prompt construction, token usage, and request/response payloads.
+
+```bash
+# Launch Claude Code with traffic inspection on port 8081
+codeforge proxy
+```
+
+The proxy runs on port 8081. Open the mitmproxy web interface to view, filter, and inspect all API calls in real time.
+
+### dbr — Devcontainer Bridge
+
+Dynamic port forwarding bridge for the devcontainer. Forwards ports between the host and the running devcontainer, enabling access to services running inside the container from the host machine.
+
+```bash
+# Start the devcontainer bridge
+dbr
+```
+
+### ccstatusline — Terminal Status Bar
+
+A status bar widget for your terminal prompt that displays contextual information about your current Claude Code session — active agent, model, token usage, and session status. Integrates with your shell prompt to provide at-a-glance session awareness.
+
+```bash
+# Configure the statusline
+ccstatusline
+```
+
 ## Code Quality Tools
 
 These tools are used both manually and automatically by the [Auto Code Quality Plugin](../plugins/auto-code-quality/) to maintain code standards.
@@ -233,28 +262,31 @@ CodeForge uses `uv` as the default Python package manager. It is significantly f
 | # | Command | Category | Description |
 |---|---------|----------|-------------|
 | 1 | `cc` / `claude` | Session | Claude Code with CodeForge config |
-| 2 | `ccraw` | Session | Vanilla Claude Code |
-| 3 | `ccw` | Session | Claude Code in writing mode |
-| 4 | `ccms` | Session | Session history search _(currently disabled)_ |
-| 5 | `ccusage` | Session | API usage statistics |
-| 6 | `ccburn` | Session | Token burn analysis |
-| 7 | `ccstatusline` | Session | Terminal statusline |
-| 8 | `codeforge-dashboard` | Session | Web-based session dashboard |
-| 9 | `claude-monitor` | Session | Real-time session monitor |
-| 10 | `agent-browser` | Session | Headless browser for agents |
-| 11 | `check-setup` | Session | Installation health check |
-| 12 | `cc-tools` | Session | List all available tools |
-| 13 | `ruff` | Quality | Python linting and formatting |
-| 14 | `biome` | Quality | JS/TS/JSON linting and formatting |
-| 15 | `shellcheck` | Quality | Shell script linting |
-| 16 | `shfmt` | Quality | Shell script formatting |
-| 17 | `dprint` | Quality | Markdown/TOML/JSON formatting |
-| 18 | `hadolint` | Quality | Dockerfile linting |
-| 19 | `sg` / `ast-grep` | Intelligence | Structural code search |
-| 20 | `tree-sitter` | Intelligence | Syntax tree parsing |
-| 21 | `pyright` | Intelligence | Python LSP server |
-| 22 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
-| 23 | `codeforge` | Session | CodeForge CLI — session search, plugins, indexing _(experimental)_ |
+| 2 | `cc-orc` | Session | Claude Code in orchestrator mode (delegation-first) |
+| 3 | `ccraw` | Session | Vanilla Claude Code |
+| 4 | `ccw` | Session | Claude Code in writing mode |
+| 5 | `ccms` | Session | Session history search _(currently disabled)_ |
+| 6 | `ccusage` | Session | API usage statistics |
+| 7 | `ccburn` | Session | Token burn analysis |
+| 8 | `ccstatusline` | Session | Terminal status bar widget |
+| 9 | `codeforge-dashboard` | Session | Web-based session dashboard |
+| 10 | `claude-monitor` | Session | Real-time session monitor |
+| 11 | `agent-browser` | Session | Headless browser for agents |
+| 12 | `check-setup` | Session | Installation health check |
+| 13 | `cc-tools` | Session | List all available tools |
+| 14 | `codeforge` | Session | CodeForge CLI — session search, plugins, indexing _(experimental)_ |
+| 15 | `codeforge proxy` | Session | Launch Claude Code through mitmproxy for API traffic inspection |
+| 16 | `dbr` | Infrastructure | Devcontainer bridge for dynamic port forwarding |
+| 17 | `ruff` | Quality | Python linting and formatting |
+| 18 | `biome` | Quality | JS/TS/JSON linting and formatting |
+| 19 | `shellcheck` | Quality | Shell script linting |
+| 20 | `shfmt` | Quality | Shell script formatting |
+| 21 | `dprint` | Quality | Markdown/TOML/JSON formatting |
+| 22 | `hadolint` | Quality | Dockerfile linting |
+| 23 | `sg` / `ast-grep` | Intelligence | Structural code search |
+| 24 | `tree-sitter` | Intelligence | Syntax tree parsing |
+| 25 | `pyright` | Intelligence | Python LSP server |
+| 26 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
 
 ## Related
 

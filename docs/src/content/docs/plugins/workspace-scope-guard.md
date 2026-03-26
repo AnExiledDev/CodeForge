@@ -43,14 +43,18 @@ The blacklist:
 
 ### What's In Scope
 
-Everything under the current working directory:
+Everything under the resolved project root. The guard determines scope by walking up from the current working directory to find the nearest `.git` directory, then expands the allowed scope to the git repository root. This means the entire repository is in scope, not just the CWD:
 
 ```
-/workspaces/projects/MyProject/          -- project root (cwd)
+/workspaces/projects/MyProject/          -- project root (git repo root)
 /workspaces/projects/MyProject/src/      -- in scope
 /workspaces/projects/MyProject/tests/    -- in scope
 /workspaces/projects/MyProject/.specs/   -- in scope
 ```
+
+### Worktree Support
+
+When working inside a `.claude/worktrees/` path, the guard recognizes the worktree structure and expands scope to the parent project root rather than scoping narrowly to just the worktree directory. This ensures agents working in worktrees can still access the full project.
 
 ### What's Out of Scope
 
@@ -68,14 +72,14 @@ Anything outside the project root is blocked:
 When your current directory is `/workspaces` (the workspace root itself), the scope guard allows operations within `/workspaces/` — **except** for blacklisted paths. `/workspaces/.devcontainer/` remains blocked even from workspace root.
 :::
 
-### Allowlisted Paths
+### Paths Outside `/workspaces/`
 
-A minimal set of paths are always allowed:
+Paths that fall entirely outside the `/workspaces/` tree are not subject to scope enforcement — they pass through because the guard only polices workspace-internal paths. Common examples:
 
-| Allowed Path | Reason |
-|-------------|--------|
-| `~/.claude/` | Claude config, plans, rules |
-| `/tmp/` | System temp directory |
+| Path | Why It Passes Through |
+|------|----------------------|
+| `~/.claude/` | Outside `/workspaces/` — Claude config, plans, rules |
+| `/tmp/` | Outside `/workspaces/` — system temp directory |
 
 ## Bash Enforcement
 
@@ -85,7 +89,7 @@ Bash commands receive two-layer scope enforcement:
 
 20+ regex patterns extract file paths from write operations: redirects (`>`), cp, mv, touch, mkdir, rm, ln, rsync, chmod, chown, dd, wget -O, curl -o, tar -C, unzip -d, gcc -o, sqlite3, and more. Each extracted target is resolved and scope-checked.
 
-**System command exemption:** Commands like `git`, `pip`, `npm` get a Layer 1 exemption ONLY when ALL write targets resolve to system paths (`/usr/`, `/bin/`, etc.). Any `/workspaces/` write target outside cwd cancels the exemption.
+**Paths outside `/workspaces/`:** Write targets that resolve to paths outside `/workspaces/` entirely (e.g., `/usr/`, `/bin/`, `/tmp/`) pass through Layer 1 without blocking, since they are outside the workspace and not the guard's concern. However, any `/workspaces/` write target outside the project root cancels this pass-through and triggers a block.
 
 ### Layer 2 — Workspace Path Scan
 

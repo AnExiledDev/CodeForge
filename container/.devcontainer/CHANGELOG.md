@@ -22,6 +22,9 @@
 
 ### Scope Guard
 
+- Fix `/dev/null` false positive — redirects to system paths (`/dev/`, `/proc/`, `/sys/`, etc.) are now allowed regardless of the primary command, not just for system commands like `git` or `pip`
+- Fix CWD drift — scope root is now persisted on first invocation per session, preventing `cd` commands in Bash from silently changing the enforced scope boundary
+- CWD context injector now uses the same persisted scope root, keeping advisory context aligned with enforcement
 - Fix false positives blocking writes to system paths (`/dev/null`, `/usr/`, `/etc/`, `$HOME/`) — scope guard now only enforces isolation between workspace projects
 - Remove complex system-command exemption logic (no longer needed)
 
@@ -75,14 +78,6 @@
 - Tabbed client-specific instructions on the installation page
 - Dedicated port forwarding reference page covering VS Code auto-detect, devcontainer-bridge, and SSH tunneling
 - Document `${CLAUDE_PLUGIN_DATA}` variable in CLAUDE.md for future plugin persistent storage
-
-## v2.1.1 — 2026-03-13
-
-### Workspace Scope Guard
-
-- Fix `/dev/null` false positive — redirects to system paths (`/dev/`, `/proc/`, `/sys/`, etc.) are now allowed regardless of the primary command, not just for system commands like `git` or `pip`
-- Fix CWD drift — scope root is now persisted on first invocation per session, preventing `cd` commands in Bash from silently changing the enforced scope boundary
-- CWD context injector now uses the same persisted scope root, keeping advisory context aligned with enforcement
 
 ## v2.1.0 — 2026-03-13
 

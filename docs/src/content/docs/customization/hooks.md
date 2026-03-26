@@ -259,7 +259,6 @@ Here is a quick reference of all hooks registered by CodeForge's default plugins
 | Plugin | Hook Point | Script | Purpose |
 |--------|-----------|--------|---------|
 | agent-system | PreToolUse (Task) | `redirect-builtin-agents.py` | Swap built-in agents for enhanced custom agents |
-| agent-system | SubagentStart | `inject-cwd.py` | Inject working directory into subagent context |
 | agent-system | TeammateIdle | `teammate-idle-check.py` | Check incomplete tasks before teammate shutdown |
 | agent-system | TaskCompleted | `task-completed-check.py` | Run test suite after task completion |
 | auto-code-quality | PostToolUse (Edit\|Write) | `collect-edited-files.py` | Track edited files for batch processing |
@@ -269,6 +268,7 @@ Here is a quick reference of all hooks registered by CodeForge's default plugins
 | auto-code-quality | Stop | `advisory-test-runner.py` | Run affected tests |
 | session-context | SessionStart | `git-state-injector.py` | Inject git branch, status, recent commits |
 | session-context | SessionStart | `todo-harvester.py` | Surface TODO/FIXME comments |
+| session-context | PostToolUse (Edit\|Write) | `collect-session-edits.py` | Track session file edits for context |
 | session-context | Stop | `commit-reminder.py` | Remind about uncommitted changes |
 | dangerous-command-blocker | PreToolUse (Bash) | `block-dangerous.py` | Block destructive bash commands |
 | protected-files-guard | PreToolUse (Edit\|Write) | `guard-protected.py` | Block edits to sensitive files |
@@ -281,7 +281,28 @@ Here is a quick reference of all hooks registered by CodeForge's default plugins
 | spec-workflow | Stop | `spec-reminder.py` | Remind about spec updates after code changes |
 | skill-engine | UserPromptSubmit | `skill-suggester.py` | Suggest relevant skills based on prompt content |
 | ticket-workflow | UserPromptSubmit | `ticket-linker.py` | Auto-fetch GitHub issues/PRs from `#123` references |
-| notify-hook | Stop | (bell/OSC) | Desktop notification when Claude finishes |
+| notify-hook | Stop | `claude-notify` | Desktop notification when Claude finishes |
+
+## Per-Hook Disable
+
+Individual hooks can be disabled without turning off their entire plugin. The file `.codeforge/config/disabled-hooks.json` contains a `"disabled"` array of script names:
+
+```json
+{
+  "disabled": [
+    "git-state-injector",
+    "ticket-linker",
+    "spec-reminder",
+    "commit-reminder"
+  ]
+}
+```
+
+To disable a hook, add its script name (without path or extension) to the array. To re-enable, remove it.
+
+Changes take effect immediately — no container rebuild or session restart required. This is useful for temporarily silencing noisy hooks or disabling hooks that conflict with your workflow without losing the rest of the plugin's functionality.
+
+See also [Optional Features — Per-Hook Disable](./optional-features/#per-hook-disable) for more examples.
 
 ## Related
 

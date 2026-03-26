@@ -38,7 +38,7 @@ npm install -g codeforge-dev
 codeforge-dev
 
 # Pin a specific version
-npx codeforge-dev@2.0.0
+npx codeforge-dev@2.1.0
 ```
 
 ### What the Installer Creates
@@ -152,7 +152,7 @@ A healthy installation shows all of these as available:
 | Category | Tools |
 |----------|-------|
 | Claude Code | `claude`, `cc`, `ccw`, `ccraw` |
-| Session tools | `ccusage`, `ccburn`, `claude-monitor` (`ccms` currently disabled) |
+| Session tools | `ccusage`, `ccburn` (disabled by default), `claude-monitor` (`ccms` currently disabled) |
 | Languages | `node`, `python`, `bun` (`rustc` opt-in) |
 | Code intelligence | `ast-grep`, `tree-sitter`, `pyright`, `typescript-language-server` |
 | Linters/Formatters | `ruff`, `biome` |
@@ -181,7 +181,7 @@ A few features ship with `"version": "none"` by default (shfmt, dprint, shellche
 - **ccusage** / **ccburn** — token usage analysis and burn rate tracking
 - **ccstatusline** — session status in your terminal prompt
 - **claude-monitor** — real-time session monitoring
-- **codeforge-dashboard** — web-based session analytics on port 7847
+- **codeforge-dashboard** — web-based session analytics on port 7847 _(opt-in — may not be available if the feature is disabled)_
 - **agent-browser** — headless Chromium via Playwright for web interaction
 - **ast-grep** / **tree-sitter** — structural code search and parsing
 

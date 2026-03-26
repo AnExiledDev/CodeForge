@@ -60,7 +60,7 @@
 		"code-review@anthropics/claude-code": true,
 		"feature-dev@anthropics/claude-code": true,
 		"pr-review-toolkit@anthropics/claude-code": true,
-		"codeforge-lsp@devs-marketplace": true,
+		"codeforge-lsp@devs-marketplace": false,
 		"ticket-workflow@devs-marketplace": true,
 		"notify-hook@devs-marketplace": true,
 		"dangerous-command-blocker@devs-marketplace": true,

@@ -50,11 +50,11 @@ Key requirements:
 
 ### Session Search (`session-search.md`)
 
-Configures the `ccms` session history search tool. Mandates project-scoped searches to prevent cross-project information leakage, and requires CLI mode (no interactive TUI) for automation compatibility. _(Note: `ccms` is currently disabled in the default container build. This rule remains deployed so it takes effect if ccms is re-enabled.)_
+Configures the `codeforge session search` tool. Mandates project-scoped searches to prevent cross-project information leakage, and requires non-interactive mode for automation compatibility.
 
 Key requirements:
 - Always pass `--project <current-project-dir>` to scope results
-- Always pass a query string (no bare `ccms` TUI mode)
+- Always pass a query string (non-interactive mode)
 - Use `--no-color` for clean output parsing
 - Default to `-n 20` to limit result count
 
@@ -99,7 +99,7 @@ Claude treats rule file content as mandatory. If you write "consider using X," C
 └── rules/
     ├── spec-workflow.md      # Built-in: specification workflow
     ├── workspace-scope.md    # Built-in: project isolation
-    ├── session-search.md     # Built-in: ccms configuration
+    ├── session-search.md     # Built-in: session search configuration
     ├── coding-standards.md   # Custom: your team's standards
     ├── git-workflow.md       # Custom: branching and commit rules
     └── security.md           # Custom: security requirements

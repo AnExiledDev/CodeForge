@@ -43,17 +43,26 @@ Commands that destroy or overwrite git history in ways that are difficult to rec
 Even `git push -f` without specifying a branch is blocked, because it could unintentionally force-push to the current branch. The blocker requires you to be explicit about what you're doing.
 :::
 
-### System Modification
+### Dangerous Permissions
 
-Commands that modify critical system directories or create security vulnerabilities:
+Commands that create security vulnerabilities through overly permissive file modes:
 
 | Pattern | Example | Why It's Blocked |
 |---------|---------|-----------------|
-| `chmod 777` | `chmod 777 app.py` | Creates world-writable files |
-| `chmod -R 777` | `chmod -R 777 /var/www` | Recursively weakens permissions |
-| Write to system dirs | `> /usr/local/bin/script` | Modifies system binaries |
-| Write to `/etc/` | `echo "config" > /etc/hosts` | Modifies system configuration |
-| Write to `/bin/` or `/sbin/` | `> /bin/script` | Modifies core system binaries |
+| `chmod 0777` / `chmod a=rwx` | `chmod 0777 app.py` | Creates world-writable files |
+| `chmod u+s` / `chmod g+s` | `chmod u+s script` | Sets setuid/setgid bits, privilege escalation risk |
+
+### Additional Git Safety
+
+Commands that rewrite or destroy git history beyond basic force pushes:
+
+| Pattern | Example | Why It's Blocked |
+|---------|---------|-----------------|
+| `--force-with-lease` | `git push --force-with-lease` | Safer force push but still rewrites history |
+| `--force-if-includes` | `git push --force-if-includes` | Conditional force push still rewrites history |
+| `git filter-branch` | `git filter-branch --tree-filter ...` | Rewrites entire repository history |
+| Plus-refspec push | `git push origin +main` | Force push via refspec syntax |
+| Branch deletion | `git push origin :branch` or `--delete` | Deletes remote branches |
 
 ### Disk and Device Operations
 
@@ -73,6 +82,8 @@ Commands that could break container isolation:
 | `docker run --privileged` | `docker run --privileged ubuntu` | Allows container escape |
 | Mount host root | `docker run -v /:/host ubuntu` | Exposes host filesystem |
 | Destructive docker ops | `docker rm container_id` | Stops, removes, or kills containers and images (`docker rmi`) |
+| `docker system prune` | `docker system prune -a` | Removes all unused containers, images, networks |
+| `docker volume rm` | `docker volume rm data` | Deletes persistent volume data |
 
 ## What Happens When a Command Is Blocked
 
@@ -86,14 +97,14 @@ The command never executes. Claude receives the block message and can suggest a 
 
 ## Fail-Safe Behavior
 
-The blocker follows a "fail closed" principle for its own errors:
+The blocker follows a strict "fail closed" principle:
 
-- If it can't parse the hook input JSON, it blocks the command (exit code 2) rather than allowing something it couldn't inspect.
-- If an unexpected error occurs during pattern matching, it logs the error but allows the command through to avoid blocking legitimate work on a hook bug.
+- If it can't parse the hook input JSON, it **blocks** the command (exit code 2) rather than allowing something it couldn't inspect.
+- If an unexpected error occurs during pattern matching, it **blocks** the command (exit code 2). The blocker never allows a command through when it cannot verify safety.
 
 ## Overriding Blocks
 
-The blocker is designed to catch accidental destructive commands, not to prevent intentional operations. If you genuinely need to run a blocked command, you can use the Claude Code permission prompt to explicitly approve it. The blocker respects user intent -- it's a guardrail, not a cage.
+The blocker uses exit code 2 to block commands, which is a **hard block** in Claude Code's hook system. Unlike exit code 1 (which can be overridden via the permission prompt), exit code 2 blocks cannot be bypassed through the UI. If you genuinely need to run a blocked command, you must either modify the plugin's `hooks.json` to adjust the patterns, or disable the plugin entirely in your `settings.json`.
 
 :::note[Complementary Guards]
 This plugin handles command-level safety. For file-path-level protection, see the [Workspace Scope Guard](./workspace-scope-guard/) and [Protected Files Guard](./protected-files-guard/), which cover different attack surfaces.

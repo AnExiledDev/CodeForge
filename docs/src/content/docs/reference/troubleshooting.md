@@ -187,7 +187,7 @@ Any local feature can be disabled without removing it from `devcontainer.json` b
 
 2. **Restore default config sources** — run `git checkout .codeforge/config/` to discard any local edits to the source files, then restart the container to redeploy.
 
-3. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash /workspaces/.devcontainer/scripts/setup-aliases.sh`.
+3. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash .devcontainer/scripts/setup-aliases.sh` from your project root (or `/workspaces/.devcontainer/scripts/setup-aliases.sh` for workspace-scoped installs).
 
 4. **Full reset** — rebuild the container from scratch (VS Code: **Dev Containers: Rebuild Container**). This recreates everything but still preserves `.codeforge/` user modifications since they live in the repository.
 

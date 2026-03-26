@@ -91,13 +91,13 @@ cc-tools
 # Check API token usage
 ccusage
 
-# Open the session analytics dashboard
+# Open the session analytics dashboard (opt-in — requires enabling the feature)
 codeforge-dashboard
 ```
 
 ## Agents and Skills
 
-CodeForge includes **21 specialized agents** and **38 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
+CodeForge includes **19 specialized agents** and **34 skills** that activate automatically based on what you're working on. You don't need to memorize names — just describe what you want, and Claude delegates to the right specialist. The examples in "What to Try First" above show this in action.
 
 - **[Agents](../features/agents/)** — specialized AI personas for architecture, debugging, testing, security, migrations, and more
 - **[Skills](../features/skills/)** — domain-specific knowledge packs (FastAPI, Docker, Svelte, debugging patterns, etc.) that the skill engine suggests automatically or you invoke with slash commands like `/spec`
@@ -129,7 +129,7 @@ The session context plugin reminds you to commit when there are significant unco
 ## Next Steps
 
 - [Plugins Overview](../plugins/) — understand how each plugin enhances your workflow
-- [Agents](../features/agents/) — explore all 21 specialized agents in detail
+- [Agents](../features/agents/) — explore all 19 specialized agents in detail
 - [Skills](../features/skills/) — browse the complete skill catalog
 - [Configuration](../customization/configuration/) — customize CodeForge to match your preferences
 - [Commands Reference](../reference/commands/) — full reference for all CLI commands

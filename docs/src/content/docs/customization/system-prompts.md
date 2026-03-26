@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-System prompts define how Claude Code behaves during your sessions -- its coding style, response format, tool usage patterns, and decision-making priorities. CodeForge ships two system prompts: one for development work and one for writing tasks.
+System prompts define how Claude Code behaves during your sessions -- its coding style, response format, tool usage patterns, and decision-making priorities. CodeForge ships three system prompts: one for development work, one for writing tasks, and one for delegation-first orchestration.
 
 ## Main System Prompt
 
@@ -64,6 +64,23 @@ The writing system prompt is activated when you launch Claude with the `ccw` com
 
 :::tip[Quick Switch]
 Use `cc` for coding sessions and `ccw` for writing sessions. Both are shell aliases that point Claude Code at different system prompt files.
+:::
+
+## Orchestrator System Prompt
+
+The orchestrator system prompt is activated when you launch Claude with the `cc-orc` command. It configures a delegation-first orchestrator mode where Claude prioritizes decomposing work into subagent tasks rather than doing everything inline.
+
+**Location:** `.codeforge/config/orchestrator-system-prompt.md`
+**Deployed to:** `~/.claude/orchestrator-system-prompt.md`
+
+### Key Differences from Main Prompt
+
+- Prioritizes task decomposition and subagent delegation over inline execution
+- Optimized for multi-agent workflows where the orchestrator coordinates rather than implements
+- Designed for complex tasks that benefit from parallel subagent execution
+
+:::tip[When to Use]
+Use `cc` for standard coding sessions, `ccw` for writing sessions, and `cc-orc` for complex tasks where delegation-first orchestration produces better results.
 :::
 
 ## Customizing Prompts

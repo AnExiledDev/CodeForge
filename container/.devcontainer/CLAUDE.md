@@ -39,7 +39,7 @@ Config files deploy via `.codeforge/file-manifest.json` on every container start
 
 Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
-- **agent-system** — 21 custom agents (4 workhorse + 17 specialist) + built-in agent redirection
+- **agent-system** — 19 custom agents + built-in agent redirection
 - **skill-engine** — 23 general coding skills + auto-suggestion
 - **spec-workflow** — 3 spec lifecycle skills (`/spec`, `/build`, `/specs`) + spec-reminder hook
 - **session-context** — Git state injection, TODO harvesting, commit reminders

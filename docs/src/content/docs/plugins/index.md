@@ -43,7 +43,7 @@ The `plugin.json` manifest is minimal — it identifies the plugin and its autho
 ```json
 {
   "name": "agent-system",
-  "description": "21 custom agents with built-in agent redirection, CWD injection, and read-only bash enforcement",
+  "description": "19 custom agents with built-in agent redirection and read-only bash enforcement",
   "author": {
     "name": "AnExiledDev"
   }
@@ -96,7 +96,7 @@ See [Hooks](../customization/hooks/) for the full hook API and configuration det
 
 ## Installed Plugins
 
-CodeForge ships with 13 local marketplace plugins plus 1 external Anthropic plugin, organized into two categories: **core plugins** that provide primary functionality, and **safety and integration plugins** that protect your work and connect to external tools.
+CodeForge ships with 13 local marketplace plugins plus 4 Anthropic official plugins, organized into two categories: **core plugins** that provide primary functionality, and **safety and integration plugins** that protect your work and connect to external tools.
 
 ### Core Plugins
 
@@ -104,7 +104,7 @@ These plugins deliver the headline features of CodeForge — intelligent delegat
 
 | Plugin | What It Does |
 |--------|-------------|
-| [Agent System](./agent-system/) | 21 specialized agents with automatic delegation, CWD injection, and read-only enforcement |
+| [Agent System](./agent-system/) | 19 specialized agents with automatic delegation and read-only enforcement |
 | [Skill Engine](./skill-engine/) | 23 domain skills with context-aware auto-suggestion |
 | [Spec Workflow](./spec-workflow/) | Full specification lifecycle from creation through implementation to as-built closure |
 | [Ticket Workflow](./ticket-workflow/) | GitHub issue integration with EARS-formatted tickets and automated PR reviews |
@@ -142,27 +142,27 @@ Plugins are declared in `settings.json` under the `enabledPlugins` key. Every pl
 
 ```json
 {
-  "enabledPlugins": [
-    "agent-system",
-    "skill-engine",
-    "spec-workflow",
-    "session-context",
-    "auto-code-quality",
-    "workspace-scope-guard",
-    "dangerous-command-blocker",
-    "protected-files-guard",
-    "codeforge-lsp",
-    "ticket-workflow",
-    "notify-hook",
-    "frontend-design",
-    "code-review",
-    "feature-dev",
-    "pr-review-toolkit"
-  ]
+  "enabledPlugins": {
+    "agent-system@devs-marketplace": true,
+    "skill-engine@devs-marketplace": true,
+    "spec-workflow@devs-marketplace": true,
+    "session-context@devs-marketplace": true,
+    "auto-code-quality@devs-marketplace": true,
+    "workspace-scope-guard@devs-marketplace": true,
+    "dangerous-command-blocker@devs-marketplace": true,
+    "protected-files-guard@devs-marketplace": true,
+    "codeforge-lsp@devs-marketplace": true,
+    "ticket-workflow@devs-marketplace": true,
+    "notify-hook@devs-marketplace": true,
+    "frontend-design@devs-marketplace": true,
+    "code-review@devs-marketplace": true,
+    "feature-dev@devs-marketplace": true,
+    "pr-review-toolkit@devs-marketplace": true
+  }
 }
 ```
 
-To disable a plugin, remove it from the list. To re-enable it, add it back. Changes take effect on the next container start.
+To disable a plugin, set its value to `false`. To re-enable it, set it back to `true`. Changes take effect on the next container start.
 
 :::caution[Safety Plugins]
 Think carefully before disabling safety plugins like `dangerous-command-blocker` or `workspace-scope-guard`. These protect against accidental data loss and scope violations.

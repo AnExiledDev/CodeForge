@@ -147,6 +147,10 @@ In practice, Claude and the specialized agents use ast-grep for cross-file patte
 
 LSP servers provide semantic code intelligence — they understand types, scopes, definitions, and references at a level that syntax analysis alone cannot reach. CodeForge configures LSP servers for your installed language runtimes, giving Claude access to the same "go to definition" and "find references" operations your IDE provides.
 
+:::note[Opt-In Feature]
+LSP servers are disabled by default. To enable them, set the `codeforge-lsp` feature to `"latest"` in `devcontainer.json` and rebuild the container.
+:::
+
 ### Installed LSP Servers
 
 | Language | Server | Version |

@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-CodeForge is a DevContainer configuration that transforms your development environment into an AI-powered workspace. It bundles 17 plugins, 22 tools, 21 specialized agents, and 38 skills into a single `npx codeforge-dev` install.
+CodeForge is a DevContainer configuration that transforms your development environment into an AI-powered workspace. It bundles 17 plugins, 22 tools, 19 specialized agents, and 34 skills into a single `npx codeforge-dev` install.
 
 ## What is CodeForge?
 
@@ -29,7 +29,7 @@ If you already have Docker and VS Code installed, you can go from zero to a runn
 
 **Start productive immediately.** New projects and new team members skip the setup ritual entirely. One command installs a complete, consistent environment with every tool pre-configured.
 
-**AI that understands your workflow.** CodeForge doesn't just install Claude Code — it teaches it. System prompts, plugin hooks, and rules give Claude deep context about your project structure, coding standards, and preferred workflows. The agent system provides 21 specialized AI agents, each tuned for a specific task like architecture planning, debugging, or security auditing.
+**AI that understands your workflow.** CodeForge doesn't just install Claude Code — it teaches it. System prompts, plugin hooks, and rules give Claude deep context about your project structure, coding standards, and preferred workflows. The agent system provides 19 specialized AI agents, each tuned for a specific task like architecture planning, debugging, or security auditing.
 
 **Safety built in.** Workspace scope guards prevent accidental writes outside your project directory. Dangerous command blockers catch destructive shell commands before they run. Protected file guards keep secrets and lock files safe. You get the power of AI-assisted development with guardrails that prevent costly mistakes.
 
@@ -37,13 +37,13 @@ If you already have Docker and VS Code installed, you can go from zero to a runn
 
 ## What's Included
 
-### 14 Plugins
+### 17 Plugins
 
-Plugins are the backbone of CodeForge. They hook into Claude Code's lifecycle to enhance, guard, and automate your workflow. Highlights include:
+Plugins are the backbone of CodeForge. They hook into Claude Code's lifecycle to enhance, guard, and automate your workflow. 4 are official Anthropic contributions. Highlights include:
 
-- **Agent System** — 21 specialized agents for architecture, debugging, testing, security, and more
+- **Agent System** — 19 specialized agents for architecture, debugging, testing, security, and more
 - **Skill Engine** — 23 domain-specific knowledge packs covering frameworks, patterns, and workflows
-- **Spec Workflow** — specification-driven development with 8 lifecycle skills
+- **Spec Workflow** — specification-driven development with 3 lifecycle skills
 - **Session Context** — automatic git state injection, TODO harvesting, and commit reminders
 - **Auto Code Quality** — formatting, linting, and advisory test runs on every change
 - **Safety Guards** — workspace scope, dangerous command blocking, and protected file enforcement
@@ -64,7 +64,7 @@ CodeForge installs a comprehensive toolchain so you never have to stop and insta
 
 See the [Features Overview](../features/) for the complete reference.
 
-### 21 Custom Agents
+### 19 Custom Agents
 
 Agents are specialized AI personas that Claude delegates to based on your request. Each agent carries domain-specific instructions and behavioral guidelines:
 
@@ -73,11 +73,11 @@ Agents are specialized AI personas that Claude delegates to based on your reques
 - **Test Writer** — test generation with framework-aware patterns
 - **Security Auditor** — vulnerability detection and security review
 - **Refactorer** — safe, incremental code transformations
-- And 16 more covering debugging, documentation, migration, performance, and beyond
+- And 14 more covering debugging, documentation, migration, performance, and beyond
 
 See [Agents](../features/agents/) for the full roster.
 
-### 38 Skills
+### 34 Skills
 
 Skills are domain-specific knowledge packs that Claude can draw on. They provide curated best practices, patterns, and workflows for specific technologies and tasks:
 

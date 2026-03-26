@@ -7,6 +7,12 @@ sidebar:
 
 The CodeForge LSP plugin gives Claude access to the same code intelligence that powers your IDE -- type checking, go-to-definition, find-references, and more. By connecting Claude to Language Server Protocol servers, it can navigate and understand your codebase with precision rather than relying on text search alone.
 
+:::caution[Disabled by Default]
+LSP servers are **disabled by default** in CodeForge. The `lsp-servers` devcontainer feature ships with `version: "none"` and the plugin is set to `false` in settings. To enable LSP support:
+1. Set the `lsp-servers` feature version to `"latest"` in your `devcontainer.json`
+2. Set the `codeforge-lsp` plugin to `true` in your `settings.json`
+:::
+
 ## How It Works
 
 This is a purely declarative plugin -- it has no hook scripts and no shell scripts. All configuration lives in `plugin.json`, where it registers LSP server definitions. Claude Code launches each server at startup if its binary is available on PATH. Missing servers are silently skipped, so the plugin never fails on a missing tool.
@@ -59,7 +65,7 @@ Servers activate only when their binary is found on PATH:
 |--------|--------|--------------------------|
 | Pyright | `pyright-langserver` | Yes (via `npm i -g pyright`) |
 | TypeScript LS | `typescript-language-server` | Yes (via `npm i -g typescript-language-server typescript`) |
-| gopls | `gopls` | Yes (via `go install golang.org/x/tools/gopls@latest`) |
+| gopls | `gopls` | Requires Go feature enabled (Go is disabled by default) |
 
 If you need LSP for additional languages, you can add server definitions to the plugin's `plugin.json` following the same pattern.
 

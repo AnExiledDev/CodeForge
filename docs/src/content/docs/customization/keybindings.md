@@ -88,6 +88,10 @@ Edit `.codeforge/config/keybindings.json` to remap Claude Code actions to non-co
 
 The keybindings file is deployed to `~/.claude/keybindings.json` on container start via `file-manifest.json`.
 
+:::note[Shipped Default]
+CodeForge ships with an empty bindings array (`"bindings": []`) in `.codeforge/config/keybindings.json`. No custom keybindings are active by default — add your own entries to the array using the format above.
+:::
+
 ## Claude Code Shortcut Reference
 
 Full list of default Claude Code shortcuts (these work when Claude Code has terminal focus):

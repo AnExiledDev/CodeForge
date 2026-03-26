@@ -131,7 +131,7 @@
 		// },
 		"./features/ast-grep": {},
 		"./features/tree-sitter": {},
-		"./features/lsp-servers": {},
+		"./features/lsp-servers": { "version": "none" },
 		"./features/agent-browser": {},
 		"./features/kitty-terminfo": {},
 		"./features/chromaterm": {

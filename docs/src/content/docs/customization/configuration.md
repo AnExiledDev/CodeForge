@@ -15,7 +15,7 @@ The primary configuration file lives at `.codeforge/config/settings.json`. It is
 
 ```json
 {
-  "model": "opus",
+  "model": "opus[1m]",
   "effortLevel": "high",
   "cleanupPeriodDays": 60,
   "autoCompact": true,
@@ -27,7 +27,7 @@ The primary configuration file lives at `.codeforge/config/settings.json`. It is
 
 | Setting | Purpose | Default |
 |---------|---------|---------|
-| `model` | Default Claude model (`opus`, `sonnet`, `haiku`) | `opus` |
+| `model` | Default Claude model (`opus[1m]`, `sonnet`, `haiku`) | `opus[1m]` |
 | `effortLevel` | Response effort (`low`, `medium`, `high`) | `high` |
 | `cleanupPeriodDays` | Days before old session data is cleaned up | `60` |
 | `autoCompact` | Automatically compact context when it gets long | `true` |
@@ -41,11 +41,10 @@ The `env` block sets environment variables that configure Claude Code internals:
 ```json
 {
   "env": {
-    "ANTHROPIC_MODEL": "claude-opus-4-6",
-    "BASH_DEFAULT_TIMEOUT_MS": "240000",
+    "ANTHROPIC_MODEL": "claude-opus-4-6[1m]",
+    "BASH_DEFAULT_TIMEOUT_MS": "120000",
     "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
     "MAX_THINKING_TOKENS": "63999",
-    "CLAUDE_CODE_SHELL": "zsh",
     "CLAUDE_CODE_EFFORT_LEVEL": "high",
     "CLAUDE_CODE_ENABLE_TASKS": "true",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
@@ -53,7 +52,9 @@ The `env` block sets environment variables that configure Claude Code internals:
 }
 ```
 
-See [Environment Variables](../reference/environment/) for the complete list of available variables and their effects.
+:::note[Not Exhaustive]
+The `env` block shown above is a subset. Many more environment variables are available — see [Environment Variables](../reference/environment/) for the complete list.
+:::
 
 ### Permissions
 
@@ -190,7 +191,7 @@ DevContainer features install runtimes and tools. CodeForge pins external featur
   "features": {
     "ghcr.io/devcontainers/features/node:1.7.1": { "version": "lts" },
     // "ghcr.io/devcontainers/features/rust:1.5.0": { "version": "latest" },  // Opt-in
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0.5": {},
+    "./features/claude-code-native": {},
     "./features/ruff": { "version": "latest" },
     // "./features/ccms": {}        // Currently disabled — replaced by `codeforge session search`
   }
@@ -250,6 +251,23 @@ When `CLAUDE_AUTH_TOKEN` is set, `setup-auth.sh` creates `~/.claude/.credentials
 :::caution[Don't Commit Secrets]
 The `.secrets` file is listed in `.gitignore`. Never commit it to version control. For Codespaces, use [GitHub Secrets](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-secrets-for-your-repository-and-organization-for-github-codespaces) instead — environment variables with the same names take precedence over `.secrets` file values.
 :::
+
+## disabled-hooks.json
+
+The file `.codeforge/config/disabled-hooks.json` controls per-hook disabling. Add script names to the `"disabled"` array to prevent specific hooks from firing, without disabling the entire plugin:
+
+```json
+{
+  "disabled": [
+    "git-state-injector",
+    "ticket-linker",
+    "spec-reminder",
+    "commit-reminder"
+  ]
+}
+```
+
+Changes take effect immediately — no container rebuild required. To re-enable a hook, remove its name from the array. See [Hooks — Per-Hook Disable](./hooks/#per-hook-disable) for details.
 
 ## Configuration Precedence
 

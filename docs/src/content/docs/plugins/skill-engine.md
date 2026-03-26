@@ -79,6 +79,7 @@ Skills for working with Claude Code itself and extending CodeForge.
 | **ast-grep-patterns** | AST-grep pattern writing for syntax-aware code search |
 | **team** | Multi-agent team coordination, task decomposition, parallel workstreams |
 | **worktree** | Git worktree lifecycle, EnterWorktree tool, `.worktreeinclude` setup, parallel workflows |
+| **agent-browser** | Browser automation patterns for agent-driven web interaction |
 
 :::note[Cross-Plugin Skills]
 The spec lifecycle skills (`/spec`, `/build`, `/specs`) live in the [Spec Workflow](./spec-workflow/) plugin, not the skill engine. However, the skill-suggester registers keywords for them so they are auto-suggested alongside skill-engine skills.

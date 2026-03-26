@@ -16,7 +16,7 @@ The plugin registers hooks at two lifecycle points:
 | **SessionStart** | Git state injector + TODO harvester | Gives Claude full project awareness at the start of every session |
 | **Stop** | Commit reminder | Prompts about uncommitted changes before the turn ends |
 
-The SessionStart scripts (git state injector and TODO harvester) are purely advisory -- they inject context without making decisions. The commit reminder is different: it uses a "block" decision to keep Claude from finishing a turn when there are uncommitted changes.
+The SessionStart scripts (git state injector and TODO harvester) are purely advisory -- they inject context without making decisions. The commit reminder is also advisory -- it exits 0 with a `systemMessage` to inject a reminder about uncommitted changes, but it never blocks the turn.
 
 ## Git State Injection
 
@@ -103,23 +103,25 @@ The harvester shows up to 10 items with relative file paths and line numbers, ca
 
 ## Commit Reminder
 
-The `commit-reminder.py` script fires at the Stop hook when Claude finishes a turn. It checks for uncommitted changes and, if any exist, blocks the stop with a summary so Claude can suggest committing.
+The `commit-reminder.py` script fires at the Stop hook when Claude finishes a turn. It checks for uncommitted changes and, if any exist, injects an advisory system reminder so Claude can mention them.
 
 ### What It Reports
 
-The reminder counts staged and unstaged changes separately:
+The reminder summarizes the session's edited files:
 
 ```
-[Uncommitted Changes] 5 files with changes (2 staged, 3 unstaged).
+[Session Summary] 5 files modified in this session (2 staged, 3 unstaged).
 Consider asking the user if they'd like to commit before finishing.
 ```
 
+The reminder uses tiered thresholds: it fires when there are 3 or more changed files, or 2 or more source files modified. It also enforces a 5-minute cooldown to avoid repeated reminders within a short period.
+
 ### Loop Prevention
 
-The commit reminder uses the `stop_hook_active` guard to prevent infinite loops. If another Stop hook has already blocked (like the advisory test runner), the commit reminder skips itself rather than stacking blocks.
+The commit reminder uses the `stop_hook_active` guard to prevent infinite loops. If another Stop hook has already fired (like the advisory test runner), the commit reminder skips itself rather than stacking reminders.
 
 :::note[Advisory, Not Mandatory]
-The commit reminder blocks the Stop to give Claude a chance to mention uncommitted changes, but it doesn't force a commit. Claude will typically ask if you'd like to commit -- you can say no and continue.
+The commit reminder injects a system-level reminder (exits 0 with a `systemMessage`) but never blocks the turn. Claude will typically ask if you'd like to commit -- you can say no and continue.
 :::
 
 ## Hook Registration
@@ -128,7 +130,12 @@ The commit reminder blocks the Stop to give Claude a chance to mention uncommitt
 |--------|------|---------|
 | `git-state-injector.py` | SessionStart | Injects git branch, status, and recent commits |
 | `todo-harvester.py` | SessionStart | Surfaces TODO/FIXME/HACK/XXX comment counts |
+| `collect-session-edits.py` | PostToolUse (Edit, Write) | Tracks files modified during the session for the commit reminder |
 | `commit-reminder.py` | Stop | Reminds about uncommitted changes at turn boundaries |
+
+:::note[Disabled by Default]
+The `git-state-injector`, `commit-reminder`, `ticket-linker`, and `spec-reminder` hooks are disabled by default via the plugin's `disabled-hooks.json`. The TODO harvester and `collect-session-edits.py` remain active.
+:::
 
 ## Related
 

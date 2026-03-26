@@ -1,11 +1,11 @@
 ---
 title: Agent System
-description: The agent system plugin provides 21 specialized AI agents with automatic delegation, CWD injection, and read-only enforcement.
+description: The agent system plugin provides 19 specialized AI agents with automatic delegation and read-only enforcement.
 sidebar:
   order: 2
 ---
 
-The agent system is CodeForge's flagship plugin. It gives you access to 21 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to test writing and security auditing. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
+The agent system is CodeForge's flagship plugin. It gives you access to 19 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to test writing and security auditing. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
 
 ## How Delegation Works
 
@@ -67,7 +67,7 @@ Each redirect is a strict improvement. The custom agents carry capabilities that
 - **Calibrated models** — the architect uses Opus for deep reasoning, the explorer uses Haiku for speed. Stock agents all inherit the session default.
 - **Safety hooks** — read-only agents have `guard-readonly-bash.py` blocking write operations. The refactorer runs regression checks after every edit. Stock agents have no per-agent safety enforcement.
 - **Focused system prompts** — each custom agent has a detailed system prompt shaping its behavior, expertise boundaries, and workflow. Stock agents use a generic prompt.
-- **Worktree isolation** — the test-writer, refactorer, migrator, and doc-writer work in isolated git worktrees. Stock agents always work on the active branch.
+- **Worktree isolation** — the test-writer, refactorer, migrator, and documenter work in isolated git worktrees. Stock agents always work on the active branch.
 
 The redirect is fully transparent to you and to Claude. Using either name works — `Explore` and `explorer` both resolve to the same enhanced agent.
 
@@ -77,13 +77,11 @@ Claude Code has a seventh built-in agent type, `magic-docs`, which handles inter
 
 ## Safety Mechanisms
 
-The agent system includes two key safety mechanisms that run automatically.
+The agent system includes safety mechanisms that run automatically.
 
 ### CWD Injection
 
-Every time a subagent starts, the `inject-cwd.py` hook fires. It reads the current working directory and injects it as context for the agent, ensuring every agent knows exactly which project directory to work in. This prevents agents from accidentally operating in the wrong directory — a subtle but important safeguard when working across multiple projects.
-
-The hook fires on the `SubagentStart` event and adds a message like: *"Working Directory: /workspaces/projects/MyApp — restrict all file operations to this directory."*
+Working directory context is injected into every subagent by the [Workspace Scope Guard](./workspace-scope-guard/) plugin, not by the agent system itself. The scope guard's `inject-workspace-cwd.py` script fires on `SubagentStart` (among other events) and ensures every agent knows exactly which project directory to work in. See the [Workspace Scope Guard](./workspace-scope-guard/) documentation for details.
 
 ### Read-Only Enforcement
 
@@ -105,7 +103,7 @@ Read-only agents don't just have instructions saying "don't write files." The gu
 
 ## Agent Reference
 
-CodeForge includes 21 specialized agents. Each one is tailored for a specific class of development task.
+CodeForge includes 19 specialized agents. Each one is tailored for a specific class of development task.
 
 ### Read-Only Agents
 
@@ -133,28 +131,28 @@ These agents can read and write files, run commands, and make changes to your co
 | **generalist** | General-purpose development tasks | Inherited | No | spec skills |
 | **test-writer** | Test creation, coverage analysis, framework detection | Opus | Worktree | testing |
 | **refactorer** | Behavior-preserving code transformations | Opus | Worktree | refactoring-patterns |
-| **doc-writer** | Documentation writing and maintenance | Opus | Worktree | documentation-patterns |
+| **documenter** | Documentation writing and maintenance | Opus | Worktree | documentation-patterns |
 | **migrator** | Code migration, framework upgrades | Opus | Worktree | migration-patterns |
+| **implementer** | Task implementation from specs and plans | Opus | No | spec skills |
+| **investigator** | Deep codebase investigation and root-cause analysis | Sonnet | No | debugging |
 | **bash-exec** | Shell command execution and scripting | Sonnet | No | — |
 | **statusline-config** | Statusline customization | Sonnet | No | — |
 
 :::note[Model Selection]
-Agents use different Claude models based on task complexity. The architect, test-writer, refactorer, doc-writer, migrator, and spec-writer use Opus for maximum reasoning capability. The explorer, dependency-analyst, and git-archaeologist use Haiku for speed. The researcher, security-auditor, debug-logs, perf-profiler, bash-exec, and statusline-config use Sonnet for balanced performance. The generalist inherits the session's model setting.
+Agents use different Claude models based on task complexity. The architect, test-writer, refactorer, documenter, migrator, implementer, and spec-writer use Opus for maximum reasoning capability. The explorer, dependency-analyst, and git-archaeologist use Haiku for speed. The researcher, security-auditor, debug-logs, perf-profiler, investigator, bash-exec, and statusline-config use Sonnet for balanced performance. The generalist inherits the session's model setting.
 :::
 
 ## Hook Scripts
 
-The agent system registers hooks across several lifecycle events:
+The agent system registers three hooks in its `hooks.json`:
 
 | Script | Event | What It Does |
 |--------|-------|-------------|
 | `redirect-builtin-agents.py` | PreToolUse (Task) | Redirects built-in agent types to CodeForge's custom specialists |
-| `inject-cwd.py` | SubagentStart | Injects the working directory so agents operate in the correct project |
-| `guard-readonly-bash.py` | PreToolUse (Bash) | Blocks write operations for read-only agents |
-| `verify-no-regression.py` | PostToolUse (Edit) | Checks for test regressions after code edits (refactorer) |
-| `verify-tests-pass.py` | Stop | Validates all tests pass at the end of a turn (test-writer) |
-| `task-completed-check.py` | TaskCompleted | Verifies task results meet requirements in team workflows |
 | `teammate-idle-check.py` | TeammateIdle | Monitors teammate activity and reassigns work if needed |
+| `task-completed-check.py` | TaskCompleted | Verifies task results meet requirements in team workflows |
+
+Additional hooks like `guard-readonly-bash.py`, `verify-no-regression.py`, and `verify-tests-pass.py` are registered per-agent in each agent's frontmatter `hooks` section, not in the plugin-level `hooks.json`. CWD injection is handled by the [Workspace Scope Guard](./workspace-scope-guard/) plugin.
 
 ## How Agent Definitions Work
 
@@ -215,7 +213,7 @@ The agent system supports multi-agent team workflows for complex tasks. When a t
 For example, implementing a feature from a specification might involve:
 - A **researcher** exploring the codebase for patterns and conventions
 - A **test-writer** creating tests in a worktree
-- A **doc-writer** updating documentation
+- A **documenter** updating documentation
 
 The team is coordinated through the task system, with hooks like `task-completed-check.py` and `teammate-idle-check.py` ensuring smooth collaboration.
 
@@ -223,7 +221,7 @@ The recommended team compositions vary by task type:
 
 | Task Type | Recommended Teammates |
 |-----------|----------------------|
-| Full-stack feature | researcher + test-writer + doc-writer |
+| Full-stack feature | researcher + test-writer + documenter |
 | Backend-heavy work | researcher + test-writer |
 | Security-sensitive feature | security-auditor + test-writer |
 | Refactoring | refactorer + test-writer |

@@ -14,7 +14,7 @@ This section is a lookup resource for CodeForge internals. Use it when you need 
 | [Commands](./commands/) | Every CLI command and slash command, grouped by category, with usage examples |
 | [Environment Variables](./environment/) | All environment variables with types, defaults, and where they are set |
 | [Architecture](./architecture/) | System overview, component relationships, data flow, and design principles |
-| [Changelog](./changelog/) | Version history from v1.2.0 to current, with migration notes |
+| [Changelog](./changelog/) | Version history from v1.0.0 to current, with migration notes |
 
 ## Most-Used Quick Reference
 
@@ -68,9 +68,9 @@ These are the files you will interact with most often when configuring CodeForge
 | Component | Count | Details |
 |-----------|-------|---------|
 | DevContainer features | 22 | Runtimes, CLI tools, monitoring |
-| Plugins | 14 (13 local + 1 official) | Safety, quality, workflow, intelligence |
-| Agents | 21 | Specialized personas from explorer to security-auditor |
-| Skills | 38 | On-demand knowledge across coding, testing, frameworks |
+| Plugins | 17 (13 local + 4 Anthropic official) | Safety, quality, workflow, intelligence |
+| Agents | 19 | Specialized personas from explorer to security-auditor |
+| Skills | 34 | On-demand knowledge across coding, testing, frameworks |
 | Built-in rules | 3 | Workspace scope, spec workflow, session search |
 | CLI commands | 10+ | Session, analysis, code quality, intelligence |
 

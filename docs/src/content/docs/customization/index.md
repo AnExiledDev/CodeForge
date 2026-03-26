@@ -21,7 +21,7 @@ Customization works through four layers, each targeting a different aspect of th
 
 | Layer | What It Controls | Key Files | Documentation |
 |-------|-----------------|-----------|---------------|
-| [Configuration](./configuration/) | Feature flags, plugin toggles, runtime settings, container setup | `settings.json`, `devcontainer.json`, `file-manifest.json` | Settings and deployment |
+| [Configuration](./configuration/) | Feature flags, plugin toggles, runtime settings, container setup | `settings.json`, `devcontainer.json`, `file-manifest.json`, `disabled-hooks.json` | Settings and deployment |
 | [System Prompts](./system-prompts/) | Claude Code behavior, coding standards, response style | `main-system-prompt.md`, `writing-system-prompt.md` | Behavioral guidance |
 | [Rules](./rules/) | Hard constraints applied to all sessions | `.claude/rules/*.md` | Mandatory requirements |
 | [Hooks](./hooks/) | Scripts that run at lifecycle points | `hooks.json` + Python scripts | Automation and validation |
@@ -38,9 +38,9 @@ Edit `settings.json` and change the `model` field:
 
 ```json
 {
-  "model": "sonnet",
+  "model": "opus[1m]",
   "env": {
-    "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929"
+    "ANTHROPIC_MODEL": "claude-opus-4-6[1m]"
   }
 }
 ```

@@ -2,7 +2,7 @@
 
 CLI for CodeForge development workflows. Manages sessions, plugins, configuration, codebase indexing, and devcontainers.
 
-> **Experimental** — v0.1.0. Ships with CodeForge v2.1.1.
+> **Experimental** — v0.1.0. Ships with CodeForge v2.1.0.
 
 ## Install
 

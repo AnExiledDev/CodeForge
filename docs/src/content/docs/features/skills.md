@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: Complete reference for all 38 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
+description: Complete reference for all 34 CodeForge skills — domain knowledge packs for frameworks, patterns, and workflows.
 sidebar:
   order: 3
 ---
@@ -219,13 +219,21 @@ Git worktree creation, management, and cleanup for parallel development workflow
 
 **Auto-suggested when:** You mention creating a worktree, `EnterWorktree`, git worktree commands, parallel branches, or isolating work.
 
+### agent-browser
+
+Headless Chromium browser automation using Playwright for agents that need to inspect web content, take screenshots, or interact with web UIs. Covers browser launch, page navigation, element interaction, and screenshot capture patterns.
+
+**Key topics:** Playwright headless Chromium, page navigation, screenshot capture, element selectors, waiting strategies, cookie and session management.
+
+**Auto-suggested when:** You mention browser automation, taking screenshots, inspecting a web page, or headless browsing.
+
 ## Skill Categories Summary
 
 | Category | Skills | Focus |
 |----------|--------|-------|
 | **Frameworks** | fastapi, svelte5, pydantic-ai, docker, docker-py, sqlite | Framework-specific patterns and APIs |
 | **Practices** | testing, debugging, refactoring-patterns, security-checklist, api-design, documentation-patterns, performance-profiling, dependency-management, migration-patterns | Methodologies and established patterns |
-| **Claude & CodeForge** | claude-code-headless, claude-agent-sdk, skill-building, git-forensics, ast-grep-patterns, team, worktree | Building on and extending the Claude ecosystem |
+| **Claude & CodeForge** | claude-code-headless, claude-agent-sdk, skill-building, git-forensics, ast-grep-patterns, team, worktree, agent-browser | Building on and extending the Claude ecosystem |
 
 :::note[Skills vs Agents]
 Skills and agents serve different purposes. An **agent** is a specialized Claude instance with specific tools and constraints — it *does work*. A **skill** is a knowledge pack that *informs work* — it provides the patterns, best practices, and domain knowledge that make an agent (or the main Claude session) more effective. Many agents have associated skills that load automatically when the agent is spawned.

@@ -112,10 +112,10 @@ This requires SSH access to the container, which is available when connecting vi
 Port forwarding behavior is configured in `.devcontainer/devcontainer.json`:
 
 ```jsonc
-"forwardPorts": [],
+"forwardPorts": [7847],
 "portsAttributes": {
     "7847": {
-        "label": "Claude Dashboard",
+        "label": "CodeForge Dashboard",
         "onAutoForward": "notify"
     },
     "*": {
@@ -124,7 +124,7 @@ Port forwarding behavior is configured in `.devcontainer/devcontainer.json`:
 }
 ```
 
-- `forwardPorts` — static port list (empty by default; VS Code auto-detects dynamically instead)
+- `forwardPorts` — static port list (dashboard port 7847 is pre-configured; VS Code also auto-detects dynamically)
 - `portsAttributes` — labels and behavior for auto-detected ports (VS Code / Codespaces only)
 
 These settings are ignored by non-VS Code clients. Use `dbr` or SSH tunneling instead.

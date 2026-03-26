@@ -15,7 +15,7 @@ Variables that control Claude Code's core behavior inside the CodeForge containe
 |----------|-------------|---------|--------|
 | `ANTHROPIC_MODEL` | Primary Claude model ID | `claude-opus-4-6` | settings.json |
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Opus model ID | `claude-opus-4-6` | settings.json |
-| `ANTHROPIC_DEFAULT_SONNET_MODEL` | Sonnet model ID | `claude-sonnet-4-5-20250929` | settings.json |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | Sonnet model ID | `claude-sonnet-4-6` | settings.json |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Haiku model ID | `claude-haiku-4-5-20251001` | settings.json |
 | `CLAUDE_CONFIG_DIR` | Claude Code configuration directory | `/home/vscode/.claude` | devcontainer.json |
 | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | Maximum tokens per response | `64000` | settings.json |
@@ -100,6 +100,7 @@ These variables live in `.devcontainer/.env` and control what `setup.sh` does on
 | `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |
 | `SETUP_PLUGINS` | `true` | Install Anthropic plugins and register local marketplace |
 | `SETUP_UPDATE_CLAUDE` | `true` | Background-update Claude Code CLI binary |
+| `CLAUDE_VERSION_LOCK` | (unset) | Pin Claude Code to a specific semver version (e.g., `1.0.33`). When set, the update script installs the exact version instead of updating to latest. |
 | `SETUP_TERMINAL` | `true` | Configure VS Code <kbd>Shift</kbd>+<kbd>Enter</kbd> keybinding for Claude Code terminal |
 | `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
 | `SETUP_POSTSTART` | `true` | Run post-start hooks from `/usr/local/devcontainer-poststart.d/` |
@@ -146,7 +147,7 @@ Applied when Claude Code starts. These are set inside the `env` block.
 ```json
 {
   "env": {
-    "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_MODEL": "claude-sonnet-4-6",
     "CLAUDE_CODE_EFFORT_LEVEL": "medium"
   }
 }
@@ -157,7 +158,7 @@ Applied when Claude Code starts. These are set inside the `env` block.
 Add to `~/.zshrc` or `~/.bashrc`. Applied for every new shell session.
 
 ```bash
-export CLAUDE_MODEL="claude-sonnet-4-5-20250929"
+export ANTHROPIC_MODEL="claude-sonnet-4-6"
 ```
 
 ### Per-Session (Highest Precedence)
@@ -165,7 +166,7 @@ export CLAUDE_MODEL="claude-sonnet-4-5-20250929"
 Set on the command line when launching Claude Code. Overrides everything else.
 
 ```bash
-ANTHROPIC_MODEL="claude-sonnet-4-5-20250929" cc
+ANTHROPIC_MODEL="claude-sonnet-4-6" cc
 ```
 
 ## Common Customizations
@@ -174,7 +175,7 @@ Here are the environment variable changes you are most likely to make:
 
 | Goal | Variable | Value |
 |------|----------|-------|
-| Use Sonnet instead of Opus | `ANTHROPIC_MODEL` | `claude-sonnet-4-5-20250929` |
+| Use Sonnet instead of Opus | `ANTHROPIC_MODEL` | `claude-sonnet-4-6` |
 | Increase Bash timeout for long builds | `BASH_DEFAULT_TIMEOUT_MS` | `600000` |
 | Reduce auto-compact aggressiveness | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `85` |
 | Disable extended thinking | (remove `alwaysThinkingEnabled` from settings.json) | -- |

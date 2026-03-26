@@ -37,7 +37,7 @@ Commands for session analysis, usage tracking, and system monitoring.
 |---------|-------------|---------|
 | `ccms` | Search Claude Code session history. Supports boolean queries, role filtering, time scoping, and project isolation. _(currently disabled — replaced by `codeforge session search`)_ | `ccms --project "$(pwd)" "auth approach"` |
 | `ccusage` | View Claude API usage statistics | `ccusage` |
-| `ccburn` | Analyze token burn rate and consumption patterns with pace indicators | `ccburn` |
+| `ccburn` | Analyze token burn rate and consumption patterns with pace indicators _(disabled by default — uncomment in devcontainer.json to enable)_ | `ccburn` |
 | `ccstatusline` | Terminal status line displaying session metrics, git state, token usage, and burn rate | (runs automatically) |
 | `codeforge-dashboard` | Web-based session monitoring dashboard on port 7847 with cost estimates and activity heatmaps | `codeforge-dashboard` |
 | `claude-monitor` | Real-time Claude session activity monitor | `claude-monitor` |
@@ -159,6 +159,7 @@ The `codeforge` command provides development workflow tools. When run outside th
 | `codeforge plugin` | `list`, `show`, `enable`, `disable`, `hooks`, `agents`, `skills` | Manage Claude Code plugins |
 | `codeforge config` | `show`, `apply` | View and deploy configuration |
 | `codeforge index` | `build`, `search`, `show`, `stats`, `tree`, `clean` | Build and search a codebase symbol index |
+| `codeforge proxy` | — | Launch Claude Code through mitmproxy — inspect API traffic in browser (port 8081) |
 | `codeforge container` | `up`, `down`, `rebuild`, `exec`, `ls`, `shell` | Manage CodeForge devcontainers |
 
 ## GitHub CLI

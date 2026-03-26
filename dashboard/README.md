@@ -2,12 +2,12 @@
 
 Session analytics dashboard for Claude Code. Parses JSONL session files into a SQLite database and serves a Svelte 5 SPA for browsing sessions, conversations, plans, tasks, agents, and memory.
 
-> **v0.1.0** — Ships with CodeForge v2.1.1.
+> **v0.1.0** — Ships with CodeForge v2.1.0.
 
 ## Quick Start
 
 ```bash
-# Development — starts the Bun backend (port 5173)
+# Development — starts the Bun backend (port 7847) and Vite frontend (port 5173)
 bun run dev
 
 # Development — starts only the Vite frontend dev server

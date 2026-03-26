@@ -29,7 +29,7 @@ Claude applies that snippet's instruction and follows it for the rest of the con
 | `ship` | Commit all staged changes, push to remote, and create a pull request. |
 | `deep` | Be thorough and comprehensive. Investigate in depth, consider edge cases, leave no stone unturned. |
 | `hold` | Complete the current task but do not commit, push, or publish. Await my review before any git operations. |
-| `recall` | Search past session history with `ccms --no-color --project "$(pwd)"` to find prior decisions, discussions, and context relevant to the current task. Summarize what you find before proceeding. |
+| `recall` | Search past session history with `codeforge session search --no-color --project "$(pwd)"` to find prior decisions, discussions, and context relevant to the current task. Summarize what you find before proceeding. |
 | `wait` | When done, stop. Do not suggest next steps, ask follow-up questions, or continue with related work. Await further instructions. |
 
 :::tip[When to Use Snippets]

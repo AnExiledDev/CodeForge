@@ -85,7 +85,7 @@ Additional hook points (`SessionStart`, `SubagentStart`, `TeammateIdle`, `TaskCo
 
 ### Agent System
 
-The agent system provides specialized personas with constrained tools and focus areas. CodeForge ships 21 custom agents:
+The agent system provides specialized personas with constrained tools and focus areas. CodeForge ships 19 custom agents:
 
 **How agent routing works:**
 
@@ -99,7 +99,7 @@ The agent system provides specialized personas with constrained tools and focus 
 4. The custom agent's system prompt is loaded, restricting tools and focus
 5. The agent executes within its constraints and returns results
 
-**Agent tiers:** Agents are grouped by capability level. Tier 1 (generalist) has all instruction blocks. Tier 2 (write agents like refactorer, test-writer, doc-writer) have full blocks. Tier 3 (read-only agents like explorer, researcher) have compact blocks.
+**Agent tiers:** Agents are grouped by capability level. Tier 1 (generalist) has all instruction blocks. Tier 2 (write agents like refactorer, test-writer, documenter) have full blocks. Tier 3 (read-only agents like explorer, researcher) have compact blocks.
 
 ### Skill Loading
 
@@ -111,7 +111,7 @@ Skills are Markdown knowledge files loaded on demand during a session:
 4. The skill content is injected into the conversation context
 5. Claude uses the skill knowledge for the current task
 
-CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflow, git-workflow, agent-system, and prompt-snippets plugins.
+CodeForge ships 34 skills across the skill-engine, spec-workflow, ticket-workflow, git-workflow, agent-system, and prompt-snippets plugins.
 
 ## Directory Structure
 
@@ -134,9 +134,9 @@ CodeForge ships 38 skills across the skill-engine, spec-workflow, ticket-workflo
 +-- plugins/
 |   +-- devs-marketplace/
 |       +-- plugins/
-|           +-- agent-system/      # 21 agents + redirection hooks
+|           +-- agent-system/      # 19 agents + redirection hooks
 |           +-- skill-engine/      # 23 skills + auto-suggestion
-|           +-- spec-workflow/     # 8 spec lifecycle skills
+|           +-- spec-workflow/     # 3 spec lifecycle skills
 |           +-- session-context/   # Git state, TODOs, commit reminders
 |           +-- auto-code-quality/ # Format + lint + test at Stop
 |           +-- dangerous-command-blocker/  # Block destructive commands
@@ -225,7 +225,7 @@ devcontainer.json
 1. **Session start** -- User runs `cc`. Claude Code loads the system prompt, rules, CLAUDE.md files. SessionStart hooks fire (git state injection, TODO harvesting).
 2. **Turn cycle** -- User input arrives. Claude selects tools. PreToolUse hooks gate each tool call. Tool executes. PostToolUse hooks enrich context. Claude generates a response.
 3. **Turn boundary** -- Stop hooks fire: format edited files, lint them, run affected tests, check for uncommitted changes, remind about specs, send notifications.
-4. **Session end** -- Session data is written to JSONL files for `ccms` search.
+4. **Session end** -- Session data is written to JSONL files for `codeforge session search`.
 
 ### Context Assembly
 

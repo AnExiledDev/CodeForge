@@ -81,12 +81,6 @@ Claude calls the Task tool (spawning a subagent)
   |           +-> Built-in agent name? -> Rewrite to custom agent
   |           +-> Already custom? -> Pass through
   |
-  +-> SubagentStart fires (all subagents)
-  |     |
-  |     +-> inject-cwd.py
-  |           |
-  |           +-> Injects working directory as additionalContext
-  |
   +-> Subagent works...
   |
   +-> TaskCompleted fires
@@ -119,7 +113,6 @@ Read-only agents (explorer, researcher, architect, etc.) have their Bash access 
 | Script | Exit 0 | Exit 2 |
 |--------|--------|--------|
 | redirect-builtin-agents.py | Allow (or rewrite) | Block with error |
-| inject-cwd.py | Inject context | N/A |
 | guard-readonly-bash.py | Allow command | Block write operation |
 | task-completed-check.py | Tests pass | Tests fail (block completion) |
 | teammate-idle-check.py | No incomplete tasks | Has incomplete tasks |

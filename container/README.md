@@ -83,9 +83,9 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo, claude-session-dashboard
 
-### Agents (17) & Skills (35)
+### Agents (19) & Skills (34)
 
-The `agent-system` plugin includes 17 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 23 general coding skills, `spec-workflow` adds 8 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills.
+The `agent-system` plugin includes 19 specialized agents (architect, explorer, test-writer, security-auditor, etc.). The `skill-engine` plugin provides 23 general coding skills, `spec-workflow` adds 3 spec lifecycle skills, and `ticket-workflow` provides 4 ticket management skills. 4 plugins are official Anthropic contributions.
 
 ## Architecture
 
@@ -106,7 +106,7 @@ CodeForge operates in three layers, each building on the one below:
 
 **DevContainer** — The foundation. A Python 3.14 container with Node.js, Rust, and Bun runtimes, plus 23 custom features that install development tools (ast-grep, tree-sitter, biome, ruff, and others).
 
-**CodeForge Layer** — The intelligence. 17 plugins register hooks that validate commands, inject context, and enforce safety. 21 agents provide specialized personas. 38 skills offer on-demand reference material. System prompts and rules shape behavior.
+**CodeForge Layer** — The intelligence. 17 plugins register hooks that validate commands, inject context, and enforce safety. 19 agents provide specialized personas. 34 skills offer on-demand reference material. System prompts and rules shape behavior.
 
 **Claude Code** — The AI assistant, executing tools and coordinating work. CodeForge enhances it through configuration — replacing built-in subagents, adding safety guardrails, and wiring up quality checks that run automatically.
 
@@ -118,11 +118,11 @@ All configuration lives in `.devcontainer/` and deploys automatically on contain
 
 | File | What It Configures | User-Modifiable? |
 |------|--------------------|------------------|
-| `config/defaults/settings.json` | Model, plugins, permissions, environment variables | Yes |
-| `config/defaults/main-system-prompt.md` | Claude's behavioral guidelines and directives | Yes |
-| `config/defaults/keybindings.json` | Keyboard shortcuts | Yes |
-| `config/defaults/ccstatusline-settings.json` | Terminal status bar widgets and layout | Yes |
-| `config/file-manifest.json` | Which config files deploy and how they update | Yes |
+| `.codeforge/config/settings.json` | Model, plugins, permissions, environment variables | Yes |
+| `.codeforge/config/main-system-prompt.md` | Claude's behavioral guidelines and directives | Yes |
+| `.codeforge/config/keybindings.json` | Keyboard shortcuts | Yes |
+| `.codeforge/config/ccstatusline-settings.json` | Terminal status bar widgets and layout | Yes |
+| `.codeforge/file-manifest.json` | Which config files deploy and how they update | Yes |
 | `devcontainer.json` | Container image, features, runtimes, ports | Yes |
 | `.env` | Setup phase toggles (auth, plugins, aliases, etc.) | Yes |
 
@@ -177,7 +177,7 @@ npm publish
 
 ## Changelog
 
-See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **2.0.0**.
+See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **2.1.0**.
 
 ## Further Reading
 

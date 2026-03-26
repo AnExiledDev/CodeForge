@@ -1,11 +1,11 @@
 ---
 title: Agents
-description: Complete reference for all 21 CodeForge agents — capabilities, tool access, and use cases.
+description: Complete reference for all 19 CodeForge agents — capabilities, tool access, and use cases.
 sidebar:
   order: 2
 ---
 
-CodeForge provides 21 specialized agents, each configured with a focused system prompt, specific tool access, and domain expertise. Claude automatically delegates to the appropriate agent based on your request — ask about architecture and you get the architect; ask for a security review and you get the security auditor.
+CodeForge provides 19 specialized agents, each configured with a focused system prompt, specific tool access, and domain expertise. Claude automatically delegates to the appropriate agent based on your request — ask about architecture and you get the architect; ask for a security review and you get the security auditor.
 
 ## How Agents Work
 
@@ -30,7 +30,7 @@ CodeForge **entirely replaces** all six built-in agents with enhanced custom spe
 
 The redirect is fully transparent — you can use either the built-in name or the custom name interchangeably. Asking Claude to "explore the codebase" triggers the same enhanced explorer agent whether the system selects the `Explore` type or the `explorer` type.
 
-Beyond the six replacements, CodeForge adds **15 entirely new specialists** that have no built-in equivalent: debug-logs, dependency-analyst, doc-writer, documenter, git-archaeologist, implementer, investigator, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, tester, and test-writer. These are available only in CodeForge.
+Beyond the six replacements, CodeForge adds **13 entirely new specialists** that have no built-in equivalent: debug-logs, dependency-analyst, documenter, git-archaeologist, implementer, investigator, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, and test-writer. These are available only in CodeForge.
 
 :::tip[Why This Matters]
 The redirect happens at the hook level, not the prompt level. This means the upgrade is enforced — not suggested. Even if Claude's internal routing tries to use a stock Explore agent, the hook intercepts the call and swaps in the enhanced explorer before any code executes. The result is a strictly better agent every time, with zero user effort.
@@ -110,28 +110,16 @@ Analyzes project dependencies for outdated packages, security vulnerabilities, v
 "Audit the project dependencies for security vulnerabilities and outdated packages."
 :::
 
-### doc-writer
-
-<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">documentation-patterns</span>
-
-A technical writing specialist that creates and maintains README files, API documentation, inline comments (docstrings, JSDoc), and architectural guides. Reads and understands your code first, then produces documentation that reflects actual verified behavior — never aspirational or assumed behavior. Works in a git worktree for safe isolation.
-
-**When activated:** "Write a README," "document this module," "add docstrings," API documentation requests.
-
-:::tip[Try this]
-"Document the public API for the user service module. Include usage examples and parameter descriptions."
-:::
-
 ### documenter
 
-<span class="badge badge--orange">Full</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">documentation-patterns</span> <span class="badge badge--purple">spec</span> <span class="badge badge--purple">build</span> <span class="badge badge--purple">specs</span>
+<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">documentation-patterns</span> <span class="badge badge--purple">spec</span> <span class="badge badge--purple">build</span> <span class="badge badge--purple">specs</span>
 
-A documentation and specification lifecycle agent. Handles READMEs, API docs, inline documentation, and architectural guides alongside the full spec workflow — creating, refining, and building from spec packages. Carries 4 frontloaded skills covering documentation patterns and all 3 spec operations. Unlike doc-writer, the documenter works directly (no worktree isolation) and owns the spec lifecycle. Never modifies source code logic.
+A documentation and specification lifecycle agent. Handles READMEs, API docs, inline documentation, and architectural guides alongside the full spec workflow — creating, refining, and building from spec packages. Carries 4 frontloaded skills covering documentation patterns and all 3 spec operations. Works in a git worktree for safe isolation and owns the spec lifecycle. Never modifies source code logic.
 
 **When activated:** "Document this module," "write a README," "create a spec and document the feature," specification lifecycle tasks that combine docs and specs.
 
-:::tip[documenter vs doc-writer]
-Use **doc-writer** for pure documentation tasks (READMEs, docstrings, API docs) where worktree isolation is preferred. Use **documenter** when documentation and specification work are interleaved — it has the full spec skill set (`/spec`, `/build`, `/specs`) built in.
+:::tip[Try this]
+"Create a spec for the notification feature and document the public API alongside it."
 :::
 
 ### explorer
@@ -148,7 +136,7 @@ A fast codebase navigator for file discovery, pattern matching, and structural a
 
 ### generalist
 
-<span class="badge badge--orange">Full</span> <span class="badge badge--blue">Sonnet</span>
+<span class="badge badge--orange">Full</span> <span class="badge badge--blue">Inherited</span>
 
 The general-purpose development agent for tasks that don't fit a specialized role. Has access to all tools and can handle mixed workloads — small features, bug fixes, multi-file investigations, and miscellaneous development tasks. Used when no specialist clearly matches.
 
@@ -196,7 +184,7 @@ Use the **investigator** when an investigation spans multiple domains (e.g., "wh
 
 ### migrator
 
-<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">migration-patterns</span>
+<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span>
 
 Plans and executes framework upgrades, language version bumps, API changes, and dependency migrations. Works methodically — creating a migration plan, transforming code in controlled steps, and verifying functionality after each change. Uses web research to consult official migration guides. Works in a git worktree so your main branch stays clean.
 
@@ -220,7 +208,7 @@ A performance engineer that measures application performance, identifies bottlen
 
 ### refactorer
 
-<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">refactoring-patterns</span>
+<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span>
 
 A disciplined refactoring specialist that performs behavior-preserving code transformations. Identifies code smells (god classes, deep nesting, duplication, long parameter lists), applies established refactoring patterns (extract function, replace conditional with polymorphism, introduce parameter object), and rigorously verifies that tests pass after every single edit via a PostToolUse hook. Works in a git worktree.
 
@@ -232,7 +220,7 @@ A disciplined refactoring specialist that performs behavior-preserving code tran
 
 ### researcher
 
-<span class="badge badge--green">Read-only</span> <span class="badge badge--blue">Sonnet</span> <span class="badge badge--purple">documentation-patterns</span>
+<span class="badge badge--green">Read-only</span> <span class="badge badge--blue">Sonnet</span>
 
 A technical research analyst that investigates codebases, searches documentation, and gathers web-based evidence to answer technical questions. Follows a disciplined codebase-first, web-second approach — local evidence is more reliable than generic documentation. Evaluates source recency, authority, and specificity. Produces structured reports with citations.
 
@@ -278,21 +266,9 @@ A specialist for configuring the Claude Code terminal statusline. Converts shell
 "Convert my current PS1 prompt to a Claude Code statusline. Include git branch, Python version, and working directory."
 :::
 
-### tester
-
-<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">testing</span> <span class="badge badge--purple">build</span>
-
-A test suite creation and verification agent. Analyzes existing code, writes comprehensive tests, and ensures all tests pass before completing via a Stop hook. Supports pytest, Vitest, Jest, Go testing, and Rust test frameworks. Works in a git worktree. Functionally equivalent to test-writer with the addition of the build skill for closing the spec loop after writing tests.
-
-**When activated:** "Write tests for," "add test coverage," "create integration tests," test creation tasks.
-
-:::tip[tester vs test-writer]
-These agents are nearly identical. **tester** includes the `/build` skill for spec-driven workflows. **test-writer** is the built-in replacement agent. Both produce the same quality of tests — use whichever surfaces based on your request.
-:::
-
 ### test-writer
 
-<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span> <span class="badge badge--purple">testing</span>
+<span class="badge badge--orange">Full (worktree)</span> <span class="badge badge--blue">Opus</span>
 
 A senior test engineer that analyzes existing code and writes comprehensive test suites. Detects test frameworks (pytest, Vitest, Jest, Go testing, Rust tests), follows project conventions exactly, and verifies all written tests pass before completing. A Stop hook automatically checks that no tests are failing when the agent finishes. Works in a git worktree. Never modifies source code — if a bug is found, it reports the bug rather than fixing it.
 
@@ -311,29 +287,27 @@ A senior test engineer that analyzes existing code and writes comprehensive test
 | claude-guide | Read-only | Haiku | -- | -- | claude-code-headless, claude-agent-sdk |
 | debug-logs | Read-only | Sonnet | -- | -- | debugging |
 | dependency-analyst | Read-only | Haiku | -- | Yes | dependency-management |
-| doc-writer | Full | Opus | Worktree | -- | documentation-patterns  |
-| documenter | Full | Opus | -- | -- | documentation-patterns, spec, build, specs |
+| documenter | Full | Opus | Worktree | -- | documentation-patterns, spec, build, specs |
 | explorer | Read-only | Haiku | -- | -- | ast-grep-patterns |
 | generalist | Full | Inherited | -- | -- | spec workflow |
 | git-archaeologist | Read-only | Haiku | -- | -- | git-forensics |
 | implementer | Full | Opus | Worktree | -- | refactoring-patterns, migration-patterns, build |
 | investigator | Read-only | Sonnet | -- | -- | documentation-patterns, git-forensics, performance-profiling, debugging, dependency-management, ast-grep-patterns |
-| migrator | Full | Opus | Worktree | -- | migration-patterns |
+| migrator | Full | Opus | Worktree | -- | -- |
 | perf-profiler | Read-only | Sonnet | -- | Yes | performance-profiling |
-| refactorer | Full | Opus | Worktree | -- | refactoring-patterns |
-| researcher | Read-only | Sonnet | -- | -- | documentation-patterns |
+| refactorer | Full | Opus | Worktree | -- | -- |
+| researcher | Read-only | Sonnet | -- | -- | -- |
 | security-auditor | Read-only | Sonnet | -- | Yes | security-checklist |
 | spec-writer | Read-only | Opus | -- | -- | spec, specs |
 | statusline-config | Full | Sonnet | -- | -- | -- |
-| tester | Full | Opus | Worktree | -- | testing, build |
-| test-writer | Full | Opus | Worktree | -- | testing |
+| test-writer | Full | Opus | Worktree | -- | -- |
 
 ## Access Levels at a Glance
 
 | Access Level | Agents |
 |-------------|--------|
 | **Read-only** | architect, claude-guide, debug-logs, dependency-analyst, explorer, git-archaeologist, investigator, perf-profiler, researcher, security-auditor, spec-writer |
-| **Full** | bash-exec, doc-writer, documenter, generalist, implementer, migrator, refactorer, statusline-config, tester, test-writer |
+| **Full** | bash-exec, documenter, generalist, implementer, migrator, refactorer, statusline-config, test-writer |
 
 :::note[About Model Selection]
 Agents use different Claude models based on task complexity. Opus handles the most demanding tasks (architecture, refactoring, test writing, migration). Sonnet covers analytical tasks that need strong reasoning (security audits, research, debugging). Haiku powers fast, focused tasks (exploration, dependency analysis, git history). The generalist inherits whichever model the main session is using.
@@ -346,7 +320,7 @@ Several agents include built-in safety hooks:
 - **Read-only bash guard** — The architect, explorer, investigator, security auditor, dependency analyst, and git-archaeologist all have a PreToolUse hook that blocks any Bash command that could modify files or state.
 - **Git-readonly guard** — The git-archaeologist has a specialized guard that only permits read-only git subcommands (log, blame, show, diff, reflog, etc.).
 - **Post-edit test verification** — The refactorer runs tests automatically after every single Edit operation. If tests fail, the change is immediately reverted.
-- **Stop verification** — The test-writer and tester have a Stop hook that verifies all written tests pass before the agent completes. The implementer has a similar Stop hook that runs regression checks.
+- **Stop verification** — The test-writer has a Stop hook that verifies all written tests pass before the agent completes. The implementer has a similar Stop hook that runs regression checks.
 
 ## Related
 

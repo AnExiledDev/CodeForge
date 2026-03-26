@@ -7,10 +7,6 @@ sidebar:
 
 CodeForge v2 externalizes user configuration from `.devcontainer/config/defaults/` to a new top-level `.codeforge/` directory. This separates your customizations from the DevContainer infrastructure, making updates cleaner and reducing merge conflicts.
 
-:::note[Unreleased]
-v2 is the next release. The current published version is 1.14.2. This guide is forward-looking — use it when v2 ships or if you're testing from the main branch.
-:::
-
 ## What Changed
 
 In v1.x, user-customizable files lived inside `.devcontainer/config/defaults/`. This meant every CodeForge update touched the same directory as your customizations, making it hard to tell what changed and what you'd modified.
