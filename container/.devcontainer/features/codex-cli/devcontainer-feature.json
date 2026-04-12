@@ -1,0 +1,20 @@
+{
+	"id": "codex-cli",
+	"version": "1.0.0",
+	"name": "Codex CLI (OpenAI)",
+	"description": "Installs OpenAI Codex CLI terminal coding agent via npm",
+	"documentationURL": "https://github.com/openai/codex",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Version to install: 'latest' or a specific semver. Use 'none' to skip.",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node"]
+}

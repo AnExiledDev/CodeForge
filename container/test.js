@@ -129,6 +129,53 @@ function runTests() {
 		checksumStructureValid = false;
 	}
 
+	// Test 8: Bundled defaults in .devcontainer/defaults/codeforge/ match .codeforge/
+	let bundledDefaultsInSync = true;
+	const bundledDir = path.join(
+		__dirname,
+		".devcontainer",
+		"defaults",
+		"codeforge",
+	);
+	if (fs.existsSync(bundledDir) && fs.existsSync(codeforgeDir)) {
+		const sourceChecksums = generateChecksums(codeforgeDir);
+		const bundledChecksums = generateChecksums(bundledDir);
+		const sourceKeys = Object.keys(sourceChecksums).sort();
+		const bundledKeys = Object.keys(bundledChecksums).sort();
+
+		if (JSON.stringify(sourceKeys) !== JSON.stringify(bundledKeys)) {
+			console.log(
+				"❌ Test 8: Bundled defaults file list differs from .codeforge/",
+			);
+			const missing = sourceKeys.filter((k) => !bundledKeys.includes(k));
+			const extra = bundledKeys.filter((k) => !sourceKeys.includes(k));
+			if (missing.length)
+				console.log(`    Missing from bundled: ${missing.join(", ")}`);
+			if (extra.length)
+				console.log(`    Extra in bundled: ${extra.join(", ")}`);
+			bundledDefaultsInSync = false;
+		} else {
+			const drifted = sourceKeys.filter(
+				(k) => sourceChecksums[k] !== bundledChecksums[k],
+			);
+			if (drifted.length > 0) {
+				console.log(
+					"❌ Test 8: Bundled defaults content differs from .codeforge/",
+				);
+				console.log(`    Drifted files: ${drifted.join(", ")}`);
+				bundledDefaultsInSync = false;
+			} else {
+				console.log("✓ Test 8: Bundled defaults match .codeforge/");
+			}
+		}
+	} else if (!fs.existsSync(bundledDir)) {
+		console.log("❌ Test 8: .devcontainer/defaults/codeforge/ not found");
+		bundledDefaultsInSync = false;
+	} else {
+		console.log("❌ Test 8: .codeforge/ not found, cannot compare");
+		bundledDefaultsInSync = false;
+	}
+
 	// Summary
 	console.log("\n📊 Test Results:");
 	if (
@@ -136,7 +183,8 @@ function runTests() {
 		packageValid &&
 		setupExecutable &&
 		checksumFunctionsExist &&
-		checksumStructureValid
+		checksumStructureValid &&
+		bundledDefaultsInSync
 	) {
 		console.log("🎉 All tests passed! Package is ready for distribution.");
 		process.exit(0);

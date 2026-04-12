@@ -84,6 +84,27 @@ Minimal output for quick checks.
 - **Session Tracking**: View usage by individual sessions
 - **Cost Tracking**: Accurate pricing for different models
 
+## Codex Usage Tracking
+
+This feature also installs `ccusage-codex`, a companion tool for tracking OpenAI Codex CLI token usage. It reads session data from `~/.codex/` (the Codex CLI config directory).
+
+### Codex Daily Report
+```bash
+ccusage-codex daily
+```
+
+### Codex Monthly Report
+```bash
+ccusage-codex monthly
+```
+
+### Codex JSON Output
+```bash
+ccusage-codex monthly --json
+```
+
+`ccusage-codex` is from the same [ccusage project](https://github.com/ryoppippi/ccusage) and shares the same version. It is installed as a separate alias (`npx -y @ccusage/codex@<version>`) alongside the main `ccusage` alias.
+
 ## How It Works
 
 This feature creates a shell alias that points to `npx -y ccusage@<version>`, which automatically downloads and runs the latest version of ccusage without requiring a global installation.

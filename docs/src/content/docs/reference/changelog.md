@@ -40,12 +40,46 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Related
 
-- [Installation](../getting-started/installation/) — initial setup and update instructions
+- [Install in VS Code](../start-here/install-in-vscode/) — initial setup and update instructions
 - [Architecture](./architecture/) — system design context for understanding changes
 
 ---
 
 ## Version History
+
+## v2.2.0 — 2026-04-11
+
+### Claude Code Router
+
+- **New feature: `claude-code-router`** — installs claude-code-router proxy daemon for routing Claude Code API calls to alternate LLM providers (DeepSeek, Gemini, OpenRouter, Anthropic). Default-on with autostart. Supports version pinning (`latest`, semver, or `none` to disable).
+- **Router configuration** — user-editable `claude-code-router.json` in `.codeforge/config/` deploys to `~/.claude-code-router/config.json` via file manifest. Uses `$ENV_VAR` interpolation for API keys.
+- **Provider API keys** — `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY` support in `.secrets` file and Codespaces secrets.
+- **Daemon supervision** — poststart hook with restart-on-failure wrapper; health gate skips autostart if no provider keys configured.
+- **Quick redeploy** — `ccr-apply` alias redeploys config and restarts daemon in one command.
+
+### Codex CLI
+
+- **New feature: `codex-cli`** — installs OpenAI Codex CLI terminal coding agent via npm. Supports version pinning (`latest`, semver, or `none` to disable). Enabled by default.
+- **Codex authentication** — `OPENAI_API_KEY` support in `.secrets` file and Codespaces secrets. Auto-creates `~/.codex/auth.json` on container start. Browser-based ChatGPT OAuth also supported interactively.
+- **Codex config management** — user-editable `codex-config.toml` in `.codeforge/config/` deploys to `~/.codex/config.toml` via file manifest
+- **Codex persistence** — separate Docker named volume (`codeforge-codex-config-${devcontainerId}`) for `~/.codex/`, surviving container rebuilds
+- **ccusage Codex support** — `ccusage-codex` alias installed alongside `ccusage` for Codex session token and cost tracking via `@ccusage/codex`
+- **Tool enumeration** — `codex` and `ccusage-codex` added to `cc-tools` and `check-setup` output
+
+## v2.1.1 — 2026-03-27
+
+### CLI
+
+- Fix wrapper source discovery — search both `/workspaces/cli` and `/workspaces/projects/CodeForge/cli` so the CLI works in nested workspace layouts
+
+### Dashboard
+
+- Fix wrapper to add dev-mode source discovery — dashboard now finds and runs from monorepo source when available, matching CLI behavior
+- Fix wrapper to exec the bash entrypoint directly instead of through bun (which tried to parse it as JavaScript)
+
+### Install Scripts
+
+- Improve bun detection in CLI and dashboard install scripts — add explicit `/root/.bun/bin/bun` and `/home/vscode/.bun/bin/bun` candidate paths, detailed error output, and `PATH` export for downstream commands
 
 ## v2.1.0 — 2026-03-25
 
@@ -57,14 +91,15 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ### CLI
 
+- **CLI feature now installs from NPM** — `codeforge-cli` feature installs `@coredirective/cf-cli` via `bun install -g` instead of running from workspace source. Auto-falls back to source when developing CodeForge itself.
 - **`codeforge proxy`** — launch Claude Code through mitmproxy for full API traffic inspection. Starts mitmweb in the background, proxies all Claude API requests through it, and opens a browser UI at `http://localhost:8081` for real-time request/response inspection. Auto-installs mitmproxy via pipx on first use, handles CA certificate generation and system trust store installation. Supports `--no-web` for headless mitmdump output, `--setup` for install-only, and `-- <claude-args>` passthrough. Useful for monitoring token usage, cache behavior, and rate limit utilization — the `anthropic-ratelimit-unified-*` response headers on `/v1/messages` requests show 5-hour and 7-day quota utilization even with long-lived auth tokens.
 - **Version lock** — set `CLAUDE_VERSION_LOCK=<semver>` in `.env` to pin Claude Code to a specific version. The update script installs the exact version instead of updating to latest. Background auto-updater disabled via `DISABLE_AUTOUPDATER`.
 
 ### Dashboard
 
-- **First-party dashboard** — replaced third-party `claude-session-dashboard` npm package with `codeforge-dashboard` (built from monorepo `dashboard/` package)
+- **First-party dashboard** — replaced third-party `claude-session-dashboard` npm package with `@coredirective/cf-dash` (built from monorepo `dashboard/` package)
+- Dashboard feature now installs from NPM registry via `bun install -g @coredirective/cf-dash`
 - Auto-launch on container start via poststart hook (controllable with `autostart` option)
-- Install switched from npm to Bun (`bun install -g`)
 - Command renamed: `claude-dashboard` → `codeforge-dashboard`
 - Removed persistence symlink hook (dashboard DB now lives on bind mount at `~/.codeforge/data/`)
 

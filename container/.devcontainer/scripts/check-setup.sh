@@ -61,6 +61,12 @@ warn_check "biome" "command -v biome"
 warn_check "ruff" "command -v ruff"
 warn_check "ast-grep" "command -v ast-grep"
 warn_check "tmux" "command -v tmux"
+warn_check "codex" "command -v codex"
+
+echo ""
+echo "Claude Code Router:"
+warn_check "ccr installed" "command -v ccr"
+warn_check "CCR config exists" "test -f ${HOME}/.claude-code-router/config.json"
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━"

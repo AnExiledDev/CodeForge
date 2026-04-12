@@ -1,201 +1,163 @@
 ---
 title: Troubleshooting
-description: Common issues and solutions for the CodeForge devcontainer.
+description: Symptom-first troubleshooting for install, container, authentication, commands, plugins, ports, and performance issues.
 sidebar:
   order: 7
 ---
 
-Solutions for common issues with the CodeForge devcontainer. If your problem isn't listed here, check [GitHub Issues](https://github.com/AnExiledDev/CodeForge/issues) or open a new one.
+Use this page by symptom. Start with the section that matches what the user sees, not the subsystem you think might be involved.
 
-## Installation Issues
+If your problem is not listed here, check [GitHub Issues](https://github.com/AnExiledDev/CodeForge/issues).
 
-**Problem: `npx @coredirective/cf-container` fails.**
+## The Installer Fails
 
-- **Node.js not installed** — the installer requires Node.js 18+ and npm. Run `node --version` to check; install from [nodejs.org](https://nodejs.org/) if missing.
-- **Network issues** — npm needs to reach the registry. Check your connection or try `npm config set registry https://registry.npmjs.org/`.
-- **Permission errors** — prefer `npx --yes @coredirective/cf-container` to avoid global install permission issues. If you need global installs, configure your npm prefix or use a Node version manager (e.g., nvm) instead of `sudo`.
+Symptom: `npx @coredirective/cf-container` fails.
 
-**Problem: VS Code doesn't show "Reopen in Container".**
+Check these first:
 
-- **Extension not installed** — install `ms-vscode-remote.remote-containers` from the Extensions marketplace, then reload VS Code.
-- **`.devcontainer/` not at repo root** — VS Code looks for `.devcontainer/` in the workspace root. If your project is inside a subfolder, open that subfolder directly.
-- **VS Code version** — DevContainers requires VS Code 1.85 or later. Check **Help → About** and update if needed.
+1. Verify Node.js and npm are installed.
+2. Check network access to the npm registry.
+3. Retry with:
 
-:::note[Using a different client?]
-Not using VS Code? The DevContainer CLI, JetBrains Gateway, DevPod, and Codespaces all read the same `devcontainer.json`. See the [Installation guide](/getting-started/installation/#step-2-open-in-a-devcontainer-client) for client-specific instructions.
-:::
+```bash
+npx --yes @coredirective/cf-container
+```
 
-## Container Build Failures
+If the problem is permissions-related, avoid global installs and use `npx`.
 
-**Problem: Container fails to build during feature installation.**
+## The Container Does Not Open or Build Correctly
 
-- Check Docker has sufficient memory (6 GB+ recommended). CodeForge sets `--memory=6g` by default.
-- If a specific feature fails, disable it temporarily by setting `"version": "none"` in `devcontainer.json`.
-- Check internet connectivity — most features download binaries from GitHub releases.
-- If hitting GitHub API rate limits during build, set `GH_TOKEN` or `GITHUB_TOKEN` as an environment variable.
-- **Docker not running** — start Docker Desktop or the Docker daemon.
-- **Cached partial build** — use **Dev Containers: Rebuild Container Without Cache** (VS Code) or `devcontainer up --workspace-folder . --remove-existing-container` (CLI) to start clean.
+Symptom: VS Code does not offer to reopen in container, or the build fails.
 
-**Problem: Build is slow or hangs.**
+Check these first:
 
-- The mcp-qdrant feature downloads an embedding model (~90 MB). This is normal on first build.
-- Use `"version": "none"` to skip optional features you don't need.
+1. Confirm the Dev Containers extension is installed.
+2. Make sure `.devcontainer/` is at the project root you opened.
+3. Confirm Docker is running.
+4. Rebuild without cache if the first build was interrupted.
 
-:::tip[Disabling Features]
-Any local feature can be disabled without removing it from `devcontainer.json` by setting `"version": "none"`. The feature entry stays in the config for easy re-enabling — just remove the version override or set it to `"latest"`.
-:::
+If feature installation is the failure point:
 
-## Authentication Issues
+- confirm you have enough memory
+- check internet access and GitHub rate limiting
+- temporarily disable the failing feature with `"version": "none"`
 
-**Problem: `claude` command fails with authentication error.**
+## Authentication Fails
 
-- Run `claude` once interactively to complete authentication.
-- If using API key auth, verify `ANTHROPIC_API_KEY` is set correctly.
-- Background update may be in progress — wait 10 seconds and retry.
+### Claude Code
 
-**Problem: `gh` CLI not authenticated.**
+Symptom: `claude` or `cc` fails with auth errors.
 
-- Run `gh auth status` to check current state.
-- Run `gh auth login` for interactive setup.
-- Or configure `.devcontainer/.secrets` with `GH_TOKEN` for automatic auth on container start. See [Configuration — Secrets](../customization/configuration/#secrets-file).
-- Credentials persist in `/workspaces/.gh/` across rebuilds.
+Try:
 
-**Problem: Claude auth token not taking effect in Codespaces.**
+1. Launch `claude` once interactively.
+2. Verify your token or API-key configuration.
+3. Wait briefly and retry if background setup just completed.
 
-- When `CLAUDE_AUTH_TOKEN` is set via Codespaces secrets, it persists as an environment variable for the entire container lifetime. The `unset` in `setup-auth.sh` only clears it in the child process. This is a Codespaces platform limitation.
-- If `.credentials.json` already exists, the token injection is skipped (idempotent). Delete `~/.claude/.credentials.json` to force re-creation from the token.
+### GitHub CLI
 
-**Problem: Git push fails with permission error.**
+Symptom: `gh` is not authenticated.
 
-- Run `gh auth status` to verify authentication.
-- Check git remote URL: `git remote -v`. HTTPS remotes require `gh` auth; SSH remotes require SSH keys.
-- Verify `git config --global user.name` and `user.email` are set.
+Try:
 
-**Problem: NPM publish/install fails with 401.**
+```bash
+gh auth status
+gh auth login
+```
 
-- Set `NPM_TOKEN` in `.devcontainer/.secrets` or as environment variable.
-- Verify token: `npm whoami`.
+Or configure `GH_TOKEN` in `.devcontainer/.secrets`.
 
-## Feature Installation Failures
+### Codex CLI
 
-**Problem: Feature checksum verification fails.**
+Symptom: `codex` fails with auth errors.
 
-- This usually means a corrupted download. Rebuild the container to retry.
-- If persistent, the release may have been re-tagged. Try pinning a specific version in `devcontainer.json`.
+Try:
 
-**Problem: Feature download fails after retries.**
+1. Launch `codex` interactively once.
+2. Verify `OPENAI_API_KEY` if using API-key auth.
+3. Recreate `~/.codex/auth.json` if needed.
 
-- Check internet connectivity.
-- GitHub may be experiencing issues — check [githubstatus.com](https://www.githubstatus.com/).
-- Set `GH_TOKEN` environment variable to avoid rate limiting.
+## Commands or Tools Are Missing
 
-**Problem: Permission denied during feature install.**
+Symptom: `cc` or another tool is not found.
 
-- Features run as root during build. This shouldn't happen in normal use.
-- If modifying features, ensure `install.sh` has execute permissions and starts with `#!/bin/bash`.
+Check these first:
 
-## Plugin Issues
+1. Open a new terminal.
+2. Run `check-setup`.
+3. Run `cc-tools`.
+4. Confirm the tool is not optional or disabled by default.
 
-**Problem: Plugin not loading or not appearing in Claude Code.**
+If `cc` is missing specifically, reload your shell config with `source ~/.bashrc` or `source ~/.zshrc`.
 
-- Check `enabledPlugins` in `.codeforge/config/settings.json` — the plugin must be listed there.
-- Verify the plugin directory exists under `plugins/devs-marketplace/plugins/`.
-- Run `check-setup` to verify core configuration is correct.
-- Check plugin blacklist: ensure it's not in `PLUGIN_BLACKLIST` in `.env`.
+## A Plugin or Automation Is Not Running
 
-**Problem: Auto-formatter or auto-linter not running.**
+Symptom: a plugin appears inactive, or formatting/linting does not happen.
 
-- These run on the Stop hook — they only trigger when Claude Code stops (end of conversation turn).
-- Verify the underlying tools are installed: `cc-tools` lists all available tools.
-- Check the 30-second timeout hasn't been exceeded (large file sets may hit this).
+Check these first:
 
-## Agent Teams and tmux Issues
+1. Confirm the plugin is enabled in `settings.json`.
+2. Confirm the required underlying tools are installed.
+3. Remember that many checks run on the **Stop** hook, not immediately on edit.
+4. Check whether a hook was disabled in `disabled-hooks.json`.
 
-**Problem: Split panes not working.**
+## The Container or Startup Is Slow
 
-- Agent Teams requires tmux. Use the **"Claude Teams (tmux)"** terminal profile in VS Code.
-- Verify tmux is installed: `tmux -V`.
-- If using an external terminal, connect via `.codeforge/scripts/connect-external-terminal.sh`.
+Symptom: slow startup, high memory usage, or long rebuilds.
 
-**Problem: tmux Unicode/emoji rendering broken.**
+Try:
 
-- Ensure locale is set: `echo $LANG` should show `en_US.UTF-8`.
-- If not, run `source ~/.bashrc` or open a new terminal.
+1. Increase Docker memory if your machine can support it.
+2. Disable unused optional features.
+3. Use normal rebuilds instead of no-cache rebuilds for routine changes.
+4. Check available disk space.
 
-## "Command Not Found" Errors
+First start is slower than later starts because setup scripts and tool installs run only once per fresh environment.
 
-**Problem: `cc: command not found` or similar.**
+## Ports or Dashboards Are Not Reachable
 
-- Run `source ~/.bashrc` (or `~/.zshrc`) to reload aliases.
-- Or open a new terminal.
-- Verify setup ran: check for `# Claude Code environment and aliases` in your rc file.
+Symptom: dashboard or other service is running in the container but not reachable from the host.
 
-**Problem: Tool not found (e.g., `ruff`, `dprint`).**
+Check these first:
 
-- Run `cc-tools` to see which tools are installed.
-- Check if the feature was disabled with `"version": "none"` in `devcontainer.json`.
-- Some tools (like `ruff`) install to `~/.local/bin` — ensure it's in your `PATH`.
+1. If you are using VS Code, confirm port forwarding is active.
+2. If you are using the DevContainer CLI or another non-VS Code client, use `dbr` or SSH tunneling.
+3. Check for port conflicts such as `7847` already being in use.
 
-## Performance Issues
+Use [Accessing Services](/use/accessing-services/) for the practical guide.
 
-**Problem: Container is slow or running out of memory.**
+## Docker or WSL Is Misbehaving
 
-- CodeForge defaults to 6 GB RAM / 12 GB swap. Increase in `devcontainer.json` `runArgs`.
-- Disable features you don't need with `"version": "none"`.
-- The background Claude Code update runs once on startup — it's not persistent.
+### Linux Docker permission errors
 
-**Problem: Slow startup.**
+Symptom: `docker` permission errors.
 
-- First start is slower due to `postStartCommand` running all setup scripts.
-- Subsequent starts skip unchanged config files (SHA-256 comparison).
-- Disable steps you don't need via `.env` (e.g., `SETUP_PROJECTS=false`). See [Environment Variables — Setup Variables](./environment/#setup-variables-env).
+Make sure your user can access the Docker daemon without `sudo`.
 
-## Docker Permission Errors (Linux)
+### Windows WSL issues
 
-**Problem: `docker: permission denied` or `Cannot connect to the Docker daemon`.**
+Symptom: Docker hangs or the container does not start in WSL-based setups.
 
-- Add your user to the `docker` group: `sudo usermod -aG docker $USER`, then log out and back in.
-- Verify with `docker ps` — it should run without `sudo`.
-- If using Docker rootless mode, ensure the socket path is set correctly in VS Code settings.
+Check:
 
-## WSL 2 Integration Issues (Windows)
+1. Docker Desktop WSL integration is enabled.
+2. Your distro is using WSL 2, not WSL 1.
+3. Docker Desktop was restarted after settings changes.
 
-**Problem: Container fails to start, or Docker commands hang inside WSL.**
+## Reset Options
 
-- Open Docker Desktop → **Settings → Resources → WSL Integration** and enable integration for your WSL distro.
-- Ensure WSL 2 (not WSL 1) is active: run `wsl -l -v` in PowerShell and check the VERSION column.
-- Restart Docker Desktop after changing WSL settings.
+Use the smallest reset that solves the problem:
 
-## Port Conflicts
-
-**Problem: The codeforge-dashboard or other tools fail to bind their port.**
-
-- CodeForge's session dashboard uses **port 7847** by default. If another service uses that port, change it in `devcontainer.json` under `forwardPorts`.
-- To find what's using a port: `lsof -i :7847` (macOS/Linux) or `netstat -ano | findstr 7847` (Windows).
-
-## Slow Rebuilds
-
-**Problem: Rebuilding the container takes as long as the first build.**
-
-- **Use "Rebuild Container"** (not "Rebuild Without Cache") for routine rebuilds — Docker reuses cached layers for unchanged steps.
-- **Prune unused images** to free disk space: `docker system prune -a` removes all unused images (confirm you don't need them first).
-- **Check disk space** — Docker needs headroom for layer storage. If your disk is nearly full, builds may fail or slow down significantly.
-
-## How to Reset
-
-1. **Reset runtime config** — delete `~/.claude/` and restart the container. `setup-config.sh` will redeploy all files from `.codeforge/config/`. This resets the deployed copies but preserves your `.codeforge/` source files (user modifications remain intact).
-
-2. **Restore default config sources** — run `git checkout .codeforge/config/` to discard any local edits to the source files, then restart the container to redeploy.
-
-3. **Reset aliases** — delete the `# Claude Code environment and aliases` block from `~/.bashrc` and `~/.zshrc`, then run `bash .devcontainer/scripts/setup-aliases.sh` from your project root (or `/workspaces/.devcontainer/scripts/setup-aliases.sh` for workspace-scoped installs).
-
-4. **Full reset** — rebuild the container from scratch (VS Code: **Dev Containers: Rebuild Container**). This recreates everything but still preserves `.codeforge/` user modifications since they live in the repository.
-
-5. **Reset a single feature** — set it to `"version": "none"`, rebuild, then set it back to the desired version and rebuild again.
+1. delete and redeploy runtime config in `~/.claude/`
+2. restore default source config under `.codeforge/config/`
+3. reset aliases in your shell config
+4. rebuild the container
+5. disable and re-enable a single feature
 
 ## Related
 
-- [Configuration](../customization/configuration/) — settings and file manifest reference
-- [Environment Variables](./environment/) — all environment variables
-- [Commands](./commands/) — CLI commands and slash commands
-- [Architecture](./architecture/) — system design and component relationships
+- [Before You Install](/start-here/before-you-install/)
+- [Install in VS Code](/start-here/install-in-vscode/)
+- [Secrets and Auth](/customize/secrets-and-auth/)
+- [Environment Variables](./environment-variables/)
+- [Commands Reference](./commands/)

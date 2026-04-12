@@ -79,6 +79,7 @@ fi
 
 # === INSTALL (CREATE ALIASES) ===
 ALIAS_CMD="alias ccusage=\"npx -y ccusage@${CCUSAGE_VERSION}\""
+CODEX_ALIAS_CMD="alias ccusage-codex=\"npx -y @ccusage/codex@${CCUSAGE_VERSION}\""
 
 configure_shell() {
     local shell_rc="$1"
@@ -94,6 +95,17 @@ configure_shell() {
     else
         echo "[ccusage] Adding ccusage alias to ${shell_name}"
         echo "${ALIAS_CMD}" >> "${shell_rc}"
+        if ! chown "${USERNAME}:${USERNAME}" "${shell_rc}" 2>/dev/null; then
+            echo "[ccusage] WARNING: Could not set ownership on ${shell_rc}"
+            echo "  Fix: sudo chown ${USERNAME}:${USERNAME} ${shell_rc}"
+        fi
+    fi
+
+    if grep -q "alias ccusage-codex=" "${shell_rc}"; then
+        echo "[ccusage] ${shell_name} ccusage-codex alias already configured. Skipping..."
+    else
+        echo "[ccusage] Adding ccusage-codex alias to ${shell_name}"
+        echo "${CODEX_ALIAS_CMD}" >> "${shell_rc}"
         if ! chown "${USERNAME}:${USERNAME}" "${shell_rc}" 2>/dev/null; then
             echo "[ccusage] WARNING: Could not set ownership on ${shell_rc}"
             echo "  Fix: sudo chown ${USERNAME}:${USERNAME} ${shell_rc}"
@@ -120,6 +132,15 @@ else
     echo "  The alias will still work once ccusage is available"
 fi
 
+echo "[ccusage] Verifying npx can access @ccusage/codex..."
+if sudo -u "${USERNAME}" bash -c "npx -y @ccusage/codex@${CCUSAGE_VERSION} --version" &>/dev/null; then
+    echo "[ccusage] ✓ ccusage-codex is accessible"
+else
+    echo "[ccusage] WARNING: Could not verify ccusage-codex installation"
+    echo "  This may be due to network connectivity"
+    echo "  The alias will still work once @ccusage/codex is available"
+fi
+
 # === SUMMARY ===
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -136,5 +157,8 @@ echo "  ccusage --daily      # Daily usage report"
 echo "  ccusage --monthly    # Monthly report"
 echo "  ccusage --live       # Live monitoring"
 echo "  ccusage --help       # Full options"
+echo ""
+echo "  ccusage-codex daily   # Codex daily usage report"
+echo "  ccusage-codex monthly # Codex monthly report"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

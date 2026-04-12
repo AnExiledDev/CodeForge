@@ -1,5 +1,37 @@
 # CodeForge Devcontainer Changelog
 
+## v2.2.0 — 2026-04-11
+
+### Claude Code Router
+
+- **New feature: `claude-code-router`** — installs claude-code-router proxy daemon for routing Claude Code API calls to alternate LLM providers (DeepSeek, Gemini, OpenRouter, Anthropic). Default-on with autostart. Supports version pinning (`latest`, semver, or `none` to disable).
+- **Router configuration** — user-editable `claude-code-router.json` in `.codeforge/config/` deploys to `~/.claude-code-router/config.json` via file manifest. Uses `$ENV_VAR` interpolation for API keys.
+- **Provider API keys** — `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY` support in `.secrets` file and Codespaces secrets.
+- **Daemon supervision** — poststart hook with restart-on-failure wrapper; health gate skips autostart if no provider keys configured.
+- **Quick redeploy** — `ccr-apply` alias redeploys config and restarts daemon in one command.
+
+### Codex CLI
+
+- **New feature: `codex-cli`** — installs OpenAI Codex CLI terminal coding agent via npm. Supports version pinning (`latest`, semver, or `none` to disable). Enabled by default.
+- **Codex authentication** — `OPENAI_API_KEY` support in `.secrets` file and Codespaces secrets. Auto-creates `~/.codex/auth.json` on container start. Browser-based ChatGPT OAuth also supported interactively.
+- **Codex config management** — user-editable `codex-config.toml` in `.codeforge/config/` deploys to `~/.codex/config.toml` via file manifest
+- **Codex persistence** — separate Docker named volume (`codeforge-codex-config-${devcontainerId}`) for `~/.codex/`, surviving container rebuilds
+- **ccusage Codex support** — `ccusage-codex` alias installed alongside `ccusage` for Codex session token and cost tracking via `@ccusage/codex`
+- **Tool enumeration** — `codex` and `ccusage-codex` added to `cc-tools` and `check-setup` output
+
+### Dashboard
+
+- **Dashboard extracted to separate repository** — the `dashboard/` package is deprecated and being moved to its own repo as **CodeDirective**. Dashboard is now gitignored in the monorepo. The devcontainer feature continues to install from the published npm package.
+
+### Documentation
+
+- **Complete docs restructure** — reorganized documentation site for clearer navigation:
+  - `getting-started/` → `start-here/` (installation, first session, migration)
+  - `features/` + `customization/` → `use/` + `customize/` (daily usage vs. configuration)
+  - `plugins/` → `extend/plugins/` (extension points under a dedicated section)
+  - New `reference/` section consolidates agents, skills, CLI tools, environment variables, and architecture
+- Added new reference pages: `agents.md`, `skills.md`, `cli-tools.md`, `environment-variables.md`, `whats-included.md`
+
 ## v2.1.1 — 2026-03-27
 
 ### CLI

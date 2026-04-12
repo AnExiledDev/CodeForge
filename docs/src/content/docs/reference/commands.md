@@ -7,6 +7,10 @@ sidebar:
 
 All CLI commands and slash commands available in the CodeForge DevContainer. Commands are shell aliases and functions defined in `setup-aliases.sh` and deployed to `.bashrc` and `.zshrc` on container start.
 
+:::note[Reference Page]
+Use this page for exact syntax and examples. If you want the official inventory counts and status labels for optional, disabled, or experimental items, use [What’s Included](./whats-included/).
+:::
+
 ## Session Commands
 
 Commands for launching and managing Claude Code sessions.
@@ -17,6 +21,7 @@ Commands for launching and managing Claude Code sessions.
 | `claude` | Identical to `cc` | `claude` |
 | `ccw` | Launch Claude Code with the writing system prompt (for docs and prose) | `ccw` |
 | `ccraw` | Launch vanilla Claude Code with no custom config, prompts, or plugins | `ccraw` |
+| `codex` | Launch OpenAI Codex CLI terminal coding agent (requires separate OpenAI auth) | `codex` |
 | `cc-orc` | Launch Claude Code in orchestrator mode (delegation-first workflow) | `cc-orc` |
 
 All session commands auto-detect the Claude binary location: `~/.local/bin/claude` (native install) is preferred, then `/usr/local/bin/claude`, then PATH lookup. If ChromaTerm (`ct`) is installed, output is wrapped through it for color highlighting.
@@ -37,6 +42,7 @@ Commands for session analysis, usage tracking, and system monitoring.
 |---------|-------------|---------|
 | `ccms` | Search Claude Code session history. Supports boolean queries, role filtering, time scoping, and project isolation. _(currently disabled — replaced by `codeforge session search`)_ | `ccms --project "$(pwd)" "auth approach"` |
 | `ccusage` | View Claude API usage statistics | `ccusage` |
+| `ccusage-codex` | View Codex CLI token usage and cost statistics | `ccusage-codex daily` |
 | `ccburn` | Analyze token burn rate and consumption patterns with pace indicators _(disabled by default — uncomment in devcontainer.json to enable)_ | `ccburn` |
 | `ccstatusline` | Terminal status line displaying session metrics, git state, token usage, and burn rate | (runs automatically) |
 | `codeforge-dashboard` | Web-based session monitoring dashboard on port 7847 with cost estimates and activity heatmaps | `codeforge-dashboard` |
@@ -196,7 +202,7 @@ Commands come from different sources in the CodeForge setup:
 |--------|----------|-------------|
 | Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | Shell functions | `cc-tools` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
-| DevContainer features | `ccusage`, `ccburn`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
+| DevContainer features | `ccusage`, `ccusage-codex`, `ccburn`, `codex`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
 | CodeForge CLI | `codeforge session`, `codeforge index`, `codeforge container`, etc. | `codeforge-cli` devcontainer feature |
 | Slash commands | `/spec`, `/build`, `/ticket:new`, `/ship`, `/pr:review`, `/ps`, etc. | Skill SKILL.md files in plugin directories |
 | External features | `gh`, `docker`, `node`, `bun` | Installed via `devcontainer.json` features |
@@ -207,6 +213,6 @@ Run `cc-tools` to see every installed tool and its version. This is the quickest
 
 ## Related
 
-- [CLI Tools](../features/tools/) -- detailed tool descriptions and usage examples
-- [Spec Workflow](../plugins/spec-workflow/) -- specification command details and lifecycle
-- [Environment Variables](./environment/) -- env vars that affect command behavior
+- [CLI Tools Reference](./cli-tools/) -- detailed tool descriptions and usage examples
+- [Spec Workflow](/use/spec-workflow/) -- specification command details and lifecycle
+- [Environment Variables](./environment-variables/) -- env vars that affect command behavior

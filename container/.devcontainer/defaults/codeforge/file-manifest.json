@@ -1,0 +1,77 @@
+[
+	{
+		"src": "config/settings.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/keybindings.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/main-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/rules/spec-workflow.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/rules/workspace-scope.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/rules/session-search.md",
+		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/writing-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/orchestrator-system-prompt.md",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/ccstatusline-settings.json",
+		"dest": "${HOME}/.config/ccstatusline",
+		"destFilename": "settings.json",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/ccstatusline-settings.json",
+		"dest": "/usr/local/share/ccstatusline",
+		"destFilename": "settings.template.json",
+		"enabled": true,
+		"overwrite": "always"
+	},
+	{
+		"src": "config/disabled-hooks.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": false,
+		"overwrite": "never"
+	},
+	{
+		"src": "config/codex-config.toml",
+		"dest": "${HOME}/.codex",
+		"destFilename": "config.toml",
+		"enabled": true,
+		"overwrite": "if-changed"
+	}
+]

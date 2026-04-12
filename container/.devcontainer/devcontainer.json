@@ -10,6 +10,11 @@
 			"source": "codeforge-claude-config-${devcontainerId}",
 			"target": "/home/vscode/.claude",
 			"type": "volume"
+		},
+		{
+			"source": "codeforge-codex-config-${devcontainerId}",
+			"target": "/home/vscode/.codex",
+			"type": "volume"
 		}
 	],
 
@@ -41,6 +46,26 @@
 		"CLAUDE_AUTH_TOKEN": {
 			"description": "Claude long-lived auth token from 'claude setup-token' (optional - sk-ant-oat01-*)",
 			"documentationUrl": "https://docs.anthropic.com/en/docs/claude-code/cli-reference#claude-setup-token"
+		},
+		"OPENAI_API_KEY": {
+			"description": "OpenAI API key for Codex CLI (optional - sk-*)",
+			"documentationUrl": "https://platform.openai.com/api-keys"
+		},
+		"ANTHROPIC_API_KEY": {
+			"description": "Anthropic API key for claude-code-router (optional - sk-ant-api03-*)",
+			"documentationUrl": "https://console.anthropic.com/settings/keys"
+		},
+		"DEEPSEEK_API_KEY": {
+			"description": "DeepSeek API key for claude-code-router (optional)",
+			"documentationUrl": "https://platform.deepseek.com/api_keys"
+		},
+		"GEMINI_API_KEY": {
+			"description": "Google Gemini API key for claude-code-router (optional)",
+			"documentationUrl": "https://aistudio.google.com/apikey"
+		},
+		"OPENROUTER_API_KEY": {
+			"description": "OpenRouter API key for claude-code-router (optional)",
+			"documentationUrl": "https://openrouter.ai/keys"
 		}
 	},
 
@@ -59,10 +84,12 @@
 		"ghcr.io/rails/devcontainer/features/bun",
 		"./features/codeforge-cli",
 		"./features/claude-code-native",
+		"./features/codex-cli",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
 		"./features/ccusage",
+		"./features/claude-code-router",
 		// "./features/ccburn",
 		"./features/ccstatusline",
 		"./features/codeforge-dashboard",
@@ -101,11 +128,18 @@
 		// Uncomment to add Go runtime (not installed by default):
 		// "ghcr.io/devcontainers/features/go:1": {},
 		"./features/claude-code-native": {},
+		"./features/codex-cli": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
 			"shells": "both",
 			"username": "automatic"
+		},
+		"./features/claude-code-router": {
+			"version": "latest",
+			"shells": "both",
+			"username": "automatic",
+			"autostart": "true"
 		},
 		"./features/claude-monitor": {
 			"version": "latest",

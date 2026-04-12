@@ -1,0 +1,23 @@
+# Codex CLI Configuration
+# This file is deployed to ~/.codex/config.toml on container start.
+# See https://github.com/openai/codex for full documentation.
+
+# Credential storage backend: "file" | "keyring" | "auto" | "ephemeral"
+# "file" stores credentials in ~/.codex/auth.json (recommended for containers)
+cli_auth_credentials_store = "file"
+
+# Sandbox mode: "read-only" | "workspace-write" | "danger-full-access"
+# sandbox_mode = "workspace-write"
+
+# Default model
+# model = "codex-mini-latest"
+
+# Web search: "disabled" | "cached" | "live"
+# web_search = "live"
+
+# Custom model providers (uncomment and configure as needed)
+# [model_providers.custom]
+# name = "Custom Provider"
+# base_url = "https://api.example.com"
+# env_key = "CUSTOM_API_KEY"
+# wire_api = "responses"

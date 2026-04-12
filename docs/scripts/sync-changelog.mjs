@@ -68,7 +68,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Related
 
-- [Installation](../getting-started/installation/) — initial setup and update instructions
+- [Install in VS Code](../start-here/install-in-vscode/) — initial setup and update instructions
 - [Architecture](./architecture/) — system design context for understanding changes
 
 ---

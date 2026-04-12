@@ -1,0 +1,32 @@
+{
+	"id": "claude-code-router",
+	"version": "1.0.0",
+	"name": "Claude Code Router - LLM Provider Proxy",
+	"description": "Installs claude-code-router daemon for routing Claude Code API calls to alternate LLM providers (DeepSeek, Gemini, OpenRouter, Anthropic)",
+	"documentationURL": "https://github.com/musistudio/claude-code-router",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "claude-code-router version to use (e.g., 'latest', '1.0.0', 'none' to skip)",
+			"default": "latest"
+		},
+		"shells": {
+			"type": "string",
+			"description": "Which shells to configure (bash, zsh, or both)",
+			"default": "both",
+			"enum": ["bash", "zsh", "both"]
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		},
+		"autostart": {
+			"type": "string",
+			"description": "Auto-start the router daemon on container start",
+			"default": "true",
+			"enum": ["true", "false"]
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node:1"]
+}

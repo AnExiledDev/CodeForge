@@ -20,7 +20,7 @@
 	{
 		"src": "config/rules/spec-workflow.md",
 		"dest": "${CLAUDE_CONFIG_DIR}/rules",
-		"enabled": true,
+		"enabled": false,
 		"overwrite": "if-changed"
 	},
 	{
@@ -66,5 +66,19 @@
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": false,
 		"overwrite": "never"
+	},
+	{
+		"src": "config/codex-config.toml",
+		"dest": "${HOME}/.codex",
+		"destFilename": "config.toml",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/claude-code-router.json",
+		"dest": "${HOME}/.claude-code-router",
+		"destFilename": "config.json",
+		"enabled": true,
+		"overwrite": "if-changed"
 	}
 ]

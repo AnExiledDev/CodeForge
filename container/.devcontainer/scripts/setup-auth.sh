@@ -111,6 +111,63 @@ else
     echo "[setup-auth] CLAUDE_AUTH_TOKEN not set, skipping Claude auth"
 fi
 
+# --- OpenAI Codex auth (API key) ---
+# For Codex CLI: set OPENAI_API_KEY in .secrets or as an environment variable.
+# Browser-based ChatGPT OAuth is also supported — run `codex` interactively.
+_CODEX_DIR="${CODEX_HOME:-${_USER_HOME}/.codex}"
+_CODEX_AUTH_FILE="$_CODEX_DIR/auth.json"
+if [ -n "$OPENAI_API_KEY" ]; then
+    # Validate token format (OpenAI API keys start with sk-)
+    if [[ ! "$OPENAI_API_KEY" =~ ^sk- ]]; then
+        echo "[setup-auth] WARNING: OPENAI_API_KEY doesn't match expected format (sk-*), skipping"
+    elif [ -f "$_CODEX_AUTH_FILE" ]; then
+        echo "[setup-auth] Codex auth.json already exists, skipping token injection"
+        # Verify permissions
+        perms=$(stat -c %a "$_CODEX_AUTH_FILE" 2>/dev/null)
+        if [ -n "$perms" ] && [ "$perms" != "600" ]; then
+            echo "[setup-auth] WARNING: Codex auth.json has permissions $perms (expected 600), fixing"
+            chmod 600 "$_CODEX_AUTH_FILE"
+        fi
+        AUTH_CONFIGURED=true
+    else
+        echo "[setup-auth] Creating Codex auth.json from OPENAI_API_KEY..."
+        ( umask 077; mkdir -p "$_CODEX_DIR" )
+        ESCAPED_KEY=$(printf '%s' "$OPENAI_API_KEY" | sed 's/\\/\\\\/g; s/"/\\"/g')
+        if ( umask 077; printf '{\n  "auth_mode": "apikey",\n  "OPENAI_API_KEY": "%s"\n}\n' "$ESCAPED_KEY" > "$_CODEX_AUTH_FILE" ); then
+            echo "[setup-auth] Codex API key configured"
+            AUTH_CONFIGURED=true
+        else
+            echo "[setup-auth] WARNING: Failed to write Codex auth.json — check permissions on $_CODEX_DIR"
+        fi
+    fi
+    unset OPENAI_API_KEY
+else
+    echo "[setup-auth] OPENAI_API_KEY not set, skipping Codex auth"
+fi
+
+# --- Claude Code Router provider keys ---
+# Export provider API keys for CCR's $ENV_VAR interpolation in config.json.
+# Unlike Claude/Codex tokens which write to credential files then unset,
+# CCR keys must persist as env vars because CCR reads them at runtime.
+_CCR_KEY_CONFIGURED=false
+for _CCR_VAR in ANTHROPIC_API_KEY DEEPSEEK_API_KEY GEMINI_API_KEY OPENROUTER_API_KEY; do
+    if [ -n "${!_CCR_VAR:-}" ]; then
+        # Write to shell rc files so they're available in interactive shells
+        grep -q "export ${_CCR_VAR}=" "${_USER_HOME}/.bashrc" 2>/dev/null || \
+            echo "export ${_CCR_VAR}=\"${!_CCR_VAR}\"" >> "${_USER_HOME}/.bashrc"
+        grep -q "export ${_CCR_VAR}=" "${_USER_HOME}/.zshrc" 2>/dev/null || \
+            echo "export ${_CCR_VAR}=\"${!_CCR_VAR}\"" >> "${_USER_HOME}/.zshrc"
+        echo "[setup-auth] ✓ ${_CCR_VAR} configured for claude-code-router"
+        _CCR_KEY_CONFIGURED=true
+    fi
+done
+if [ "$_CCR_KEY_CONFIGURED" = true ]; then
+    AUTH_CONFIGURED=true
+else
+    echo "[setup-auth] No claude-code-router provider keys set (ANTHROPIC_API_KEY, DEEPSEEK_API_KEY, etc.)"
+fi
+unset _CCR_VAR _CCR_KEY_CONFIGURED
+
 # --- Summary ---
 if [ "$AUTH_CONFIGURED" = true ]; then
     echo "[setup-auth] Auth configuration complete"

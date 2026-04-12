@@ -1,32 +1,26 @@
 {
-  "id": "ccusage",
-  "version": "1.0.0",
-  "name": "ccusage - Claude Code Usage Analyzer",
-  "description": "Installs ccusage CLI tool for analyzing Claude Code token usage",
-  "documentationURL": "https://github.com/ryoppippi/ccusage",
-  "options": {
-    "version": {
-      "type": "string",
-      "description": "ccusage version to use (e.g., 'latest', '1.0.0')",
-      "default": "latest"
-    },
-    "shells": {
-      "type": "string",
-      "description": "Which shells to configure (bash, zsh, or both)",
-      "default": "both",
-      "enum": [
-        "bash",
-        "zsh",
-        "both"
-      ]
-    },
-    "username": {
-      "type": "string",
-      "description": "Container user to install for",
-      "default": "automatic"
-    }
-  },
-  "installsAfter": [
-    "ghcr.io/devcontainers/features/node:1"
-  ]
+	"id": "ccusage",
+	"version": "1.0.0",
+	"name": "ccusage - Claude Code & Codex Usage Analyzer",
+	"description": "Installs ccusage and ccusage-codex CLI tools for analyzing Claude Code and Codex token usage",
+	"documentationURL": "https://github.com/ryoppippi/ccusage",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "ccusage version to use (e.g., 'latest', '1.0.0')",
+			"default": "latest"
+		},
+		"shells": {
+			"type": "string",
+			"description": "Which shells to configure (bash, zsh, or both)",
+			"default": "both",
+			"enum": ["bash", "zsh", "both"]
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node:1"]
 }

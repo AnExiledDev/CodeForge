@@ -11,6 +11,7 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `.codeforge/config/orchestrator-system-prompt.md` | Orchestrator mode prompt (delegation-first) |
 | `.codeforge/config/ccstatusline-settings.json` | Status bar widget layout (deployed to ~/.config/ccstatusline/) |
 | `.codeforge/config/disabled-hooks.json` | Disable individual plugin hooks by script name |
+| `.codeforge/config/claude-code-router.json` | LLM provider routing config (deployed to ~/.claude-code-router/) |
 | `.codeforge/file-manifest.json` | Controls which config files deploy and when |
 | `devcontainer.json` | Container definition: image, features, mounts |
 | `.env` | Boolean flags controlling setup steps |
@@ -26,8 +27,11 @@ Config files deploy via `.codeforge/file-manifest.json` on every container start
 | `ccraw` | Vanilla Claude Code (bypasses config) |
 | `ccw` | Claude Code with writing system prompt |
 | `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
+| `codex` | OpenAI Codex CLI terminal coding agent |
 | `ccms` | Session history search _(disabled — requires Rust toolchain; uncomment in devcontainer.json to enable)_ |
 | `codeforge proxy` | Launch Claude Code through mitmproxy — inspect API traffic in browser (port 8081) |
+| `ccr start` / `ccr stop` | Claude Code Router daemon control |
+| `ccr-apply` | Redeploy router config + restart daemon |
 | `ccusage` / `ccburn` | Token usage analysis / burn rate |
 | `agent-browser` | Headless Chromium (Playwright-based) |
 | `check-setup` | Verify CodeForge setup health |
@@ -70,6 +74,10 @@ Rules in `.codeforge/config/rules/` deploy to `.claude/rules/` on every containe
 The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude-config-${devcontainerId}`), persisting config, credentials, and session data across container rebuilds. Each devcontainer instance gets an isolated volume.
 
 **Token authentication:** Set `CLAUDE_AUTH_TOKEN` in `.devcontainer/.secrets` (or as a Codespaces secret) with a long-lived token from `claude setup-token`. On container start, `setup-auth.sh` auto-creates `~/.claude/.credentials.json` with `600` permissions. If `.credentials.json` already exists, token injection is skipped (idempotent). Tokens must match `sk-ant-*` format.
+
+Codex CLI credentials (`~/.codex/`) are backed by a separate Docker named volume (`codeforge-codex-config-${devcontainerId}`). Set `OPENAI_API_KEY` in `.devcontainer/.secrets` (or as a Codespaces secret) for automatic API key injection, or run `codex` interactively for browser-based ChatGPT OAuth.
+
+**Claude Code Router:** Set provider API keys (`ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`) in `.devcontainer/.secrets`. Keys are exported as env vars on container start and read at runtime by the router's `$ENV_VAR` interpolation in `~/.claude-code-router/config.json`. Edit routing rules in `.codeforge/config/claude-code-router.json` and run `ccr-apply` to redeploy.
 
 ## Modifying Behavior
 

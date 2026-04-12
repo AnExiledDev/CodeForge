@@ -20,9 +20,19 @@ if [ -d "$CODEFORGE_DIR" ]; then
 	exit 0
 fi
 
-# Nothing to migrate if old defaults dir doesn't exist
+# Nothing to migrate — try bootstrapping from bundled defaults instead
 if [ ! -d "$OLD_DEFAULTS_DIR" ]; then
-	log "No legacy .devcontainer/config/defaults/ found — skipping migration"
+	BUNDLED_DEFAULTS="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/defaults/codeforge"
+	if [ -d "$BUNDLED_DEFAULTS" ]; then
+		log "Bootstrapping .codeforge/ from bundled defaults..."
+		cp -a "$BUNDLED_DEFAULTS" "$CODEFORGE_DIR"
+		mkdir -p "$CODEFORGE_DIR/.markers" "$CODEFORGE_DIR/.checksums"
+		date -Iseconds > "$CODEFORGE_DIR/.markers/v2-bootstrapped"
+		log "Bootstrap complete — .codeforge/ is ready"
+	else
+		warn "No .codeforge/, no legacy layout, and no bundled defaults found"
+		warn "Run 'npx @coredirective/cf-container --force' to scaffold .codeforge/"
+	fi
 	exit 0
 fi
 

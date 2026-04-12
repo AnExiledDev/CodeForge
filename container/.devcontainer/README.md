@@ -57,6 +57,37 @@ You can also set `CLAUDE_AUTH_TOKEN` as a Codespaces secret for cloud environmen
 
 For more options, see the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
 
+## Codex CLI Authentication
+
+Codex CLI supports API key and browser-based authentication.
+
+### Browser Login
+
+```bash
+codex
+```
+
+On first run, select "Sign in with ChatGPT" to authenticate via browser. Requires a ChatGPT Plus, Pro, Business, Edu, or Enterprise plan. Credentials are cached in `~/.codex/auth.json` and persist across container rebuilds via a Docker named volume.
+
+### API Key
+
+```bash
+export OPENAI_API_KEY="sk-..."
+codex
+```
+
+Get an API key from [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+
+### Automatic Token Setup
+
+Add your API key to `.devcontainer/.secrets`:
+
+```bash
+OPENAI_API_KEY=sk-your-key-here
+```
+
+On next container start, `setup-auth.sh` will create `~/.codex/auth.json` automatically. You can also set `OPENAI_API_KEY` as a Codespaces secret.
+
 ## GitHub & NPM Authentication
 
 ### Automatic Auth via `.secrets` (Recommended)
@@ -184,6 +215,7 @@ claude --resume               # Resume previous session
 | `shellcheck` | Static analysis tool for shell scripts |
 | `hadolint` | Dockerfile linter |
 | `agent-browser` | Headless browser automation for AI agents |
+| `codex` | OpenAI Codex CLI terminal coding agent |
 
 ### Code Intelligence
 | Tool | Description |
@@ -204,6 +236,7 @@ claude --resume               # Resume previous session
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `claude-monitor` | Real-time usage tracking |
 | `codeforge-dashboard` | Session analytics dashboard — auto-launches on start (port 7847) |
+| `ccr` | Claude Code Router — routes API calls to alternate LLM providers (auto-starts on port 3456) |
 
 ## Configuration
 
@@ -286,6 +319,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `dprint` | Pluggable formatter for Markdown/YAML/TOML (disabled by default) |
 | `ccms` | Claude Code session history search |
 | `claude-session-dashboard` | Local session analytics dashboard with web UI |
+| `codex-cli` | OpenAI Codex CLI terminal coding agent |
 | `notify-hook` | Desktop notifications on Claude completion |
 | `mcp-qdrant` | Qdrant vector database MCP server (optional) |
 
@@ -316,6 +350,7 @@ Three methods for providing GitHub/NPM credentials, in order of precedence:
 All methods persist across container rebuilds via the bind-mounted `/workspaces/.gh/` directory.
 
 4. **`.secrets` file with `CLAUDE_AUTH_TOKEN`** — Long-lived Claude auth token from `claude setup-token`. Auto-creates `~/.claude/.credentials.json` on container start.
+5. **`.secrets` file with `OPENAI_API_KEY`** — OpenAI API key for Codex CLI. Auto-creates `~/.codex/auth.json` on container start.
 
 ## Agents & Skills
 

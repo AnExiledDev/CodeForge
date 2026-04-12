@@ -20,6 +20,12 @@ coverage/
 *.swp
 *.swo
 *~
+TEMP/
+temp/
+tmp/
+
+# Screenshots
+*.png
 
 # IDE
 .vscode/
@@ -60,10 +66,8 @@ cli/.pytest_cache/
 cli/.ruff_cache/
 .codeforge/data/
 
-# Dashboard-specific
-dashboard/.svelte-kit/
-dashboard/build/
-dashboard/mockups/
+# Dashboard (deprecated — migrating to CodeDirective, a separate repo)
+dashboard/
 
 # Docs-specific
 docs/.astro/
