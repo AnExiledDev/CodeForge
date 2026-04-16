@@ -51,7 +51,7 @@
 	},
 	"autoMemoryDirectory": "./.claude/memory",
 	"plansDirectory": "./.claude/plans",
-	"viewMode": "verbose",
+	"viewMode": "focus",
 	"spinnerVerbs": {
 		"mode": "replace",
 		"verbs": [
