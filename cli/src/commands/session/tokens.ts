@@ -100,7 +100,12 @@ export function pathToProjectSlug(input: string): string {
 		isAbsolute(input) || input.startsWith("./") || input.startsWith("../");
 	if (looksLikePath) {
 		const abs = isAbsolute(input) ? input : resolve(input);
-		return abs.replace(/\/+$/, "").replace(/[./]/g, "-");
+		// Normalize Windows separators so the slug logic (which encodes `/` and
+		// `.` as `-`) produces identical output on all platforms. Without this,
+		// `resolve("./foo")` on Windows returns `D:\...\foo` and the backslashes
+		// leak through unchanged.
+		const normalized = abs.replace(/\\/g, "/");
+		return normalized.replace(/\/+$/, "").replace(/[./]/g, "-");
 	}
 	return input;
 }
