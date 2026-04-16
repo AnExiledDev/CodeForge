@@ -1,0 +1,24 @@
+{
+	"mcpServers": {},
+	"providers": {
+		"anthropic": {
+			"api_key": "$ANTHROPIC_API_KEY",
+			"base_url": "https://api.anthropic.com"
+		},
+		"deepseek": {
+			"api_key": "$DEEPSEEK_API_KEY",
+			"base_url": "https://api.deepseek.com"
+		},
+		"gemini": {
+			"api_key": "$GEMINI_API_KEY",
+			"base_url": "https://generativelanguage.googleapis.com"
+		},
+		"openrouter": {
+			"api_key": "$OPENROUTER_API_KEY",
+			"base_url": "https://openrouter.ai/api"
+		}
+	},
+	"router": {
+		"default": "anthropic/claude-sonnet-4-20250514"
+	}
+}

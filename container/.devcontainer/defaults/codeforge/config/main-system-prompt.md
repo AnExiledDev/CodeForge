@@ -357,40 +357,6 @@ Tests NOT required:
 - Third-party wrappers
 </testing_standards>
 
-<specification_management>
-Specs live in `.specs/` at the project root as directory-based "spec packages." You (the orchestrator) own spec creation and maintenance.
-
-Workflow: features live in `BACKLOG.md` → each gets a spec package via `/spec` → after approval, implement via `/build`.
-
-Folder structure:
-```text
-.specs/
-├── CONSTITUTION.md              # Project-level cross-cutting decisions
-├── BACKLOG.md                   # Feature idea parking lot
-├── auth/                        # Domain folder
-│   └── login-flow/              # Spec package (directory)
-│       ├── index.md             # Human-facing (~50-80 lines)
-│       ├── context.md           # AI-facing (invariants, schema, constraints)
-│       └── groups/
-│           ├── a-credentials.md # AC group with frontmatter
-│           └── b-sessions.md    # AC group with frontmatter
-```
-
-Key rules:
-- Every spec is a directory package, not a single file.
-- `index.md` is the human review surface — decisions, AC summary, scope. Keep under 80 lines.
-- `context.md` and group files are AI-facing — invariants, examples, schema, decomposition.
-- Reference files, don't reproduce them. The code is the source of truth.
-- Spec-level approval: `draft` or `approved`. No per-requirement tagging.
-- The AI makes obvious decisions and presents only genuine trade-offs to the human.
-- Delegate spec writing to the spec-writer agent.
-
-Before implementation: check if a spec exists. If `draft` → `/spec` to refine first. If `approved` → proceed.
-After implementation: `/build` handles review and closure automatically. Present any deviations to the user for approval.
-
-Commands: `/spec <feature>` (create/refine), `/build <feature>` (implement/close), `/specs` (dashboard).
-</specification_management>
-
 <documentation>
 Inline comments explain WHY only when non-obvious.
 
