@@ -22,11 +22,12 @@ Config files deploy via `defaults/codeforge/file-manifest.json` on every contain
 
 | Command | Purpose |
 |---------|---------|
-| `cc` / `claude` | Run Claude Code with auto-configuration |
+| `cc` / `claude` | Run Claude Code with auto-configuration (opus-4-5, 200k context) |
 | `codeforge config apply` | Deploy config files to `~/.claude/` (same as container start) |
 | `ccraw` | Vanilla Claude Code (bypasses config) |
-| `ccw` | Claude Code with writing system prompt |
-| `cc-orc` | Claude Code in orchestrator mode (delegation-first) |
+| `ccw` | Claude Code with writing system prompt (opus-4-5, 200k context) |
+| `cc-orc` | Claude Code in orchestrator mode, delegation-first (opus-4-5, 200k context) |
+| `cc7` / `ccw7` / `cc-orc7` | Claude Code on opus-4-7 with 400k context (main / writing / orchestrator modes) |
 | `codex` | OpenAI Codex CLI terminal coding agent |
 | `ccms` | Session history search _(disabled — requires Rust toolchain; uncomment in devcontainer.json to enable)_ |
 | `codeforge proxy` | Launch Claude Code through mitmproxy — inspect API traffic in browser (port 8081) |

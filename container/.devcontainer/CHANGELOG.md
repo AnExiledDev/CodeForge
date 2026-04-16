@@ -4,6 +4,9 @@
 
 ### Configuration
 
+- **Default model changed to `claude-opus-4-5`** — `ANTHROPIC_MODEL` and `ANTHROPIC_DEFAULT_OPUS_MODEL` in default settings flipped from `claude-opus-4-7` to `claude-opus-4-5`. Subagents also run on 4.5 by default.
+- **Per-alias context windows** — `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` removed from global `settings.json env` (they pinned 250k globally, which would exceed 4.5's 200k ceiling). Context is now set inline per alias: `cc` / `claude` / `ccw` / `cc-orc` = 200k; `cc7` / `ccw7` / `cc-orc7` = 400k.
+- **New 4.7 alias variants** — `cc7`, `ccw7`, `cc-orc7` run Claude Code on `claude-opus-4-7` with a 400k context window (main / writing / orchestrator system prompts respectively). Use these for sessions that need 4.7's larger window; use `cc` / `ccw` / `cc-orc` (now on 4.5) for standard work.
 - **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
 - **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
 
