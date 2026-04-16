@@ -8,6 +8,7 @@ description: >-
   with sg run, $$$ARGS meta-variables, tree-sitter tags. DO NOT USE for
   simple text searches where Grep suffices.
 version: 0.2.0
+effort: medium
 ---
 
 # AST-Grep Patterns

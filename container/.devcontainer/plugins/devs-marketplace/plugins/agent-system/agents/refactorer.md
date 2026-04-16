@@ -25,6 +25,7 @@ hooks:
       type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify-no-regression.py"
       timeout: 30
+effort: xhigh
 ---
 
 # Refactorer Agent

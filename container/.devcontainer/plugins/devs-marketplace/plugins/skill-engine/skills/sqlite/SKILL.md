@@ -10,6 +10,7 @@ description: >-
   expression indexes. DO NOT USE for PostgreSQL, MySQL, or other client-server
   database systems.
 version: 0.2.0
+effort: medium
 ---
 
 # SQLite Development

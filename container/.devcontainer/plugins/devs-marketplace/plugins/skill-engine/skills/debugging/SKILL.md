@@ -12,6 +12,7 @@ description: >-
 version: 0.2.0
 allowed-tools: Bash, Read, Glob, Grep
 argument-hint: "[service or log-path]"
+effort: high
 ---
 
 # Debugging & Log Analysis

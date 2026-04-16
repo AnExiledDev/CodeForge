@@ -14,6 +14,7 @@ color: yellow
 permissionMode: default
 memory:
   scope: project
+effort: medium
 ---
 
 # Bash Execution Agent

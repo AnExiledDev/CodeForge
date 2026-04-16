@@ -11,6 +11,7 @@ description: >-
   routine git operations like committing, branching, or merging.
 version: 0.2.0
 allowed-tools: Bash, Read, Grep
+effort: medium
 ---
 
 # Git Forensics

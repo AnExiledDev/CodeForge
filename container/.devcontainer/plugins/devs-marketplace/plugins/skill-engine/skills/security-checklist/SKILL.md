@@ -10,6 +10,7 @@ description: >-
   profiling or general code quality reviews.
 version: 0.2.0
 allowed-tools: Bash, Read, Glob, Grep
+effort: xhigh
 ---
 
 # Security Checklist

@@ -11,6 +11,7 @@ description: >-
   auditing, dependency management, or code refactoring.
 version: 0.2.0
 allowed-tools: Bash, Read, Glob, Grep
+effort: high
 ---
 
 # Performance Profiling

@@ -19,6 +19,7 @@ memory:
 skills:
   - migration-patterns
   - build
+effort: xhigh
 ---
 
 # Migrator Agent

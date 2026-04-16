@@ -9,6 +9,7 @@ description: >-
   query(), PermissionResult, AgentDefinition. DO NOT USE for PydanticAI Python
   agents or Claude Code CLI headless mode.
 version: 0.2.0
+effort: high
 ---
 
 # Claude Agent SDK (TypeScript)

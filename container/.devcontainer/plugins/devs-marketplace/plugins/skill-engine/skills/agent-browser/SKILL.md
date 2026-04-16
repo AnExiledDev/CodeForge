@@ -11,6 +11,7 @@ description: >-
 version: 0.1.0
 allowed-tools: Bash
 argument-hint: "[url or action]"
+effort: high
 ---
 
 # Headless Browser Automation

@@ -22,6 +22,7 @@ hooks:
     - type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify-no-regression.py"
       timeout: 120
+effort: xhigh
 ---
 
 # Implementer Agent

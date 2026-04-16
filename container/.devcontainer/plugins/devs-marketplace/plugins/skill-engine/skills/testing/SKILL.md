@@ -11,6 +11,7 @@ description: >-
 version: 0.2.0
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep
 argument-hint: "[file or module]"
+effort: high
 ---
 
 # Testing (FastAPI + Svelte)

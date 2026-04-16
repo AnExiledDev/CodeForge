@@ -37,6 +37,7 @@
 - **Model upgrade** — all 9 opus-based agents now pinned to explicit `opus-4-5` model version (architect, documenter, implementer, investigator, migrator, refactorer, security-auditor, spec-writer, test-writer)
 - **Worktree isolation removed** — write-capable agents (documenter, implementer, migrator, refactorer, test-writer) now run in the main worktree instead of isolated git worktrees
 - **Model tier upgrade** — investigator and security-auditor upgraded from sonnet to opus for improved analysis quality
+- **Effort levels configured** — all 19 agents and 23 skills now have `effort:` frontmatter for Opus 4.7 adaptive thinking
 
 ### Configuration
 

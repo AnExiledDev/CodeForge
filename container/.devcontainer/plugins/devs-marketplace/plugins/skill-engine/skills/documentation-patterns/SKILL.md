@@ -8,6 +8,7 @@ description: >-
   Google-style docstrings, Sphinx, rustdoc, TSDoc, OpenAPI annotations.
   DO NOT USE for writing code, fixing bugs, or generating changelogs.
 version: 0.2.0
+effort: medium
 ---
 
 # Documentation Patterns

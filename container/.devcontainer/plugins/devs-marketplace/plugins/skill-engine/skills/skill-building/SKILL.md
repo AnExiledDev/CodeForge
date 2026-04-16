@@ -8,6 +8,7 @@ description: >-
   instructions", or works with skill authoring patterns or plugin directory
   structure. DO NOT USE for application code or general prompt engineering.
 version: 0.2.0
+effort: medium
 ---
 
 # Skill Building for Claude Code Plugins

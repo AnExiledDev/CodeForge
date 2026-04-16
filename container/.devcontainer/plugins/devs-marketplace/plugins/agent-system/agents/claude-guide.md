@@ -21,6 +21,7 @@ memory:
 skills:
   - claude-code-headless
   - claude-agent-sdk
+effort: medium
 ---
 
 # Claude Guide Agent

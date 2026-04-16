@@ -9,6 +9,7 @@ description: >-
   DO NOT USE for programmatic container management from Python — use
   docker-py instead.
 version: 0.2.0
+effort: medium
 ---
 
 # Docker & Docker Compose

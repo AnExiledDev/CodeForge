@@ -25,6 +25,7 @@ hooks:
       type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/guard-readonly-bash.py --mode general-readonly"
       timeout: 5
+effort: xhigh
 ---
 
 # Research Agent

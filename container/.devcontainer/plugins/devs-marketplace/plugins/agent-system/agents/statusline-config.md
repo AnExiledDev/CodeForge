@@ -14,6 +14,7 @@ color: orange
 permissionMode: acceptEdits
 memory:
   scope: user
+effort: medium
 ---
 
 # Status Line Configuration Agent

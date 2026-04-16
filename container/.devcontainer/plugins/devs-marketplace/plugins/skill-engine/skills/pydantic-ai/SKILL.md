@@ -9,6 +9,7 @@ description: >-
   RunContext, TestModel, FallbackModel, VercelAIAdapter. DO NOT USE for Claude
   Agent SDK TypeScript agents or general LLM API calls.
 version: 0.2.0
+effort: high
 ---
 
 # PydanticAI Agent Development

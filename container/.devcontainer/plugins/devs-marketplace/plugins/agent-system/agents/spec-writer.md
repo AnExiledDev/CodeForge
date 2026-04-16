@@ -19,6 +19,7 @@ memory:
 skills:
   - spec
   - specs
+effort: max
 ---
 
 # Spec Writer Agent

@@ -11,6 +11,7 @@ description: >-
   or single-branch workflows.
 version: 0.1.0
 allowed-tools: Bash, Read, Grep, Glob, EnterWorktree
+effort: low
 ---
 
 # Git Worktrees

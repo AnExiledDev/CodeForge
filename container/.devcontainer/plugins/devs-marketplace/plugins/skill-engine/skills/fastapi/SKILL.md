@@ -10,6 +10,7 @@ description: >-
   DO NOT USE for general Python web frameworks like Flask or Django, or for
   frontend development.
 version: 0.2.0
+effort: high
 ---
 
 # FastAPI Development

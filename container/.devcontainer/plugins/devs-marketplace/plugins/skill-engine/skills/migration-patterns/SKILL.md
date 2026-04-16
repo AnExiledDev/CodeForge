@@ -8,6 +8,7 @@ description: >-
   or works with Pydantic v1-to-v2, Django upgrades, CommonJS to ESM.
   DO NOT USE for routine dependency updates without API changes.
 version: 0.2.0
+effort: xhigh
 ---
 
 # Migration Patterns

@@ -11,6 +11,7 @@ description: >-
   or application-level vulnerability scanning.
 version: 0.2.0
 allowed-tools: Bash, Read, Glob, Grep
+effort: high
 ---
 
 # Dependency Management

@@ -24,6 +24,7 @@ hooks:
     - type: command
       command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/verify-tests-pass.py"
       timeout: 120
+effort: xhigh
 ---
 
 # Test Writer Agent

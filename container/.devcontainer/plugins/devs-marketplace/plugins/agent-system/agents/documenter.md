@@ -22,6 +22,7 @@ skills:
   - spec
   - build
   - specs
+effort: xhigh
 ---
 
 # Documenter Agent

@@ -12,6 +12,7 @@ description: >-
   workstreams.
 version: 0.2.0
 disable-model-invocation: true
+effort: xhigh
 ---
 
 # Agent Team Orchestration

@@ -8,6 +8,7 @@ description: >-
   with $state, $derived, $effect, $props, @ai-sdk/svelte, svelte-dnd-action.
   DO NOT USE for Svelte 4 legacy codebases or React/Vue development.
 version: 0.2.0
+effort: medium
 ---
 
 # Svelte 5 Development

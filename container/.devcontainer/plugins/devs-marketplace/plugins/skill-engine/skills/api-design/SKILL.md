@@ -10,6 +10,7 @@ description: >-
   status codes. DO NOT USE for API implementation code — use the fastapi skill
   for building endpoints.
 version: 0.2.0
+effort: high
 ---
 
 # API Design

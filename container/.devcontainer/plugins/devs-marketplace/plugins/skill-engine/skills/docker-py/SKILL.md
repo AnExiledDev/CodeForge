@@ -10,6 +10,7 @@ description: >-
   DO NOT USE for writing Dockerfiles or Docker Compose files — use the docker
   skill instead.
 version: 0.2.0
+effort: medium
 ---
 
 # Docker SDK for Python

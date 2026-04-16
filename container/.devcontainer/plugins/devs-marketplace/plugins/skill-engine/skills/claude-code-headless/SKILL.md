@@ -9,6 +9,7 @@ description: >-
   --output-format stream-json, --permission-mode, --json-schema, --resume.
   DO NOT USE for the TypeScript SDK API — use claude-agent-sdk instead.
 version: 0.3.0
+effort: high
 ---
 
 # Claude Code Headless

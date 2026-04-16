@@ -10,6 +10,7 @@ description: >-
   primitive obsession, or inline variable. DO NOT USE for adding new
   features, fixing bugs, or performance optimization.
 version: 0.2.0
+effort: high
 ---
 
 # Refactoring Patterns
