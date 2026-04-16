@@ -61,6 +61,9 @@ for rc in ~/.bashrc ~/.zshrc; do
 		sed -i "/^alias claude='/d" "$rc"
 		sed -i "/^alias ccraw='/d" "$rc"
 		sed -i "/^alias ccw='/d" "$rc"
+		sed -i "/^alias cc7='/d" "$rc"
+		sed -i "/^alias ccw7='/d" "$rc"
+		sed -i "/^alias cc-orc7='/d" "$rc"
 		sed -i '/^alias check-setup=/d' "$rc"
 		# cc-tools function from old format
 		if grep -q "^cc-tools()" "$rc" 2>/dev/null; then
@@ -114,11 +117,14 @@ _OMC_DISALLOWED_TOOLS=(
     mcp__oh-my-claude__coworker_task
 )
 
-alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias cc='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias claude='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
 alias ccraw='command "\$_CLAUDE_BIN"'
-alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias cc-orc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias ccw='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias cc-orc='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias cc7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias ccw7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias cc-orc7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
 alias ccr-apply='codeforge config apply && (ccr restart 2>/dev/null || ccr start) && echo "CCR config applied and restarted"'
 alias omc-apply='codeforge config apply && (omc proxy restart 2>/dev/null || omc proxy start) && echo "OMC config applied and proxy restarted"'
 
@@ -149,11 +155,14 @@ BLOCK_EOF
 done
 
 echo "[setup-aliases] Aliases configured:"
-echo "  cc          -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
-echo "  claude      -> claude with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
+echo "  cc          -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
+echo "  claude      -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
 echo "  ccraw       -> vanilla claude without any config"
-echo "  ccw         -> claude with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
-echo "  cc-orc      -> claude with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
+echo "  ccw         -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
+echo "  cc-orc      -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
+echo "  cc7         -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
+echo "  ccw7        -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
+echo "  cc-orc7     -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
 echo "  ccr-apply   -> redeploy claude-code-router config + restart daemon"
 echo "  cc-tools    -> list all available CodeForge tools"
 echo "  check-setup -> verify CodeForge setup health"
