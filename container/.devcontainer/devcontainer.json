@@ -66,6 +66,22 @@
 		"OPENROUTER_API_KEY": {
 			"description": "OpenRouter API key for claude-code-router (optional)",
 			"documentationUrl": "https://openrouter.ai/keys"
+		},
+		"KIMI_API_KEY": {
+			"description": "Moonshot Kimi API key for oh-my-claude (optional)",
+			"documentationUrl": "https://platform.moonshot.cn/"
+		},
+		"ZHIPU_API_KEY": {
+			"description": "ZhiPu GLM API key for oh-my-claude (optional)",
+			"documentationUrl": "https://open.bigmodel.cn/"
+		},
+		"ALIYUN_API_KEY": {
+			"description": "Aliyun DashScope API key for oh-my-claude (optional)",
+			"documentationUrl": "https://dashscope.console.aliyun.com/"
+		},
+		"MINIMAX_API_KEY": {
+			"description": "MiniMax API key for oh-my-claude (optional)",
+			"documentationUrl": "https://platform.minimaxi.com/"
 		}
 	},
 
@@ -89,7 +105,8 @@
 		"./features/agent-browser",
 		"./features/claude-monitor",
 		"./features/ccusage",
-		"./features/claude-code-router",
+		// "./features/claude-code-router",
+		// "./features/oh-my-claude",  // disabled — needs refinement (omc install modifies settings.json)
 		// "./features/ccburn",
 		"./features/ccstatusline",
 		"./features/ast-grep",
@@ -134,12 +151,18 @@
 			"shells": "both",
 			"username": "automatic"
 		},
-		"./features/claude-code-router": {
-			"version": "latest",
-			"shells": "both",
-			"username": "automatic",
-			"autostart": "true"
-		},
+		// "./features/claude-code-router": {
+		// 	"version": "latest",
+		// 	"shells": "both",
+		// 	"username": "automatic",
+		// 	"autostart": "true"
+		// },
+		// oh-my-claude — disabled; needs refinement (omc install modifies settings.json)
+		// "./features/oh-my-claude": {
+		// 	"version": "latest",
+		// 	"autostart": true,
+		// 	"providerAgentsOnly": true
+		// },
 		"./features/claude-monitor": {
 			"version": "latest",
 			"installer": "uv",

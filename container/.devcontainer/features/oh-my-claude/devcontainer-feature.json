@@ -1,0 +1,25 @@
+{
+	"id": "oh-my-claude",
+	"version": "1.0.0",
+	"name": "oh-my-claude",
+	"description": "Multi-provider proxy for Claude Code with Chinese LLM routing",
+	"documentationURL": "https://github.com/lgcyaxi/oh-my-claude",
+	"options": {
+		"version": {
+			"type": "string",
+			"default": "latest",
+			"description": "oh-my-claude version to install"
+		},
+		"autostart": {
+			"type": "boolean",
+			"default": true,
+			"description": "Auto-start proxy on container start"
+		},
+		"providerAgentsOnly": {
+			"type": "boolean",
+			"default": true,
+			"description": "Only install provider agents (@kimi, @deepseek, etc.), delete role agents"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node:1"]
+}
