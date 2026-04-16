@@ -5,6 +5,7 @@
 ### Fixes
 
 - **`session tokens --project` now works with absolute paths** — the filter was comparing an on-disk slug (e.g. `-workspaces-projects-CodeForge`) to the raw `--project` path (e.g. `/workspaces/projects/CodeForge`), which never matched. Absolute paths and paths starting with `./` / `../` are now encoded to Claude's slug form (replacing `/` and `.` with `-`) before matching. Plain substrings without separators still pass through unchanged, so `--project CodeForge` keeps working.
+- **`session tokens --since` / `--until` now actually filter results** — both options were parsed but never applied. Filtering is session-level and uses file mtime (last-activity time) so sessions outside the window are skipped without being parsed.
 
 ## v0.2.0 — 2026-04-16
 

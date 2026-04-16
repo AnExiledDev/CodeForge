@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import type { Command } from "commander";
+import { stat } from "fs/promises";
 import { basename, isAbsolute, resolve } from "path";
 import { readLines } from "../../search/engine.js";
 import { discoverSessionFiles } from "../../utils/glob.js";
@@ -102,6 +103,25 @@ export function pathToProjectSlug(input: string): string {
 		return abs.replace(/\/+$/, "").replace(/[./]/g, "-");
 	}
 	return input;
+}
+
+/**
+ * Pure check for whether a file's last-modified time falls within an optional
+ * [since, until] window. Exported for direct unit testing without fixtures.
+ *
+ * Semantics:
+ * - `since`: mtime must be >= since (inclusive)
+ * - `until`: mtime must be <= until (inclusive)
+ * - If both bounds are omitted, always returns true.
+ */
+export function isFileWithinTimeRange(
+	mtime: Date,
+	since?: Date,
+	until?: Date,
+): boolean {
+	if (since && mtime < since) return false;
+	if (until && mtime > until) return false;
+	return true;
 }
 
 function isSubagentPath(filePath: string): boolean {
@@ -332,11 +352,26 @@ async function analyzeTokens(options: {
 		? pathToProjectSlug(options.project)
 		: undefined;
 
+	const hasTimeFilter = !!(options.since || options.until);
+
 	for (const filePath of files) {
 		// Filter by project (slug-to-slug match; absolute paths are encoded).
 		if (projectNeedle) {
 			const project = extractProjectFromPath(filePath);
 			if (!project?.includes(projectNeedle)) continue;
+		}
+
+		// Filter by file mtime (session activity time) before the expensive
+		// per-file parse. Sessions outside the window are skipped without reads.
+		if (hasTimeFilter) {
+			try {
+				const st = await stat(filePath);
+				if (!isFileWithinTimeRange(st.mtime, options.since, options.until)) {
+					continue;
+				}
+			} catch {
+				continue;
+			}
 		}
 
 		const stats = await analyzeSessionTokens(filePath);
