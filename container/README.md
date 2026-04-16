@@ -81,7 +81,7 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 ### Custom Features (21)
 
-tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo, claude-session-dashboard
+tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo
 
 ### Agents (19) & Skills (34)
 

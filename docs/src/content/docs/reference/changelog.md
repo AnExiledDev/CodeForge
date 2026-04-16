@@ -66,6 +66,19 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **ccusage Codex support** — `ccusage-codex` alias installed alongside `ccusage` for Codex session token and cost tracking via `@ccusage/codex`
 - **Tool enumeration** — `codex` and `ccusage-codex` added to `cc-tools` and `check-setup` output
 
+### Dashboard
+
+- **Dashboard extracted to separate repository** — the `dashboard/` package is deprecated and being moved to its own repo as **CodeDirective**. Dashboard is now gitignored in the monorepo. The devcontainer feature continues to install from the published npm package.
+
+### Documentation
+
+- **Complete docs restructure** — reorganized documentation site for clearer navigation:
+  - `getting-started/` → `start-here/` (installation, first session, migration)
+  - `features/` + `customization/` → `use/` + `customize/` (daily usage vs. configuration)
+  - `plugins/` → `extend/plugins/` (extension points under a dedicated section)
+  - New `reference/` section consolidates agents, skills, CLI tools, environment variables, and architecture
+- Added new reference pages: `agents.md`, `skills.md`, `cli-tools.md`, `environment-variables.md`, `whats-included.md`
+
 ## v2.1.1 — 2026-03-27
 
 ### CLI

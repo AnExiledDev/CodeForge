@@ -117,15 +117,6 @@ Analyze token consumption patterns across sessions to understand usage efficienc
 ccburn
 ```
 
-### codeforge-dashboard
-
-A web-based session monitoring dashboard that provides real-time visibility into active Claude sessions, resource usage, and session history. Runs on port 7847.
-
-```bash
-# Launch the dashboard
-codeforge-dashboard
-```
-
 ### claude-monitor
 
 Real-time terminal-based Claude session monitor. Shows active sessions and their current status.
@@ -302,26 +293,25 @@ The table below is broader than the canonical 25-tool inventory because it also 
 | 6 | `ccusage` | Session | API usage statistics |
 | 7 | `ccburn` | Session | Token burn analysis |
 | 8 | `ccstatusline` | Session | Terminal status bar widget |
-| 9 | `codeforge-dashboard` | Session | Web-based session dashboard |
-| 10 | `claude-monitor` | Session | Real-time session monitor |
-| 11 | `agent-browser` | Session | Headless browser for agents |
-| 12 | `check-setup` | Session | Installation health check |
-| 13 | `cc-tools` | Session | List all available tools |
-| 14 | `codeforge` | Session | CodeForge CLI — session search, plugins, indexing _(experimental)_ |
-| 15 | `codeforge proxy` | Session | Launch Claude Code through mitmproxy for API traffic inspection |
-| 16 | `codex` | Session | OpenAI Codex CLI terminal coding agent |
-| 17 | `ccusage-codex` | Session | Codex token usage statistics |
-| 18 | `dbr` | Infrastructure | Devcontainer bridge for dynamic port forwarding |
-| 19 | `ruff` | Quality | Python linting and formatting |
-| 20 | `biome` | Quality | JS/TS/JSON linting and formatting |
-| 21 | `shellcheck` | Quality | Shell script linting |
-| 22 | `shfmt` | Quality | Shell script formatting |
-| 23 | `dprint` | Quality | Markdown/TOML/JSON formatting |
-| 24 | `hadolint` | Quality | Dockerfile linting |
-| 25 | `sg` / `ast-grep` | Intelligence | Structural code search |
-| 26 | `tree-sitter` | Intelligence | Syntax tree parsing |
-| 27 | `pyright` | Intelligence | Python LSP server |
-| 28 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
+| 9 | `claude-monitor` | Session | Real-time session monitor |
+| 10 | `agent-browser` | Session | Headless browser for agents |
+| 11 | `check-setup` | Session | Installation health check |
+| 12 | `cc-tools` | Session | List all available tools |
+| 13 | `codeforge` | Session | CodeForge CLI — session search, plugins, indexing _(experimental)_ |
+| 14 | `codeforge proxy` | Session | Launch Claude Code through mitmproxy for API traffic inspection |
+| 15 | `codex` | Session | OpenAI Codex CLI terminal coding agent |
+| 16 | `ccusage-codex` | Session | Codex token usage statistics |
+| 17 | `dbr` | Infrastructure | Devcontainer bridge for dynamic port forwarding |
+| 18 | `ruff` | Quality | Python linting and formatting |
+| 19 | `biome` | Quality | JS/TS/JSON linting and formatting |
+| 20 | `shellcheck` | Quality | Shell script linting |
+| 21 | `shfmt` | Quality | Shell script formatting |
+| 22 | `dprint` | Quality | Markdown/TOML/JSON formatting |
+| 23 | `hadolint` | Quality | Dockerfile linting |
+| 24 | `sg` / `ast-grep` | Intelligence | Structural code search |
+| 25 | `tree-sitter` | Intelligence | Syntax tree parsing |
+| 26 | `pyright` | Intelligence | Python LSP server |
+| 27 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
 
 ## Related
 

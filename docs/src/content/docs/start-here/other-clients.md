@@ -29,7 +29,7 @@ Any client that respects the Dev Containers specification can use the same setup
 
 ## Key Difference from VS Code
 
-VS Code auto-forwards ports. Other clients often do not, so you may need [`dbr`](/use/accessing-services/) or SSH tunneling to access services such as the dashboard.
+VS Code auto-forwards ports. Other clients often do not, so you may need [`dbr`](/use/accessing-services/) or SSH tunneling to access services.
 
 ## Next Steps
 

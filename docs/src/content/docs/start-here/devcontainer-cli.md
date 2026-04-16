@@ -70,7 +70,7 @@ devcontainer exec --workspace-folder . cc-tools
 VS Code auto-forwards container ports to your host automatically. **The CLI does not.** You need an explicit forwarding mechanism.
 
 :::caution[No automatic port forwarding]
-Unlike VS Code, the devcontainer CLI does not auto-forward ports. Services running inside the container (like the Claude Dashboard on port 7847) won't be accessible on your host unless you set up forwarding manually. Note that the dashboard requires enabling the feature in your DevContainer configuration.
+Unlike VS Code, the devcontainer CLI does not auto-forward ports. Services running inside the container won't be accessible on your host unless you set up forwarding manually.
 :::
 
 **Recommended:** Install [devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge) (`dbr`) for dynamic, automatic port forwarding that works with any terminal client. CodeForge pre-installs the container side — you only need the host daemon:

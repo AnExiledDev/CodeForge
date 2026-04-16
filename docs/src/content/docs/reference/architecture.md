@@ -124,7 +124,6 @@ CodeForge ships 34 skills across the skill-engine, spec-workflow, ticket-workflo
 |   +-- ccstatusline/              # Terminal status line
 |   +-- ccusage/                   # API usage stats
 |   +-- ccburn/                    # Token burn rate
-|   +-- claude-session-dashboard/  # Web dashboard
 |   +-- claude-monitor/            # Real-time monitor
 |   +-- ast-grep/                  # Structural code search
 |   +-- tree-sitter/               # Syntax parsing

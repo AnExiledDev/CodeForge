@@ -114,15 +114,15 @@ Try:
 
 First start is slower than later starts because setup scripts and tool installs run only once per fresh environment.
 
-## Ports or Dashboards Are Not Reachable
+## Ports or Services Are Not Reachable
 
-Symptom: dashboard or other service is running in the container but not reachable from the host.
+Symptom: a service is running in the container but not reachable from the host.
 
 Check these first:
 
 1. If you are using VS Code, confirm port forwarding is active.
 2. If you are using the DevContainer CLI or another non-VS Code client, use `dbr` or SSH tunneling.
-3. Check for port conflicts such as `7847` already being in use.
+3. Check for port conflicts.
 
 Use [Accessing Services](/use/accessing-services/) for the practical guide.
 

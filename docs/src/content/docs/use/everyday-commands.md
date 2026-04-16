@@ -30,7 +30,6 @@ This page is intentionally curated. Use it for the commands you are likely to ne
 |---------|----------------|
 | `ccusage` | Check Claude usage and cost stats |
 | `ccusage-codex` | Check Codex usage stats |
-| `codeforge-dashboard` | Open the analytics dashboard |
 | `claude-monitor` | Watch active session activity in the terminal |
 
 ## Search and Navigation

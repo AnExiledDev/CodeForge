@@ -46,10 +46,7 @@ Outside a Claude session, these commands are useful early on:
 ```bash
 cc-tools
 ccusage
-codeforge-dashboard
 ```
-
-The dashboard may be optional depending on your enabled features.
 
 ## Where to Go Next
 

@@ -89,11 +89,26 @@ export default defineConfig({
 						icon: "rocket",
 						items: [
 							{ label: "Overview", slug: "start-here" },
-							{ label: "Before You Install", slug: "start-here/before-you-install" },
-							{ label: "Install in VS Code", slug: "start-here/install-in-vscode" },
-							{ label: "Verify Your Install", slug: "start-here/verify-install" },
-							{ label: "Start Your First Session", slug: "start-here/first-session" },
-							{ label: "Your First Tasks", slug: "start-here/your-first-tasks" },
+							{
+								label: "Before You Install",
+								slug: "start-here/before-you-install",
+							},
+							{
+								label: "Install in VS Code",
+								slug: "start-here/install-in-vscode",
+							},
+							{
+								label: "Verify Your Install",
+								slug: "start-here/verify-install",
+							},
+							{
+								label: "Start Your First Session",
+								slug: "start-here/first-session",
+							},
+							{
+								label: "Your First Tasks",
+								slug: "start-here/your-first-tasks",
+							},
 							{
 								label: "DevContainer CLI",
 								slug: "start-here/devcontainer-cli",
@@ -118,7 +133,6 @@ export default defineConfig({
 							{ label: "Spec Workflow", slug: "use/spec-workflow" },
 							{ label: "Ticket Workflow", slug: "use/ticket-workflow" },
 							{ label: "Git and PRs", slug: "use/git-and-prs" },
-							{ label: "Dashboard", slug: "use/dashboard" },
 							{ label: "Memories", slug: "use/memories" },
 							{ label: "Accessing Services", slug: "use/accessing-services" },
 						],
@@ -145,7 +159,10 @@ export default defineConfig({
 								label: "Keybindings and Terminal",
 								slug: "customize/keybindings-and-terminal",
 							},
-							{ label: "Optional Components", slug: "customize/optional-components" },
+							{
+								label: "Optional Components",
+								slug: "customize/optional-components",
+							},
 						],
 					},
 					{
@@ -159,10 +176,22 @@ export default defineConfig({
 							{
 								label: "Core Plugins",
 								items: [
-									{ label: "Agent System", slug: "extend/plugins/agent-system" },
-									{ label: "Skill Engine", slug: "extend/plugins/skill-engine" },
-									{ label: "Spec Workflow", slug: "extend/plugins/spec-workflow" },
-									{ label: "Ticket Workflow", slug: "extend/plugins/ticket-workflow" },
+									{
+										label: "Agent System",
+										slug: "extend/plugins/agent-system",
+									},
+									{
+										label: "Skill Engine",
+										slug: "extend/plugins/skill-engine",
+									},
+									{
+										label: "Spec Workflow",
+										slug: "extend/plugins/spec-workflow",
+									},
+									{
+										label: "Ticket Workflow",
+										slug: "extend/plugins/ticket-workflow",
+									},
 								],
 							},
 							{
@@ -189,12 +218,27 @@ export default defineConfig({
 							{
 								label: "Session & Integration",
 								items: [
-									{ label: "Session Context", slug: "extend/plugins/session-context" },
-									{ label: "Git Workflow", slug: "extend/plugins/git-workflow" },
-									{ label: "Prompt Snippets", slug: "extend/plugins/prompt-snippets" },
+									{
+										label: "Session Context",
+										slug: "extend/plugins/session-context",
+									},
+									{
+										label: "Git Workflow",
+										slug: "extend/plugins/git-workflow",
+									},
+									{
+										label: "Prompt Snippets",
+										slug: "extend/plugins/prompt-snippets",
+									},
 									{ label: "Notify Hook", slug: "extend/plugins/notify-hook" },
-									{ label: "CodeForge LSP", slug: "extend/plugins/codeforge-lsp" },
-									{ label: "Frontend Design", slug: "extend/plugins/frontend-design" },
+									{
+										label: "CodeForge LSP",
+										slug: "extend/plugins/codeforge-lsp",
+									},
+									{
+										label: "Frontend Design",
+										slug: "extend/plugins/frontend-design",
+									},
 								],
 							},
 						],
@@ -210,7 +254,10 @@ export default defineConfig({
 							{ label: "CLI Tools", slug: "reference/cli-tools" },
 							{ label: "Agents", slug: "reference/agents" },
 							{ label: "Skills", slug: "reference/skills" },
-							{ label: "Environment Variables", slug: "reference/environment-variables" },
+							{
+								label: "Environment Variables",
+								slug: "reference/environment-variables",
+							},
 							{ label: "Architecture", slug: "reference/architecture" },
 							{ label: "Troubleshooting", slug: "reference/troubleshooting" },
 							{ label: "Changelog", slug: "reference/changelog" },

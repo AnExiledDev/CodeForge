@@ -45,7 +45,6 @@ Commands for session analysis, usage tracking, and system monitoring.
 | `ccusage-codex` | View Codex CLI token usage and cost statistics | `ccusage-codex daily` |
 | `ccburn` | Analyze token burn rate and consumption patterns with pace indicators _(disabled by default — uncomment in devcontainer.json to enable)_ | `ccburn` |
 | `ccstatusline` | Terminal status line displaying session metrics, git state, token usage, and burn rate | (runs automatically) |
-| `codeforge-dashboard` | Web-based session monitoring dashboard on port 7847 with cost estimates and activity heatmaps | `codeforge-dashboard` |
 | `claude-monitor` | Real-time Claude session activity monitor | `claude-monitor` |
 | `agent-browser` | Headless Chromium browser for agent automation with accessibility tree snapshots | `agent-browser` |
 | `check-setup` | Verify CodeForge installation health -- checks tools, config, and aliases | `check-setup` |
