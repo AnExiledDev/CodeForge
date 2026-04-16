@@ -1,11 +1,11 @@
 ---
 title: Accessing Services
-description: How to reach dashboards, previews, and forwarded ports from a CodeForge container across different clients.
+description: How to reach previews and forwarded ports from a CodeForge container across different clients.
 sidebar:
   order: 10
 ---
 
-CodeForge runs inside a Docker container. When a service inside the container listens on a port (e.g., a dev server on port 3000 or the Claude Dashboard on port 7847), you need a forwarding mechanism to access it from your host machine. Which mechanism to use depends on your DevContainer client.
+CodeForge runs inside a Docker container. When a service inside the container listens on a port (e.g., a dev server on port 3000), you need a forwarding mechanism to access it from your host machine. Which mechanism to use depends on your DevContainer client.
 
 :::tip[When to read this page]
 If you use VS Code, you usually only need this page when automatic forwarding is not enough. If you use the DevContainer CLI, JetBrains, or direct SSH, this page matters much earlier.
@@ -24,7 +24,6 @@ If you use VS Code, you usually only need this page when automatic forwarding is
 VS Code automatically detects ports opened inside the container and forwards them to your host. CodeForge configures this in `devcontainer.json`:
 
 - **All ports** are auto-forwarded with a notification prompt
-- **Port 7847** (Claude Dashboard) gets a friendly label in the Ports panel
 
 No setup required — ports appear in the VS Code **Ports** panel as services start. Click the local address to open in your browser.
 
@@ -95,7 +94,7 @@ For one-off port forwarding or environments where `dbr` isn't available, use SSH
 ssh -L 3000:localhost:3000 <container-user>@<container-host>
 
 # Forward multiple ports
-ssh -L 3000:localhost:3000 -L 7847:localhost:7847 <container-user>@<container-host>
+ssh -L 3000:localhost:3000 -L 8080:localhost:8080 <container-user>@<container-host>
 ```
 
 This requires SSH access to the container, which is available when connecting via the `devcontainer` CLI or any Docker SSH setup.
@@ -116,19 +115,14 @@ This requires SSH access to the container, which is available when connecting vi
 Port forwarding behavior is configured in `.devcontainer/devcontainer.json`:
 
 ```jsonc
-"forwardPorts": [7847],
 "portsAttributes": {
-    "7847": {
-        "label": "CodeForge Dashboard",
-        "onAutoForward": "notify"
-    },
     "*": {
         "onAutoForward": "notify"
     }
 }
 ```
 
-- `forwardPorts` — static port list (dashboard port 7847 is pre-configured; VS Code also auto-detects dynamically)
+- `forwardPorts` — static port list for specific services you always want forwarded
 - `portsAttributes` — labels and behavior for auto-detected ports (VS Code / Codespaces only)
 
 These settings are ignored by non-VS Code clients. Use `dbr` or SSH tunneling instead.

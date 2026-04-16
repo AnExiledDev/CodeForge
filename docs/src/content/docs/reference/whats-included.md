@@ -50,7 +50,6 @@ These counts are the canonical inventory numbers. Some deeper reference pages in
 |------|--------|-------|
 | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc` | Default | Session launch commands |
 | `check-setup`, `cc-tools`, `ccusage`, `claude-monitor` | Default | Everyday operational tools |
-| `codeforge-dashboard` | Optional | Dashboard feature may need enabling |
 | LSP servers | Disabled by default | Require feature enablement and plugin toggle |
 | `ccms` | Deprecated | Replaced by `codeforge session search` |
 | `ccburn` | Disabled by default | Older burn-rate view, largely superseded by `ccstatusline` |
@@ -60,7 +59,6 @@ These counts are the canonical inventory numbers. Some deeper reference pages in
 
 | Component | Status | Where to configure |
 |-----------|--------|--------------------|
-| Dashboard | Optional | `devcontainer.json` feature config |
 | LSP servers | Disabled by default | `devcontainer.json` + plugin enablement |
 | Rust toolchain | Optional | `devcontainer.json` |
 | Go toolchain | Optional | `devcontainer.json` |

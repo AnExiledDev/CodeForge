@@ -73,7 +73,7 @@
 	// then Claude Code native binary (no Node dependency), then custom features.
 	// npm-dependent features (agent-browser, ccusage,
 	// biome, lsp-servers) must come after Node. bun-dependent features
-	// (codeforge-dashboard) must come after Bun. uv-dependent features (ruff, claude-monitor) must
+	// uv-dependent features (ruff, claude-monitor) must
 	// come after uv. notify-hook is second-to-last (lightweight, no dependencies).
 	// dbr (devcontainer-bridge) is last — standalone binary, no dependencies.
 	"overrideFeatureInstallOrder": [
@@ -92,7 +92,6 @@
 		"./features/claude-code-router",
 		// "./features/ccburn",
 		"./features/ccstatusline",
-		"./features/codeforge-dashboard",
 		"./features/ast-grep",
 		"./features/tree-sitter",
 		"./features/lsp-servers",
@@ -157,12 +156,6 @@
 		},
 		// Uncomment to add ccms (requires Rust):
 		// "./features/ccms": {},
-		"./features/codeforge-dashboard": {
-			"version": "latest",
-			"port": "7847",
-			"autostart": true,
-			"username": "automatic"
-		},
 		"./features/ast-grep": {},
 		"./features/tree-sitter": {},
 		"./features/lsp-servers": { "version": "none" },
@@ -192,12 +185,7 @@
 		"ghcr.io/bradleybeddoes/devcontainer-bridge/dbr:0.2.0": {}
 	},
 
-	"forwardPorts": [7847],
 	"portsAttributes": {
-		"7847": {
-			"label": "CodeForge Dashboard",
-			"onAutoForward": "notify"
-		},
 		"*": {
 			"onAutoForward": "notify"
 		}

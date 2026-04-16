@@ -54,20 +54,6 @@ Language Server Protocol servers provide inline diagnostics, go-to-definition, a
 
 3. Rebuild the container.
 
-## Dashboard
-
-The CodeForge Dashboard is a Svelte 5 SPA for visual session analytics, conversation replay, task/plan/agent views, and cost tracking. It is opt-in.
-
-### Enabling
-
-Uncomment or add the `claude-session-dashboard` feature in `devcontainer.json`, or use the `codeforge-dashboard` feature:
-
-```json
-"./features/codeforge-dashboard": {}
-```
-
-Rebuild the container after enabling. The dashboard runs on a forwarded port — check the container's port list after startup.
-
 ## ccms (Claude Code Memory Search)
 
 A Rust-based session search tool. Replaced in the default build by `codeforge session search`, but still available as an opt-in feature.

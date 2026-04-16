@@ -10,11 +10,6 @@ This repository contains three packages. Each package manages its own dependenci
 | `cli/` | Bun | bun |
 | `docs/` | Node.js | npm |
 
-> **Dashboard → CodeDirective**: The `dashboard/` package is deprecated and being
-> extracted to its own repository as **CodeDirective** — an independent app. It is
-> gitignored and will be removed from this repo. Do not add dashboard dependencies
-> or make cross-package changes involving dashboard code.
-
 ## Development Rules
 
 ### Branching Strategy
