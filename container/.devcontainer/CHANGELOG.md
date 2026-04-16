@@ -1,5 +1,16 @@
 # CodeForge Devcontainer Changelog
 
+## v2.2.1 — 2026-04-16
+
+### Configuration
+
+- **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
+- **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
+
+### Fixes
+
+- **Disallowed tools alias splitting** — oh-my-claude disallowed tools are now stored as a bash array and expanded per-argument in the Claude aliases, so `--disallowedTools` and each tool name are passed as separate argv entries in both bash and zsh.
+
 ## v2.2.0 — 2026-04-16
 
 ### Claude Code Router
@@ -41,8 +52,6 @@
 
 ### Configuration
 
-- **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
-- **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
 - **Default model updated** — `ANTHROPIC_MODEL` changed from `claude-opus-4-6[1m]` to `claude-opus-4-7`
 - **Thinking tokens reduced** — `MAX_THINKING_TOKENS` reduced from 63999 to 31999; adaptive thinking disabled (`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING: 1`)
 - **Effort level increased** — `CLAUDE_CODE_EFFORT_LEVEL` changed from `medium` to `max`
