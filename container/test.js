@@ -28,8 +28,8 @@ function runTests() {
 		"README.md",
 		".devcontainer/devcontainer.json",
 		".devcontainer/scripts/setup.sh",
-		".codeforge/config/settings.json",
-		".codeforge/file-manifest.json",
+		".devcontainer/defaults/codeforge/config/settings.json",
+		".devcontainer/defaults/codeforge/file-manifest.json",
 	];
 
 	let allFilesExist = true;
@@ -99,9 +99,14 @@ function runTests() {
 
 	// Test 7: generateChecksums produces expected structure
 	let checksumStructureValid = true;
-	const codeforgeDir = path.join(__dirname, ".codeforge");
-	if (fs.existsSync(codeforgeDir)) {
-		const checksums = generateChecksums(codeforgeDir);
+	const defaultsDir = path.join(
+		__dirname,
+		".devcontainer",
+		"defaults",
+		"codeforge",
+	);
+	if (fs.existsSync(defaultsDir)) {
+		const checksums = generateChecksums(defaultsDir);
 		if (typeof checksums === "object" && checksums !== null) {
 			const keys = Object.keys(checksums);
 			if (keys.length > 0) {
@@ -125,55 +130,41 @@ function runTests() {
 			checksumStructureValid = false;
 		}
 	} else {
-		console.log("❌ Test 7: .codeforge directory not found, skipping");
+		console.log(
+			"❌ Test 7: .devcontainer/defaults/codeforge/ not found, skipping",
+		);
 		checksumStructureValid = false;
 	}
 
-	// Test 8: Bundled defaults in .devcontainer/defaults/codeforge/ match .codeforge/
-	let bundledDefaultsInSync = true;
-	const bundledDir = path.join(
-		__dirname,
-		".devcontainer",
-		"defaults",
-		"codeforge",
-	);
-	if (fs.existsSync(bundledDir) && fs.existsSync(codeforgeDir)) {
-		const sourceChecksums = generateChecksums(codeforgeDir);
-		const bundledChecksums = generateChecksums(bundledDir);
-		const sourceKeys = Object.keys(sourceChecksums).sort();
-		const bundledKeys = Object.keys(bundledChecksums).sort();
+	// Test 8: Defaults directory has expected config structure
+	let defaultsStructureValid = true;
+	const expectedSubdirs = ["config"];
+	const expectedFiles = ["file-manifest.json", "config/settings.json"];
 
-		if (JSON.stringify(sourceKeys) !== JSON.stringify(bundledKeys)) {
-			console.log(
-				"❌ Test 8: Bundled defaults file list differs from .codeforge/",
-			);
-			const missing = sourceKeys.filter((k) => !bundledKeys.includes(k));
-			const extra = bundledKeys.filter((k) => !sourceKeys.includes(k));
-			if (missing.length)
-				console.log(`    Missing from bundled: ${missing.join(", ")}`);
-			if (extra.length)
-				console.log(`    Extra in bundled: ${extra.join(", ")}`);
-			bundledDefaultsInSync = false;
-		} else {
-			const drifted = sourceKeys.filter(
-				(k) => sourceChecksums[k] !== bundledChecksums[k],
-			);
-			if (drifted.length > 0) {
-				console.log(
-					"❌ Test 8: Bundled defaults content differs from .codeforge/",
-				);
-				console.log(`    Drifted files: ${drifted.join(", ")}`);
-				bundledDefaultsInSync = false;
-			} else {
-				console.log("✓ Test 8: Bundled defaults match .codeforge/");
+	if (fs.existsSync(defaultsDir)) {
+		for (const subdir of expectedSubdirs) {
+			const subdirPath = path.join(defaultsDir, subdir);
+			if (
+				!fs.existsSync(subdirPath) ||
+				!fs.statSync(subdirPath).isDirectory()
+			) {
+				console.log(`❌ Test 8: Missing expected subdirectory: ${subdir}`);
+				defaultsStructureValid = false;
 			}
 		}
-	} else if (!fs.existsSync(bundledDir)) {
-		console.log("❌ Test 8: .devcontainer/defaults/codeforge/ not found");
-		bundledDefaultsInSync = false;
+		for (const file of expectedFiles) {
+			const filePath = path.join(defaultsDir, file);
+			if (!fs.existsSync(filePath)) {
+				console.log(`❌ Test 8: Missing expected file: ${file}`);
+				defaultsStructureValid = false;
+			}
+		}
+		if (defaultsStructureValid) {
+			console.log("✓ Test 8: Defaults directory has expected structure");
+		}
 	} else {
-		console.log("❌ Test 8: .codeforge/ not found, cannot compare");
-		bundledDefaultsInSync = false;
+		console.log("❌ Test 8: .devcontainer/defaults/codeforge/ not found");
+		defaultsStructureValid = false;
 	}
 
 	// Summary
@@ -184,7 +175,7 @@ function runTests() {
 		setupExecutable &&
 		checksumFunctionsExist &&
 		checksumStructureValid &&
-		bundledDefaultsInSync
+		defaultsStructureValid
 	) {
 		console.log("🎉 All tests passed! Package is ready for distribution.");
 		process.exit(0);
