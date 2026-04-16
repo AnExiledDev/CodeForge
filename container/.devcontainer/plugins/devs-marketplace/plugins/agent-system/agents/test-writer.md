@@ -11,7 +11,7 @@ description: >-
   test frameworks. Do not use for modifying application source code, fixing
   bugs, or implementing features.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: opus-4-5
 color: green
 permissionMode: acceptEdits
 memory:

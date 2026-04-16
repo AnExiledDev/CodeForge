@@ -15,7 +15,7 @@ description: >-
   any files. Do not use for code modifications, file writing, or
   implementation tasks.
 tools: Read, Glob, Grep, WebSearch, WebFetch, Bash
-model: opus
+model: opus-4-5
 color: cyan
 permissionMode: plan
 memory:

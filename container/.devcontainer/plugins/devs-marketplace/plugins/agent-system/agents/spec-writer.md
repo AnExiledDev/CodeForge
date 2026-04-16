@@ -11,7 +11,7 @@ description: >-
   codebase state. Do not use for code implementation or writing
   executable code — specification authoring only.
 tools: Read, Glob, Grep, WebSearch
-model: opus
+model: opus-4-5
 color: magenta
 permissionMode: plan
 memory:

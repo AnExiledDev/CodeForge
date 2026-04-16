@@ -8,7 +8,7 @@ description: >-
   modification to the codebase. Runs tests after edits to verify correctness.
   Do not use for read-only investigation, test writing, or documentation tasks.
 tools: Read, Write, Edit, Glob, Grep, Bash
-model: opus
+model: opus-4-5
 color: blue
 permissionMode: acceptEdits
 memory:

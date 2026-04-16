@@ -11,7 +11,7 @@ description: >-
   structural improvements. Do not use for adding new features, fixing bugs,
   or making behavioral changes to code.
 tools: Read, Edit, Glob, Grep, Bash
-model: opus
+model: opus-4-5
 color: yellow
 permissionMode: acceptEdits
 memory:
