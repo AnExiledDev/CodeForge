@@ -47,6 +47,17 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
+## v2.2.1 — 2026-04-16
+
+### Configuration
+
+- **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
+- **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
+
+### Fixes
+
+- **Disallowed tools alias splitting** — oh-my-claude disallowed tools are now stored as a bash array and expanded per-argument in the Claude aliases, so `--disallowedTools` and each tool name are passed as separate argv entries in both bash and zsh.
+
 ## v2.2.0 — 2026-04-16
 
 ### Claude Code Router
@@ -84,6 +95,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **Model upgrade** — all 9 opus-based agents now pinned to explicit `opus-4-5` model version (architect, documenter, implementer, investigator, migrator, refactorer, security-auditor, spec-writer, test-writer)
 - **Worktree isolation removed** — write-capable agents (documenter, implementer, migrator, refactorer, test-writer) now run in the main worktree instead of isolated git worktrees
 - **Model tier upgrade** — investigator and security-auditor upgraded from sonnet to opus for improved analysis quality
+- **Effort levels configured** — all 19 agents and 23 skills now have `effort:` frontmatter for Opus 4.7 adaptive thinking
 
 ### Configuration
 
