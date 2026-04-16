@@ -2,6 +2,15 @@
 
 ## v2.2.0 — 2026-04-11
 
+### Rules
+
+- **New rule: `auto-memory.md`** — reinforces auto-memory system usage with constraints: max 100 lines per memory, timestamp requirement (`added: YYYY-MM-DD`), stale memory cleanup, and date refresh on updates
+- **New rule: `zero-tolerance-bugs.md`** — every bug found must be fixed immediately; bugs are always in scope; only the user can defer a fix
+- **New rule: `scope-discipline.md`** — only the user defines scope; nothing is in/out of scope without explicit user approval
+- **New rule: `explicit-start.md`** — never start work without clear user instruction; research, questions, and planning don't imply "go"
+- **New rule: `plan-presentation.md`** — show compressed plan overview in chat first; only use Plan tool when user explicitly requests full plan
+- **New rule: `surface-decisions.md`** — surface all assumptions, decisions, trade-offs, and uncertainties to user before acting
+
 ### Claude Code Router
 
 - **New feature: `claude-code-router`** — installs claude-code-router proxy daemon for routing Claude Code API calls to alternate LLM providers (DeepSeek, Gemini, OpenRouter, Anthropic). Default-on with autostart. Supports version pinning (`latest`, semver, or `none` to disable).
