@@ -1,5 +1,22 @@
 # CodeForge CLI Changelog
 
+## v0.2.0 — 2026-04-16
+
+### New Command
+
+- **`codeforge session tokens`** — Analyze thinking token usage across Claude Code sessions
+  - Shows exact billed output tokens (from API) and visible content breakdown (thinking, text, tool chars)
+  - **Thinking Density** table: % of turns with thinking, avg chars per thinking turn, session intensity breakdown (none/light/medium/heavy)
+  - **Per-session breakdown**: turns with thinking, density %, avg chars per thinking turn
+  - Filter by `--project`, `--model`, `--since`, `--until`
+  - Output formats: text (colorized tables) and JSON (`--format json`)
+
+### Purpose
+
+Benchmarks thinking token costs to compare extended thinking behavior across models (e.g., Opus 4.5 vs 4.6). Since `output_tokens` is a combined total (thinking + text + tool_use) with no separate `thinking_tokens` field, this command provides visibility into thinking patterns through empirical measurement of visible content.
+
+---
+
 ## v0.1.0 — 2026-03-14 (Experimental)
 
 ### Package Rename

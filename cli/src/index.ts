@@ -27,6 +27,7 @@ import { registerProxyCommand } from "./commands/proxy.js";
 import { registerListCommand } from "./commands/session/list.js";
 import { registerSearchCommand } from "./commands/session/search.js";
 import { registerShowCommand } from "./commands/session/show.js";
+import { registerTokensCommand } from "./commands/session/tokens.js";
 import { registerTaskListCommand } from "./commands/task/list.js";
 import { registerTaskSearchCommand } from "./commands/task/search.js";
 import { registerTaskShowCommand } from "./commands/task/show.js";
@@ -49,6 +50,7 @@ const session = program
 registerSearchCommand(session);
 registerListCommand(session);
 registerShowCommand(session);
+registerTokensCommand(session);
 
 const task = program.command("task").description("Search and manage tasks");
 
