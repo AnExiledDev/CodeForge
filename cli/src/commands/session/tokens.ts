@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import type { Command } from "commander";
-import { basename } from "path";
+import { basename, isAbsolute, resolve } from "path";
 import { readLines } from "../../search/engine.js";
 import { discoverSessionFiles } from "../../utils/glob.js";
 import { parseRelativeTime, parseTime } from "../../utils/time.js";
@@ -78,6 +78,30 @@ function extractProjectFromPath(filePath: string): string | undefined {
 		return parts[projectsIdx + 1];
 	}
 	return undefined;
+}
+
+/**
+ * Normalize a user-provided --project value for matching against Claude's
+ * on-disk project slugs.
+ *
+ * Claude encodes project cwds by replacing `/` and `.` with `-`, e.g.
+ *   /workspaces/projects/CodeForge  -> -workspaces-projects-CodeForge
+ *   /workspaces/.devcontainer       -> -workspaces--devcontainer
+ *
+ * Behavior:
+ * - Absolute paths are converted to slug form.
+ * - Relative paths beginning with `./` or `../` are resolved against cwd first.
+ * - Plain substrings without separators pass through unchanged so users can
+ *   filter with `--project CodeForge` against the slug (backwards-compatible).
+ */
+export function pathToProjectSlug(input: string): string {
+	const looksLikePath =
+		isAbsolute(input) || input.startsWith("./") || input.startsWith("../");
+	if (looksLikePath) {
+		const abs = isAbsolute(input) ? input : resolve(input);
+		return abs.replace(/\/+$/, "").replace(/[./]/g, "-");
+	}
+	return input;
 }
 
 function isSubagentPath(filePath: string): boolean {
@@ -304,11 +328,15 @@ async function analyzeTokens(options: {
 	const mainSessions: SessionTokenStats[] = [];
 	const subagentSessions: SessionTokenStats[] = [];
 
+	const projectNeedle = options.project
+		? pathToProjectSlug(options.project)
+		: undefined;
+
 	for (const filePath of files) {
-		// Filter by project
-		if (options.project) {
+		// Filter by project (slug-to-slug match; absolute paths are encoded).
+		if (projectNeedle) {
 			const project = extractProjectFromPath(filePath);
-			if (!project?.includes(options.project)) continue;
+			if (!project?.includes(projectNeedle)) continue;
 		}
 
 		const stats = await analyzeSessionTokens(filePath);
