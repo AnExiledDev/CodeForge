@@ -41,7 +41,7 @@ elif [ "${USERNAME}" = "none" ] || ! id -u "${USERNAME}" >/dev/null 2>&1; then
     USERNAME=root
 fi
 
-USER_HOME=$(eval echo "~${USERNAME}")
+USER_HOME=$(getent passwd "${USERNAME}" | cut -d: -f6)
 
 # Install npm package
 echo "[oh-my-claude] Installing @lgcyaxi/oh-my-claude@${OMC_VERSION} globally..."

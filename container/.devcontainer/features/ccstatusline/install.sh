@@ -59,7 +59,7 @@ fi
 echo "[ccstatusline] Installing for user: ${USERNAME}"
 
 # Get user's home directory
-USER_HOME=$(eval echo ~${USERNAME})
+USER_HOME=$(getent passwd "${USERNAME}" | cut -d: -f6)
 
 # Check if ccstatusline is available
 if sudo -u "${USERNAME}" bash -c 'npx -y ccstatusline@latest --version' &>/dev/null 2>&1; then

@@ -63,7 +63,7 @@ fi
 echo "[claude-code-router] Installing for user: ${USERNAME}"
 
 # === GET USER HOME ===
-USER_HOME=$(eval echo "~${USERNAME}")
+USER_HOME=$(getent passwd "${USERNAME}" | cut -d: -f6)
 if [ ! -d "${USER_HOME}" ]; then
     echo "[claude-code-router] ERROR: Home directory not found for user ${USERNAME}"
     exit 1

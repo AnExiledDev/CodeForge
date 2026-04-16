@@ -31,7 +31,7 @@ if [[ "${USERNAME}" == "auto" || "${USERNAME}" == "automatic" ]]; then
     USERNAME="${USERNAME:-root}"
 fi
 
-USER_HOME="$(eval echo "~${USERNAME}")"
+USER_HOME="$(getent passwd "${USERNAME}" | cut -d: -f6)"
 
 echo "[claude-monitor] Target user: ${USERNAME}"
 echo "[claude-monitor] Home: ${USER_HOME}"

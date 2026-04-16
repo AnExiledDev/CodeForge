@@ -66,7 +66,7 @@ fi
 echo "[ccburn] Installing for user: ${USERNAME}"
 
 # === GET USER HOME ===
-USER_HOME=$(eval echo "~${USERNAME}")
+USER_HOME=$(getent passwd "${USERNAME}" | cut -d: -f6)
 if [ ! -d "${USER_HOME}" ]; then
     echo "[ccburn] ERROR: Home directory not found for user ${USERNAME}"
     exit 1

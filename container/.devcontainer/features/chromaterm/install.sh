@@ -31,7 +31,7 @@ if [[ "${USERNAME}" == "auto" || "${USERNAME}" == "automatic" ]]; then
     USERNAME="${USERNAME:-root}"
 fi
 
-USER_HOME="$(eval echo "~${USERNAME}")"
+USER_HOME="$(getent passwd "${USERNAME}" | cut -d: -f6)"
 
 echo "[chromaterm] Target user: ${USERNAME}"
 echo "[chromaterm] Version: ${CT_VERSION}"
