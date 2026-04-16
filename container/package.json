@@ -3,7 +3,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
 	"main": "setup.js",
 	"bin": {
