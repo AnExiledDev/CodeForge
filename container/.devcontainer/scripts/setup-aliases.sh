@@ -93,14 +93,32 @@ else
 fi
 
 # oh-my-claude tools to disable (memory, preferences, coworker - keep only proxy tools)
-# Note: no quotes around tool names - they don't contain spaces and quotes would be passed literally
-_OMC_DISALLOWED_TOOLS='--disallowedTools mcp__oh-my-claude__remember mcp__oh-my-claude__recall mcp__oh-my-claude__get_memory mcp__oh-my-claude__forget mcp__oh-my-claude__list_memories mcp__oh-my-claude__memory_status mcp__oh-my-claude__compact_memories mcp__oh-my-claude__clear_memories mcp__oh-my-claude__summarize_memories mcp__oh-my-claude__add_preference mcp__oh-my-claude__list_preferences mcp__oh-my-claude__get_preference mcp__oh-my-claude__update_preference mcp__oh-my-claude__delete_preference mcp__oh-my-claude__match_preferences mcp__oh-my-claude__preference_stats mcp__oh-my-claude__coworker_task'
+_OMC_DISALLOWED_TOOLS=(
+    --disallowedTools
+    mcp__oh-my-claude__remember
+    mcp__oh-my-claude__recall
+    mcp__oh-my-claude__get_memory
+    mcp__oh-my-claude__forget
+    mcp__oh-my-claude__list_memories
+    mcp__oh-my-claude__memory_status
+    mcp__oh-my-claude__compact_memories
+    mcp__oh-my-claude__clear_memories
+    mcp__oh-my-claude__summarize_memories
+    mcp__oh-my-claude__add_preference
+    mcp__oh-my-claude__list_preferences
+    mcp__oh-my-claude__get_preference
+    mcp__oh-my-claude__update_preference
+    mcp__oh-my-claude__delete_preference
+    mcp__oh-my-claude__match_preferences
+    mcp__oh-my-claude__preference_stats
+    mcp__oh-my-claude__coworker_task
+)
 
-alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions \$_OMC_DISALLOWED_TOOLS'
-alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions \$_OMC_DISALLOWED_TOOLS'
+alias cc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias claude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions "\${_OMC_DISALLOWED_TOOLS[@]}"'
 alias ccraw='command "\$_CLAUDE_BIN"'
-alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions \$_OMC_DISALLOWED_TOOLS'
-alias cc-orc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions \$_OMC_DISALLOWED_TOOLS'
+alias ccw='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions "\${_OMC_DISALLOWED_TOOLS[@]}"'
+alias cc-orc='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions "\${_OMC_DISALLOWED_TOOLS[@]}"'
 alias ccr-apply='codeforge config apply && (ccr restart 2>/dev/null || ccr start) && echo "CCR config applied and restarted"'
 alias omc-apply='codeforge config apply && (omc proxy restart 2>/dev/null || omc proxy start) && echo "OMC config applied and proxy restarted"'
 
