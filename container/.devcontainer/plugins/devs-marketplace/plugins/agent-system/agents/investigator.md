@@ -15,7 +15,7 @@ description: >-
   any files. Do not use for code modifications, file writing, or
   implementation tasks.
 tools: Read, Glob, Grep, WebSearch, WebFetch, Bash
-model: sonnet
+model: opus
 color: cyan
 permissionMode: plan
 memory:

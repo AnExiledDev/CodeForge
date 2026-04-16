@@ -16,7 +16,7 @@ description: >-
   modifying any files. Do not use for fixing vulnerabilities or
   implementing security changes — audit and reporting only.
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: opus
 color: red
 permissionMode: plan
 background: true

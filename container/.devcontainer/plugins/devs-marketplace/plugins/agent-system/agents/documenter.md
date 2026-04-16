@@ -15,7 +15,6 @@ tools: Read, Write, Edit, Glob, Grep
 model: opus
 color: magenta
 permissionMode: acceptEdits
-isolation: worktree
 memory:
   scope: project
 skills:

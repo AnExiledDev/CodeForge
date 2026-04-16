@@ -14,7 +14,6 @@ tools: Read, Write, Edit, Glob, Grep, Bash
 model: opus
 color: green
 permissionMode: acceptEdits
-isolation: worktree
 memory:
   scope: project
 skills:

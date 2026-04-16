@@ -14,7 +14,6 @@ tools: Read, Edit, Write, Glob, Grep, Bash, WebFetch
 model: opus
 color: magenta
 permissionMode: acceptEdits
-isolation: worktree
 memory:
   scope: user
 skills:
