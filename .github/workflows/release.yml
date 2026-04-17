@@ -50,7 +50,7 @@ jobs:
         id: changelog
         run: |
           VERSION="${{ needs.validate.outputs.version }}"
-          NOTES=$(sed -n "/^## \[v${VERSION}\]/,/^## \[v/{ /^## \[v${VERSION}\]/d; /^## \[v/d; p; }" container/.devcontainer/CHANGELOG.md)
+          NOTES=$(sed -n "/^## v${VERSION} /,/^## v/{ /^## v${VERSION} /d; /^## v/d; p; }" container/.devcontainer/CHANGELOG.md)
           if [ -z "$NOTES" ]; then
             NOTES="Release v${VERSION}"
           fi
