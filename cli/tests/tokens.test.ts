@@ -38,7 +38,12 @@ describe("pathToProjectSlug", () => {
 		const abs = pathToProjectSlug("./foo");
 		// Resolved path always ends with /foo; after encoding trailing segment is -foo
 		expect(abs.endsWith("-foo")).toBe(true);
-		expect(abs.startsWith("-")).toBe(true);
+		// On POSIX, resolved absolute paths start with `/` which encodes to `-`.
+		// On Windows they start with a drive letter (e.g. `D:`) so the leading
+		// `-` assertion is POSIX-only.
+		if (process.platform !== "win32") {
+			expect(abs.startsWith("-")).toBe(true);
+		}
 
 		const abs2 = pathToProjectSlug("../bar");
 		expect(abs2.endsWith("-bar")).toBe(true);
