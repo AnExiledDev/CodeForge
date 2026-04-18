@@ -4,23 +4,44 @@ on:
   push:
     branches: [staging]
     paths: ['container/**', 'cli/**']
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Which package(s) to publish
+        type: choice
+        options: [both, container, cli]
+        default: both
 
 jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      container: ${{ steps.filter.outputs.container }}
-      cli: ${{ steps.filter.outputs.cli }}
+      container: ${{ steps.resolve.outputs.container }}
+      cli: ${{ steps.resolve.outputs.cli }}
     steps:
       - uses: actions/checkout@v6
+
       - uses: dorny/paths-filter@v3
         id: filter
+        if: github.event_name == 'push'
         with:
           filters: |
             container:
               - 'container/**'
             cli:
               - 'cli/**'
+
+      - name: Resolve targets
+        id: resolve
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PACKAGE="${{ inputs.package }}"
+            echo "container=$( [ "$PACKAGE" = both ] || [ "$PACKAGE" = container ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+            echo "cli=$( [ "$PACKAGE" = both ] || [ "$PACKAGE" = cli ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+          else
+            echo "container=${{ steps.filter.outputs.container }}" >> "$GITHUB_OUTPUT"
+            echo "cli=${{ steps.filter.outputs.cli }}" >> "$GITHUB_OUTPUT"
+          fi
 
   publish-container:
     needs: changes
