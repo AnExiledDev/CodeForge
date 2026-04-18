@@ -294,15 +294,15 @@ function runTests() {
 		}
 		if (
 			omcFeature.options &&
-			omcFeature.options.installLaunchAliases &&
-			!omcFeature.options.autostart
+			!omcFeature.options.autostart &&
+			!omcFeature.options.installLaunchAliases
 		) {
 			console.log(
-				"✓ Test 10.3: oh-my-claude feature exposes launch helpers instead of autostart",
+				"✓ Test 10.3: oh-my-claude feature delegates aliases to setup-aliases.sh and has no autostart",
 			);
 		} else {
 			console.log(
-				"❌ Test 10.3: oh-my-claude feature should use installLaunchAliases and not autostart",
+				"❌ Test 10.3: oh-my-claude feature should not own aliases (setup-aliases.sh does) and should not autostart",
 			);
 			omcFeatureValid = false;
 		}
