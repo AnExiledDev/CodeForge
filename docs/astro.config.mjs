@@ -94,6 +94,10 @@ export default defineConfig({
 								slug: "start-here/before-you-install",
 							},
 							{
+								label: "Windows Networking",
+								slug: "start-here/windows-networking",
+							},
+							{
 								label: "Install in VS Code",
 								slug: "start-here/install-in-vscode",
 							},

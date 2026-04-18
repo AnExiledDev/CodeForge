@@ -61,7 +61,7 @@ agent-browser close
 | `fill @eN "text"` | Type text into an input element | `agent-browser fill @e3 "hello"` |
 | `select @eN "value"` | Select an option from a dropdown | `agent-browser select @e5 "option1"` |
 | `cookie set "..."` | Set a cookie for authenticated sessions | `agent-browser cookie set "session=abc123; domain=.example.com"` |
-| `connect <port>` | Connect to host Chrome via CDP | `agent-browser connect 9222` |
+| `connect <host:port>` | Connect to host Chrome via CDP | `agent-browser connect host.docker.internal:9222` |
 | `close` | End the browser session | `agent-browser close` |
 
 > **Full details:** See `references/cli-reference.md` for complete command syntax, output formats, and all options.
@@ -121,17 +121,29 @@ agent-browser close
 
 ### Host Chrome Connection
 
-Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol). Useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions needed):
+Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol). Useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions or logged-in sessions needed).
 
-1. Start Chrome on host with remote debugging:
-   ```bash
-   chrome --remote-debugging-port=9222
-   ```
+**Chrome 144+** (recommended): No CLI launch needed. Enable remote debugging via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging" — Chrome listens on port 9222 by default
 
-2. Connect from container:
-   ```bash
-   agent-browser connect 9222
-   ```
+**Chrome 136–143**: Chrome 136+ requires `--user-data-dir` alongside `--remote-debugging-port` or the flag is silently ignored:
+
+```bash
+# Linux / macOS
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+
+# Windows PowerShell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
+```
+
+Connect from the container — always use `host.docker.internal`, not `localhost`:
+
+```bash
+agent-browser connect host.docker.internal:9222
+```
+
+For Windows users, [mirrored networking](/start-here/windows-networking/) provides the smoothest experience for host Chrome CDP and general port forwarding.
 
 ---
 
@@ -139,7 +151,8 @@ Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol
 
 These defaults apply when the user does not specify a preference. State the assumption when applying a default:
 
-- **Mode:** Always use headless mode (bundled Chromium) unless the user explicitly requests host Chrome connection
+- **Mode:** Always use headless mode (bundled Chromium) unless the user explicitly requests host Chrome connection. When host Chrome is requested, default to `host.docker.internal:9222` as the CDP endpoint.
+- **Networking:** When connecting to host Chrome from inside a container, always use `host.docker.internal` — never `localhost`
 - **Snapshot first:** Always run `snapshot` before interacting with elements — never guess element references
 - **Snapshot after:** Always run `snapshot` after interactions to verify results
 - **Close when done:** Always `close` the browser session when the task is complete

@@ -146,6 +146,59 @@ agent-browser close
 
 ---
 
+## Host Chrome CDP Session
+
+Connect to Chrome running on your host machine to use an existing logged-in session, extensions, or saved passwords. This is the recommended approach when the container's bundled Chromium cannot access what you need.
+
+### Prerequisites
+
+The user must enable Chrome remote debugging on their host machine before you can connect.
+
+**Chrome 144+** (recommended): No CLI launch needed. The user enables remote debugging via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging"
+3. Chrome listens on port 9222 by default
+
+**Chrome 136–143**: Launch Chrome with explicit flags:
+
+```bash
+# Linux / macOS
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+
+# Windows PowerShell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
+```
+
+> **Why `--user-data-dir`?** Chrome 136+ silently ignores `--remote-debugging-port` unless a user data directory is also specified.
+
+### Workflow
+
+```bash
+# Connect to host Chrome from inside the container
+agent-browser connect host.docker.internal:9222
+
+# Snapshot to see what's currently open
+agent-browser snapshot
+
+# Navigate to a page (uses host Chrome's cookies and extensions)
+agent-browser open https://example.com/dashboard
+
+# Interact normally
+agent-browser snapshot
+agent-browser click @e3
+
+# Close the CDP connection (does not close Chrome on the host)
+agent-browser close
+```
+
+**Key points:**
+- Always use `host.docker.internal:9222` from inside a devcontainer — `localhost` refers to the container itself
+- The CDP connection gives you access to the host Chrome's full session: cookies, localStorage, extensions, saved passwords
+- Closing the agent-browser session does not close Chrome on the host
+- For Windows users needing broader port forwarding, see [Windows Mirrored Networking](/start-here/windows-networking/)
+
+---
+
 ## Screenshot Capture
 
 Take screenshots for visual verification at key points:

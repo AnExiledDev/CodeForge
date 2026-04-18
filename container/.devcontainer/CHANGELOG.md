@@ -29,6 +29,17 @@
 - **Install order guaranteed** — oh-my-claude added to `overrideFeatureInstallOrder` in devcontainer.json.
 - **Documentation** — added Known Limitations section covering expected `omc doctor` failures, missing slash commands (upstream issue), and role agent filtering.
 
+### Agent Browser
+
+- **Version bumped to latest** — updated from pinned 0.11.1; picks up `--auto-connect` fixes and CDP improvements through v0.26.0
+- **Host Chrome CDP documentation overhauled** — corrected Chrome version requirements (136+ needs `--user-data-dir`, 144+ has `chrome://inspect` checkbox), documented `host.docker.internal` for container-to-host networking, fixed flag naming (`--auto-connect` not `--autoConnect`), added Windows PowerShell launch commands
+
+### Documentation
+
+- **New guide: Windows Networking** — comprehensive WSL 2 mirrored networking setup for Windows users; recommended approach for port forwarding, replacing `dbr` on Windows
+- **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
+- **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
+
 ## v2.2.1 — 2026-04-16
 
 ### Configuration

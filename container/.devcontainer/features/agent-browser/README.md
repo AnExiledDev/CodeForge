@@ -48,18 +48,26 @@ agent-browser close
 
 ### Host Chrome Connection
 
-Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol):
+Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol). Useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions or logged-in sessions needed).
 
-1. Start Chrome on host with remote debugging:
-   ```bash
-   chrome --remote-debugging-port=9222
-   # or on macOS:
-   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
-   ```
+**Chrome 144+** (recommended): No CLI launch needed. Enable remote debugging via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging" — Chrome listens on port 9222 by default
 
-2. Connect from container:
-   ```bash
-   agent-browser connect 9222
-   ```
+**Chrome 136–143**: Chrome 136+ requires `--user-data-dir` alongside `--remote-debugging-port` or the flag is silently ignored:
 
-This is useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions needed).
+```bash
+# Linux / macOS
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+
+# Windows PowerShell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
+```
+
+Connect from the container using `host.docker.internal` — not `localhost`, which refers to the container itself:
+
+```bash
+agent-browser connect host.docker.internal:9222
+```
+
+> **Security note:** CDP exposes the full browser session (cookies, storage, DOM) to anything that can reach the debug port. Use with caution on shared or networked machines.

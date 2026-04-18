@@ -144,6 +144,45 @@ Check:
 2. Your distro is using WSL 2, not WSL 1.
 3. Docker Desktop was restarted after settings changes.
 
+## Agent-Browser Cannot Connect to Host Chrome
+
+Symptom: `agent-browser connect` fails with connection refused, timeout, or empty response.
+
+Check these in order:
+
+1. **Are you using `host.docker.internal`?** Inside a container, `localhost` refers to the container itself. Use `host.docker.internal:9222` to reach the host.
+
+2. **Is Chrome remote debugging actually enabled?**
+   - Chrome 144+: Open `chrome://inspect/#remote-debugging` and check that "Enable remote debugging" is checked.
+   - Chrome 136–143: Chrome must be launched with both `--remote-debugging-port=9222` **and** `--user-data-dir`. Chrome 136+ silently ignores the port flag without a user data directory.
+   - Verify from the host: `curl http://localhost:9222/json/version` should return JSON.
+
+3. **Is the port reachable from the container?**
+   ```bash
+   curl http://host.docker.internal:9222/json/version
+   ```
+   If this fails, the host is not reachable. Windows users should enable [mirrored networking](/start-here/windows-networking/).
+
+4. **Is another Chrome instance blocking the port?** Only one Chrome process can listen on a given debug port. Close other Chrome instances or use a different port.
+
+5. **Firewall blocking?** Windows Firewall may block incoming connections on port 9222. Add an inbound rule or temporarily disable the firewall to test.
+
+## Mirrored Networking Not Working
+
+Symptom: After enabling mirrored networking in `.wslconfig`, ports are still not accessible between host and container.
+
+Check these in order:
+
+1. **Did you restart WSL?** Changes to `.wslconfig` require `wsl --shutdown` from PowerShell, then restarting your WSL distribution or Docker Desktop.
+
+2. **Is mirrored mode actually active?** Run `wsl --status` from PowerShell and look for "Networking mode: Mirrored".
+
+3. **VPN conflict?** Cisco AnyConnect and some VPN clients break mirrored networking. Disconnect the VPN and test again. See the [Windows Networking guide](/start-here/windows-networking/#vpn-conflicts) for workarounds.
+
+4. **Windows update regression?** Microsoft occasionally ships updates that break mirrored mode. Check [WSL GitHub Issues](https://github.com/microsoft/WSL/issues) for known regressions. Revert to NAT mode as a temporary workaround.
+
+5. **Docker Desktop version?** Mirrored networking requires Docker Desktop 4.26.0 or later. Update Docker Desktop if you're on an older version.
+
 ## Reset Options
 
 Use the smallest reset that solves the problem:

@@ -58,6 +58,12 @@ CodeForge installs Claude Code inside the container, but you still need valid Cl
 
 Windows users need **WSL 2**. Docker Desktop's legacy Hyper-V path is not supported for this workflow.
 
+:::tip[Recommended: Enable mirrored networking]
+For the best experience on Windows, enable WSL 2 mirrored networking. It provides seamless port forwarding between your container and host — required for [host Chrome CDP connections](/start-here/windows-networking/#chrome-remote-debugging-setup) and eliminates the need for manual port forwarding tools.
+
+See the [Windows Networking guide](/start-here/windows-networking/) for setup instructions.
+:::
+
 ## Hardware Guidance
 
 | Resource | Minimum | Recommended |

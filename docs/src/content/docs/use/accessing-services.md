@@ -19,6 +19,16 @@ If you use VS Code, you usually only need this page when automatic forwarding is
 | devcontainer-bridge (`dbr`) | Any terminal client | Dynamic — polls `/proc/net/tcp` | Host daemon required |
 | SSH tunneling | Any SSH client | Manual | Per-port command |
 
+## Windows: Mirrored Networking (Recommended)
+
+If you're on Windows with WSL 2, **mirrored networking** is the recommended approach. It makes `localhost` work bidirectionally between your host and the container — no forwarding tools needed.
+
+Once enabled, container ports are accessible on `localhost` from Windows, and host services (like Chrome remote debugging) are reachable from inside the container via `host.docker.internal`.
+
+This replaces the need for `dbr` (which does not support Windows) and eliminates manual SSH tunneling for most use cases.
+
+→ **[Set up mirrored networking](/start-here/windows-networking/)**
+
 ## VS Code Auto-Detect
 
 VS Code automatically detects ports opened inside the container and forwards them to your host. CodeForge configures this in `devcontainer.json`:
@@ -79,7 +89,7 @@ curl http://localhost:8080
 |----------|-------------|--------------|--------|
 | macOS    | Supported   | Expected to work | Not fully confirmed |
 | Linux    | Supported   | Expected to work | Not fully confirmed |
-| Windows  | Not yet supported | — | Future fix planned |
+| Windows  | Not yet supported | — | Use [mirrored networking](/start-here/windows-networking/) instead |
 
 :::note
 devcontainer-bridge auto-forwarding on macOS and Linux has not been fully validated across all configurations. If you encounter issues, fall back to SSH tunneling and [report the issue](https://github.com/bradleybeddoes/devcontainer-bridge/issues). Windows host daemon support is planned for a future release.
@@ -103,12 +113,17 @@ This requires SSH access to the container, which is available when connecting vi
 
 | If you use... | Recommended mechanism |
 |---------------|----------------------|
+| **Windows (any client)** | **Mirrored networking** — [zero config after setup](/start-here/windows-networking/) |
 | VS Code | Auto-detect (built-in, zero config) |
 | DevContainer CLI | `dbr` (dynamic, automatic) — see the [CLI guide](/start-here/devcontainer-cli/) |
 | JetBrains Gateway | Gateway's built-in forwarding, or `dbr` as fallback |
 | Codespaces | Auto-detect (built-in to Codespaces) |
 | DevPod | DevPod's built-in SSH tunneling, or `dbr` |
 | Direct SSH | SSH tunneling for specific ports, or `dbr` for all ports |
+
+## Browser Automation (CDP)
+
+For browser automation using agent-browser's host Chrome connection, `host.docker.internal:9222` is the correct CDP endpoint from inside the container. Windows users should enable [mirrored networking](/start-here/windows-networking/) for reliable host connectivity. See the agent-browser feature documentation for the full CDP workflow.
 
 ## Configuration
 

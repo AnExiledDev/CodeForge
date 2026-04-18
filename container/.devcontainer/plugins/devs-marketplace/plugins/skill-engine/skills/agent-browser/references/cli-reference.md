@@ -187,29 +187,38 @@ agent-browser cookie set "auth_token=xyz789; domain=.app.example.com; path=/; se
 Connects to a Chrome instance running on the host via Chrome DevTools Protocol (CDP).
 
 ```bash
-agent-browser connect <port>
+agent-browser connect <host:port>
 ```
 
 **Arguments:**
-- `<port>` — The remote debugging port Chrome is listening on
+- `<host:port>` — The CDP endpoint. Use `host.docker.internal:9222` when running inside a devcontainer.
 
 **Prerequisites:**
-Chrome must be started on the host with remote debugging enabled:
+Chrome must have remote debugging enabled on the host before connecting.
+
+**Chrome 144+** (recommended): No CLI launch needed. Enable via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging" — Chrome listens on port 9222 by default
+
+**Chrome 136–143**: Chrome 136+ requires `--user-data-dir` alongside `--remote-debugging-port` or the flag is silently ignored:
 ```bash
-chrome --remote-debugging-port=9222
-# macOS:
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+# Linux / macOS
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+
+# Windows PowerShell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
 ```
 
 **Examples:**
 ```bash
-agent-browser connect 9222
+agent-browser connect host.docker.internal:9222
 ```
 
 **When to use:**
 - When the container's bundled Chromium is insufficient
 - When specific browser extensions are needed
 - When you need to observe browser behavior visually on the host
+- When you need access to a logged-in Chrome session (cookies, extensions, saved passwords)
 
 ---
 
@@ -237,6 +246,8 @@ agent-browser close
 | Element not found | Reference ID from stale snapshot | Run `snapshot` again to get current references |
 | Session already active | Tried to `open` without `close` | Run `close` first, then `open` |
 | Connection refused (CDP) | Host Chrome not running with debug port | Start Chrome with `--remote-debugging-port` |
+| Connection refused via localhost | Container cannot reach host on localhost | Use `host.docker.internal:9222` instead of `localhost:9222` |
+| Chrome ignores --remote-debugging-port | Chrome 136+ requires --user-data-dir | Add `--user-data-dir` flag when launching Chrome |
 
 **General recovery pattern:**
 ```bash

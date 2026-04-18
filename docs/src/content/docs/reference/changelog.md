@@ -54,6 +54,8 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **New feature: `hermes-agent`** — installs [Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) CLI via the upstream `curl | bash` installer with `--skip-setup`. Hermes uses the plain `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Enabled by default; set `"version": "none"` in `devcontainer.json` to disable.
 - **Hermes persistence** — dedicated Docker named volume (`codeforge-hermes-config-${devcontainerId}`) for `~/.hermes/`, surviving container rebuilds so `hermes setup` is a one-time cost per devcontainer instance.
 - **No credential seeding** — the interactive `hermes setup` wizard is intentionally skipped during image build. Run `hermes setup` on first use to pick a provider and paste an API key (e.g. from `$MINIMAX_API_KEY`, which already has a slot in `.secrets.example`). Claude OAuth / Codex ChatGPT OAuth cannot be reused — Hermes needs its own provider auth.
+- **Install script now warns on unsupported `version` values** — Hermes upstream has not tagged releases yet, so anything other than `latest` or `none` silently installed HEAD of `main`. The installer now prints a clear WARNING when `version` is set to a semver or unrecognized value, making it obvious that the pin is not honored.
+- **Install script warns on volume-mount mismatch** — the Hermes config volume in `devcontainer.json` is pinned to `/home/vscode/.hermes`. If the feature's auto-detected user resolves to anything other than `vscode` (e.g. `node`, `codespace`, `root`), the installer now surfaces a WARNING that `hermes setup` state will not persist across rebuilds, instead of silently breaking.
 
 ### Configuration
 
@@ -73,6 +75,17 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **Shell helpers ownership clarified** — install.sh no longer writes shell aliases; CodeForge's `setup-aliases.sh` owns all OMC helper aliases (`omc-cc`, `omc-deepseek`, etc.). Legacy OMC shell blocks are cleaned up on install.
 - **Install order guaranteed** — oh-my-claude added to `overrideFeatureInstallOrder` in devcontainer.json.
 - **Documentation** — added Known Limitations section covering expected `omc doctor` failures, missing slash commands (upstream issue), and role agent filtering.
+
+### Agent Browser
+
+- **Version bumped to latest** — updated from pinned 0.11.1; picks up `--auto-connect` fixes and CDP improvements through v0.26.0
+- **Host Chrome CDP documentation overhauled** — corrected Chrome version requirements (136+ needs `--user-data-dir`, 144+ has `chrome://inspect` checkbox), documented `host.docker.internal` for container-to-host networking, fixed flag naming (`--auto-connect` not `--autoConnect`), added Windows PowerShell launch commands
+
+### Documentation
+
+- **New guide: Windows Networking** — comprehensive WSL 2 mirrored networking setup for Windows users; recommended approach for port forwarding, replacing `dbr` on Windows
+- **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
+- **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
 
 ## v2.2.1 — 2026-04-16
 
