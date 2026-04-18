@@ -152,6 +152,25 @@ codex
 Codex CLI is a separate tool from Claude Code. It uses OpenAI's models and requires separate authentication. Both tools coexist in the CodeForge container without conflict.
 :::
 
+### hermes — Hermes Agent (Nous Research)
+
+[Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/), an open-source autonomous AI agent CLI. Uses the `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Installed via the `hermes-agent` feature.
+
+```bash
+# First-run setup — pick a provider and paste an API key
+hermes setup
+
+# Interactive session
+hermes
+
+# Direct prompt
+hermes "summarize this repo"
+```
+
+:::note[First-run setup required]
+Hermes ships with no pre-seeded credentials. Claude OAuth (`sk-ant-oat-*`) and Codex ChatGPT OAuth cannot be reused — Hermes needs its own provider auth. Setup is a one-time cost per devcontainer instance; `~/.hermes/` persists via a Docker named volume.
+:::
+
 ### check-setup
 
 Verify your CodeForge installation health — checks that all expected tools are installed, plugins are loaded, and configuration is valid.
@@ -301,17 +320,18 @@ The table below is broader than the canonical 25-tool inventory because it also 
 | 14 | `codeforge proxy` | Session | Launch Claude Code through mitmproxy for API traffic inspection |
 | 15 | `codex` | Session | OpenAI Codex CLI terminal coding agent |
 | 16 | `ccusage-codex` | Session | Codex token usage statistics |
-| 17 | `dbr` | Infrastructure | Devcontainer bridge for dynamic port forwarding |
-| 18 | `ruff` | Quality | Python linting and formatting |
-| 19 | `biome` | Quality | JS/TS/JSON linting and formatting |
-| 20 | `shellcheck` | Quality | Shell script linting |
-| 21 | `shfmt` | Quality | Shell script formatting |
-| 22 | `dprint` | Quality | Markdown/TOML/JSON formatting |
-| 23 | `hadolint` | Quality | Dockerfile linting |
-| 24 | `sg` / `ast-grep` | Intelligence | Structural code search |
-| 25 | `tree-sitter` | Intelligence | Syntax tree parsing |
-| 26 | `pyright` | Intelligence | Python LSP server |
-| 27 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
+| 17 | `hermes` | Session | Nous Research Hermes Agent CLI (run `hermes setup` first) |
+| 18 | `dbr` | Infrastructure | Devcontainer bridge for dynamic port forwarding |
+| 19 | `ruff` | Quality | Python linting and formatting |
+| 20 | `biome` | Quality | JS/TS/JSON linting and formatting |
+| 21 | `shellcheck` | Quality | Shell script linting |
+| 22 | `shfmt` | Quality | Shell script formatting |
+| 23 | `dprint` | Quality | Markdown/TOML/JSON formatting |
+| 24 | `hadolint` | Quality | Dockerfile linting |
+| 25 | `sg` / `ast-grep` | Intelligence | Structural code search |
+| 26 | `tree-sitter` | Intelligence | Syntax tree parsing |
+| 27 | `pyright` | Intelligence | Python LSP server |
+| 28 | `typescript-language-server` | Intelligence | TypeScript/JS LSP server |
 
 ## Related
 

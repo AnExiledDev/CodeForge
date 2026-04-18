@@ -6,7 +6,9 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 
 | File | Purpose |
 |------|---------|
-| `defaults/codeforge/config/settings.json` | Model, tokens, permissions, plugins, env vars |
+| `defaults/codeforge/config/settings.base.json` | Shared Claude Code settings: permissions, plugins, env vars |
+| `defaults/codeforge/config/settings-profiles/*.json` | Model/context/thinking overlays used to generate deployed settings profiles |
+| `defaults/codeforge/config/settings*.json` | Generated Claude Code settings profiles deployed to `~/.claude/` |
 | `defaults/codeforge/config/main-system-prompt.md` | System prompt defining assistant behavior |
 | `defaults/codeforge/config/orchestrator-system-prompt.md` | Orchestrator mode prompt (delegation-first) |
 | `defaults/codeforge/config/ccstatusline-settings.json` | Status bar widget layout (deployed to ~/.config/ccstatusline/) |
@@ -22,13 +24,14 @@ Config files deploy via `defaults/codeforge/file-manifest.json` on every contain
 
 | Command | Purpose |
 |---------|---------|
-| `cc` / `claude` | Run Claude Code with auto-configuration (opus-4-5, 200k context) |
+| `cc` / `claude` / `cc7` | Run Claude Code with auto-configuration (opus-4-7, 200k context) |
 | `codeforge config apply` | Deploy config files to `~/.claude/` (same as container start) |
 | `ccraw` | Vanilla Claude Code (bypasses config) |
-| `ccw` | Claude Code with writing system prompt (opus-4-5, 200k context) |
-| `cc-orc` | Claude Code in orchestrator mode, delegation-first (opus-4-5, 200k context) |
-| `cc7` / `ccw7` / `cc-orc7` | Claude Code on opus-4-7 with 400k context (main / writing / orchestrator modes) |
+| `cc5` / `cc6` / `cc61` / `cc71` | Main prompt profiles for opus-4-5 200k, opus-4-6 200k, opus-4-6 1M bounded to 400k, opus-4-7 1M bounded to 400k |
+| `ccw*` | Same profile matrix with the writing system prompt |
+| `cc-orc*` | Same profile matrix in orchestrator mode, delegation-first |
 | `codex` | OpenAI Codex CLI terminal coding agent |
+| `hermes` | Nous Research Hermes Agent CLI (run `hermes setup` on first use) |
 | `ccms` | Session history search _(disabled — requires Rust toolchain; uncomment in devcontainer.json to enable)_ |
 | `codeforge proxy` | Launch Claude Code through mitmproxy — inspect API traffic in browser (port 8081) |
 | `ccr start` / `ccr stop` | Claude Code Router daemon control |
@@ -79,9 +82,11 @@ Codex CLI credentials (`~/.codex/`) are backed by a separate Docker named volume
 
 **Claude Code Router:** Set provider API keys (`ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`) in `.devcontainer/.secrets`. Keys are exported as env vars on container start and read at runtime by the router's `$ENV_VAR` interpolation in `~/.claude-code-router/config.json`. Edit routing rules in `defaults/codeforge/config/claude-code-router.json` and run `ccr-apply` to redeploy.
 
+**oh-my-claude:** The local `features/oh-my-claude` feature is opt-in. It installs the OMC CLI and generated agents, skips OMC hooks/MCP/statusline, and preserves CodeForge-managed `~/.claude/settings.json`. OMC proxy sessions are launched per session with `omc cc` or the `omc-cc` helper; do not add a post-start OMC daemon.
+
 ## Modifying Behavior
 
-1. **Change model**: Edit `defaults/codeforge/config/settings.json` → `"model"` field
+1. **Change shared Claude settings**: Edit `defaults/codeforge/config/settings.base.json`, then run `node scripts/generate-settings-profiles.js`
 2. **Change system prompt**: Edit `defaults/codeforge/config/main-system-prompt.md`
 3. **Add config file**: Place in `defaults/codeforge/config/`, add entry to `defaults/codeforge/file-manifest.json`
 4. **Add features**: Add to `"features"` in `devcontainer.json`

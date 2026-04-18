@@ -28,8 +28,17 @@ function runTests() {
 		"README.md",
 		".devcontainer/devcontainer.json",
 		".devcontainer/scripts/setup.sh",
+		".devcontainer/scripts/generate-settings-profiles.js",
+		".devcontainer/defaults/codeforge/config/settings.base.json",
 		".devcontainer/defaults/codeforge/config/settings.json",
+		".devcontainer/defaults/codeforge/config/settings-opus-47-1m-400k.json",
+		".devcontainer/defaults/codeforge/config/settings-opus-46-200k.json",
+		".devcontainer/defaults/codeforge/config/settings-opus-46-1m-400k.json",
+		".devcontainer/defaults/codeforge/config/settings-opus-45-200k.json",
 		".devcontainer/defaults/codeforge/file-manifest.json",
+		".devcontainer/features/oh-my-claude/devcontainer-feature.json",
+		".devcontainer/features/oh-my-claude/install.sh",
+		".devcontainer/features/oh-my-claude/README.md",
 	];
 
 	let allFilesExist = true;
@@ -139,7 +148,15 @@ function runTests() {
 	// Test 8: Defaults directory has expected config structure
 	let defaultsStructureValid = true;
 	const expectedSubdirs = ["config"];
-	const expectedFiles = ["file-manifest.json", "config/settings.json"];
+	const expectedFiles = [
+		"file-manifest.json",
+		"config/settings.base.json",
+		"config/settings.json",
+		"config/settings-opus-47-1m-400k.json",
+		"config/settings-opus-46-200k.json",
+		"config/settings-opus-46-1m-400k.json",
+		"config/settings-opus-45-200k.json",
+	];
 
 	if (fs.existsSync(defaultsDir)) {
 		for (const subdir of expectedSubdirs) {
@@ -167,6 +184,133 @@ function runTests() {
 		defaultsStructureValid = false;
 	}
 
+	// Test 9: Settings profiles are generated from base + overlays
+	let settingsProfilesValid = true;
+	const configDir = path.join(defaultsDir, "config");
+	const profileDir = path.join(configDir, "settings-profiles");
+	const profileMatrix = [
+		["opus-47-200k.json", "settings.json"],
+		["opus-47-1m-400k.json", "settings-opus-47-1m-400k.json"],
+		["opus-46-200k.json", "settings-opus-46-200k.json"],
+		["opus-46-1m-400k.json", "settings-opus-46-1m-400k.json"],
+		["opus-45-200k.json", "settings-opus-45-200k.json"],
+	];
+	const profileEnvKeys = [
+		"ANTHROPIC_MODEL",
+		"ANTHROPIC_DEFAULT_OPUS_MODEL",
+		"CLAUDE_CODE_MAX_CONTEXT_TOKENS",
+		"CLAUDE_CODE_AUTO_COMPACT_WINDOW",
+		"MAX_THINKING_TOKENS",
+		"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
+	];
+	const readJson = (filePath) =>
+		JSON.parse(fs.readFileSync(filePath, "utf8"));
+	const isObject = (value) =>
+		value !== null && typeof value === "object" && !Array.isArray(value);
+	const merge = (base, overlay) => {
+		const result = { ...base };
+		for (const [key, value] of Object.entries(overlay)) {
+			if (isObject(value) && isObject(result[key])) {
+				result[key] = merge(result[key], value);
+			} else {
+				result[key] = value;
+			}
+		}
+		return result;
+	};
+	const stripProfileFields = (settings) => {
+		const stripped = JSON.parse(JSON.stringify(settings));
+		delete stripped.model;
+		delete stripped.autoCompactWindow;
+		delete stripped.effortLevel;
+		if (stripped.env) {
+			for (const key of profileEnvKeys) {
+				delete stripped.env[key];
+			}
+		}
+		return stripped;
+	};
+	try {
+		const base = readJson(path.join(configDir, "settings.base.json"));
+		for (const [overlayFile, outputFile] of profileMatrix) {
+			const overlay = readJson(path.join(profileDir, overlayFile));
+			const generated = readJson(path.join(configDir, outputFile));
+			const expected = merge(base, overlay);
+			if (JSON.stringify(generated) !== JSON.stringify(expected)) {
+				console.log(`❌ Test 9: ${outputFile} is stale`);
+				settingsProfilesValid = false;
+			}
+			if (
+				JSON.stringify(stripProfileFields(generated)) !==
+				JSON.stringify(stripProfileFields(base))
+			) {
+				console.log(
+					`❌ Test 9: ${outputFile} diverges from base outside profile fields`,
+				);
+				settingsProfilesValid = false;
+			}
+		}
+		if (settingsProfilesValid) {
+			console.log("✓ Test 9: Settings profiles preserve shared base settings");
+		}
+	} catch (error) {
+		console.log(`❌ Test 9: Settings profile validation failed: ${error}`);
+		settingsProfilesValid = false;
+	}
+
+	// Test 10: oh-my-claude feature stays aligned with CodeForge ownership
+	let omcFeatureValid = true;
+	const omcInstallPath = path.join(
+		__dirname,
+		".devcontainer",
+		"features",
+		"oh-my-claude",
+		"install.sh",
+	);
+	const omcFeatureJsonPath = path.join(
+		__dirname,
+		".devcontainer",
+		"features",
+		"oh-my-claude",
+		"devcontainer-feature.json",
+	);
+	if (fs.existsSync(omcInstallPath) && fs.existsSync(omcFeatureJsonPath)) {
+		const omcInstall = fs.readFileSync(omcInstallPath, "utf8");
+		const omcFeature = JSON.parse(fs.readFileSync(omcFeatureJsonPath, "utf8"));
+		if (
+			omcInstall.includes("--skip-hooks") &&
+			omcInstall.includes("--skip-mcp")
+		) {
+			console.log("✓ Test 10.1: oh-my-claude install skips hooks and MCP");
+		} else {
+			console.log("❌ Test 10.1: oh-my-claude install must skip hooks and MCP");
+			omcFeatureValid = false;
+		}
+		if (!/omc proxy (start|stop|restart)/.test(omcInstall)) {
+			console.log("✓ Test 10.2: oh-my-claude install avoids stale daemon commands");
+		} else {
+			console.log("❌ Test 10.2: oh-my-claude install uses stale daemon commands");
+			omcFeatureValid = false;
+		}
+		if (
+			omcFeature.options &&
+			omcFeature.options.installLaunchAliases &&
+			!omcFeature.options.autostart
+		) {
+			console.log(
+				"✓ Test 10.3: oh-my-claude feature exposes launch helpers instead of autostart",
+			);
+		} else {
+			console.log(
+				"❌ Test 10.3: oh-my-claude feature should use installLaunchAliases and not autostart",
+			);
+			omcFeatureValid = false;
+		}
+	} else {
+		console.log("❌ Test 10: oh-my-claude feature files missing");
+		omcFeatureValid = false;
+	}
+
 	// Summary
 	console.log("\n📊 Test Results:");
 	if (
@@ -175,7 +319,9 @@ function runTests() {
 		setupExecutable &&
 		checksumFunctionsExist &&
 		checksumStructureValid &&
-		defaultsStructureValid
+		defaultsStructureValid &&
+		settingsProfilesValid &&
+		omcFeatureValid
 	) {
 		console.log("🎉 All tests passed! Package is ready for distribution.");
 		process.exit(0);

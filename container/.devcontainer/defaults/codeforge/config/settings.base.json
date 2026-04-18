@@ -15,6 +15,7 @@
 		"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
 		"FORCE_AUTOUPDATE_PLUGINS": "1",
 		"CLAUDE_CODE_SCROLL_SPEED": "3",
+
 		"ENABLE_TOOL_SEARCH": "auto:5",
 		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "0",
 		"CLAUDE_CODE_ENABLE_TASKS": "1",
@@ -28,15 +29,12 @@
 		"CLAUDE_AUTO_BACKGROUND_TASKS": "1",
 		"CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
 		"CLAUDE_CODE_NO_FLICKER": "1",
+
 		"CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY": "10",
 		"CLAUDE_CODE_MAX_RETRIES": "1",
 		"BASH_MAX_OUTPUT_LENGTH": "15000",
 		"TASK_MAX_OUTPUT_LENGTH": "64000",
-		"DISABLE_AUTOUPDATER": "1",
-		"ANTHROPIC_MODEL": "claude-opus-4-7",
-		"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
-		"CLAUDE_CODE_MAX_CONTEXT_TOKENS": "200000",
-		"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000"
+		"DISABLE_AUTOUPDATER": "1"
 	},
 	"teammateMode": "auto",
 	"showClearContextOnPlanAccept": true,
@@ -87,10 +85,7 @@
 		]
 	},
 	"permissions": {
-		"allow": [
-			"Read(/workspaces/*)",
-			"WebFetch(domain:*)"
-		],
+		"allow": ["Read(/workspaces/*)", "WebFetch(domain:*)"],
 		"deny": [],
 		"ask": [],
 		"defaultMode": "plan",
@@ -122,8 +117,5 @@
 		"prompt-snippets@devs-marketplace": true,
 		"git-workflow@devs-marketplace": false
 	},
-	"autoUpdatesChannel": "latest",
-	"model": "claude-opus-4-7",
-	"autoCompactWindow": 200000,
-	"effortLevel": "high"
+	"autoUpdatesChannel": "latest"
 }

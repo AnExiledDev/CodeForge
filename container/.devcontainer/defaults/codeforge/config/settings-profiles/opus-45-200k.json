@@ -1,0 +1,12 @@
+{
+	"model": "claude-opus-4-5",
+	"autoCompactWindow": 200000,
+	"env": {
+		"ANTHROPIC_MODEL": "claude-opus-4-5",
+		"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5",
+		"CLAUDE_CODE_MAX_CONTEXT_TOKENS": "200000",
+		"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000",
+		"MAX_THINKING_TOKENS": "31999",
+		"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
+	}
+}

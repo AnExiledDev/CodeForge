@@ -6,6 +6,30 @@
 		"overwrite": "if-changed"
 	},
 	{
+		"src": "config/settings-opus-47-1m-400k.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/settings-opus-46-200k.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/settings-opus-46-1m-400k.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"src": "config/settings-opus-45-200k.json",
+		"dest": "${CLAUDE_CONFIG_DIR}",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
 		"src": "config/keybindings.json",
 		"dest": "${CLAUDE_CONFIG_DIR}",
 		"enabled": true,

@@ -216,6 +216,7 @@ claude --resume               # Resume previous session
 | `hadolint` | Dockerfile linter |
 | `agent-browser` | Headless browser automation for AI agents |
 | `codex` | OpenAI Codex CLI terminal coding agent |
+| `hermes` | Nous Research Hermes Agent CLI (run `hermes setup` on first use) |
 
 ### Code Intelligence
 | Tool | Description |
@@ -320,6 +321,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `ccms` | Claude Code session history search |
 | `claude-session-dashboard` | Local session analytics dashboard with web UI |
 | `codex-cli` | OpenAI Codex CLI terminal coding agent |
+| `hermes-agent` | Nous Research Hermes Agent CLI (interactive `hermes setup` on first use) |
 | `notify-hook` | Desktop notifications on Claude completion |
 | `mcp-qdrant` | Qdrant vector database MCP server (optional) |
 

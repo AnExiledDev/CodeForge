@@ -213,6 +213,40 @@ Credentials persist across container rebuilds via a Docker named volume (`codefo
 "./features/codex-cli": { "version": "none" }
 ```
 
+## Hermes Agent
+
+[Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) — open-source autonomous AI agent CLI. Enabled by default — set `"version": "none"` to disable.
+
+### Configuration
+
+The feature installs Hermes via the upstream `curl | bash` script with `--skip-setup`, so no credentials are seeded during image build. The binary symlinks to `~/.local/bin/hermes`.
+
+```json
+"./features/hermes-agent": {}
+```
+
+### Authentication
+
+Hermes uses the `anthropic` and `openai` Python SDKs directly and needs its own provider credentials — **Claude OAuth (`sk-ant-oat-*`) and Codex ChatGPT OAuth cannot be reused**.
+
+Run the setup wizard once per devcontainer instance:
+
+```bash
+hermes setup
+```
+
+Pick a provider (Anthropic, OpenAI, MiniMax, local, etc.), paste an API key, and choose a default model. The wizard writes `~/.hermes/config.yaml` and `~/.hermes/.env`.
+
+If you already have `MINIMAX_API_KEY` in `.devcontainer/.secrets`, paste `echo $MINIMAX_API_KEY` into the wizard when prompted.
+
+`~/.hermes/` is backed by the `codeforge-hermes-config-${devcontainerId}` Docker named volume, so setup is a one-time cost per devcontainer instance.
+
+### Disabling
+
+```json
+"./features/hermes-agent": { "version": "none" }
+```
+
 ## Disabling Default Features
 
 Any feature can be disabled without removing it from `devcontainer.json` by setting `"version": "none"`:

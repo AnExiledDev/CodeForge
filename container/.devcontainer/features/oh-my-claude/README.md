@@ -1,75 +1,118 @@
 # oh-my-claude
 
-Multi-provider proxy for Claude Code with Chinese LLM routing.
+Opt-in integration for [oh-my-claude](https://github.com/lgcyaxi/oh-my-claude), a multi-provider Claude Code launcher with per-session proxy routing for providers such as DeepSeek, Kimi, Aliyun/Qwen, ZhiPu/Z.AI, MiniMax, OpenRouter, and Ollama.
 
-## Description
-
-Installs [oh-my-claude](https://github.com/lgcyaxi/oh-my-claude), a proxy that routes Claude Code API calls to Chinese LLM providers (Kimi, DeepSeek, Qwen, Zhipu, MiniMax).
-
-**Important**: This feature installs agents only (`--skip-hooks --skip-mcp`). CodeForge manages settings.json separately to avoid conflicts.
+CodeForge keeps ownership of Claude Code settings, hooks, MCP servers, statusline, and the default `cc` aliases. This feature installs the OMC CLI and generated agents, while skipping OMC hooks and MCP setup to avoid conflicts.
 
 ## Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `version` | string | `latest` | oh-my-claude version to install (`latest`, `2.2.3`, `none` to skip) |
-| `autostart` | boolean | `true` | Auto-start proxy on container start |
-| `providerAgentsOnly` | boolean | `true` | Keep only provider agents, delete role agents |
+| `version` | string | `latest` | oh-my-claude npm version to install (`latest`, a semver, or `none`) |
+| `shells` | string | `both` | Shells to clean up legacy OMC blocks from: `bash`, `zsh`, or `both` |
+| `username` | string | `automatic` | Container user to install for |
+| `providerAgentsOnly` | boolean | `true` | Remove generated role agents that overlap CodeForge agents, keeping provider agents only |
 
-## Provider Agents (Kept)
-
-When `providerAgentsOnly: true`, these 6 agents are preserved:
-
-- `@kimi` — Moonshot Kimi
-- `@deepseek` — DeepSeek
-- `@deepseek-r` — DeepSeek Reasoner
-- `@qwen` — Alibaba Qwen (via Aliyun DashScope)
-- `@zhipu` — Zhipu GLM
-- `@mm-cn` — MiniMax
-
-## Role Agents (Deleted)
-
-These 11 agents are removed when `providerAgentsOnly: true`:
-
-sisyphus, prometheus, claude-reviewer, claude-scout, oracle, ui-designer, analyst, librarian, document-writer, navigator, hephaestus
-
-## Disabled Tools
-
-The `cc`/`claude` aliases disable these oh-my-claude MCP tools via `--disallowedTools`:
-
-**Memory (9)**: remember, recall, get_memory, forget, list_memories, memory_status, compact_memories, clear_memories, summarize_memories
-
-**Preferences (7)**: add_preference, list_preferences, get_preference, update_preference, delete_preference, match_preferences, preference_stats
-
-**Coworker (1)**: coworker_task
-
-**Kept (3)**: switch_model, switch_status, switch_revert (proxy routing)
+> **Note:** Shell aliases (`omc-cc`, `omc-deepseek`, etc.) are provided by CodeForge's `setup-aliases.sh`, not this feature.
 
 ## Usage
 
+oh-my-claude proxy sessions are started per Claude Code session:
+
 ```bash
-omc proxy start        # Start the proxy
-omc proxy stop         # Stop the proxy  
-omc proxy status       # Check proxy status
-omc proxy switch MODEL # Switch to a different model
+omc cc -skip              # Launch Claude Code through OMC
+omc cc -p ds -- --help    # Direct DeepSeek provider launch with Claude args
+omc cc -p km -- --help    # Direct Kimi provider launch with Claude args
+omc proxy status          # Show active OMC proxy sessions
+omc proxy sessions        # List active proxy sessions
+omc proxy switch          # Show sessions and model choices
+omc proxy revert          # Revert a session to native Claude
+omc doctor --detail       # Diagnose OMC setup
 ```
 
-## Authentication
+There is no CodeForge post-start OMC daemon. The upstream OMC CLI owns the lifecycle for each `omc cc` session.
 
-Set provider API keys in `.devcontainer/.secrets`:
+## Provider Keys
+
+Set provider keys in `.devcontainer/.secrets`:
 
 ```bash
-KIMI_API_KEY=
-ZHIPU_API_KEY=
-ALIYUN_API_KEY=
-MINIMAX_API_KEY=
 DEEPSEEK_API_KEY=
+KIMI_API_KEY=
+ALIYUN_API_KEY=
+ZHIPU_API_KEY=
+ZAI_API_KEY=
+MINIMAX_API_KEY=
+MINIMAX_CN_API_KEY=
+OPENROUTER_API_KEY=
 ```
 
-oh-my-claude has built-in provider configs — no separate config file needed. Just set the API keys and they'll be picked up automatically.
+OMC also supports OAuth for selected providers. Use `omc auth list` and `omc auth login <provider>` after the container starts.
 
-## Notes
+## Configuration
 
-- oh-my-claude does not install skills/commands in current version (2.2.x)
-- The feature skips hooks and MCP server installation to avoid settings.json conflicts
-- Statusline integration is disabled to preserve ccstatusline
+Upstream OMC configuration lives at:
+
+```text
+~/.claude/oh-my-claude.json
+```
+
+CodeForge does not deploy a default OMC config file. The installer preserves `~/.claude/settings.json` byte-for-byte when it already exists and removes any OMC-generated `settings.json` when CodeForge has not deployed one yet.
+
+## Boundaries
+
+- OMC hooks are skipped.
+- OMC MCP server setup is skipped.
+- OMC statusline setup is skipped; CodeForge keeps `ccstatusline`.
+- The normal `cc`, `claude`, `cc5`, `cc6`, `cc61`, `cc7`, `cc71`, `ccw*`, and `cc-orc*` launchers remain CodeForge-owned.
+- Use one routing layer at a time unless intentionally testing interactions between `claude-code-router` and OMC.
+
+## Known Limitations
+
+### `omc doctor` Shows Expected Failures
+
+Because CodeForge intentionally skips OMC hooks, MCP, and statusline, `omc doctor` will report:
+
+```
+✗ Hooks configured        ← expected (--skip-hooks)
+✗ MCP server configured   ← expected (--skip-mcp)
+⚠ StatusLine not configured ← expected (CodeForge uses ccstatusline)
+```
+
+These are **not errors** — they reflect CodeForge's intentional configuration choices.
+
+### OMC Slash Commands Not Available
+
+The upstream npm package (`@lgcyaxi/oh-my-claude`) does not ship the `src/assets/commands` directory, so OMC slash commands (`/omc-sisyphus`, `/omc-plan`, etc.) are not installed. Core functionality (agents, provider routing via `omc cc`) works normally.
+
+### Role Agents Filtered
+
+When `providerAgentsOnly: true` (default), the following role agents are removed to avoid conflicts with CodeForge's agent-system plugin:
+
+- `sisyphus`, `prometheus`, `claude-reviewer`, `claude-scout`, `oracle`
+- `ui-designer`, `analyst`, `librarian`, `document-writer`, `navigator`, `hephaestus`
+
+Only provider agents remain: `kimi`, `mm-cn`, `deepseek`, `deepseek-r`, `qwen`, `zhipu`.
+
+## Troubleshooting
+
+### Agents Not Generated
+
+If `~/.claude/agents/` is empty after container build:
+
+```bash
+omc install --skip-hooks --skip-mcp --force
+```
+
+The post-start hook will automatically filter role agents on next container start.
+
+### Empty OMC Block in Shell RC
+
+If you see empty markers in `.bashrc`/`.zshrc`:
+
+```bash
+# === oh-my-claude launch helpers START ===
+# === oh-my-claude launch helpers END ===
+```
+
+These are harmless remnants from older installs. CodeForge's `setup-aliases.sh` provides all OMC aliases in the "CodeForge Claude aliases" block instead.

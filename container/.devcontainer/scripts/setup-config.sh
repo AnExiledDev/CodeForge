@@ -28,13 +28,12 @@ legacy_copy() {
 	local target_dir="${CLAUDE_CONFIG_DIR:?CLAUDE_CONFIG_DIR not set}"
 	warn "file-manifest.json not found, falling back to legacy copy"
 	mkdir -p "$target_dir"
-	for file in config/settings.json config/keybindings.json config/main-system-prompt.md; do
-		if [ -f "$CONFIG_DIR/$file" ]; then
-			local basename="${file##*/}"
-			cp "$CONFIG_DIR/$file" "$target_dir/$basename"
-			chown "$(id -un):$(id -gn)" "$target_dir/$basename" 2>/dev/null || true
-			log "Copied $basename (legacy)"
-		fi
+	for file in "$CONFIG_DIR"/config/settings*.json "$CONFIG_DIR"/config/keybindings.json "$CONFIG_DIR"/config/main-system-prompt.md; do
+		[ -f "$file" ] || continue
+		local basename="${file##*/}"
+		cp "$file" "$target_dir/$basename"
+		chown "$(id -un):$(id -gn)" "$target_dir/$basename" 2>/dev/null || true
+		log "Copied $basename (legacy)"
 	done
 	log "Configuration complete (legacy)"
 }

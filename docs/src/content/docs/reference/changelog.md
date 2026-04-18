@@ -47,10 +47,40 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
+## Unreleased
+
+### Hermes Agent
+
+- **New feature: `hermes-agent`** — installs [Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) CLI via the upstream `curl | bash` installer with `--skip-setup`. Hermes uses the plain `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Enabled by default; set `"version": "none"` in `devcontainer.json` to disable.
+- **Hermes persistence** — dedicated Docker named volume (`codeforge-hermes-config-${devcontainerId}`) for `~/.hermes/`, surviving container rebuilds so `hermes setup` is a one-time cost per devcontainer instance.
+- **No credential seeding** — the interactive `hermes setup` wizard is intentionally skipped during image build. Run `hermes setup` on first use to pick a provider and paste an API key (e.g. from `$MINIMAX_API_KEY`, which already has a slot in `.secrets.example`). Claude OAuth / Codex ChatGPT OAuth cannot be reused — Hermes needs its own provider auth.
+
+### Configuration
+
+- **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
+- **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
+- **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
+- **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
+
+### oh-my-claude
+
+- **StatusLine protection hardened** — install.sh now explicitly resets `statusLine` to ccstatusline after `omc install` completes, since OMC lacks a `--skip-statusline` flag. This prevents OMC from overwriting CodeForge's statusline config.
+- **Feature completed as opt-in** — `features/oh-my-claude` now installs the OMC CLI with hooks/MCP skipped, preserves CodeForge-managed `settings.json`, and keeps OMC proxy lifecycle per-session via `omc cc` instead of a post-start daemon.
+- **Alias cleanup** — default CodeForge `cc` aliases no longer pass OMC MCP `--disallowedTools`; OMC helpers are exposed separately (`omc-cc`, `omc-doctor`, provider shortcuts) when OMC is installed.
+- **Provider env coverage** — added Z.AI, MiniMax CN, Ollama, and embedding provider env placeholders to `.secrets.example`.
+- **Robust agent generation** — `omc install` now retries up to 3 times with 2-second backoff if the initial install fails during container build.
+- **Post-start agent cleanup** — role agents (sisyphus, prometheus, etc.) are now filtered on every container start, ensuring provider-only mode even when `omc install` is run manually.
+- **Shell helpers ownership clarified** — install.sh no longer writes shell aliases; CodeForge's `setup-aliases.sh` owns all OMC helper aliases (`omc-cc`, `omc-deepseek`, etc.). Legacy OMC shell blocks are cleaned up on install.
+- **Install order guaranteed** — oh-my-claude added to `overrideFeatureInstallOrder` in devcontainer.json.
+- **Documentation** — added Known Limitations section covering expected `omc doctor` failures, missing slash commands (upstream issue), and role agent filtering.
+
 ## v2.2.1 — 2026-04-16
 
 ### Configuration
 
+- **Default model changed to `claude-opus-4-5`** — `ANTHROPIC_MODEL` and `ANTHROPIC_DEFAULT_OPUS_MODEL` in default settings flipped from `claude-opus-4-7` to `claude-opus-4-5`. Subagents also run on 4.5 by default.
+- **Per-alias context windows** — `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` removed from global `settings.json env` (they pinned 250k globally, which would exceed 4.5's 200k ceiling). Context is now set inline per alias: `cc` / `claude` / `ccw` / `cc-orc` = 200k; `cc7` / `ccw7` / `cc-orc7` = 400k.
+- **New 4.7 alias variants** — `cc7`, `ccw7`, `cc-orc7` run Claude Code on `claude-opus-4-7` with a 400k context window (main / writing / orchestrator system prompts respectively). Use these for sessions that need 4.7's larger window; use `cc` / `ccw` / `cc-orc` (now on 4.5) for standard work.
 - **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
 - **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
 

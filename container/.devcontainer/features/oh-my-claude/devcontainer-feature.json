@@ -8,17 +8,23 @@
 		"version": {
 			"type": "string",
 			"default": "latest",
-			"description": "oh-my-claude version to install"
+			"description": "oh-my-claude version to install (latest, semver, or none to skip)"
 		},
-		"autostart": {
-			"type": "boolean",
-			"default": true,
-			"description": "Auto-start proxy on container start"
+		"shells": {
+			"type": "string",
+			"default": "both",
+			"enum": ["bash", "zsh", "both"],
+			"description": "Which shells to clean up legacy OMC blocks from"
+		},
+		"username": {
+			"type": "string",
+			"default": "automatic",
+			"description": "Container user to install for"
 		},
 		"providerAgentsOnly": {
 			"type": "boolean",
 			"default": true,
-			"description": "Only install provider agents (@kimi, @deepseek, etc.), delete role agents"
+			"description": "Keep provider agents and remove generated role agents that overlap CodeForge agents"
 		}
 	},
 	"installsAfter": ["ghcr.io/devcontainers/features/node:1"]

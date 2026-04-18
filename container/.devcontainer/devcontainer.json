@@ -15,6 +15,11 @@
 			"source": "codeforge-codex-config-${devcontainerId}",
 			"target": "/home/vscode/.codex",
 			"type": "volume"
+		},
+		{
+			"source": "codeforge-hermes-config-${devcontainerId}",
+			"target": "/home/vscode/.hermes",
+			"type": "volume"
 		}
 	],
 
@@ -82,6 +87,14 @@
 		"MINIMAX_API_KEY": {
 			"description": "MiniMax API key for oh-my-claude (optional)",
 			"documentationUrl": "https://platform.minimaxi.com/"
+		},
+		"ZAI_API_KEY": {
+			"description": "Z.AI / ZhiPu global API key for oh-my-claude (optional)",
+			"documentationUrl": "https://z.ai/"
+		},
+		"MINIMAX_CN_API_KEY": {
+			"description": "MiniMax CN API key for oh-my-claude (optional)",
+			"documentationUrl": "https://platform.minimaxi.com/"
 		}
 	},
 
@@ -101,12 +114,13 @@
 		"./features/codeforge-cli",
 		"./features/claude-code-native",
 		"./features/codex-cli",
+		"./features/hermes-agent",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
 		"./features/ccusage",
-		// "./features/claude-code-router",
-		// "./features/oh-my-claude",  // disabled — needs refinement (omc install modifies settings.json)
+		"./features/claude-code-router",
+		"./features/oh-my-claude",
 		// "./features/ccburn",
 		"./features/ccstatusline",
 		"./features/ast-grep",
@@ -145,24 +159,26 @@
 		// "ghcr.io/devcontainers/features/go:1": {},
 		"./features/claude-code-native": {},
 		"./features/codex-cli": {},
+		"./features/hermes-agent": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
 			"shells": "both",
 			"username": "automatic"
 		},
-		// "./features/claude-code-router": {
-		// 	"version": "latest",
-		// 	"shells": "both",
-		// 	"username": "automatic",
-		// 	"autostart": "true"
-		// },
-		// oh-my-claude — disabled; needs refinement (omc install modifies settings.json)
-		// "./features/oh-my-claude": {
-		// 	"version": "latest",
-		// 	"autostart": true,
-		// 	"providerAgentsOnly": true
-		// },
+		"./features/claude-code-router": {
+			"version": "none",
+			"shells": "both",
+			"username": "automatic",
+			"autostart": "false"
+		},
+		// oh-my-claude — disabled by default. Set version to latest/semver only when you want OMC alongside CodeForge aliases.
+		"./features/oh-my-claude": {
+			"version": "none",
+			"shells": "both",
+			"username": "automatic",
+			"providerAgentsOnly": true
+		},
 		"./features/claude-monitor": {
 			"version": "latest",
 			"installer": "uv",

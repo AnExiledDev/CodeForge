@@ -1,0 +1,12 @@
+{
+	"model": "claude-opus-4-7",
+	"autoCompactWindow": 200000,
+	"effortLevel": "high",
+	"env": {
+		"ANTHROPIC_MODEL": "claude-opus-4-7",
+		"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+		"CLAUDE_CODE_MAX_CONTEXT_TOKENS": "200000",
+		"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000",
+		"CLAUDE_CODE_EFFORT_LEVEL": "high"
+	}
+}
