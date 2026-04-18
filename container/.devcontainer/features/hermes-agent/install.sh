@@ -12,6 +12,14 @@ if [ "${VERSION}" = "none" ]; then
 	exit 0
 fi
 
+# VERSION currently only honors 'latest' and 'none'. Upstream Hermes has not
+# tagged release versions yet; the installer always pulls HEAD of main. Warn
+# loudly so a user who pins a semver doesn't think they got that version.
+if [ "${VERSION}" != "latest" ]; then
+	echo "[hermes-agent] WARNING: version '${VERSION}' was requested, but only 'latest' and 'none' are supported."
+	echo "[hermes-agent] WARNING: installing HEAD of NousResearch/hermes-agent main instead."
+fi
+
 echo "[hermes-agent] Starting installation..."
 echo "[hermes-agent] Version: ${VERSION}"
 
@@ -37,6 +45,20 @@ if [ -z "${USER_HOME}" ]; then
 fi
 
 echo "[hermes-agent] Installing for user: ${USERNAME} (home: ${USER_HOME})"
+
+# === VOLUME MOUNT CONSISTENCY CHECK ===
+# devcontainer.json pins the Hermes config volume to /home/vscode/.hermes.
+# If we're installing for a different user (not 'vscode'), ~/.hermes won't be
+# backed by the named volume and setup state will be lost on rebuild.
+EXPECTED_HERMES_HOME="/home/vscode/.hermes"
+ACTUAL_HERMES_HOME="${USER_HOME}/.hermes"
+if [ "${ACTUAL_HERMES_HOME}" != "${EXPECTED_HERMES_HOME}" ]; then
+	echo "[hermes-agent] WARNING: installing as '${USERNAME}' (home: ${USER_HOME})."
+	echo "[hermes-agent] WARNING: the Hermes config volume in devcontainer.json targets ${EXPECTED_HERMES_HOME},"
+	echo "[hermes-agent] WARNING: but this install will write to ${ACTUAL_HERMES_HOME}."
+	echo "[hermes-agent] WARNING: 'hermes setup' state will NOT persist across container rebuilds."
+	echo "[hermes-agent] WARNING: fix by aligning the mount target in devcontainer.json with ${USER_HOME}/.hermes."
+fi
 
 # === VALIDATE DEPENDENCIES ===
 for cmd in curl git bash; do
