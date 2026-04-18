@@ -40,6 +40,13 @@
 - **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
 - **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
 
+### CI
+
+- **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
+- **Removed dead dashboard release workflow** — `release-dashboard.yml` referenced the extracted `dashboard/` directory and would fail on any `dashboard-v*` tag.
+- **Removed stale test-dashboard CI job** — cleaned up CI configuration for the extracted dashboard package.
+- **Fixed release.yml changelog extraction** — corrected the `sed` header pattern for extracting release notes from the changelog.
+
 ## v2.2.1 — 2026-04-16
 
 ### Configuration

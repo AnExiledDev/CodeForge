@@ -1,5 +1,16 @@
 # CodeForge CLI Changelog
 
+## Unreleased
+
+### Fixes
+
+- **`pathToProjectSlug` now works on Windows** — `path.resolve()` on Windows returns backslash-separated paths (e.g. `D:\a\foo`), but the slug regex only replaced forward slashes. Backslashes are now normalized to forward slashes before slugging, fixing `session tokens --project` on Windows.
+- **`pathToProjectSlug` leading-dash assertion scoped to POSIX** — on Windows, resolved paths start with a drive letter (not a dash), so the POSIX-only `startsWith('-')` assertion is now guarded behind a platform check. Cross-platform CI passes cleanly.
+
+### CI
+
+- **Canary pre-release publishing** — every push to `staging` that touches `cli/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-cli@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
+
 ## v0.2.1 — 2026-04-16
 
 ### Fixes
