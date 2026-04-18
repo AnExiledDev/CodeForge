@@ -1,0 +1,91 @@
+name: Release Canary
+
+on:
+  push:
+    branches: [staging]
+    paths: ['container/**', 'cli/**']
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      container: ${{ steps.filter.outputs.container }}
+      cli: ${{ steps.filter.outputs.cli }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            container:
+              - 'container/**'
+            cli:
+              - 'cli/**'
+
+  publish-container:
+    needs: changes
+    if: needs.changes.outputs.container == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+
+      - name: Run tests
+        run: npm test
+        working-directory: container
+
+      - name: Set canary version
+        run: |
+          BASE=$(node -p "require('./package.json').version")
+          CANARY="${BASE}-staging.${GITHUB_SHA::7}"
+          npm version "$CANARY" --no-git-tag-version
+        working-directory: container
+
+      - name: Publish to npm
+        run: npm publish --tag canary
+        working-directory: container
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-cli:
+    needs: changes
+    if: needs.changes.outputs.cli == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+        working-directory: cli
+
+      - name: Run tests
+        run: bun test
+        working-directory: cli
+
+      - name: Build
+        run: bun run build
+        working-directory: cli
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+
+      - name: Set canary version
+        run: |
+          BASE=$(node -p "require('./package.json').version")
+          CANARY="${BASE}-staging.${GITHUB_SHA::7}"
+          npm version "$CANARY" --no-git-tag-version
+        working-directory: cli
+
+      - name: Publish to npm
+        run: npm publish --tag canary
+        working-directory: cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
