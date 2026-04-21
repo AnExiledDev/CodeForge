@@ -26,6 +26,7 @@
 - **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
 - **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
+- **Auto mode disabled by default** — `disableAutoMode: "disable"` added to the base settings profile, removing the `auto` permission mode from the Shift+Tab cycle and rejecting `--permission-mode auto` at startup. Users who want auto mode back can override via `~/.claude/settings.json`.
 
 ### oh-my-claude
 
