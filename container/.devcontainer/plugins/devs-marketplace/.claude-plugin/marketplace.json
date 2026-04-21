@@ -52,7 +52,7 @@
 		},
 		{
 			"name": "agent-system",
-			"description": "4 custom agents with built-in agent redirection (15 archived for rewrite)",
+			"description": "4 custom agents with built-in agent redirection and /verify-tests skill (15 archived for rewrite)",
 			"version": "1.0.0",
 			"source": "./plugins/agent-system",
 			"category": "development",

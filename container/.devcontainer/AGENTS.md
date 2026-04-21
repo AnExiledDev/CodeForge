@@ -48,7 +48,7 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
 ### Active
 
-- **agent-system** — 4 custom agents (architect, claude-guide, explorer, generalist) + built-in agent redirection
+- **agent-system** — 4 custom agents (architect, claude-guide, explorer, generalist) + built-in agent redirection + `/verify-tests` skill
 - **skill-engine** — 2 coding knowledge packs (`/team`, `/agent-browser`) + auto-suggestion
 - **auto-code-quality** — File tracking, syntax validation, `/cq` quality gate (format + lint + test on demand)
 - **session-context** — Git state injection, TODO harvesting, commit reminders

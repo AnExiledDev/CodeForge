@@ -53,6 +53,7 @@
 ### Agent System
 
 - **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
+- **Replaced automatic test hooks with `/verify-tests` skill** — removed `TaskCompleted` hook (`task-completed-check.py`), implementer Stop hook (`verify-no-regression.py`), refactorer PostToolUse hook (`verify-no-regression.py`), and test-writer Stop hook (`verify-tests-pass.py`). Test verification is now on-demand via `/verify-tests`, which detects the project's test framework and runs the suite with structured reporting.
 
 ### Plugin Cleanup
 
