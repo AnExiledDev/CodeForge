@@ -101,6 +101,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **Disabled prompt-snippets plugin** — `/ps` command no longer available.
 - **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
 
+
 ### CI
 
 - **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
