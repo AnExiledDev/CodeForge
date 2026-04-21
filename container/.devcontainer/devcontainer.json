@@ -28,6 +28,7 @@
 		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
 		"GH_CONFIG_DIR": "/workspaces/.gh",
 		"TMPDIR": "/workspaces/.tmp",
+		"HERMES_CDP_ENDPOINT": "http://192.168.65.254:9223",
 		"TERM": "${localEnv:TERM:xterm-256color}",
 		"COLORTERM": "truecolor",
 		"CLAUDECODE": null

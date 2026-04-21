@@ -165,8 +165,8 @@ The user must enable Chrome remote debugging on their host machine before you ca
 # Linux / macOS
 google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
 
-# Windows PowerShell
-& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
+# Windows PowerShell, from repo root as Administrator
+.\.devcontainer\scripts\start-hermes-chrome.ps1
 ```
 
 > **Why `--user-data-dir`?** Chrome 136+ silently ignores `--remote-debugging-port` unless a user data directory is also specified.
@@ -175,7 +175,9 @@ google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
 
 ```bash
 # Connect to host Chrome from inside the container
-agent-browser connect host.docker.internal:9222
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+curl http://$CDP_HOST:9223/json/version
+agent-browser connect $CDP_HOST:9223
 
 # Snapshot to see what's currently open
 agent-browser snapshot
@@ -192,7 +194,9 @@ agent-browser close
 ```
 
 **Key points:**
-- Always use `host.docker.internal:9222` from inside a devcontainer — `localhost` refers to the container itself
+- On Windows, the host must run `.devcontainer\scripts\start-hermes-chrome.ps1` first
+- Chrome CDP rejects DNS Host headers, so resolve `host.docker.internal` to IPv4 before connecting
+- Verify `curl http://$CDP_HOST:9223/json/version` before `agent-browser connect $CDP_HOST:9223`
 - The CDP connection gives you access to the host Chrome's full session: cookies, localStorage, extensions, saved passwords
 - Closing the agent-browser session does not close Chrome on the host
 - For Windows users needing broader port forwarding, see [Windows Mirrored Networking](/start-here/windows-networking/)
