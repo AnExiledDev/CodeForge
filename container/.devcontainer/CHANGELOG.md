@@ -63,6 +63,12 @@
 - **Disabled prompt-snippets plugin** — `/ps` command no longer available.
 - **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
 
+### Code Quality
+
+- **Replaced auto-format/lint/test Stop hooks with `/cq` skill** — the three Stop hooks (`format-on-stop.py`, `lint-file.py`, `advisory-test-runner.py`) that ran automatically on every stop are replaced by a single `/cq` skill that Claude invokes explicitly. Eliminates race conditions with background agents, stops firing during orchestration pauses, and lets Claude act on lint/test results instead of ignoring passive context.
+- **New quality gate Stop hook** — lightweight `quality-gate.py` (~1ms) checks whether files were edited and no background tasks are running, then blocks the stop with a prompt to run `/cq`. Deletes temp files on block to prevent loops.
+- **New task tracker hooks** — `task-tracker.py` handles `TaskCreated`/`TaskCompleted` events to maintain an active-task count. The quality gate skips blocking while tasks are running, preventing format/lint conflicts with background agents.
+
 ### CI
 
 - **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.

@@ -84,7 +84,7 @@
 		},
 		{
 			"name": "auto-code-quality",
-			"description": "Self-contained code quality: auto-format + auto-lint edited files (Ruff/Black, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
+			"description": "Code quality with /cq skill: file tracking, syntax validation, background-task-aware quality gate, on-demand format + lint + test (Ruff, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
 			"version": "1.0.0",
 			"source": "./plugins/auto-code-quality",
 			"category": "development",

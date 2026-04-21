@@ -1,5 +1,5 @@
 {
-	"description": "Self-contained code quality: file collection on edit, syntax validation, batch formatting + linting at stop",
+	"description": "Code quality: file collection on edit, syntax validation, task tracking, and /cq quality gate at stop",
 	"hooks": {
 		"PostToolUse": [
 			{
@@ -18,23 +18,35 @@
 				]
 			}
 		],
+		"TaskCreated": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/task-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"TaskCompleted": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/task-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
 		"Stop": [
 			{
 				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/format-on-stop.py",
-						"timeout": 15
-					},
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lint-file.py",
-						"timeout": 60
-					},
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/advisory-test-runner.py",
-						"timeout": 20
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/quality-gate.py",
+						"timeout": 3
 					}
 				]
 			}

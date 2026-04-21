@@ -218,6 +218,21 @@ claude --resume               # Resume previous session
 | `codex` | OpenAI Codex CLI terminal coding agent |
 | `hermes` | Nous Research Hermes Agent CLI (run `hermes setup` on first use) |
 
+### Windows Host Chrome CDP
+
+For Hermes, Vercel agent-browser, Codex, or Claude Code to control Chrome running on a Windows host, run this from an Administrator PowerShell at the repository root:
+
+```powershell
+.\.devcontainer\scripts\start-hermes-chrome.ps1
+```
+
+The devcontainer uses `HERMES_CDP_ENDPOINT=http://192.168.65.254:9223` for Docker Desktop. Verify the current host IPv4 from inside the container:
+
+```bash
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+curl http://$CDP_HOST:9223/json/version
+```
+
 ### Code Intelligence
 | Tool | Description |
 |------|-------------|
@@ -335,7 +350,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 
 ### auto-code-quality
 
-Combined auto-formatter, auto-linter, and advisory test runner plugin at `plugins/devs-marketplace/plugins/auto-code-quality/`. Three-phase pipeline: collect edited files (PostToolUse), batch format + lint (Stop), and advisory test runner (Stop). Supports all languages from the former auto-formatter + auto-linter plugins. Replaces the separate `auto-formatter` and `auto-linter` plugins.
+Code quality plugin at `plugins/devs-marketplace/plugins/auto-code-quality/`. Tracks edited files (PostToolUse), validates data file syntax instantly, tracks background tasks (TaskCreated/Completed), and gates stops with a lightweight check — if files were edited and no tasks are running, prompts Claude to run the `/cq` skill for formatting, linting (with auto-fix), and affected test execution. Supports Python, JS/TS, Go, Shell, Rust, Markdown, YAML, TOML, and Dockerfiles.
 
 ## Alias Management
 

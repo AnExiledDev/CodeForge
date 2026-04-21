@@ -50,7 +50,7 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
 - **agent-system** — 4 custom agents (architect, claude-guide, explorer, generalist) + built-in agent redirection
 - **skill-engine** — 2 coding knowledge packs (`/team`, `/agent-browser`) + auto-suggestion
-- **auto-code-quality** — Auto-format + auto-lint + advisory test runner
+- **auto-code-quality** — File tracking, syntax validation, `/cq` quality gate (format + lint + test on demand)
 - **session-context** — Git state injection, TODO harvesting, commit reminders
 - **workspace-scope-guard** — Blocks writes outside working directory
 - **dangerous-command-blocker** — Blocks destructive bash commands
