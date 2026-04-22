@@ -114,7 +114,7 @@
 		"session-context@devs-marketplace": false,
 		"auto-code-quality@devs-marketplace": true,
 		"workspace-scope-guard@devs-marketplace": true,
-		"prompt-snippets@devs-marketplace": true,
+		"prompt-snippets@devs-marketplace": false,
 		"git-workflow@devs-marketplace": false
 	},
 	"autoUpdatesChannel": "latest"

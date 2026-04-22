@@ -46,23 +46,28 @@ Config files deploy via `defaults/codeforge/file-manifest.json` on every contain
 
 Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 
-- **agent-system** — 19 custom agents + built-in agent redirection
-- **skill-engine** — 23 general coding skills + auto-suggestion
-- **spec-workflow** — 3 spec lifecycle skills (`/spec`, `/build`, `/specs`) + spec-reminder hook
-- **session-context** — Git state injection, TODO harvesting, commit reminders
+### Active
+
+- **agent-system** — 4 custom agents (architect, claude-guide, explorer, generalist) + built-in agent redirection
+- **skill-engine** — 2 coding knowledge packs (`/team`, `/agent-browser`) + auto-suggestion
 - **auto-code-quality** — Auto-format + auto-lint + advisory test runner
+- **session-context** — Git state injection, TODO harvesting, commit reminders
 - **workspace-scope-guard** — Blocks writes outside working directory
 - **dangerous-command-blocker** — Blocks destructive bash commands
 - **protected-files-guard** — Blocks edits to secrets/lock files
-- **codeforge-lsp** — LSP for Python + TypeScript/JavaScript
-- **ticket-workflow** — EARS ticket workflow + auto-linking
-- **git-workflow** — Standalone ship (commit/push/PR) + PR review
-- **notify-hook** — Desktop notifications on completion
 - **frontend-design** (Anthropic official) — UI/frontend design skill
 - **code-review** (Anthropic official) — Code review skill
 - **feature-dev** (Anthropic official) — Feature development skill
 - **pr-review-toolkit** (Anthropic official) — PR review commands + agents
-- **prompt-snippets** — Quick behavioral mode switches via /ps command
+
+### Disabled
+
+- **spec-workflow** — Spec lifecycle (archived, pending rewrite)
+- **git-workflow** — Ship + PR review (archived, pending rewrite)
+- **ticket-workflow** — EARS ticket workflow (archived, pending rewrite)
+- **notify-hook** — Desktop notifications (archived, pending rewrite)
+- **prompt-snippets** — Behavioral mode switches (archived, pending rewrite)
+- **codeforge-lsp** — LSP servers (disabled)
 
 ## Rules System
 

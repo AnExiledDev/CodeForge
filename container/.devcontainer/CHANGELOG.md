@@ -48,6 +48,15 @@
 - **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
 - **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
 
+### Plugin Cleanup
+
+- **Archived 15 agents** — agent-system reduced from 19 to 4 active agents (architect, claude-guide, explorer, generalist). Archived agents preserved in `agents/_archived/` for future rewrite.
+- **Archived 21 skills** — skill-engine reduced from 23 to 2 active skills (`/team`, `/agent-browser`). Archived skills preserved in `skills/_archived/`.
+- **Archived `/debug` skill** — moved from agent-system active skills to `skills/_archived/`.
+- **Removed 2 agent redirects** — `Bash→bash-exec` and `statusline-setup→statusline-config` removed from redirect map. Built-in types now fall through to Claude Code defaults.
+- **Disabled prompt-snippets plugin** — `/ps` command no longer available.
+- **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
+
 ### CI
 
 - **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
