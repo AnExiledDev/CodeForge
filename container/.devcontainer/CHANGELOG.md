@@ -6,6 +6,10 @@
 
 - **Shell terminal keybinds hardened** — disabled `Ctrl+Z` (suspend, which closes Docker-attached panes), `Ctrl+S/Q` (flow control freeze), and `Ctrl+W` (conflicts with Windows Terminal close-tab). Rebound `Ctrl+\` (SIGQUIT) to `Ctrl+]` and `Ctrl+D` (EOF) to `Ctrl+^` as emergency-only alternatives. Also unbound zsh's `Alt+W` (copy-region-as-kill) and `Alt+Q` (push-line) to free those keys for terminal use.
 
+### Security
+
+- **Git safe.directory configured on container start** — bind-mounted `/workspaces` may have a different uid than the container user, causing Git to refuse all operations with "dubious ownership" errors (CVE-2022-24765). `setup.sh` now runs `git config --global safe.directory` using `$WORKSPACE_ROOT` on every start.
+
 ### Hermes Agent
 
 - **New feature: `hermes-agent`** — installs [Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) CLI via the upstream `curl | bash` installer with `--skip-setup`. Hermes uses the plain `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Enabled by default; set `"version": "none"` in `devcontainer.json` to disable.
