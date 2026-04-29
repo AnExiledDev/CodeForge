@@ -78,7 +78,9 @@ fi
 # Mark workspace as safe for Git — bind-mounted workspace may have
 # different uid than container user, causing "dubious ownership"
 # errors (CVE-2022-24765)
-git config --global safe.directory "${WORKSPACE_ROOT:-/workspaces}"
+if ! git config --global --add safe.directory "${WORKSPACE_ROOT:-/workspaces}" 2>/dev/null; then
+    echo "[setup] WARNING: Could not configure git safe.directory — git operations may show 'dubious ownership' errors"
+fi
 
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()
