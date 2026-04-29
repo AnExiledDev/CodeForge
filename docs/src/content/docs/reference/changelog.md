@@ -49,6 +49,15 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Terminal
+
+- **Alt+Enter newline keybinding** — added `alt+enter` → `chat:newline` to the default Claude Code keybindings. Windows Terminal doesn't support the Kitty keyboard protocol, so Shift+Enter and Ctrl+Enter send identical bytes to plain Enter. Alt+Enter sends ESC+CR, which is universally distinct and works reliably as a newline key.
+- **Shell terminal keybinds hardened** — disabled `Ctrl+Z` (suspend, which closes Docker-attached panes), `Ctrl+S/Q` (flow control freeze), and `Ctrl+W` (conflicts with Windows Terminal close-tab). Rebound `Ctrl+\` (SIGQUIT) to `Ctrl+]` and `Ctrl+D` (EOF) to `Ctrl+^` as emergency-only alternatives. Also unbound zsh's `Alt+W` (copy-region-as-kill) and `Alt+Q` (push-line) to free those keys for terminal use.
+
+### Security
+
+- **Git safe.directory configured on container start** — bind-mounted `/workspaces` may have a different uid than the container user, causing Git to refuse all operations with "dubious ownership" errors (CVE-2022-24765). `setup.sh` now runs `git config --global safe.directory` using `$WORKSPACE_ROOT` on every start.
+
 ### Hermes Agent
 
 - **New feature: `hermes-agent`** — installs [Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) CLI via the upstream `curl | bash` installer with `--skip-setup`. Hermes uses the plain `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Enabled by default; set `"version": "none"` in `devcontainer.json` to disable.
@@ -59,11 +68,13 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ### Configuration
 
+- **Dangerous-mode permission prompt skipped by default** — `skipDangerousModePermissionPrompt: true` is now set in `settings.base.json` and propagates to all five generated profiles. Suppresses the one-time bypass-permissions confirmation on new devcontainers.
 - **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
 - **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
 - **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
 - **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
+- **Auto mode disabled by default** — `disableAutoMode: "disable"` added to the base settings profile, removing the `auto` permission mode from the Shift+Tab cycle and rejecting `--permission-mode auto` at startup. Users who want auto mode back can override via `~/.claude/settings.json`.
 
 ### oh-my-claude
 
@@ -91,6 +102,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 ### Agent System
 
 - **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
+- **Replaced automatic test hooks with `/verify-tests` skill** — removed `TaskCompleted` hook (`task-completed-check.py`), implementer Stop hook (`verify-no-regression.py`), refactorer PostToolUse hook (`verify-no-regression.py`), and test-writer Stop hook (`verify-tests-pass.py`). Test verification is now on-demand via `/verify-tests`, which detects the project's test framework and runs the suite with structured reporting.
 
 ### Plugin Cleanup
 
@@ -101,6 +113,11 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **Disabled prompt-snippets plugin** — `/ps` command no longer available.
 - **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
 
+### Code Quality
+
+- **Replaced auto-format/lint/test Stop hooks with `/cq` skill** — the three Stop hooks (`format-on-stop.py`, `lint-file.py`, `advisory-test-runner.py`) that ran automatically on every stop are replaced by a single `/cq` skill that Claude invokes explicitly. Eliminates race conditions with background agents, stops firing during orchestration pauses, and lets Claude act on lint/test results instead of ignoring passive context.
+- **New quality gate Stop hook** — lightweight `quality-gate.py` (~1ms) checks whether files were edited and no background tasks are running, then blocks the stop with a prompt to run `/cq`. Deletes temp files on block to prevent loops.
+- **New task tracker hooks** — `task-tracker.py` handles `TaskCreated`/`TaskCompleted` events to maintain an active-task count. The quality gate skips blocking while tasks are running, preventing format/lint conflicts with background agents.
 
 ### CI
 

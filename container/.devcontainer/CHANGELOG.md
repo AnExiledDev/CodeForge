@@ -4,6 +4,7 @@
 
 ### Terminal
 
+- **Alt+Enter newline keybinding** — added `alt+enter` → `chat:newline` to the default Claude Code keybindings. Windows Terminal doesn't support the Kitty keyboard protocol, so Shift+Enter and Ctrl+Enter send identical bytes to plain Enter. Alt+Enter sends ESC+CR, which is universally distinct and works reliably as a newline key.
 - **Shell terminal keybinds hardened** — disabled `Ctrl+Z` (suspend, which closes Docker-attached panes), `Ctrl+S/Q` (flow control freeze), and `Ctrl+W` (conflicts with Windows Terminal close-tab). Rebound `Ctrl+\` (SIGQUIT) to `Ctrl+]` and `Ctrl+D` (EOF) to `Ctrl+^` as emergency-only alternatives. Also unbound zsh's `Alt+W` (copy-region-as-kill) and `Alt+Q` (push-line) to free those keys for terminal use.
 
 ### Security
