@@ -117,9 +117,11 @@ stty werase undef    # Kill Ctrl+W — conflicts with Windows Terminal close-tab
 stty quit '^]'       # Rebind Ctrl+\ (SIGQUIT) → Ctrl+] (emergency only)
 stty eof '^^'        # Rebind Ctrl+D (EOF) → Ctrl+^ (emergency only)
 # zsh bindkey cleanup — stty handles the terminal layer, but zsh's line
-# editor has its own Ctrl+W binding that bypasses stty
+# editor has its own bindings that bypass stty or conflict with pane hotkeys
 if [ -n "\$ZSH_VERSION" ]; then
-    bindkey -r '^W'  # Remove backward-kill-word (stty werase already disabled)
+    bindkey -r '^W'   # Remove backward-kill-word (stty werase already disabled)
+    bindkey -r '^[w'  # Remove copy-region-as-kill (unused emacs kill-ring op)
+    bindkey -r '^[q'  # Remove push-line (niche; frees Alt+Q for terminal use)
 fi
 
 # Native binary (installed by claude-code-native feature)
