@@ -75,6 +75,11 @@ if ! sudo chown "$(id -un):$(id -gn)" "$HOME/.claude" 2>/dev/null; then
     echo "[setup] WARNING: Could not fix volume ownership on $HOME/.claude — subsequent scripts may fail"
 fi
 
+# Mark workspace as safe for Git — bind-mounted workspace may have
+# different uid than container user, causing "dubious ownership"
+# errors (CVE-2022-24765)
+git config --global safe.directory "${WORKSPACE_ROOT:-/workspaces}"
+
 SETUP_START=$(date +%s)
 SETUP_RESULTS=()
 
