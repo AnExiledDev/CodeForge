@@ -108,6 +108,22 @@ if [ "\$TERM" = "xterm" ] || [ -z "\$TERM" ]; then
 fi
 export COLORTERM="\${COLORTERM:-truecolor}"
 
+# Terminal keybind hardening — disable signals that cause problems in
+# Docker-attached panes (suspend closes pane, flow-control freezes
+# terminal). EOF and QUIT rebound to esoteric combos for emergency use.
+stty susp undef      # Kill Ctrl+Z — suspend closes Docker-attached panes
+stty -ixon           # Kill Ctrl+S/Q — flow control freezes terminal
+stty werase undef    # Kill Ctrl+W — conflicts with Windows Terminal close-tab
+stty quit '^]'       # Rebind Ctrl+\ (SIGQUIT) → Ctrl+] (emergency only)
+stty eof '^^'        # Rebind Ctrl+D (EOF) → Ctrl+^ (emergency only)
+# zsh bindkey cleanup — stty handles the terminal layer, but zsh's line
+# editor has its own bindings that bypass stty or conflict with pane hotkeys
+if [ -n "\$ZSH_VERSION" ]; then
+    bindkey -r '^W'   # Remove backward-kill-word (stty werase already disabled)
+    bindkey -r '^[w'  # Remove copy-region-as-kill (unused emacs kill-ring op)
+    bindkey -r '^[q'  # Remove push-line (niche; frees Alt+Q for terminal use)
+fi
+
 # Native binary (installed by claude-code-native feature)
 _CLAUDE_BIN="\$HOME/.local/bin/claude"
 
