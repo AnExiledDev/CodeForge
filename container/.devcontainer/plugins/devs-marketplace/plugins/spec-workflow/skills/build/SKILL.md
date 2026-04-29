@@ -11,6 +11,7 @@ description: >-
   spec health (use /specs).
 version: 1.0.0
 argument-hint: "[feature-name or spec-path]"
+effort: max
 ---
 
 # Implement & Close Spec Package

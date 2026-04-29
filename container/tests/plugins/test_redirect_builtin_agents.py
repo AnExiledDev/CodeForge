@@ -59,9 +59,7 @@ class TestDataStructures:
             "Explore": "explorer",
             "Plan": "architect",
             "general-purpose": "generalist",
-            "Bash": "bash-exec",
             "claude-code-guide": "claude-guide",
-            "statusline-setup": "statusline-config",
         }
         assert redirect_builtin_agents.REDIRECT_MAP == expected
 
@@ -110,7 +108,6 @@ class TestUnqualifiedRedirect:
         "unqualified_name, expected_target",
         [
             ("explorer", "agent-system:explorer"),
-            ("bash-exec", "agent-system:bash-exec"),
         ],
     )
     def test_unqualified_to_qualified(

@@ -1,11 +1,11 @@
 ---
 title: Agent System
-description: The agent system plugin provides 19 specialized AI agents with automatic delegation and read-only enforcement.
+description: The agent system plugin provides 4 specialized AI agents with automatic delegation and read-only enforcement.
 sidebar:
   order: 2
 ---
 
-The agent system is CodeForge's flagship plugin. It gives you access to 19 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to test writing and security auditing. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
+The agent system is CodeForge's flagship plugin. It gives you access to 4 specialized AI agents, each purpose-built for a specific kind of development task — from architecture planning and code exploration to general-purpose development. When you make a request, the system automatically delegates to the most appropriate agent, so you get expert-level results without having to think about which tool to use.
 
 Most users should start with [Agents and Skills in Practice](/use/agents-and-skills/) and use this page for internal behavior and hook details.
 
@@ -48,16 +48,14 @@ The `redirect-builtin-agents.py` script registers as a `PreToolUse` hook on the 
 4. The modified request proceeds, and the custom agent spawns instead of the stock one
 5. All other parameters — the prompt, description, and context — pass through unchanged
 
-The redirect map covers all six of Claude Code's built-in agent types:
+The redirect map covers four of Claude Code's built-in agent types:
 
 ```python
 REDIRECT_MAP = {
     "Explore":            "explorer",
     "Plan":               "architect",
     "general-purpose":    "generalist",
-    "Bash":               "bash-exec",
     "claude-code-guide":  "claude-guide",
-    "statusline-setup":   "statusline-config",
 }
 ```
 
@@ -74,7 +72,7 @@ Each redirect is a strict improvement. The custom agents carry capabilities that
 The redirect is fully transparent to you and to Claude. Using either name works — `Explore` and `explorer` both resolve to the same enhanced agent.
 
 :::note[The Seventh Agent Type]
-Claude Code has a seventh built-in agent type, `magic-docs`, which handles internal documentation generation tasks within Claude Code itself. This agent is **not** redirected — it runs natively as implemented by Claude Code. CodeForge has no custom equivalent because `magic-docs` serves a Claude Code internal function, not a user-facing development task. All other six built-in types are intercepted and replaced.
+Claude Code has additional built-in agent types (`Bash`, `statusline-setup`, `magic-docs`) that are **not** redirected — they run natively as implemented by Claude Code. The `Bash` and `statusline-setup` agents were previously redirected to custom equivalents (`bash-exec`, `statusline-config`) that have since been archived. `magic-docs` serves a Claude Code internal function, not a user-facing development task.
 :::
 
 ## Safety Mechanisms
@@ -105,7 +103,7 @@ Read-only agents don't just have instructions saying "don't write files." The gu
 
 ## Agent Reference
 
-CodeForge includes 19 specialized agents. Each one is tailored for a specific class of development task.
+CodeForge includes 4 active specialized agents. Each one is tailored for a specific class of development task. 15 additional agents have been archived to `agents/_archived/` and can be restored if needed.
 
 ### Read-Only Agents
 
@@ -113,16 +111,9 @@ These agents investigate, analyze, and report — they never modify files.
 
 | Agent | Role | Model | Skills |
 |-------|------|-------|--------|
-| **architect** | System design, implementation planning, trade-off analysis | Opus | api-design, spec skills |
-| **explorer** | Fast codebase navigation, file discovery, pattern matching | Haiku | ast-grep-patterns |
-| **researcher** | Deep investigation, information gathering, web research | Sonnet | documentation-patterns |
+| **architect** | System design, implementation planning, trade-off analysis | Opus | api-design |
+| **explorer** | Fast codebase navigation, file discovery, pattern matching | Haiku | — |
 | **claude-guide** | Claude Code usage guidance and best practices | Haiku | claude-code-headless, claude-agent-sdk |
-| **debug-logs** | Log analysis, error diagnosis, debugging | Sonnet | debugging |
-| **dependency-analyst** | Dependency analysis, version conflicts, upgrade paths | Haiku | dependency-management |
-| **git-archaeologist** | Git history analysis, blame, bisect, forensics | Haiku | git-forensics |
-| **perf-profiler** | Performance profiling, bottleneck identification | Sonnet | performance-profiling |
-| **security-auditor** | Security audit, vulnerability assessment, OWASP checks | Sonnet | security-checklist |
-| **spec-writer** | Specification authoring and refinement | Opus | spec, specs |
 
 ### Full-Access Agents
 
@@ -130,18 +121,10 @@ These agents can read and write files, run commands, and make changes to your co
 
 | Agent | Role | Model | Isolation | Skills |
 |-------|------|-------|-----------|--------|
-| **generalist** | General-purpose development tasks | Inherited | No | spec skills |
-| **test-writer** | Test creation, coverage analysis, framework detection | Opus | Worktree | testing |
-| **refactorer** | Behavior-preserving code transformations | Opus | Worktree | refactoring-patterns |
-| **documenter** | Documentation writing and maintenance | Opus | Worktree | documentation-patterns |
-| **migrator** | Code migration, framework upgrades | Opus | Worktree | migration-patterns |
-| **implementer** | Task implementation from specs and plans | Opus | No | spec skills |
-| **investigator** | Deep codebase investigation and root-cause analysis | Sonnet | No | debugging |
-| **bash-exec** | Shell command execution and scripting | Sonnet | No | — |
-| **statusline-config** | Statusline customization | Sonnet | No | — |
+| **generalist** | General-purpose development tasks | Inherited | No | — |
 
 :::note[Model Selection]
-Agents use different Claude models based on task complexity. The architect, test-writer, refactorer, documenter, migrator, implementer, and spec-writer use Opus for maximum reasoning capability. The explorer, dependency-analyst, and git-archaeologist use Haiku for speed. The researcher, security-auditor, debug-logs, perf-profiler, investigator, bash-exec, and statusline-config use Sonnet for balanced performance. The generalist inherits the session's model setting.
+Agents use different Claude models based on task complexity. The architect uses Opus for deep reasoning. The explorer and claude-guide use Haiku for speed. The generalist inherits the session's model setting.
 :::
 
 ## Hook Scripts

@@ -200,11 +200,11 @@ function runTests() {
 		"ANTHROPIC_DEFAULT_OPUS_MODEL",
 		"CLAUDE_CODE_MAX_CONTEXT_TOKENS",
 		"CLAUDE_CODE_AUTO_COMPACT_WINDOW",
+		"CLAUDE_CODE_EFFORT_LEVEL",
 		"MAX_THINKING_TOKENS",
 		"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
 	];
-	const readJson = (filePath) =>
-		JSON.parse(fs.readFileSync(filePath, "utf8"));
+	const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, "utf8"));
 	const isObject = (value) =>
 		value !== null && typeof value === "object" && !Array.isArray(value);
 	const merge = (base, overlay) => {
@@ -287,9 +287,13 @@ function runTests() {
 			omcFeatureValid = false;
 		}
 		if (!/omc proxy (start|stop|restart)/.test(omcInstall)) {
-			console.log("✓ Test 10.2: oh-my-claude install avoids stale daemon commands");
+			console.log(
+				"✓ Test 10.2: oh-my-claude install avoids stale daemon commands",
+			);
 		} else {
-			console.log("❌ Test 10.2: oh-my-claude install uses stale daemon commands");
+			console.log(
+				"❌ Test 10.2: oh-my-claude install uses stale daemon commands",
+			);
 			omcFeatureValid = false;
 		}
 		if (

@@ -3,6 +3,7 @@ description: Retrieve ticket, create technical implementation plan, post to GitH
 argument-hint: [ticket-number]
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, AskUserQuestion
+effort: max
 ---
 
 # /ticket:work - Implementation Planning
