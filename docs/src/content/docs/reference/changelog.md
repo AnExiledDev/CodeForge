@@ -59,6 +59,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ### Configuration
 
+- **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
 - **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
 - **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
@@ -86,6 +87,26 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 - **New guide: Windows Networking** — comprehensive WSL 2 mirrored networking setup for Windows users; recommended approach for port forwarding, replacing `dbr` on Windows
 - **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
 - **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
+
+### Agent System
+
+- **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
+
+### Plugin Cleanup
+
+- **Archived 15 agents** — agent-system reduced from 19 to 4 active agents (architect, claude-guide, explorer, generalist). Archived agents preserved in `agents/_archived/` for future rewrite.
+- **Archived 21 skills** — skill-engine reduced from 23 to 2 active skills (`/team`, `/agent-browser`). Archived skills preserved in `skills/_archived/`.
+- **Archived `/debug` skill** — moved from agent-system active skills to `skills/_archived/`.
+- **Removed 2 agent redirects** — `Bash→bash-exec` and `statusline-setup→statusline-config` removed from redirect map. Built-in types now fall through to Claude Code defaults.
+- **Disabled prompt-snippets plugin** — `/ps` command no longer available.
+- **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
+
+### CI
+
+- **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
+- **Removed dead dashboard release workflow** — `release-dashboard.yml` referenced the extracted `dashboard/` directory and would fail on any `dashboard-v*` tag.
+- **Removed stale test-dashboard CI job** — cleaned up CI configuration for the extracted dashboard package.
+- **Fixed release.yml changelog extraction** — corrected the `sed` header pattern for extracting release notes from the changelog.
 
 ## v2.2.1 — 2026-04-16
 

@@ -2,6 +2,7 @@
 description: Create pull request with aggressive security and architecture review
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, AskUserQuestion
+effort: max
 ---
 
 # /ticket:create-pr - Create PR with Aggressive Review

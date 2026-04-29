@@ -32,7 +32,7 @@ Variables that configure Claude Code's multi-agent team capabilities.
 |----------|-------------|---------|--------|
 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Enable Agent Teams feature | `1` | settings.json |
 | `CLAUDE_CODE_ENABLE_TASKS` | Enable structured task tracking | `true` | settings.json |
-| `CLAUDE_CODE_EFFORT_LEVEL` | Response effort level (`low`, `medium`, `high`) | `high` | settings.json |
+| `CLAUDE_CODE_EFFORT_LEVEL` | Response effort level (`low`, `medium`, `high`, `xhigh`, `max`). Only set on opus-4-7 profiles; opus-4-5/4-6 profiles use `MAX_THINKING_TOKENS` token budgets instead. | `max` (opus-4-7); unset (opus-4-5/4-6) | settings.json |
 | `CLAUDE_CODE_PLAN_MODE_INTERVIEW_PHASE` | Enable interview phase in plan mode | `true` | settings.json |
 | `CLAUDE_CODE_PLAN_V2_AGENT_COUNT` | Number of agents in plan mode v2 | `3` | settings.json |
 | `CLAUDE_CODE_PLAN_MODE_REQUIRED` | Require teammates to run in plan mode until approved | `true` | settings.json |
@@ -150,7 +150,7 @@ Applied when Claude Code starts. These are set inside the `env` block.
 {
   "env": {
     "ANTHROPIC_MODEL": "claude-sonnet-4-6",
-    "CLAUDE_CODE_EFFORT_LEVEL": "medium"
+    "CLAUDE_CODE_EFFORT_LEVEL": "max"
   }
 }
 ```

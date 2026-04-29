@@ -10,6 +10,7 @@ description: >-
   specs (use /build).
 version: 1.0.0
 argument-hint: ""
+effort: max
 ---
 
 # Spec Dashboard

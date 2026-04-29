@@ -20,6 +20,8 @@
 
 ### Configuration
 
+- **Dangerous-mode permission prompt skipped by default** — `skipDangerousModePermissionPrompt: true` is now set in `settings.base.json` and propagates to all five generated profiles. Suppresses the one-time bypass-permissions confirmation on new devcontainers.
+- **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
 - **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
 - **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
@@ -47,6 +49,10 @@
 - **New guide: Windows Networking** — comprehensive WSL 2 mirrored networking setup for Windows users; recommended approach for port forwarding, replacing `dbr` on Windows
 - **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
 - **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
+
+### Agent System
+
+- **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
 
 ### Plugin Cleanup
 
