@@ -74,6 +74,7 @@ Variables set by the DevContainer environment that define workspace paths.
 | `CLAUDE_CONFIG_DIR` | Claude configuration directory | `/home/vscode/.claude` | devcontainer.json |
 | `GH_CONFIG_DIR` | GitHub CLI configuration directory | `/workspaces/.gh` | devcontainer.json |
 | `TMPDIR` | Temporary files directory | `/workspaces/.tmp` | devcontainer.json |
+| `HERMES_CDP_ENDPOINT` | Chrome CDP endpoint for Hermes/browser tooling inside the container | `http://192.168.65.254:9223` | devcontainer.json |
 | `CLAUDECODE` | Set to `null` to unset the detection flag, enabling nested Claude Code sessions | `null` | devcontainer.json |
 
 ## Tool-Specific Variables
@@ -86,6 +87,7 @@ Variables that configure individual tools within the container.
 | `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) _(only when ccms is enabled)_ |
 | `OPENAI_API_KEY` | codex | OpenAI API key for Codex CLI authentication |
 | `CODEX_HOME` | codex | Override Codex config directory (default: `~/.codex/`) |
+| `HERMES_CDP_ENDPOINT` | hermes / browser tooling | Host Chrome CDP endpoint; Windows uses the `.devcontainer\scripts\start-hermes-chrome.ps1` portproxy on port 9223. Use the resolved IPv4 address for `host.docker.internal`; Chrome rejects DNS Host headers. |
 | `RUFF_CONFIG` | ruff | Path to ruff configuration file |
 | `BIOME_CONFIG_PATH` | biome | Path to biome configuration file |
 

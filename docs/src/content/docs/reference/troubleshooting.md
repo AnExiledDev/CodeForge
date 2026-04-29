@@ -150,22 +150,25 @@ Symptom: `agent-browser connect` fails with connection refused, timeout, or empt
 
 Check these in order:
 
-1. **Are you using `host.docker.internal`?** Inside a container, `localhost` refers to the container itself. Use `host.docker.internal:9222` to reach the host.
+1. **Are you using the resolved IPv4 address?** Inside a container, `localhost` refers to the container itself. Chrome CDP also rejects `Host: host.docker.internal`, so resolve `host.docker.internal` to IPv4 and use that IP with port 9223 after running `.devcontainer\scripts\start-hermes-chrome.ps1` on the host.
 
 2. **Is Chrome remote debugging actually enabled?**
-   - Chrome 144+: Open `chrome://inspect/#remote-debugging` and check that "Enable remote debugging" is checked.
-   - Chrome 136–143: Chrome must be launched with both `--remote-debugging-port=9222` **and** `--user-data-dir`. Chrome 136+ silently ignores the port flag without a user data directory.
-   - Verify from the host: `curl http://localhost:9222/json/version` should return JSON.
+   - Windows: run `.\.devcontainer\scripts\start-hermes-chrome.ps1` from an Administrator PowerShell. It launches Chrome on `127.0.0.1:9222` and creates `0.0.0.0:9223 -> 127.0.0.1:9222`.
+   - Chrome 136+: Chrome must be launched with both `--remote-debugging-port=9222` **and** `--user-data-dir`. Chrome 136+ silently ignores the port flag without a user data directory.
+   - Verify from the Windows host: `Invoke-WebRequest http://127.0.0.1:9222/json/version` and `Invoke-WebRequest http://127.0.0.1:9223/json/version` should return JSON.
 
 3. **Is the port reachable from the container?**
    ```bash
-   curl http://host.docker.internal:9222/json/version
+   CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+   curl http://$CDP_HOST:9223/json/version
    ```
-   If this fails, the host is not reachable. Windows users should enable [mirrored networking](/start-here/windows-networking/).
+   If this fails, the portproxy/firewall path is not reachable. Windows users should enable [mirrored networking](/start-here/windows-networking/) and check `netsh interface portproxy show v4tov4`.
 
 4. **Is another Chrome instance blocking the port?** Only one Chrome process can listen on a given debug port. Close other Chrome instances or use a different port.
 
-5. **Firewall blocking?** Windows Firewall may block incoming connections on port 9222. Add an inbound rule or temporarily disable the firewall to test.
+5. **Firewall blocking?** Windows Firewall may block incoming connections on port 9223. The host helper creates an inbound rule named `Hermes Chrome CDP 9223`; confirm it is enabled.
+
+6. **Seeing HTTP 500 from Chrome?** If the response says `Host header is specified and is not an IP address or localhost`, you used `host.docker.internal` directly. Use the resolved IPv4 address instead.
 
 ## Mirrored Networking Not Working
 

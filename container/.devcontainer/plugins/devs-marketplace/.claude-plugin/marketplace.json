@@ -52,7 +52,7 @@
 		},
 		{
 			"name": "agent-system",
-			"description": "4 custom agents with built-in agent redirection (15 archived for rewrite)",
+			"description": "4 custom agents with built-in agent redirection and /verify-tests skill (15 archived for rewrite)",
 			"version": "1.0.0",
 			"source": "./plugins/agent-system",
 			"category": "development",
@@ -84,7 +84,7 @@
 		},
 		{
 			"name": "auto-code-quality",
-			"description": "Self-contained code quality: auto-format + auto-lint edited files (Ruff/Black, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
+			"description": "Code quality with /cq skill: file tracking, syntax validation, background-task-aware quality gate, on-demand format + lint + test (Ruff, Biome, gofmt, shfmt, dprint, rustfmt, Pyright, ShellCheck, go vet, hadolint, clippy)",
 			"version": "1.0.0",
 			"source": "./plugins/auto-code-quality",
 			"category": "development",

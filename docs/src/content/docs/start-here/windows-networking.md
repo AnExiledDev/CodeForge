@@ -84,31 +84,41 @@ Some Docker Desktop versions exhibit TCP connection stalls when communicating th
 
 Mirrored networking makes host Chrome CDP (Chrome DevTools Protocol) connections straightforward. After enabling mirrored mode, `host.docker.internal` reliably resolves to your Windows host.
 
-### Chrome 144+ (Recommended)
+### Recommended Windows Setup
 
-No command-line launch needed:
-
-1. Open `chrome://inspect/#remote-debugging` in Chrome
-2. Check **"Enable remote debugging"**
-3. Chrome listens on port 9222 by default
-
-### Chrome 136–143
-
-Launch Chrome with explicit flags from PowerShell:
+Run the helper from an Administrator PowerShell on the Windows host:
 
 ```powershell
-& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --user-data-dir="$env:TEMP\chrome-debug"
+.\.devcontainer\scripts\start-hermes-chrome.ps1
+```
+
+The helper keeps Chrome CDP local-only on Windows and exposes a separate Docker-facing proxy:
+
+```text
+Chrome CDP:            127.0.0.1:9222
+Windows portproxy:     0.0.0.0:9223 -> 127.0.0.1:9222
+Container endpoint:    resolved host.docker.internal IPv4, port 9223
+```
+
+Cleanup removes the portproxy and firewall rule:
+
+```powershell
+.\.devcontainer\scripts\start-hermes-chrome.ps1 -Cleanup
 ```
 
 :::caution[Chrome 136+ requires --user-data-dir]
-Chrome 136 and later silently ignores `--remote-debugging-port` unless `--user-data-dir` is also specified. Always include both flags.
+Chrome 136 and later silently ignores `--remote-debugging-port` unless `--user-data-dir` is also specified. The helper always launches Chrome with a non-default profile directory.
 :::
 
 ### Connect from the Container
 
 ```bash
-agent-browser connect host.docker.internal:9222
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+curl http://$CDP_HOST:9223/json/version
+agent-browser connect $CDP_HOST:9223
 ```
+
+Chrome CDP rejects requests whose HTTP `Host` header is a DNS name such as `host.docker.internal`. Resolve `host.docker.internal` to IPv4 first, then connect with the IP address.
 
 See the [agent-browser CLI reference](/reference/cli-tools/#agent-browser) for the full workflow.
 
@@ -159,7 +169,7 @@ After enabling mirrored networking, confirm these work:
 
 | Check | Command (from inside container) | Expected |
 |-------|-------------------------------|----------|
-| Host reachable | `curl -s http://host.docker.internal:9222/json/version` | JSON response (if Chrome debugging is active) |
+| Host Chrome CDP reachable | `CDP_HOST=$(getent ahostsv4 host.docker.internal \| awk 'NR==1 {print $1}') && curl -s http://$CDP_HOST:9223/json/version` | JSON response after running `.devcontainer\scripts\start-hermes-chrome.ps1` |
 | Internet works | `curl -s https://httpbin.org/ip` | Your public IP |
 | Port visible on host | Start `python -m http.server 8080` in container, then `curl localhost:8080` from PowerShell | HTML response |
 

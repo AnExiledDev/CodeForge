@@ -26,6 +26,7 @@
 - **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
 - **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
+- **Auto mode disabled by default** — `disableAutoMode: "disable"` added to the base settings profile, removing the `auto` permission mode from the Shift+Tab cycle and rejecting `--permission-mode auto` at startup. Users who want auto mode back can override via `~/.claude/settings.json`.
 
 ### oh-my-claude
 
@@ -53,6 +54,7 @@
 ### Agent System
 
 - **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
+- **Replaced automatic test hooks with `/verify-tests` skill** — removed `TaskCompleted` hook (`task-completed-check.py`), implementer Stop hook (`verify-no-regression.py`), refactorer PostToolUse hook (`verify-no-regression.py`), and test-writer Stop hook (`verify-tests-pass.py`). Test verification is now on-demand via `/verify-tests`, which detects the project's test framework and runs the suite with structured reporting.
 
 ### Plugin Cleanup
 
@@ -62,6 +64,12 @@
 - **Removed 2 agent redirects** — `Bash→bash-exec` and `statusline-setup→statusline-config` removed from redirect map. Built-in types now fall through to Claude Code defaults.
 - **Disabled prompt-snippets plugin** — `/ps` command no longer available.
 - **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
+
+### Code Quality
+
+- **Replaced auto-format/lint/test Stop hooks with `/cq` skill** — the three Stop hooks (`format-on-stop.py`, `lint-file.py`, `advisory-test-runner.py`) that ran automatically on every stop are replaced by a single `/cq` skill that Claude invokes explicitly. Eliminates race conditions with background agents, stops firing during orchestration pauses, and lets Claude act on lint/test results instead of ignoring passive context.
+- **New quality gate Stop hook** — lightweight `quality-gate.py` (~1ms) checks whether files were edited and no background tasks are running, then blocks the stop with a prompt to run `/cq`. Deletes temp files on block to prevent loops.
+- **New task tracker hooks** — `task-tracker.py` handles `TaskCreated`/`TaskCompleted` events to maintain an active-task count. The quality gate skips blocking while tasks are running, preventing format/lint conflicts with background agents.
 
 ### CI
 

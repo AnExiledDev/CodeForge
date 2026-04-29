@@ -123,7 +123,7 @@ This requires SSH access to the container, which is available when connecting vi
 
 ## Browser Automation (CDP)
 
-For browser automation using agent-browser's host Chrome connection, `host.docker.internal:9222` is the correct CDP endpoint from inside the container. Windows users should enable [mirrored networking](/start-here/windows-networking/) for reliable host connectivity. See the agent-browser feature documentation for the full CDP workflow.
+For browser automation using agent-browser's host Chrome connection, Windows users should run `.devcontainer\scripts\start-hermes-chrome.ps1` on the host first. The PowerShell script keeps Chrome on `127.0.0.1:9222` and exposes a Docker-facing portproxy on port 9223. From the container, resolve `host.docker.internal` to IPv4, test with `curl http://$CDP_HOST:9223/json/version`, then connect with `agent-browser connect $CDP_HOST:9223`. Chrome CDP rejects DNS Host headers, so do not connect browser tools directly to `http://host.docker.internal:9223`. See [Windows Networking](/start-here/windows-networking/) and the agent-browser feature documentation for the full CDP workflow.
 
 ## Configuration
 

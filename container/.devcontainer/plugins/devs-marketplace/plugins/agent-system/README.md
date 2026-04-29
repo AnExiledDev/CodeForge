@@ -1,10 +1,10 @@
 # agent-system
 
-Claude Code plugin that provides 4 custom agents with automatic built-in agent redirection, working directory injection, read-only bash enforcement, and team quality gates. 15 additional agents are archived in `agents/_archived/` pending rewrite.
+Claude Code plugin that provides 4 custom agents with automatic built-in agent redirection, working directory injection, read-only bash enforcement, `/verify-tests` skill, and team quality gates. 15 additional agents are archived in `agents/_archived/` pending rewrite.
 
 ## What It Does
 
-Replaces Claude Code's built-in agents with enhanced custom agents that carry domain-specific instructions, safety hooks, and tailored tool configurations. Also provides team orchestration quality gates.
+Replaces Claude Code's built-in agents with enhanced custom agents that carry domain-specific instructions, safety hooks, and tailored tool configurations. Includes `/verify-tests` for on-demand test suite execution.
 
 ### Active Agents
 
@@ -32,12 +32,18 @@ The following agents are preserved in `agents/_archived/` for future rewrite:
 
 bash-exec, debug-logs, dependency-analyst, documenter, git-archaeologist, implementer, investigator, migrator, perf-profiler, refactorer, researcher, security-auditor, spec-writer, statusline-config, test-writer
 
-### Quality Gates
+### Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `/debug` | Structured log investigation and diagnosis |
+| `/verify-tests` | Run project test suite, report results, fix failures |
+
+### Orchestration Hooks
 
 | Hook | Script | Purpose |
 |------|--------|---------|
 | TeammateIdle | `teammate-idle-check.py` | Prevents teammates from going idle with incomplete tasks |
-| TaskCompleted | `task-completed-check.py` | Runs test suite before allowing task completion |
 
 ## How It Works
 
@@ -54,14 +60,6 @@ Claude calls the Task tool (spawning a subagent)
   |           +-> Already custom? -> Pass through
   |
   +-> Subagent works...
-  |
-  +-> TaskCompleted fires
-  |     |
-  |     +-> task-completed-check.py
-  |           |
-  |           +-> Detect test framework -> Run tests
-  |           +-> Tests pass? -> Allow completion
-  |           +-> Tests fail? -> Block, send feedback
   |
   +-> TeammateIdle fires (team mode)
         |
@@ -86,7 +84,6 @@ Read-only agents (explorer, architect) have their Bash access restricted by `gua
 |--------|--------|--------|
 | redirect-builtin-agents.py | Allow (or rewrite) | Block with error |
 | guard-readonly-bash.py | Allow command | Block write operation |
-| task-completed-check.py | Tests pass | Tests fail (block completion) |
 | teammate-idle-check.py | No incomplete tasks | Has incomplete tasks |
 
 ### Timeouts
@@ -95,7 +92,6 @@ Read-only agents (explorer, architect) have their Bash access restricted by `gua
 |------|---------|
 | Agent redirection (PreToolUse) | 5s |
 | Teammate idle check | 10s |
-| Task completed check | 60s |
 
 ## Installation
 
@@ -157,14 +153,13 @@ agent-system/
 +-- scripts/
 |   +-- guard-readonly-bash.py       # Read-only bash enforcement
 |   +-- redirect-builtin-agents.py   # Built-in agent redirection
-|   +-- task-completed-check.py      # Test suite quality gate
 |   +-- teammate-idle-check.py       # Incomplete task checker
-|   +-- verify-no-regression.py      # Post-edit regression tests (dormant — agents archived)
-|   +-- verify-tests-pass.py         # Test verification (dormant — agents archived)
 +-- skills/
 |   +-- _archived/
-|       +-- debug/
-|           +-- SKILL.md             # Log investigation skill (archived)
+|   |   +-- debug/
+|   |       +-- SKILL.md             # Log investigation skill (archived)
+|   +-- verify-tests/
+|       +-- SKILL.md                 # On-demand test suite runner
 +-- AGENT-REDIRECTION.md             # Redirection mechanism docs
 +-- REVIEW-RUBRIC.md                 # Agent/skill quality rubric
 +-- README.md                        # This file
