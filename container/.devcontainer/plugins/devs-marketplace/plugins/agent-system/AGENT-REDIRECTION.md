@@ -56,12 +56,10 @@ The `redirect-builtin-agents.py` hook maps Claude Code's built-in agent types to
 
 ```python
 REDIRECT_MAP = {
-    "Explore": "explorer",        # Fast codebase search
-    "Plan": "architect",          # Implementation planning
+    "Explore": "explorer",            # Fast codebase search
+    "Plan": "architect",              # Implementation planning
     "general-purpose": "generalist",  # Multi-step tasks
-    "Bash": "bash-exec",          # Command execution
     "claude-code-guide": "claude-guide",
-    "statusline-setup": "statusline-config",
 }
 ```
 
@@ -198,7 +196,7 @@ This is how the auto-linter and syntax validator work — they inspect the resul
 
 ```
 agent-system/
-├── agents/                    # Agent definitions (17 .md files)
+├── agents/                    # Agent definitions (4 active .md files)
 │   ├── explorer.md
 │   ├── architect.md
 │   ├── generalist.md

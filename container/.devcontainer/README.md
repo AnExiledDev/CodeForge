@@ -358,29 +358,18 @@ All methods persist across container rebuilds via the bind-mounted `/workspaces/
 
 Agents and skills are distributed across focused plugins (replacing the former `code-directive` monolith).
 
-### Custom Agents (17) — `agent-system` plugin
+### Custom Agents (4) — `agent-system` plugin
 
 Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` provide enhanced behavior when spawned via the `Task` tool. The `redirect-builtin-agents.py` hook transparently swaps built-in agent types to these custom agents.
 
 | Agent | Purpose |
 |-------|---------|
 | `architect` | System design and implementation planning |
-| `bash-exec` | Command execution specialist |
 | `claude-guide` | Claude Code feature guidance |
-| `debug-logs` | Log analysis and error diagnosis |
-| `dependency-analyst` | Dependency analysis and upgrades |
-| `documenter` | Documentation, specs, and spec lifecycle |
 | `explorer` | Fast codebase search and navigation |
 | `generalist` | General-purpose multi-step tasks |
-| `git-archaeologist` | Git history forensics |
-| `migrator` | Code migration and upgrades |
-| `perf-profiler` | Performance profiling |
-| `refactorer` | Code refactoring with regression checks |
-| `researcher` | Research and information gathering |
-| `security-auditor` | Security vulnerability analysis |
-| `spec-writer` | Specification and requirements authoring |
-| `statusline-config` | ccstatusline configuration |
-| `test-writer` | Test authoring with pass verification |
+
+15 previously active agents have been archived to `agents/_archived/`.
 
 ### General Skills (23) — `skill-engine` plugin
 
