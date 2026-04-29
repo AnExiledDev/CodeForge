@@ -78,6 +78,8 @@ echo "  agent-browser close          # Close browser"
 echo ""
 echo "Host Chrome connection (if container browser insufficient):"
 echo "  # Windows: run .devcontainer\\scripts\\start-hermes-chrome.ps1 on the host"
-echo "  CDP_HOST=\$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print \$1}')"
-echo "  curl http://\$CDP_HOST:9223/json/version"
-echo "  agent-browser connect \$CDP_HOST:9223"
+cat <<'USAGE'
+  CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+  curl http://$CDP_HOST:9223/json/version
+  agent-browser connect $CDP_HOST:9223
+USAGE

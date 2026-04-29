@@ -36,6 +36,7 @@ def main():
 
     session_id = input_data.get("session_id", "")
     if not session_id:
+        print("quality-gate: session_id missing from hook input", file=sys.stderr)
         sys.exit(0)
 
     # Skip if background tasks are still running
@@ -78,13 +79,6 @@ def main():
         sys.exit(0)
 
     # Block and tell Claude to run /cq
-    # Delete temp files so the NEXT stop (after /cq runs) exits clean
-    for prefix in ("claude-cq-edited", "claude-cq-lint"):
-        try:
-            os.unlink(f"/tmp/{prefix}-{session_id}")
-        except OSError:
-            pass
-
     file_list = "\n".join(f"  - {p}" for p in paths)
     json.dump(
         {
@@ -97,6 +91,14 @@ def main():
         },
         sys.stdout,
     )
+
+    # Delete temp files so the NEXT stop (after /cq runs) exits clean
+    for prefix in ("claude-cq-edited", "claude-cq-lint"):
+        try:
+            os.unlink(f"/tmp/{prefix}-{session_id}")
+        except OSError:
+            pass
+
     sys.exit(0)
 
 
