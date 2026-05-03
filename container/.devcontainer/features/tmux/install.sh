@@ -32,6 +32,7 @@ cat > "$TMUX_CONF" << 'EOF'
 # Theme: Catppuccin Mocha
 
 # ── Core Settings ──────────────────────────────────────────────
+set -g default-shell /usr/bin/zsh
 set -g mouse on
 set -g base-index 1
 setw -g pane-base-index 1

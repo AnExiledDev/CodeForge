@@ -4,6 +4,10 @@
 
 ### Terminal
 
+- **Zsh completion stack** — new `zsh-completions` feature installs fzf, carapace-bin, zsh-autosuggestions, zsh-syntax-highlighting, and fzf-tab at build time. Tab completion now works for all CLI tools (docker, npm, git flags, codeforge subcommands, claude flags) with fuzzy matching via fzf-tab.
+- **Default shell set to zsh** — `chsh` runs at build time so `$SHELL` is `/usr/bin/zsh`. Tmux `default-shell` also set to zsh, so new panes spawn zsh regardless of entry method.
+- **Carapace multi-shell bridge** — `setup-terminal.sh` configures carapace with `CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'` after OMZ sourcing, providing completions for tools that only ship fish/bash completers. Installed via GitHub releases `.deb` with tarball fallback (apt.fury.io GPG key is defunct).
+- **OMZ plugins expanded** — plugins list now includes `docker`, `docker-compose`, `npm`, `node`, `python`, `pip`, `fzf-tab`, `zsh-autosuggestions`, and `zsh-syntax-highlighting` (was just `git`).
 - **Alt+Enter newline keybinding** — added `alt+enter` → `chat:newline` to the default Claude Code keybindings. Windows Terminal doesn't support the Kitty keyboard protocol, so Shift+Enter and Ctrl+Enter send identical bytes to plain Enter. Alt+Enter sends ESC+CR, which is universally distinct and works reliably as a newline key.
 - **Shell terminal keybinds hardened** — disabled `Ctrl+Z` (suspend, which closes Docker-attached panes), `Ctrl+S/Q` (flow control freeze), and `Ctrl+W` (conflicts with Windows Terminal close-tab). Rebound `Ctrl+\` (SIGQUIT) to `Ctrl+]` and `Ctrl+D` (EOF) to `Ctrl+^` as emergency-only alternatives. Also unbound zsh's `Alt+W` (copy-region-as-kill) and `Alt+Q` (push-line) to free those keys for terminal use.
 
