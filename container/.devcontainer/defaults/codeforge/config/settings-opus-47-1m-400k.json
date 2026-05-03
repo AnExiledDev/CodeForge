@@ -89,10 +89,7 @@
 		]
 	},
 	"permissions": {
-		"allow": [
-			"Read(/workspaces/*)",
-			"WebFetch(domain:*)"
-		],
+		"allow": ["Read(/workspaces/*)", "WebFetch(domain:*)"],
 		"deny": [],
 		"ask": [],
 		"defaultMode": "plan",

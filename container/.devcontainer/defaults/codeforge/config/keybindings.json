@@ -1,10 +1,10 @@
 {
-  "$schema": "https://www.schemastore.org/claude-code-keybindings.json",
-  "$docs": "https://code.claude.com/docs/en/keybindings",
-  "bindings": [
-    {
-      "key": "alt+enter",
-      "command": "chat:newline"
-    }
-  ]
+	"$schema": "https://www.schemastore.org/claude-code-keybindings.json",
+	"$docs": "https://code.claude.com/docs/en/keybindings",
+	"bindings": [
+		{
+			"key": "alt+enter",
+			"command": "chat:newline"
+		}
+	]
 }
