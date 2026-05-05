@@ -72,8 +72,7 @@ Variables set by the DevContainer environment that define workspace paths.
 |----------|-------------|---------|--------|
 | `WORKSPACE_ROOT` | Workspace root directory | `/workspaces` | devcontainer.json |
 | `CLAUDE_CONFIG_DIR` | Claude configuration directory | `/home/vscode/.claude` | devcontainer.json |
-| `GH_CONFIG_DIR` | GitHub CLI configuration directory | `/workspaces/.gh` | devcontainer.json |
-| `TMPDIR` | Temporary files directory | `/workspaces/.tmp` | devcontainer.json |
+| `GH_CONFIG_DIR` | GitHub CLI configuration directory | `/home/vscode/.config/gh` | devcontainer.json |
 | `HERMES_CDP_ENDPOINT` | Chrome CDP endpoint for Hermes/browser tooling inside the container | `http://192.168.65.254:9223` | devcontainer.json |
 | `CLAUDECODE` | Set to `null` to unset the detection flag, enabling nested Claude Code sessions | `null` | devcontainer.json |
 

@@ -11,6 +11,8 @@ Hooks are scripts that execute at specific points during a Claude Code session. 
 
 CodeForge uses eight hook points, each serving a different purpose in the session lifecycle:
 
+Claude Code Karma also registers read-only tracking hooks in CodeForge's generated `settings.json` profiles for `SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Notification`, `Stop`, `SubagentStart`, `SubagentStop`, and `SessionEnd`. These hooks call CodeForge wrapper commands and are managed from `settings.base.json`, not from Karma's Settings UI.
+
 ### PreToolUse
 
 Fires **before** a tool executes. Used for validation and gating.

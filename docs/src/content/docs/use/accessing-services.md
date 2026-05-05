@@ -19,6 +19,8 @@ If you use VS Code, you usually only need this page when automatic forwarding is
 | devcontainer-bridge (`dbr`) | Any terminal client | Dynamic — polls `/proc/net/tcp` | Host daemon required |
 | SSH tunneling | Any SSH client | Manual | Per-port command |
 
+Default CodeForge services include Claude Code Karma on port `7847` and the Karma API on port `7848`.
+
 ## Windows: Mirrored Networking (Recommended)
 
 If you're on Windows with WSL 2, **mirrored networking** is the recommended approach. It makes `localhost` work bidirectionally between your host and the container — no forwarding tools needed.
@@ -102,6 +104,9 @@ For one-off port forwarding or environments where `dbr` isn't available, use SSH
 ```bash
 # Forward a single port
 ssh -L 3000:localhost:3000 <container-user>@<container-host>
+
+# Forward Claude Code Karma and its API
+ssh -L 7847:localhost:7847 -L 7848:localhost:7848 <container-user>@<container-host>
 
 # Forward multiple ports
 ssh -L 3000:localhost:3000 -L 8080:localhost:8080 <container-user>@<container-host>

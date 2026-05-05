@@ -17,7 +17,7 @@ Common fields include:
 {
   "model": "opus[1m]",
   "effortLevel": "high",
-  "cleanupPeriodDays": 60,
+  "cleanupPeriodDays": 90,
   "autoCompact": true,
   "alwaysThinkingEnabled": true,
   "teammateMode": "auto",
@@ -92,6 +92,12 @@ Status line behavior is also configured in `settings.json`:
   }
 }
 ```
+
+## Karma Settings Boundary
+
+Claude Code Karma is installed by default and can display the active Claude settings. CodeForge patches Karma so the Settings page and Settings API are read-only.
+
+Persistent setting changes belong in `.codeforge/config/settings.json` or, for shipped defaults, `defaults/codeforge/config/settings.base.json`. Do not rely on Karma to modify `~/.claude/settings.json`.
 
 ## Configuration Precedence
 

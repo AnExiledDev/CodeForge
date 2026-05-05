@@ -26,8 +26,8 @@ Other pages should link here instead of repeating counts.
 | Plugins | 17 |
 | Custom agents | 19 |
 | Skills | 34 |
-| CLI tools and utilities | 25 |
-| DevContainer features | 23 |
+| CLI tools and utilities | 26 |
+| DevContainer features | 26 |
 
 These counts are the canonical inventory numbers. Some deeper reference pages intentionally include adjacent items such as runtimes or language servers for convenience, but they should link back here for the official counts.
 
@@ -50,6 +50,7 @@ These counts are the canonical inventory numbers. Some deeper reference pages in
 |------|--------|-------|
 | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc` | Default | Session launch commands |
 | `check-setup`, `cc-tools`, `ccusage`, `claude-monitor` | Default | Everyday operational tools |
+| `claude-code-karma`, `karma-status` | Default | Local Claude Code session dashboard, live tracking, and generated titles |
 | LSP servers | Disabled by default | Require feature enablement and plugin toggle |
 | `ccms` | Deprecated | Replaced by `codeforge session search` |
 | `ccburn` | Disabled by default | Older burn-rate view, largely superseded by `ccstatusline` |
