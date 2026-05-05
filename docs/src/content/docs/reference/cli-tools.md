@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-CodeForge includes 25 core CLI tools and utilities in the default inventory.
+CodeForge includes 26 core CLI tools and utilities in the default inventory.
 
 This page also includes closely related runtimes, package managers, and language servers so you can see the full command-line surface in one place.
 
@@ -125,6 +125,24 @@ Real-time terminal-based Claude session monitor. Shows active sessions and their
 # Start the session monitor
 claude-monitor
 ```
+
+### claude-code-karma / karma-status
+
+Claude Code Karma is the default local web dashboard for Claude Code session history, live sessions, analytics, hooks, plugins, tools, and generated session titles. CodeForge starts the dashboard automatically.
+
+```bash
+# Show dashboard process status and logs
+karma-status
+
+# Dashboard and API defaults
+curl http://localhost:7848/health
+```
+
+Open the dashboard at `http://localhost:7847`. The API runs on `http://localhost:7848`.
+
+:::caution[Settings are read-only]
+CodeForge owns `~/.claude/settings.json`. Karma is patched in CodeForge so its Settings page can read settings but cannot modify them.
+:::
 
 ### agent-browser
 
@@ -318,6 +336,8 @@ The table below is broader than the canonical 25-tool inventory because it also 
 | 12 | `cc-tools` | Session | List all available tools |
 | 13 | `codeforge` | Session | CodeForge CLI — session search, plugins, indexing _(experimental)_ |
 | 14 | `codeforge proxy` | Session | Launch Claude Code through mitmproxy for API traffic inspection |
+| 14a | `codeforge doctor` | Session | Environment health check — WSL filesystem, auth, caches, memory, volumes |
+| 14b | `codeforge doctor --fix` | Session | Interactive fix mode — TUI multi-select to apply fixes for detected issues |
 | 15 | `codex` | Session | OpenAI Codex CLI terminal coding agent |
 | 16 | `ccusage-codex` | Session | Codex token usage statistics |
 | 17 | `hermes` | Session | Nous Research Hermes Agent CLI (run `hermes setup` first) |

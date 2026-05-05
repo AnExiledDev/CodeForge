@@ -49,6 +49,22 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Performance
+
+- **TMPDIR removed from remoteEnv** — previously set to `/workspaces/.tmp` (bind mount, slow on NTFS/WSL). Now unset, defaulting to the container's `/tmp` (overlay/tmpfs). Scripts using `${TMPDIR:-/tmp}` already handle this correctly. Any user scripts depending on `$TMPDIR` being a persistent location should use an explicit path instead.
+- **GH_CONFIG_DIR moved to Docker named volume** — changed from `/workspaces/.gh` (bind mount) to `/home/vscode/.config/gh` backed by a `codeforge-gh-config` named volume. Faster I/O and no gitignore hazard. One-time `gh auth login` required after first rebuild.
+- **Cache volume mounts added** — `~/.cache`, `~/.npm`, and `~/.bun/install/cache` are now backed by Docker named volumes (`codeforge-cache`, `codeforge-npm-cache`, `codeforge-bun-cache`), keeping high-churn package manager caches off the bind mount.
+- **Docker Compose migration** — devcontainer now uses `docker-compose.yml` for volume management instead of inline `mounts` in devcontainer.json. Volume names are fixed (no `${devcontainerId}` suffix), simplifying volume management. Existing `${devcontainerId}`-suffixed volumes are orphaned — run `docker volume prune` to clean up, and re-authenticate `gh auth login` on first rebuild.
+- **Dynamic volume mounts** — `initializeCommand` runs `generate-mounts.mjs` on the host before container build, reading `.codeforge/mounts.json` to generate a `docker-compose.codeforge.yml` override with project-specific volume mounts for high-churn directories.
+
+### CLI
+
+- **`codeforge doctor` command** — new top-level command that checks environment health: GitHub CLI auth, Git user config, workspace filesystem type (detects slow WSL/NTFS mounts), TMPDIR location, cache directory volume backing, and container memory limits. Supports `--format json` and `--no-color`.
+- **`codeforge doctor --fix`** — interactive fix mode with TUI multi-select (via @clack/prompts). Groups fixable issues by category (auth, environment, volumes, WSL), pre-selects all fixes, and applies selected fixes. Supports `--yes` for non-interactive apply, `--dry-run` for preview, and `--only <category>` for filtering.
+- **Volume candidate detection** — `codeforge doctor` now scans for high-churn directories (node_modules, .next, .nuxt, .venv, target, .turbo, etc.) on slow filesystems and recommends Docker volume mounts. Fix action writes `.codeforge/mounts.json` for automatic compose integration.
+- **WSL .wslconfig generator** — on WSL environments, `codeforge doctor` detects host RAM and generates an optimized `.wslconfig` with memory limits, swap, `autoMemoryReclaim=gradual`, and `sparseVhd=true`. Advisory-only — prints content for manual save to `%USERPROFILE%\.wslconfig`.
+- **Windows Defender exclusion guide** — on WSL environments, `codeforge doctor` provides PowerShell commands to exclude Docker and WSL processes from Windows Defender real-time scanning.
+
 ### Terminal
 
 - **Alt+Enter newline keybinding** — added `alt+enter` → `chat:newline` to the default Claude Code keybindings. Windows Terminal doesn't support the Kitty keyboard protocol, so Shift+Enter and Ctrl+Enter send identical bytes to plain Enter. Alt+Enter sends ESC+CR, which is universally distinct and works reliably as a newline key.
@@ -68,6 +84,7 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ### Configuration
 
+- **Claude session retention increased** — default `cleanupPeriodDays` is now `90` across all generated Claude settings profiles. Extended thinking remains enabled by default.
 - **Dangerous-mode permission prompt skipped by default** — `skipDangerousModePermissionPrompt: true` is now set in `settings.base.json` and propagates to all five generated profiles. Suppresses the one-time bypass-permissions confirmation on new devcontainers.
 - **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
 - **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
@@ -92,6 +109,12 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 - **Version bumped to latest** — updated from pinned 0.11.1; picks up `--auto-connect` fixes and CDP improvements through v0.26.0
 - **Host Chrome CDP documentation overhauled** — corrected Chrome version requirements (136+ needs `--user-data-dir`, 144+ has `chrome://inspect` checkbox), documented `host.docker.internal` for container-to-host networking, fixed flag naming (`--auto-connect` not `--autoConnect`), added Windows PowerShell launch commands
+
+### Claude Code Karma
+
+- **New default dashboard: `claude-code-karma`** — installs Claude Code Karma from pinned upstream commit `4067d87ee5c85eb7d2877890ba6174115f0bee2e`, starts the dashboard on port `7847`, and starts the API on port `7848`.
+- **Live tracking and titles enabled** — CodeForge now registers Karma live-session tracking hooks and the SessionEnd title generator hook in the generated Claude settings profiles.
+- **Settings protected** — Karma is patched to keep Claude settings read-only. CodeForge owns `~/.claude/settings.json`; Karma can read settings but cannot write them from its API or Settings UI.
 
 ### Documentation
 

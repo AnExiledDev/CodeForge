@@ -15,7 +15,9 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 | `defaults/codeforge/config/disabled-hooks.json` | Disable individual plugin hooks by script name |
 | `defaults/codeforge/config/claude-code-router.json` | LLM provider routing config (deployed to ~/.claude-code-router/) |
 | `defaults/codeforge/file-manifest.json` | Controls which config files deploy and when |
-| `devcontainer.json` | Container definition: image, features, mounts |
+| `devcontainer.json` | Container definition: features, compose config, mounts |
+| `docker-compose.yml` | Base Docker Compose file: image, volumes, resource limits |
+| `.codeforge/mounts.json` | User/auto-detected volume mount configuration |
 | `.env` | Boolean flags controlling setup steps |
 
 Config files deploy via `defaults/codeforge/file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${CLAUDE_CONFIG_DIR}`, `${WORKSPACE_ROOT}`, `${HOME}`.
@@ -37,8 +39,11 @@ Config files deploy via `defaults/codeforge/file-manifest.json` on every contain
 | `ccr start` / `ccr stop` | Claude Code Router daemon control |
 | `ccr-apply` | Redeploy router config + restart daemon |
 | `ccusage` / `ccburn` | Token usage analysis / burn rate |
+| `karma-status` | Claude Code Karma dashboard process status and logs |
 | `agent-browser` | Headless Chromium (Playwright-based) |
 | `check-setup` | Verify CodeForge setup health |
+| `codeforge doctor` | Environment health check (WSL, auth, caches, memory, volumes) |
+| `codeforge doctor --fix` | Interactive fix mode — apply fixes for detected issues |
 | `dbr` | Dynamic port forwarding ([devcontainer-bridge](https://github.com/bradleybeddoes/devcontainer-bridge)) |
 | `cc-tools` | List all installed tools with versions |
 
@@ -88,6 +93,8 @@ Codex CLI credentials (`~/.codex/`) are backed by a separate Docker named volume
 **Claude Code Router:** Set provider API keys (`ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`) in `.devcontainer/.secrets`. Keys are exported as env vars on container start and read at runtime by the router's `$ENV_VAR` interpolation in `~/.claude-code-router/config.json`. Edit routing rules in `defaults/codeforge/config/claude-code-router.json` and run `ccr-apply` to redeploy.
 
 **oh-my-claude:** The local `features/oh-my-claude` feature is opt-in. It installs the OMC CLI and generated agents, skips OMC hooks/MCP/statusline, and preserves CodeForge-managed `~/.claude/settings.json`. OMC proxy sessions are launched per session with `omc cc` or the `omc-cc` helper; do not add a post-start OMC daemon.
+
+**Claude Code Karma:** The local `features/claude-code-karma` feature is default-on. It installs Karma from a pinned git ref, starts the UI on port `7847` and API on port `7848`, and patches Karma so its Settings API/UI are read-only. CodeForge owns `~/.claude/settings.json`; add Karma hooks in `defaults/codeforge/config/settings.base.json`, not from Karma.
 
 ## Modifying Behavior
 

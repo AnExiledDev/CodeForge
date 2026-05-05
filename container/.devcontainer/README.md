@@ -155,9 +155,11 @@ Expected output shows your authenticated account and token scopes.
 
 ### Credential Persistence
 
-GitHub CLI credentials are automatically persisted across container rebuilds. The container is configured to store credentials in `/workspaces/.gh/` (via `GH_CONFIG_DIR`), which is part of the bind-mounted workspace. Claude Code credentials persist via a Docker named volume mounted at `~/.claude/`.
+GitHub CLI credentials are persisted across container rebuilds via a Docker named volume mounted at `~/.config/gh/` (via `GH_CONFIG_DIR`). Claude Code credentials persist via a separate Docker named volume mounted at `~/.claude/`.
 
 **You only need to authenticate once.** After running `gh auth login` or configuring `.secrets`, your credentials will survive container rebuilds and be available in future sessions.
+
+> **Note:** If upgrading from a previous CodeForge version, you'll need to run `gh auth login` once after your first rebuild. Previous credentials in `/workspaces/.gh/` are not migrated to the new volume.
 
 ## Using Claude Code
 
@@ -251,7 +253,8 @@ curl http://$CDP_HOST:9223/json/version
 | `ccburn` | Visual token burn rate tracker with pace indicators |
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `claude-monitor` | Real-time usage tracking |
-| `codeforge-dashboard` | Session analytics dashboard — auto-launches on start (port 7847) |
+| `karma-status` | Claude Code Karma dashboard status and logs |
+| `claude-code-karma` | Session analytics dashboard — auto-launches on start (UI port 7847, API port 7848) |
 | `ccr` | Claude Code Router — routes API calls to alternate LLM providers (auto-starts on port 3456) |
 
 ## Configuration
@@ -287,9 +290,12 @@ To add a custom config file, append an entry to `file-manifest.json`:
 ```
 
 Key defaults:
-- **Model**: Claude Opus 4-6
+- **Model**: Claude Opus 4-7
 - **Default mode**: Plan (prompts before executing)
 - **Max output tokens**: 64,000
+- **Session retention**: 90 days
+
+Claude Code Karma can read these settings in its dashboard, but CodeForge patches Karma so it cannot write `~/.claude/settings.json`.
 
 ### Keybindings
 
@@ -321,6 +327,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `tmux` | Terminal multiplexer with Catppuccin theme for Agent Teams |
 | `agent-browser` | Headless browser automation for AI agents |
 | `claude-monitor` | Real-time token usage monitoring with ML predictions |
+| `claude-code-karma` | Local Claude Code session analytics dashboard with live tracking and generated titles |
 | `ccusage` | Usage analytics CLI |
 | `ccburn` | Visual token burn rate tracker with pace indicators |
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
@@ -334,7 +341,6 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `hadolint` | Dockerfile linter (disabled by default) |
 | `dprint` | Pluggable formatter for Markdown/YAML/TOML (disabled by default) |
 | `ccms` | Claude Code session history search |
-| `claude-session-dashboard` | Local session analytics dashboard with web UI |
 | `codex-cli` | OpenAI Codex CLI terminal coding agent |
 | `hermes-agent` | Nous Research Hermes Agent CLI (interactive `hermes setup` on first use) |
 | `notify-hook` | Desktop notifications on Claude completion |
@@ -364,7 +370,7 @@ Three methods for providing GitHub/NPM credentials, in order of precedence:
 2. **`.secrets` file** — Create `.devcontainer/.secrets` with token values (see template at `.secrets.example`). Auto-configured by `setup-auth.sh` on container start
 3. **Interactive login** — Run `gh auth login` for GitHub CLI, then set git identity manually
 
-All methods persist across container rebuilds via the bind-mounted `/workspaces/.gh/` directory.
+All methods persist across container rebuilds via a Docker named volume at `~/.config/gh/`.
 
 4. **`.secrets` file with `CLAUDE_AUTH_TOKEN`** — Long-lived Claude auth token from `claude setup-token`. Auto-creates `~/.claude/.credentials.json` on container start.
 5. **`.secrets` file with `OPENAI_API_KEY`** — OpenAI API key for Codex CLI. Auto-creates `~/.codex/auth.json` on container start.
