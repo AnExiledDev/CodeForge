@@ -28,9 +28,10 @@
 		"prepublishOnly": "bun run build && bun test"
 	},
 	"dependencies": {
+		"@clack/prompts": "^1.3.0",
 		"@devcontainers/cli": "^0.71.0",
-		"commander": "^13.0.0",
-		"chalk": "^5.4.0"
+		"chalk": "^5.4.0",
+		"commander": "^13.0.0"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.3.10",

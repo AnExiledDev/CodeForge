@@ -9,6 +9,7 @@ import { registerContainerLsCommand } from "./commands/container/ls.js";
 import { registerContainerRebuildCommand } from "./commands/container/rebuild.js";
 import { registerContainerShellCommand } from "./commands/container/shell.js";
 import { registerContainerUpCommand } from "./commands/container/up.js";
+import { registerDoctorCommand } from "./commands/doctor/index.js";
 import { registerIndexBuildCommand } from "./commands/index/build.js";
 import { registerIndexCleanCommand } from "./commands/index/clean.js";
 import { registerIndexSearchCommand } from "./commands/index/search.js";
@@ -104,6 +105,7 @@ registerContainerLsCommand(container);
 registerContainerShellCommand(container);
 
 registerProxyCommand(program);
+registerDoctorCommand(program);
 
 // Proxy middleware: when outside container and not --local, proxy existing commands into container
 program.hook("preAction", async (_thisCommand, actionCommand) => {
