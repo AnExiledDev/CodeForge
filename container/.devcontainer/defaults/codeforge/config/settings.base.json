@@ -1,5 +1,5 @@
 {
-	"cleanupPeriodDays": 60,
+	"cleanupPeriodDays": 90,
 	"autoCompact": true,
 	"alwaysThinkingEnabled": true,
 	"skipDangerousModePermissionPrompt": true,
@@ -94,7 +94,105 @@
 	},
 	"enabledMcpjsonServers": [],
 	"disabledMcpjsonServers": [],
-	"hooks": {},
+	"hooks": {
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"Notification": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"SubagentStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"SubagentStop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"SessionEnd": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "karma-title-generator",
+						"timeout": 15
+					}
+				]
+			}
+		]
+	},
 	"statusLine": {
 		"type": "command",
 		"command": "/usr/local/bin/ccstatusline-wrapper"

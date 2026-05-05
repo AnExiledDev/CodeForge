@@ -39,6 +39,9 @@ function runTests() {
 		".devcontainer/features/oh-my-claude/devcontainer-feature.json",
 		".devcontainer/features/oh-my-claude/install.sh",
 		".devcontainer/features/oh-my-claude/README.md",
+		".devcontainer/features/claude-code-karma/devcontainer-feature.json",
+		".devcontainer/features/claude-code-karma/install.sh",
+		".devcontainer/features/claude-code-karma/README.md",
 	];
 
 	let allFilesExist = true;

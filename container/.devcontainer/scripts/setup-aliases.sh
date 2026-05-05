@@ -98,7 +98,7 @@ for rc in ~/.bashrc ~/.zshrc; do
 
 ${BLOCK_START}
 export CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR}"
-export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/workspaces/.gh}"
+export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/home/vscode/.config/gh}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -190,7 +190,7 @@ cc-tools() {
   echo "━━━━━━━━━━━━━━━━━━━━━━━━"
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
-  for cmd in claude cc cc5 cc6 cc61 cc7 cc71 ccw ccw5 ccw6 ccw61 ccw7 ccw71 ccraw cc-orc cc-orc5 cc-orc6 cc-orc61 cc-orc7 cc-orc71 codeforge ccr omc omc-cc ccusage ccburn claude-monitor codex ccusage-codex \\
+  for cmd in claude cc cc5 cc6 cc61 cc7 cc71 ccw ccw5 ccw6 ccw61 ccw7 ccw71 ccraw cc-orc cc-orc5 cc-orc6 cc-orc61 cc-orc7 cc-orc71 codeforge ccr omc omc-cc ccusage ccburn claude-monitor karma-status karma-live-session-tracker karma-title-generator codex ccusage-codex \\
              ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
              agent-browser gh docker git jq tmux bun go infocmp; do

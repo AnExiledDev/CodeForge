@@ -77,11 +77,11 @@ tree-sitter (JS/TS/Python), ast-grep, Pyright, TypeScript LSP
 
 ### Claude Code Tools
 
-`claude`, `cc` (wrapper), `ccw` (writing mode wrapper), `ccusage`, `ccburn`, `ccstatusline`, `claude-monitor`
+`claude`, `cc` (wrapper), `ccw` (writing mode wrapper), `ccusage`, `ccburn`, `ccstatusline`, `claude-monitor`, `karma-status`
 
-### Custom Features (21)
+### Custom Features (26)
 
-tmux, agent-browser, claude-monitor, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo
+tmux, agent-browser, claude-monitor, claude-code-karma, ccusage, ccburn, ccstatusline, ast-grep, tree-sitter, lsp-servers, biome, ruff, shfmt, shellcheck, hadolint, dprint, ccms, notify-hook, mcp-qdrant, chromaterm, kitty-terminfo, codex-cli, hermes-agent, claude-code-router, codeforge-cli, oh-my-claude
 
 ### Agents (19) & Skills (34)
 

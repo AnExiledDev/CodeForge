@@ -1,0 +1,39 @@
+{
+	"id": "claude-code-karma",
+	"version": "1.0.0",
+	"name": "Claude Code Karma Dashboard",
+	"description": "Installs Claude Code Karma, a local-first Claude Code session dashboard with live tracking and generated session titles",
+	"documentationURL": "https://github.com/JayantDevkar/claude-code-karma",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Git ref to install. Use 'none' to skip.",
+			"default": "4067d87ee5c85eb7d2877890ba6174115f0bee2e"
+		},
+		"apiPort": {
+			"type": "string",
+			"description": "Karma FastAPI port. Also used by the title-generator hook wrapper.",
+			"default": "7848"
+		},
+		"frontendPort": {
+			"type": "string",
+			"description": "Karma dashboard frontend port.",
+			"default": "7847"
+		},
+		"autostart": {
+			"type": "string",
+			"description": "Auto-start Karma API and frontend on container start",
+			"default": "true",
+			"enum": ["true", "false"]
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to own runtime data",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/node",
+		"ghcr.io/devcontainers-extra/features/uv"
+	]
+}

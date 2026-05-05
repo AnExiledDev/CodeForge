@@ -72,6 +72,12 @@ warn_check "ccr installed" "command -v ccr"
 warn_check "CCR config exists" "test -f ${HOME}/.claude-code-router/config.json"
 
 echo ""
+echo "Claude Code Karma:"
+warn_check "Karma hook wrappers installed" "command -v karma-live-session-tracker && command -v karma-title-generator"
+warn_check "Karma status command installed" "command -v karma-status"
+warn_check "Karma API responding" "curl -fsS http://localhost:${CODEFORGE_KARMA_API_PORT:-7848}/health"
+
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━"
 echo "  $PASS passed, $FAIL failed, $WARN warnings"
 
