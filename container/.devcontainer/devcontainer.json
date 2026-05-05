@@ -1,33 +1,16 @@
 {
 	"name": "CodeForge - ${localWorkspaceFolderBasename}",
-	"image": "mcr.microsoft.com/devcontainers/python:3.14",
+	"dockerComposeFile": ["docker-compose.yml", "docker-compose.codeforge.yml"],
+	"service": "codeforge",
+	"initializeCommand": "node .devcontainer/scripts/generate-mounts.mjs",
 
 	"workspaceFolder": "/workspaces",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
 
-	"mounts": [
-		{
-			"source": "codeforge-claude-config-${devcontainerId}",
-			"target": "/home/vscode/.claude",
-			"type": "volume"
-		},
-		{
-			"source": "codeforge-codex-config-${devcontainerId}",
-			"target": "/home/vscode/.codex",
-			"type": "volume"
-		},
-		{
-			"source": "codeforge-hermes-config-${devcontainerId}",
-			"target": "/home/vscode/.hermes",
-			"type": "volume"
-		}
-	],
-
 	"remoteEnv": {
 		"WORKSPACE_ROOT": "/workspaces",
 		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
-		"GH_CONFIG_DIR": "/workspaces/.gh",
-		"TMPDIR": "/workspaces/.tmp",
+		"GH_CONFIG_DIR": "/home/vscode/.config/gh",
 		"HERMES_CDP_ENDPOINT": "http://host.docker.internal:9223",
 		"TERM": "${localEnv:TERM:xterm-256color}",
 		"COLORTERM": "truecolor",
@@ -119,6 +102,7 @@
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
+		"./features/claude-code-karma",
 		"./features/ccusage",
 		"./features/claude-code-router",
 		"./features/oh-my-claude",
@@ -185,6 +169,13 @@
 			"installer": "uv",
 			"username": "automatic"
 		},
+		"./features/claude-code-karma": {
+			"version": "4067d87ee5c85eb7d2877890ba6174115f0bee2e",
+			"apiPort": "7848",
+			"frontendPort": "7847",
+			"autostart": "true",
+			"username": "automatic"
+		},
 		// ccburn — disabled; replaced by native ccstatusline session-usage/weekly-usage widgets
 		// "./features/ccburn": {
 		// 	"version": "latest",
@@ -226,6 +217,14 @@
 	},
 
 	"portsAttributes": {
+		"7847": {
+			"label": "Claude Code Karma",
+			"onAutoForward": "notify"
+		},
+		"7848": {
+			"label": "Claude Code Karma API",
+			"onAutoForward": "silent"
+		},
 		"*": {
 			"onAutoForward": "notify"
 		}
@@ -277,7 +276,5 @@
 				"alefragnani.project-manager"
 			]
 		}
-	},
-
-	"runArgs": ["--memory=6g", "--memory-swap=12g", "--name=codeforge"]
+	}
 }

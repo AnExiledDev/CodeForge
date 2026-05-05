@@ -1,0 +1,25 @@
+services:
+  codeforge:
+    image: mcr.microsoft.com/devcontainers/python:3.14
+    volumes:
+      # Persistent config volumes
+      - codeforge-claude-config:/home/vscode/.claude
+      - codeforge-codex-config:/home/vscode/.codex
+      - codeforge-hermes-config:/home/vscode/.hermes
+      - codeforge-gh-config:/home/vscode/.config/gh
+      # Cache volumes
+      - codeforge-cache:/home/vscode/.cache
+      - codeforge-npm-cache:/home/vscode/.npm
+      - codeforge-bun-cache:/home/vscode/.bun/install/cache
+    mem_limit: 6g
+    memswap_limit: 6g
+    container_name: codeforge
+
+volumes:
+  codeforge-claude-config:
+  codeforge-codex-config:
+  codeforge-hermes-config:
+  codeforge-gh-config:
+  codeforge-cache:
+  codeforge-npm-cache:
+  codeforge-bun-cache:
