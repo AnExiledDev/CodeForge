@@ -34,18 +34,15 @@ There is no CodeForge post-start OMC daemon. The upstream OMC CLI owns the lifec
 
 ## Provider Keys
 
-Set provider keys in `.devcontainer/.secrets`:
+Set provider keys as Docker Compose secrets in `.codeforge/secrets/` (one file per key, raw value only):
 
 ```bash
-DEEPSEEK_API_KEY=
-KIMI_API_KEY=
-ALIYUN_API_KEY=
-ZHIPU_API_KEY=
-ZAI_API_KEY=
-MINIMAX_API_KEY=
-MINIMAX_CN_API_KEY=
-OPENROUTER_API_KEY=
+echo -n "your-key" > .codeforge/secrets/deepseek_api_key
+echo -n "your-key" > .codeforge/secrets/openrouter_api_key
+# Add other provider keys as needed
 ```
+
+OMC provider keys (KIMI, ALIYUN, ZHIPU, ZAI, MINIMAX, MINIMAX_CN) are not managed by CodeForge — set them as environment variables in your shell or via OMC's own auth system.
 
 OMC also supports OAuth for selected providers. Use `omc auth list` and `omc auth login <provider>` after the container starts.
 

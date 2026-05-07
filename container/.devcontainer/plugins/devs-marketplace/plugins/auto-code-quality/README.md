@@ -4,11 +4,12 @@ Claude Code plugin that tracks edited files and runs code quality checks on dema
 
 ## What It Does
 
-Two-phase pipeline with an explicit quality gate:
+Three-phase pipeline with an explicit quality gate:
 
 1. **Track** (PostToolUse on Edit/Write) — Records which files Claude edits, validates data file syntax instantly
-2. **Gate** (Stop hook) — Lightweight check: if files were edited and no background tasks are running, blocks the stop and prompts Claude to run `/cq`
-3. **Quality** (`/cq` skill) — Claude formats, lints (with auto-fix), and runs affected tests on all edited files
+2. **Activity** (SubagentStart/Stop, PreToolUse/PostToolUse/PostToolUseFailure on Bash) — Tracks active subagents and background bash commands so the gate stays silent during orchestration
+3. **Gate** (Stop hook) — Lightweight check: if files were edited and no background work is active, blocks the stop and prompts Claude to run `/cq`
+4. **Quality** (`/cq` skill) — Claude formats, lints (with auto-fix), and runs affected tests on all edited files
 
 The `/cq` skill can also be invoked manually at any time during a session.
 
@@ -64,12 +65,14 @@ Just work normally. When Claude stops after editing files:
 
 Type `/cq` at any point to run quality checks on all files edited so far in the session.
 
-### With background tasks
+### With background work
 
-The quality gate is background-task-aware:
-- While tasks are running, the gate stays silent (no blocking)
-- Once all tasks complete and Claude stops, the gate activates
-- This prevents race conditions from formatting files that agents are still writing
+The quality gate is background-activity-aware. It tracks two types of background work:
+
+- **Subagents** — tracked via SubagentStart/SubagentStop hooks
+- **Background bash** — tracked via PreToolUse (when `run_in_background: true`) and PostToolUse/PostToolUseFailure
+
+While any background work is active, the gate stays silent. Once all work completes and Claude stops, the gate activates. Entries older than 30 minutes are automatically pruned as stale (handles crashes/timeouts that prevent cleanup).
 
 ## Installation
 
@@ -109,16 +112,22 @@ You edit a file (Edit/Write tool)
   ├─→ collect-edited-files.py    Appends path to temp files
   └─→ syntax-validator.py        Validates JSON/YAML/TOML syntax immediately
 
-Background task spawned (TaskCreated)
-  └─→ task-tracker.py            Records task as active
+Subagent starts (SubagentStart)
+  └─→ activity-tracker.py        Records agent as active
 
-Background task done (TaskCompleted)
-  └─→ task-tracker.py            Removes task from active list
+Subagent stops (SubagentStop)
+  └─→ activity-tracker.py        Removes agent from active list
+
+Background bash starts (PreToolUse[Bash] with run_in_background: true)
+  └─→ activity-tracker.py        Records bash command as active
+
+Background bash ends (PostToolUse[Bash] or PostToolUseFailure[Bash])
+  └─→ activity-tracker.py        Removes bash command from active list
 
 Claude stops responding (Stop event)
-  └─→ quality-gate.py            Checks tasks + edited files
+  └─→ quality-gate.py            Checks active work + edited files
        │
-       ├─ Tasks active?  → skip (exit 0)
+       ├─ Work active?   → skip (exit 0)
        ├─ No edits?      → skip (exit 0)
        └─ Edits found    → block stop → Claude runs /cq
                                 → /cq formats, lints, tests
@@ -134,7 +143,7 @@ Session-scoped temp files in `/tmp/`:
 |------|---------|------------|---------|
 | `claude-cq-edited-{session_id}` | Edited file paths (format + test) | collect-edited-files.py | quality-gate.py, /cq skill |
 | `claude-cq-lint-{session_id}` | Edited file paths (lint) | collect-edited-files.py | /cq skill |
-| `claude-active-tasks-{session_id}` | Active background task IDs | task-tracker.py | quality-gate.py |
+| `claude-active-work-{session_id}` | Active background work (`type:id:timestamp`) | activity-tracker.py | quality-gate.py |
 
 All temp files are cleaned up after processing (by the gate and/or the skill).
 
@@ -169,7 +178,7 @@ Add the script name (without `.py`) to the `disabled` array in `~/.claude/disabl
 }
 ```
 
-Available hook names: `collect-edited-files`, `syntax-validator`, `task-tracker`, `quality-gate`
+Available hook names: `collect-edited-files`, `syntax-validator`, `activity-tracker`, `quality-gate`
 
 ## Conflict Warning
 
@@ -190,7 +199,7 @@ auto-code-quality/
 ├── scripts/
 │   ├── collect-edited-files.py  # File path collector (PostToolUse)
 │   ├── syntax-validator.py      # JSON/YAML/TOML validator (PostToolUse)
-│   ├── task-tracker.py          # Background task counter (TaskCreated/Completed)
+│   ├── activity-tracker.py      # Background work tracker (SubagentStart/Stop, Bash Pre/Post/Failure)
 │   └── quality-gate.py          # Stop gate — prompts /cq if needed (Stop)
 ├── skills/
 │   └── cq/

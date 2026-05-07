@@ -54,6 +54,7 @@ PROTECTED_PATTERNS = [
     (r"(^|/)secrets\.yml$", "Blocked: secrets.yml contains secrets"),
     (r"(^|/)secrets\.json$", "Blocked: secrets.json contains secrets"),
     (r"(^|/)\.secrets$", "Blocked: .secrets file contains secrets"),
+    (r"(^|/)\.codeforge/secrets/", "Blocked: .codeforge/secrets/ contains Docker secrets"),
     (r"(^|/)\.ssh/", "Blocked: .ssh/ contains sensitive authentication data"),
     (r"(^|/)\.aws/", "Blocked: .aws/ contains AWS credentials"),
     (r"(^|/)\.netrc$", "Blocked: .netrc contains authentication credentials"),

@@ -216,7 +216,7 @@ chown -R "\${KARMA_USER}:" "\${KARMA_USER_HOME}/.claude_karma" 2>/dev/null || tr
 if [ ! -f /tmp/claude-code-karma-api.pid ] || ! kill -0 "\$(cat /tmp/claude-code-karma-api.pid)" 2>/dev/null; then
 	(
 		cd "\${KARMA_HOME}/api"
-		export CLAUDE_KARMA_CLAUDE_BASE="\${CLAUDE_CONFIG_DIR:-\${KARMA_USER_HOME}/.claude}"
+		export CLAUDE_KARMA_CLAUDE_BASE="\${KARMA_USER_HOME}/.claude"
 		export CLAUDE_KARMA_CORS_ORIGINS="[\"http://localhost:\${FRONTEND_PORT}\",\"http://127.0.0.1:\${FRONTEND_PORT}\"]"
 		exec "\${KARMA_HOME}/api/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port "\${API_PORT}"
 	) >>"\${API_LOG}" 2>&1 &

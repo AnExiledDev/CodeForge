@@ -145,6 +145,8 @@ class TestCredentialFiles:
             "secrets.yml",
             "secrets.json",
             ".secrets",
+            ".codeforge/secrets/gh_token",
+            ".codeforge/secrets/claude_code_oauth_token",
         ],
     )
     def test_credential_files_are_protected(self, path: str) -> None:

@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-Task lifecycle tracker — handles TaskCreated and TaskCompleted hooks.
+Activity tracker — handles SubagentStart, SubagentStop, PreToolUse[Bash],
+PostToolUse[Bash], and PostToolUseFailure[Bash] hooks.
 
-Maintains a session-scoped file listing active background tasks.
-The quality-gate Stop hook reads this file to skip blocking when
-tasks are still running.
+Maintains a session-scoped file listing active background work items
+(subagents and background bash commands). The quality-gate Stop hook
+reads this file to skip blocking when background work is in progress.
+
+Entry format: type:id:timestamp (one per line)
+  - agent:{agent_id}:{unix_ts}
+  - bash:{tool_use_id}:{unix_ts}
 
 Always exits 0.
 """
@@ -47,25 +52,24 @@ def _locked_append(path: str, data: str) -> None:
             return
 
 
-def _locked_remove(path: str, task_id: str) -> None:
-    """Remove a task ID from the file under an exclusive lock."""
+def _locked_remove(path: str, prefix: str) -> None:
+    """Remove entries matching a type:id prefix from the file under an exclusive lock."""
     for attempt in range(_MAX_RETRIES):
         try:
             with open(path, "r+") as f:
                 fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 lines = [line.strip() for line in f if line.strip()]
 
-                try:
-                    lines.remove(task_id)
-                except ValueError:
-                    return  # Task ID not found — may have been cleaned up
+                remaining = [entry for entry in lines if not entry.startswith(prefix)]
 
-                if lines:
+                if remaining == lines:
+                    return  # Nothing matched
+
+                if remaining:
                     f.seek(0)
                     f.truncate()
-                    f.write("\n".join(lines) + "\n")
+                    f.write("\n".join(remaining) + "\n")
                 else:
-                    # No more active tasks — remove file after releasing lock
                     f.close()
                     try:
                         os.unlink(path)
@@ -92,16 +96,30 @@ def main():
         sys.exit(0)
 
     event = input_data.get("hook_event_name", "")
-    if event not in ("TaskCreated", "TaskCompleted"):
-        sys.exit(0)
+    work_file = f"/tmp/claude-active-work-{session_id}"
+    now = int(time.time())
 
-    task_id = input_data.get("task_id", "") or input_data.get("id", "") or "unknown"
-    tasks_file = f"/tmp/claude-active-tasks-{session_id}"
+    if event == "SubagentStart":
+        agent_id = input_data.get("agent_id", "")
+        if agent_id:
+            _locked_append(work_file, f"agent:{agent_id}:{now}\n")
 
-    if event == "TaskCreated":
-        _locked_append(tasks_file, task_id + "\n")
-    elif event == "TaskCompleted":
-        _locked_remove(tasks_file, task_id)
+    elif event == "SubagentStop":
+        agent_id = input_data.get("agent_id", "")
+        if agent_id:
+            _locked_remove(work_file, f"agent:{agent_id}:")
+
+    elif event == "PreToolUse":
+        tool_input = input_data.get("tool_input", {})
+        if tool_input.get("run_in_background") is True:
+            tool_use_id = input_data.get("tool_use_id", "")
+            if tool_use_id:
+                _locked_append(work_file, f"bash:{tool_use_id}:{now}\n")
+
+    elif event in ("PostToolUse", "PostToolUseFailure"):
+        tool_use_id = input_data.get("tool_use_id", "")
+        if tool_use_id:
+            _locked_remove(work_file, f"bash:{tool_use_id}:")
 
     sys.exit(0)
 

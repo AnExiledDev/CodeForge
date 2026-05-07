@@ -13,6 +13,7 @@ Runs in <10ms (just file reads).
 import json
 import os
 import sys
+import time
 
 # Hook gate — check ~/.claude/disabled-hooks.json
 _dh = os.path.join(os.path.expanduser("~"), ".claude", "disabled-hooks.json")
@@ -39,15 +40,44 @@ def main():
         print("quality-gate: session_id missing from hook input", file=sys.stderr)
         sys.exit(0)
 
-    # Skip if background tasks are still running
-    tasks_file = f"/tmp/claude-active-tasks-{session_id}"
+    # Skip if background work is still running (subagents, background bash)
+    work_file = f"/tmp/claude-active-work-{session_id}"
     try:
-        with open(tasks_file) as f:
+        with open(work_file) as f:
             entries = [line.strip() for line in f if line.strip()]
         if entries:
-            sys.exit(0)
+            # Filter out stale entries (>30 min old)
+            now = time.time()
+            fresh = []
+            for entry in entries:
+                parts = entry.rsplit(":", 1)
+                if len(parts) == 2:
+                    try:
+                        ts = int(parts[1])
+                        if now - ts <= 1800:
+                            fresh.append(entry)
+                    except ValueError:
+                        fresh.append(entry)  # Keep unparseable entries
+                else:
+                    fresh.append(entry)  # Keep malformed entries
+
+            if fresh:
+                # Rewrite file without stale entries
+                if len(fresh) < len(entries):
+                    try:
+                        with open(work_file, "w") as wf:
+                            wf.write("\n".join(fresh) + "\n")
+                    except OSError:
+                        pass
+                sys.exit(0)
+            else:
+                # All entries stale — clean up and proceed
+                try:
+                    os.unlink(work_file)
+                except OSError:
+                    pass
     except FileNotFoundError:
-        pass  # No tasks file means no active tasks
+        pass  # No work file means no active background work
     except OSError:
         pass
 

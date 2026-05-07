@@ -59,15 +59,15 @@ Set the `OPENAI_API_KEY` environment variable:
 }
 ```
 
-Or add it to `.devcontainer/.secrets`:
+Or create the secret file:
 
-```
-OPENAI_API_KEY=sk-...
+```bash
+echo -n "sk-..." > .codeforge/secrets/openai_api_key
 ```
 
 ### Credential Storage
 
-The `codex-config.toml` file (deployed to `~/.codex/config.toml`) controls credential storage. The default `"file"` backend stores credentials in `~/.codex/auth.json`, which is recommended for containers.
+The CodeForge Codex config source is `.devcontainer/defaults/codeforge/codex/config.toml` and can be overridden with `.codeforge/codex/config.toml`. It deploys to `~/.codex/config.toml` and controls credential storage. The default `"file"` backend stores credentials in `~/.codex/auth.json`, which is recommended for containers.
 
 ## Usage
 

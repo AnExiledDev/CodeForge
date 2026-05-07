@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+### Status Line
+
+- **Rate limit reset times** — the 5-hour and 7-day rate limit widgets now display when limits reset (e.g., `5h: 42% (14:30)` and `7d: 15% (Mon 09:00)`). Uses custom-command scripts instead of built-in ccstatusline types.
+
+### Configuration
+
+- **Container timezone** — new `timezone` field in `.codeforge/container.json` (default: `America/Chicago`). Set to any IANA timezone (e.g., `America/New_York`, `Europe/London`). Applied via `TZ` env var on container start.
+
+### Bug Fixes
+
+- **Fix named volume ownership for all mount points** — `setup.sh` only fixed `root:root` ownership on `~/.claude`, leaving 6 other Docker named volumes unfixed. `~/.config/gh` and `~/.bun/install/cache` were actively broken (`gh auth login` would fail with `permission denied`). Now loops over all volume mount points from `docker-compose.yml`.
+
+### Developer Tooling
+
+- **Enable shfmt, dprint, shellcheck, hadolint** — previously disabled (`"version": "none"`), now set to `"latest"`. Provides shell formatting, markdown/TOML/Dockerfile formatting, shell linting, and Dockerfile linting out of the box.
+
+### Secrets & Configuration
+
+- **Docker Compose secrets** — secrets now use Docker Compose file-based secrets mounted at `/run/secrets/`. Place secret files in `.codeforge/secrets/` (one file per secret, raw value only). The `generate-compose.mjs` init script auto-discovers secrets and generates the compose override. Supported secrets: `gh_token`, `npm_token`, `claude_code_oauth_token`, `openai_api_key`, `anthropic_api_key`, `deepseek_api_key`, `gemini_api_key`, `openrouter_api_key`. Env vars (Codespaces) remain supported as a fallback.
+- **`.secrets` and `.env` files removed** — replaced by `.codeforge/secrets/` (for sensitive tokens) and `.codeforge/container.json` (for setup flags, identity, plugin config). Migration warnings are shown if old files are detected.
+- **`CLAUDE_CODE_OAUTH_TOKEN` replaces `CLAUDE_AUTH_TOKEN`** — Claude Code's native OAuth env var is now used for headless auth instead of manual `.credentials.json` injection. Note: `CLAUDE_CODE_OAUTH_TOKEN` does not work when `ANTHROPIC_API_KEY` is also set.
+- **Git identity derived from `gh auth login`** — username and email are automatically set from the GitHub API after authentication. Manual `GH_USERNAME` and `GH_EMAIL` config is no longer needed. Override via `.codeforge/container.json` `identity` section if needed.
+- **`.codeforge/container.json`** — new structured JSON config replaces `.env` for setup flags (`setup.config`, `setup.aliases`, etc.), Claude version lock, plugin blacklist, and identity overrides. Deployed from packaged defaults with `overwrite: "never"`.
+- **`.claude.json` pre-populated** — `hasCompletedOnboarding` and `bypassPermissionsModeAccepted` are now seeded via the file manifest on first deploy, removing the `99-claude-onboarding.sh` post-start hook.
+- **`CLAUDE_CONFIG_DIR` removed** — this env var is no longer set or referenced anywhere. All paths use `$HOME/.claude` directly.
+- **`CLAUDECODE` env var removed** — the `CLAUDECODE=null` override in `remoteEnv` has been removed.
+- **oh-my-claude provider keys removed from default secrets** — `KIMI_API_KEY`, `ZHIPU_API_KEY`, `ALIYUN_API_KEY`, `MINIMAX_API_KEY`, `ZAI_API_KEY`, `MINIMAX_CN_API_KEY` removed from `devcontainer.json` secrets. Users who enable oh-my-claude can add their own secret files.
+- **`generate-mounts.mjs` renamed to `generate-compose.mjs`** — now generates both volume mounts and Docker secrets in the compose override.
+
 ### Performance
 
 - **TMPDIR removed from remoteEnv** — previously set to `/workspaces/.tmp` (bind mount, slow on NTFS/WSL). Now unset, defaulting to the container's `/tmp` (overlay/tmpfs). Scripts using `${TMPDIR:-/tmp}` already handle this correctly. Any user scripts depending on `$TMPDIR` being a persistent location should use an explicit path instead.
@@ -9,6 +38,14 @@
 - **Cache volume mounts added** — `~/.cache`, `~/.npm`, and `~/.bun/install/cache` are now backed by Docker named volumes (`codeforge-cache`, `codeforge-npm-cache`, `codeforge-bun-cache`), keeping high-churn package manager caches off the bind mount.
 - **Docker Compose migration** — devcontainer now uses `docker-compose.yml` for volume management instead of inline `mounts` in devcontainer.json. Volume names are fixed (no `${devcontainerId}` suffix), simplifying volume management. Existing `${devcontainerId}`-suffixed volumes are orphaned — run `docker volume prune` to clean up, and re-authenticate `gh auth login` on first rebuild.
 - **Dynamic volume mounts** — `initializeCommand` runs `generate-mounts.mjs` on the host before container build, reading `.codeforge/mounts.json` to generate a `docker-compose.codeforge.yml` override with project-specific volume mounts for high-churn directories.
+
+### Agent Orchestration
+
+- **New feature: `sandcastle`** — installs [@ai-hero/sandcastle](https://github.com/mattpocock/sandcastle) globally via npm for multi-agent workflow orchestration. Supports parallel agents on separate branches, implement→review→fix pipelines, and plan decomposition workflows. Uses a local-process provider model — agents run as Claude Code CLI child processes in git worktrees, inheriting all `~/.claude/` config and workspace-scope-guard confinement. Pinned to ≥0.5.4 (command injection CVE fix). Set `"version": "none"` in devcontainer.json to disable.
+
+### Context Optimization
+
+- **RTK (Rust Token Killer) integration** — new feature (`features/rtk`) installs the RTK CLI proxy that compresses Bash command output before it reaches the LLM context window (60-90% token savings). A PreToolUse hook transparently rewrites supported commands (`git`, `npm`, `cargo`, `docker`, etc.) to route through RTK. Auto-allow is disabled by default — set `RTK_AUTO_ALLOW=1` to skip permission prompts for rewritten commands. Includes Codex CLI awareness file for instruction-based prefix compliance.
 
 ### CLI
 
@@ -37,6 +74,17 @@
 
 ### Configuration
 
+- **Profile overlay `_meta` shorthand** — profile overlay files (`defaults/codeforge/claude/settings/profiles/*.json`) now use a `_meta: { model, contextWindow }` field instead of repeating the model string and context window across three separate keys. The generator expands `_meta` into `model`, `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, and `CLAUDE_CODE_DISABLE_1M_CONTEXT`. Profiles are now 3–7 lines each. To add a new profile, specify `_meta` plus any profile-specific fields and add an entry to the `profiles` array in `generate-settings-profiles.js`.
+- **Thinking settings moved to base** — `MAX_THINKING_TOKENS: 31999` and `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING: 1` moved from individual profile overlays into `base.json` so all profiles inherit them. Opus 4.7 inherits these settings unchanged.
+- **`ANTHROPIC_MODEL` / `ANTHROPIC_DEFAULT_OPUS_MODEL` removed** — these env vars were duplicating the top-level `model` field and are no longer set in generated profiles. Model selection is controlled by `model` in the settings JSON (set by `--settings` flag) plus any explicit `--model` CLI flag.
+- **`autoCompactWindow` top-level key removed** — context window is now set only via `CLAUDE_CODE_AUTO_COMPACT_WINDOW` env var (still present). The redundant top-level `autoCompactWindow` field has been removed from all profiles.
+- **`settings.json` is now a symlink to `settings-opus-46-200k.json`** — the default settings file is no longer a separate generated copy; it is a symlink (or identical file copy on platforms without symlink support) pointing to the opus-46-200k profile. The active default profile is controlled by the `isDefault: true` flag in the `profiles` array of `generate-settings-profiles.js`.
+
+- **Config defaults layout v3** - `.codeforge/` is now a minimal overrides/state directory with README, markers, checksums, and data. Packaged defaults stay under `.devcontainer/defaults/codeforge/`, organized by `claude/`, `codex/`, and `rtk/`.
+- **Claude settings generation moved to `.generated`** - settings are generated from `claude/settings/base.json` plus profile overlays into `.devcontainer/.generated/codeforge/claude/settings/`, then deployed to `~/.claude/settings*.json`. The default profile is now `opus-46-200k`; `settings.json` matches `settings-opus-46-200k.json`.
+- **Manifest override IDs** - default manifest entries now require stable `id` values. Optional `.codeforge/file-manifest.json` entries can override, disable, or add files by `id`; source resolution checks `.codeforge/`, generated output, then packaged defaults.
+- **v3 migration and stale marker** - setup writes `.codeforge/.markers/config-layout-v3` and a migration report, and alias launch checks `.codeforge/.markers/settings-generated-v3` so stale Claude settings regenerate before `cc` starts.
+
 - **Claude session retention increased** — default `cleanupPeriodDays` is now `90` across all generated Claude settings profiles. Extended thinking remains enabled by default.
 - **Dangerous-mode permission prompt skipped by default** — `skipDangerousModePermissionPrompt: true` is now set in `settings.base.json` and propagates to all five generated profiles. Suppresses the one-time bypass-permissions confirmation on new devcontainers.
 - **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
@@ -45,6 +93,15 @@
 - **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
 - **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
 - **Auto mode disabled by default** — `disableAutoMode: "disable"` added to the base settings profile, removing the `auto` permission mode from the Shift+Tab cycle and rejecting `--permission-mode auto` at startup. Users who want auto mode back can override via `~/.claude/settings.json`.
+
+### Memory & Analysis
+
+- **claude-mem memory system** — real-time observation capture with hybrid search (SQLite + Chroma vectors). Background worker on port 37777 receives hook events via HTTP POST. MCP tools (search, timeline, get_observations, smart_search) registered via poststart.d. Replaces disabled `memory-awareness`, `context-memory`, and `post-tool` hooks.
+- **lamarck skill analyzer** — periodic session analysis via cron (every 4h by default). Use `lamarck skill <name> --mode suggest` for skill-specific improvement suggestions from session history.
+- **ccdiag session diagnostics** — Go CLI for session health: `ccdiag orphans` (orphaned tool calls), `ccdiag errors` (failure patterns), `ccdiag tokens` (usage breakdown), `ccdiag proxy` (API inspection on port 9119).
+- **claude-session-analyzer** — Python quality metrics tool: thinking depth, Read:Edit ratio, frustration indicators. Usage: `analyze-sessions ~/.claude/projects/ --start 2026-01-01`.
+- **Go runtime enabled** — `ghcr.io/devcontainers/features/go:1` uncommented in devcontainer.json (required by ccdiag).
+- **Cron daemon installed** — required by lamarck for scheduled batch processing. Started via poststart.d hook.
 
 ### oh-my-claude
 
