@@ -2,7 +2,7 @@ import { statSync } from "fs";
 import { getHome, resolveNormalized } from "./platform.js";
 
 const DEFAULT_PATTERN = "**/*.jsonl";
-const DEFAULT_BASE_DIR = ".claude/projects";
+const DEFAULT_BASE_DIR = process.env.CLAUDE_PROJECTS_DIR ?? ".claude/projects";
 
 export async function discoverSessionFiles(
 	pattern?: string,

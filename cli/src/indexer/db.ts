@@ -151,6 +151,7 @@ export function searchSymbols(
 			 ORDER BY fts.rank
 			 LIMIT ?`,
 		)
+		// Type cast from SQLite row — schema enforced at table creation (see createTables above)
 		.all(query, limit) as Array<{
 		id: number;
 		name: string;

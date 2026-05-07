@@ -61,6 +61,11 @@ export async function ensureCaCert(): Promise<string> {
 			proc.kill();
 			return certPath;
 		}
+		if (proc.exitCode !== null) {
+			throw new Error(
+				"mitmproxy exited unexpectedly during CA certificate generation",
+			);
+		}
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}
 
