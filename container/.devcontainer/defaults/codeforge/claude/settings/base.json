@@ -16,6 +16,7 @@
 		"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
 		"FORCE_AUTOUPDATE_PLUGINS": "1",
 		"CLAUDE_CODE_SCROLL_SPEED": "3",
+
 		"ENABLE_TOOL_SEARCH": "auto:5",
 		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "0",
 		"CLAUDE_CODE_ENABLE_TASKS": "1",
@@ -29,15 +30,13 @@
 		"CLAUDE_AUTO_BACKGROUND_TASKS": "1",
 		"CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
 		"CLAUDE_CODE_NO_FLICKER": "1",
+
 		"CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY": "10",
 		"CLAUDE_CODE_MAX_RETRIES": "1",
 		"BASH_MAX_OUTPUT_LENGTH": "15000",
 		"TASK_MAX_OUTPUT_LENGTH": "64000",
 		"DISABLE_AUTOUPDATER": "1",
-		"ANTHROPIC_MODEL": "claude-opus-4-5",
-		"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5",
-		"CLAUDE_CODE_MAX_CONTEXT_TOKENS": "200000",
-		"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000",
+
 		"MAX_THINKING_TOKENS": "31999",
 		"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
 	},
@@ -90,10 +89,7 @@
 		]
 	},
 	"permissions": {
-		"allow": [
-			"Read(/workspaces/*)",
-			"WebFetch(domain:*)"
-		],
+		"allow": ["Read(/workspaces/*)", "WebFetch(domain:*)"],
 		"deny": [],
 		"ask": [],
 		"defaultMode": "plan",
@@ -111,6 +107,15 @@
 						"timeout": 5
 					}
 				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "claude-mem-hook context",
+						"timeout": 15
+					}
+				]
 			}
 		],
 		"UserPromptSubmit": [
@@ -119,6 +124,37 @@
 					{
 						"type": "command",
 						"command": "karma-live-session-tracker",
+						"timeout": 5
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "claude-mem-hook session-init",
+						"timeout": 10
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Read",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "claude-mem-hook file-context",
+						"timeout": 10
+					}
+				]
+			},
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/.claude/hooks/rtk-rewrite.sh",
 						"timeout": 5
 					}
 				]
@@ -131,6 +167,16 @@
 						"type": "command",
 						"command": "karma-live-session-tracker",
 						"timeout": 5
+					}
+				]
+			},
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "claude-mem-hook observation",
+						"timeout": 15
 					}
 				]
 			}
@@ -153,6 +199,15 @@
 						"type": "command",
 						"command": "karma-live-session-tracker",
 						"timeout": 5
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "claude-mem-hook summarize",
+						"timeout": 30
 					}
 				]
 			}
@@ -223,7 +278,5 @@
 		"prompt-snippets@devs-marketplace": false,
 		"git-workflow@devs-marketplace": false
 	},
-	"autoUpdatesChannel": "latest",
-	"model": "claude-opus-4-5",
-	"autoCompactWindow": 200000
+	"autoUpdatesChannel": "latest"
 }

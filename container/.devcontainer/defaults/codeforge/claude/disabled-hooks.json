@@ -4,9 +4,6 @@
 		"ticket-linker",
 		"spec-reminder",
 		"commit-reminder",
-		"memory-awareness",
-		"preference-awareness",
-		"context-memory",
-		"post-tool"
+		"preference-awareness"
 	]
 }

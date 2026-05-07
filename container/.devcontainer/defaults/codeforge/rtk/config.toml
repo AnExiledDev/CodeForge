@@ -1,0 +1,14 @@
+# RTK Configuration
+# https://github.com/rtk-ai/rtk
+
+[telemetry]
+enabled = false
+
+[hooks]
+# Commands to exclude from RTK rewriting (empty = rewrite all supported)
+exclude_commands = []
+
+[tee]
+# Save raw output for debugging failed commands
+enabled = true
+mode = "failures"

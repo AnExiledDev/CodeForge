@@ -3,6 +3,7 @@
 # Development and testing
 test.js
 .devcontainer/state/
+.devcontainer/.generated/
 .devcontainer/config/backups/
 
 # Documentation that's not needed in package
@@ -51,4 +52,6 @@ Thumbs.db
 .devcontainer/.secrets
 
 # Per-installation state (not tracked)
+.codeforge/.checksums/
 .codeforge/.markers/
+.codeforge/data/

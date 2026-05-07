@@ -153,16 +153,38 @@
 			{
 				"id": "session-usage",
 				"type": "session-usage",
+				"rawValue": true,
 				"color": "brightWhite",
-				"backgroundColor": "bgBlue",
-				"rawValue": true
+				"backgroundColor": "bgBlue"
+			},
+			{
+				"id": "session-reset",
+				"type": "reset-timer",
+				"rawValue": true,
+				"metadata": {
+					"absolute": "true",
+					"compact": "true"
+				},
+				"color": "black",
+				"backgroundColor": "bgYellow"
 			},
 			{
 				"id": "weekly-usage",
 				"type": "weekly-usage",
+				"rawValue": true,
 				"color": "brightWhite",
-				"backgroundColor": "bgMagenta",
-				"rawValue": true
+				"backgroundColor": "bgMagenta"
+			},
+			{
+				"id": "weekly-reset",
+				"type": "weekly-reset-timer",
+				"rawValue": true,
+				"metadata": {
+					"absolute": "true",
+					"compact": "true"
+				},
+				"color": "brightWhite",
+				"backgroundColor": "bgBrightBlack"
 			}
 		]
 	],
