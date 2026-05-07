@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Symptom-first troubleshooting for install, container, authentication, commands, plugins, ports, and performance issues.
+description: Symptom-first troubleshooting for install, container, authentication, commands, plugins, ports, performance, and debugging with logs.
 sidebar:
   order: 7
 ---
@@ -185,6 +185,84 @@ Check these in order:
 4. **Windows update regression?** Microsoft occasionally ships updates that break mirrored mode. Check [WSL GitHub Issues](https://github.com/microsoft/WSL/issues) for known regressions. Revert to NAT mode as a temporary workaround.
 
 5. **Docker Desktop version?** Mirrored networking requires Docker Desktop 4.26.0 or later. Update Docker Desktop if you're on an older version.
+
+## Debugging with Logs
+
+Use this section when you need to capture, find, or increase the verbosity of container logs.
+
+### Capturing Build and Startup Logs
+
+The devcontainer CLI writes structured JSON to stdout and human-readable progress to stderr. Separate them to capture both:
+
+```bash
+# Capture build logs (stderr) and result (stdout) separately
+devcontainer build --workspace-folder . > result.json 2> build.log
+
+# Capture startup logs the same way
+devcontainer up --workspace-folder . > result.json 2> up.log
+
+# Increase verbosity with --log-level (trace, debug, info, warn, error)
+devcontainer build --workspace-folder . --log-level trace 2> build.log
+
+# Machine-parseable log lines on stderr
+devcontainer up --workspace-folder . --log-format json 2> up.log
+```
+
+For lower-level Docker build output, disable BuildKit's fancy progress display:
+
+```bash
+BUILDKIT_PROGRESS=plain devcontainer build --workspace-folder . 2> build.log
+```
+
+### Capturing Runtime Container Logs
+
+Once a container is running, use `docker logs` to capture its output:
+
+```bash
+# Snapshot to file
+docker logs <container-id> > runtime.log 2>&1
+
+# Stream to file in the background
+docker logs -f <container-id> > runtime.log 2>&1 &
+```
+
+Find your container ID with `docker ps`.
+
+### Where Logs Are Stored
+
+| Location | Contents |
+|----------|----------|
+| `~/.claude/` | Claude Code session data, credentials, project state |
+| `~/.lamarck/` | Skill analysis state; runtime logs at `/tmp/lamarck.log` |
+| `~/.claude-mem/` | Memory system (settings, SQLite DB, Chroma vectors, logs) |
+| `/tmp/` | Transient logs from background processes |
+
+### Diagnostic Tools
+
+Three built-in tools help analyze session behavior and errors:
+
+**ccdiag** — Session diagnostics (Go CLI):
+
+```bash
+ccdiag orphans    # find orphaned tool calls (started but never completed)
+ccdiag errors     # analyze session errors and failure patterns
+ccdiag tokens     # token usage breakdown per session/tool
+ccdiag proxy      # launch API proxy on port 9119 for traffic inspection
+```
+
+**analyze-sessions** — Session quality metrics (Python):
+
+```bash
+# Analyze sessions from a specific date
+analyze-sessions ~/.claude/projects/ --start 2026-01-01
+
+# JSON output for scripting
+analyze-sessions ~/.claude/projects/ --format json
+```
+
+Metrics include thinking depth, Read:Edit ratio, tool call patterns, and frustration indicators (repeated failures, context resets).
+
+**karma-status** — Process status and logs for Claude Code Karma.
 
 ## Reset Options
 
