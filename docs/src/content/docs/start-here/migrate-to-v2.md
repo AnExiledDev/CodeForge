@@ -1,122 +1,95 @@
 ---
-title: Migrate to v2
-description: What changed in CodeForge v2 and how to upgrade from v1.x — configuration externalization, new file paths, and automatic migration.
+title: Migrate to v2/v3
+description: What changed in CodeForge configuration layout and how to upgrade safely.
 sidebar:
   order: 8
 ---
 
-CodeForge v2 externalizes user configuration from `.devcontainer/config/defaults/` to a new top-level `.codeforge/` directory. This separates your customizations from the DevContainer infrastructure, making updates cleaner and reducing merge conflicts.
+CodeForge now uses a defaults-plus-overrides model.
 
-## What Changed
+- Packaged defaults live in `.devcontainer/defaults/codeforge/`
+- Generated Claude settings live in `.devcontainer/.generated/codeforge/claude/settings/`
+- `.codeforge/` is a minimal user-owned overrides/state directory with `README.md`, `.markers/`, `.checksums/`, and `data/`
 
-In v1.x, user-customizable files lived inside `.devcontainer/config/defaults/`. This meant every CodeForge update touched the same directory as your customizations, making it hard to tell what changed and what you'd modified.
-
-v2 moves all user config to `.codeforge/` — a directory you own. CodeForge updates modify `.devcontainer/` (infrastructure) while `.codeforge/` (your customizations) stays untouched unless you change it.
+`.codeforge/` is no longer a copied defaults tree.
 
 ## Key Path Changes
 
-| v1.x Path | v2 Path |
-|-----------|---------|
-| `.devcontainer/config/defaults/settings.json` | `.codeforge/config/settings.json` |
-| `.devcontainer/config/defaults/main-system-prompt.md` | `.codeforge/config/main-system-prompt.md` |
-| `.devcontainer/config/defaults/rules/` | `.codeforge/config/rules/` |
-| `.devcontainer/config/file-manifest.json` | `.codeforge/file-manifest.json` |
-| `.devcontainer/connect-external-terminal.sh` | `.codeforge/scripts/connect-external-terminal.sh` |
-| `.devcontainer/connect-external-terminal.ps1` | `.codeforge/scripts/connect-external-terminal.ps1` |
-| `CONFIG_SOURCE_DIR` env var | `CODEFORGE_DIR` env var |
+| Old Path | New Path |
+|----------|----------|
+| `.codeforge/config/settings.base.json` | `.codeforge/claude/settings/base.json` |
+| `.codeforge/config/settings-profiles/*.json` | `.codeforge/claude/settings/profiles/*.json` |
+| `.codeforge/config/main-system-prompt.md` | `.codeforge/claude/system-prompts/main.md` |
+| `.codeforge/config/writing-system-prompt.md` | `.codeforge/claude/system-prompts/writing.md` |
+| `.codeforge/config/orchestrator-system-prompt.md` | `.codeforge/claude/system-prompts/orchestrator.md` |
+| `.codeforge/config/rules/` | `.codeforge/claude/rules/` |
+| `.codeforge/config/hooks/` | `.codeforge/claude/hooks/` |
+| `.codeforge/config/ccstatusline-settings.json` | `.codeforge/claude/statusline/settings.json` |
+| `.codeforge/config/claude-code-router.json` | `.codeforge/claude/router/config.json` |
+| `.codeforge/config/codex-config.toml` | `.codeforge/codex/config.toml` |
+| `.codeforge/config/codex-rtk-awareness.md` | `.codeforge/codex/AGENTS.md` |
+| `.codeforge/config/rtk-config.toml` | `.codeforge/rtk/config.toml` |
 
 ## Automatic Migration
 
-On first container start after updating to v2, the migration script (`setup-migrate-codeforge.sh`) runs automatically:
+On container start, setup runs two migration steps:
 
-1. Detects the legacy `.devcontainer/config/defaults/` directory
-2. Creates the `.codeforge/` directory structure
-3. Copies all config files from `defaults/` to `.codeforge/config/`
-4. Copies and rewrites `file-manifest.json` (updates internal paths)
-5. Moves terminal scripts to `.codeforge/scripts/`
-6. Writes a migration marker at `.codeforge/.markers/v2-migrated`
+1. `setup-migrate-codeforge.sh` ensures the minimal `.codeforge/` scaffold exists.
+2. `setup-migrate-codeforge-v3.sh` moves known old override files into the new layout.
 
-The migration is **idempotent** — if `.codeforge/` already exists, the script skips entirely. It never overwrites existing files.
+The v3 migration writes:
 
-## Manual Migration
+- marker: `.codeforge/.markers/config-layout-v3`
+- report: `.codeforge/.markers/config-layout-v3-report.md`
+- backup: `.codeforge/backups/config-layout-v3-<timestamp>/`
 
-If you prefer to migrate by hand:
+If the marker already exists, the v3 migration skips. Generated full settings files such as old `settings.json` and `settings-opus-*.json` are not treated as source of truth; they are reported for audit instead.
 
-1. **Update CodeForge:**
-   ```bash
-   npx @coredirective/cf-container@latest
-   ```
+## Settings Generation
 
-2. **Review the new `.codeforge/` directory** created by the installer. It contains default versions of all config files.
+Settings are generated from:
 
-3. **Move your customizations** from the old paths to the new paths. Only copy files you've actually modified — the installer provides fresh defaults for everything else.
+- `.devcontainer/defaults/codeforge/claude/settings/base.json`
+- `.devcontainer/defaults/codeforge/claude/settings/profiles/*.json`
+- optional matching overrides under `.codeforge/claude/settings/`
 
-4. **Update `.env`** if you set `CONFIG_SOURCE_DIR`:
-   ```bash
-   # Old (v1.x)
-   CONFIG_SOURCE_DIR=/custom/path
+Generated files are written to `.devcontainer/.generated/codeforge/claude/settings/` and deployed to `~/.claude/settings*.json`.
 
-   # New (v2)
-   CODEFORGE_DIR=/custom/path
-   ```
+The default profile is `opus-46-200k`; generated `settings.json` matches `settings-opus-46-200k.json`. Alias launch checks `.codeforge/.markers/settings-generated-v3` and regenerates settings if sources are stale.
 
-5. **Rebuild the container:**
-   - **VS Code:** `Ctrl+Shift+P` → **Dev Containers: Rebuild Container**
-   - **CLI:** `devcontainer up --workspace-folder . --remove-existing-container`
+## Manifest Overrides
 
-6. **Verify the migration:**
-   ```bash
-   check-setup
-   ```
+The default manifest lives at `.devcontainer/defaults/codeforge/file-manifest.json`. A project may add `.codeforge/file-manifest.json` to override manifest entries by stable `id`.
 
-## How Updates Work in v2
+Examples:
 
-CodeForge v2 uses **checksum-based modification detection** to protect your customizations during updates:
+```json
+[
+  {
+    "id": "claude.system-prompts.main",
+    "src": "claude/system-prompts/main.md",
+    "overwrite": "never"
+  },
+  {
+    "id": "claude.rule.session-search",
+    "disabled": true
+  }
+]
+```
 
-- When you run `npx @coredirective/cf-container@latest`, the installer compares each `.codeforge/` file's SHA-256 checksum against the known default.
-- **Unmodified files** are updated in place with the new default.
-- **Modified files** are preserved. The new default is written as a `.default` file (e.g., `settings.json.default`) for you to review and merge manually.
-
-The `--force` flag triggers this smart sync. The `--reset` flag wipes `.devcontainer/` but preserves `.codeforge/` — your customizations are always safe.
-
-## Breaking Changes
-
-### `CONFIG_SOURCE_DIR` Deprecated
-
-The `CONFIG_SOURCE_DIR` environment variable is replaced by `CODEFORGE_DIR`. If your `.env` file still sets `CONFIG_SOURCE_DIR`, the startup script:
-
-1. Detects the stale variable
-2. Overrides it internally to use the correct path
-3. Auto-comments the line in `.env` with a deprecation warning
-
-No action is required — it's handled automatically. But you should update `.env` to use `CODEFORGE_DIR` to avoid the warning.
-
-## New Capabilities
-
-v2 introduces several features alongside the directory restructure:
-
-- **`codeforge config apply`** — CLI command to deploy config files to `~/.claude/` on demand (same operation that runs on container start)
-- **`.codeforge-preserve`** — list additional files in `.codeforge/` that should be preserved during updates, beyond the defaults
-- **Checksum tracking** — `.codeforge/.checksums/` stores SHA-256 hashes so the system knows which files you've modified
+Source resolution checks `.codeforge/<src>` first, then generated output, then packaged defaults.
 
 ## Troubleshooting
 
-**Migration didn't run automatically:**
-- Check if `.codeforge/` already exists (the script skips if it does)
-- Verify `WORKSPACE_ROOT` is set correctly (defaults to `/workspaces`)
-- Run the migration script manually: `bash .devcontainer/scripts/setup-migrate-codeforge.sh`
+**Settings are stale:** run `bash .devcontainer/scripts/ensure-settings-generated.sh --force`.
 
-**Config files not deploying after migration:**
-- Run `codeforge config apply` to trigger a manual deployment
-- Check `.codeforge/file-manifest.json` — paths should reference `config/` (not `defaults/`)
+**Config did not deploy:** run `codeforge config apply` or `bash .devcontainer/scripts/setup-config.sh`.
 
-**Old `CONFIG_SOURCE_DIR` in `.env` causing issues:**
-- Remove or comment the line — `CODEFORGE_DIR` is the v2 equivalent
-- The startup script handles this automatically, but manual cleanup avoids the deprecation warning
+**Migration did not run:** check for `.codeforge/.markers/config-layout-v3`. Remove only if you intentionally want to re-run migration after restoring the old layout from backup.
 
 ## Related
 
-- [Settings and Permissions](/customize/settings-and-permissions/) — full settings reference
-- [Environment Variables](/reference/environment-variables/) — all environment variables including `CODEFORGE_DIR`
-- [Changelog](/reference/changelog/) — v2.0.0 release notes
-- [Architecture](/reference/architecture/) — system design and component relationships
+- [Settings and Permissions](/customize/settings-and-permissions/)
+- [System Prompts](/customize/system-prompts/)
+- [Environment Variables](/reference/environment-variables/)
+- [Changelog](/reference/changelog/)

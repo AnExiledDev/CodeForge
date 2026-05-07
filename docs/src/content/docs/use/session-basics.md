@@ -40,7 +40,7 @@ When you launch `cc`, CodeForge handles these pieces for you:
 
 ## Permissions and Defaults
 
-Session behavior comes from `.codeforge/config/settings.json`, especially:
+Session behavior comes from generated `~/.claude/settings.json`, built from `.devcontainer/defaults/codeforge/claude/settings/base.json` plus the default `opus-46-200k` profile. Project overrides go under `.codeforge/claude/settings/`.
 
 - `model`
 - `effortLevel`

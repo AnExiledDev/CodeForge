@@ -11,7 +11,7 @@ Hooks are scripts that execute at specific points during a Claude Code session. 
 
 CodeForge uses eight hook points, each serving a different purpose in the session lifecycle:
 
-Claude Code Karma also registers read-only tracking hooks in CodeForge's generated `settings.json` profiles for `SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Notification`, `Stop`, `SubagentStart`, `SubagentStop`, and `SessionEnd`. These hooks call CodeForge wrapper commands and are managed from `settings.base.json`, not from Karma's Settings UI.
+Claude Code Karma also registers read-only tracking hooks in CodeForge's generated `settings.json` profiles for `SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Notification`, `Stop`, `SubagentStart`, `SubagentStop`, and `SessionEnd`. These hooks call CodeForge wrapper commands and are managed from `claude/settings/base.json`, not from Karma's Settings UI.
 
 ### PreToolUse
 
@@ -287,7 +287,7 @@ Here is a quick reference of all hooks registered by CodeForge's default plugins
 
 ## Per-Hook Disable
 
-Individual hooks can be disabled without turning off their entire plugin. The file `.codeforge/config/disabled-hooks.json` contains a `"disabled"` array of script names:
+Individual hooks can be disabled without turning off their entire plugin. The source override is `.codeforge/claude/disabled-hooks.json`, deployed to `~/.claude/disabled-hooks.json`, and contains a `"disabled"` array of script names:
 
 ```json
 {

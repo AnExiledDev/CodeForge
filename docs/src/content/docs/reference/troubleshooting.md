@@ -65,7 +65,7 @@ gh auth status
 gh auth login
 ```
 
-Or configure `GH_TOKEN` in `.devcontainer/.secrets`.
+Or place your token in `.codeforge/secrets/gh_token`.
 
 ### Codex CLI
 
@@ -191,7 +191,7 @@ Check these in order:
 Use the smallest reset that solves the problem:
 
 1. delete and redeploy runtime config in `~/.claude/`
-2. restore default source config under `.codeforge/config/`
+2. remove or fix the matching override under `.codeforge/`, then regenerate/deploy settings
 3. reset aliases in your shell config
 4. rebuild the container
 5. disable and re-enable a single feature

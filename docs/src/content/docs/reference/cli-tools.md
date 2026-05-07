@@ -163,7 +163,7 @@ codex
 
 # Codex requires authentication on first run:
 # Option 1: Browser login — select "Sign in with ChatGPT"
-# Option 2: API key — set OPENAI_API_KEY in .devcontainer/.secrets
+# Option 2: API key — set OPENAI_API_KEY via .codeforge/secrets/openai_api_key
 ```
 
 :::note[Separate from Claude Code]

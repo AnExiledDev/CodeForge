@@ -17,8 +17,9 @@ Variables that control Claude Code's core behavior inside the CodeForge containe
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Opus model ID | `claude-opus-4-6` | settings.json |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | Sonnet model ID | `claude-sonnet-4-6` | settings.json |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Haiku model ID | `claude-haiku-4-5-20251001` | settings.json |
-| `CLAUDE_CONFIG_DIR` | Claude Code configuration directory | `/home/vscode/.claude` | devcontainer.json |
+| ~~`CLAUDE_CONFIG_DIR`~~ | _Removed — Claude Code uses `$HOME/.claude` directly_ | — | — |
 | `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | Maximum tokens per response | `64000` | settings.json |
+| `CLAUDE_CODE_DISABLE_1M_CONTEXT` | Disable 1M context model routing for non-1M profiles | `1` on non-1M profiles; unset on 1M profiles | generated settings.json |
 | `MAX_THINKING_TOKENS` | Maximum tokens for extended thinking | `63999` | settings.json |
 | `CLAUDE_CODE_SHELL` | Shell used for Bash tool execution | `zsh` | settings.json |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | Context usage percentage that triggers auto-compaction | `95` | settings.json |
@@ -71,7 +72,7 @@ Variables set by the DevContainer environment that define workspace paths.
 | Variable | Description | Default | Set In |
 |----------|-------------|---------|--------|
 | `WORKSPACE_ROOT` | Workspace root directory | `/workspaces` | devcontainer.json |
-| `CLAUDE_CONFIG_DIR` | Claude configuration directory | `/home/vscode/.claude` | devcontainer.json |
+| ~~`CLAUDE_CONFIG_DIR`~~ | _Removed — Claude Code uses `$HOME/.claude` directly_ | — | — |
 | `GH_CONFIG_DIR` | GitHub CLI configuration directory | `/home/vscode/.config/gh` | devcontainer.json |
 | `HERMES_CDP_ENDPOINT` | Chrome CDP endpoint for Hermes/browser tooling inside the container | `http://192.168.65.254:9223` | devcontainer.json |
 | `CLAUDECODE` | Set to `null` to unset the detection flag, enabling nested Claude Code sessions | `null` | devcontainer.json |
@@ -84,23 +85,22 @@ Variables that configure individual tools within the container.
 |----------|------|-------------|
 | `CCMS_PROJECT` | ccms | Default project scope for session search _(only when ccms is enabled)_ |
 | `CCMS_FORMAT` | ccms | Default output format (`text`, `json`) _(only when ccms is enabled)_ |
-| `OPENAI_API_KEY` | codex | OpenAI API key for Codex CLI authentication |
+| `OPENAI_API_KEY` | codex | OpenAI API key for Codex CLI authentication (set via `.codeforge/secrets/openai_api_key`) |
 | `CODEX_HOME` | codex | Override Codex config directory (default: `~/.codex/`) |
 | `HERMES_CDP_ENDPOINT` | hermes / browser tooling | Host Chrome CDP endpoint; Windows uses the `.devcontainer\scripts\start-hermes-chrome.ps1` portproxy on port 9223. Use the resolved IPv4 address for `host.docker.internal`; Chrome rejects DNS Host headers. |
 | `RUFF_CONFIG` | ruff | Path to ruff configuration file |
 | `BIOME_CONFIG_PATH` | biome | Path to biome configuration file |
 
-## Setup Variables (.env)
+## Setup Variables (container.json)
 
-These variables live in `.devcontainer/.env` and control what `setup.sh` does on each container start. Copy `.env.example` to `.env` and customize.
+These variables are configured in `.codeforge/container.json` and control what `setup.sh` does on each container start. The old `.devcontainer/.env` file has been replaced by this structured JSON config.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Where Claude Code config files are stored |
-| `CODEFORGE_DIR` | (auto-detected) | Source directory for user-customizable config files (`.codeforge/`). Replaces the deprecated `CONFIG_SOURCE_DIR` from v1.x. |
+| `CODEFORGE_DIR` | (auto-detected) | Project overrides/state directory (`.codeforge/`). Packaged defaults remain in `.devcontainer/defaults/codeforge/`; this replaces the deprecated copied-config model. |
 | `SETUP_CONFIG` | `true` | Copy config files per `file-manifest.json` |
 | `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw`/`cc-tools` aliases to shell |
-| `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` file |
+| `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.codeforge/secrets/` |
 | `SETUP_PLUGINS` | `true` | Install Anthropic plugins and register local marketplace |
 | `SETUP_UPDATE_CLAUDE` | `true` | Background-update Claude Code CLI binary |
 | `CLAUDE_VERSION_LOCK` | (unset) | Pin Claude Code to a specific semver version (e.g., `1.0.33`). When set, the update script installs the exact version instead of updating to latest. |
@@ -110,7 +110,7 @@ These variables live in `.devcontainer/.env` and control what `setup.sh` does on
 | `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip during installation |
 
 :::tip[Disabling Setup Steps]
-Set any flag to `false` to skip that step. For example, `SETUP_PROJECTS=false` disables project auto-detection if you manage the Project Manager list manually.
+Set any flag to `false` to skip that step. For example, set `SETUP_PROJECTS` to `false` in `.codeforge/container.json` to disable project auto-detection if you manage the Project Manager list manually.
 :::
 
 ## Language Runtime Variables
@@ -137,8 +137,7 @@ Applied when the container is created. Persists across all sessions.
 ```json
 {
   "remoteEnv": {
-    "WORKSPACE_ROOT": "/workspaces",
-    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+    "WORKSPACE_ROOT": "/workspaces"
   }
 }
 ```
