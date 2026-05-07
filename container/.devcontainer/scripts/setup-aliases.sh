@@ -6,8 +6,6 @@
 # Idempotent: removes the entire managed block then re-writes it fresh.
 # Safe to run on every container start via postStartCommand.
 
-CLAUDE_DIR="${CLAUDE_CONFIG_DIR:?CLAUDE_CONFIG_DIR not set}"
-
 echo "[setup-aliases] Configuring Claude aliases..."
 
 # Resolve check-setup path once (used inside the block we write)
@@ -24,7 +22,8 @@ for rc in ~/.bashrc ~/.zshrc; do
 		ls -t "${rc}.bak."* 2>/dev/null | tail -n +4 | xargs rm -f 2>/dev/null || true
 
 		# --- 2. Remove existing managed block (if present) ---
-		sed -i '/# === CodeForge Claude aliases START/,/# === CodeForge Claude aliases END/d' "$rc"
+		tmp="$(mktemp)"
+		sed '/# === CodeForge Claude aliases START/,/# === CodeForge Claude aliases END/d' "$rc" > "$tmp" && mv "$tmp" "$rc"
 
 		# --- 3. Legacy cleanup (pre-marker formats only) ---
 		# These remove remnants from versions that predated the block-marker system.
@@ -97,8 +96,11 @@ for rc in ~/.bashrc ~/.zshrc; do
 		cat >>"$rc" <<BLOCK_EOF
 
 ${BLOCK_START}
-export CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR}"
+_CLAUDE_DIR="\$HOME/.claude"
 export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/home/vscode/.config/gh}"
+export WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces}"
+export CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT:-/workspaces}/.codeforge}"
+export DEVCONTAINER_SCRIPTS="${DEVCONTAINER_SCRIPTS}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
@@ -136,10 +138,18 @@ fi
 
 alias ccraw='command "\$_CLAUDE_BIN"'
 
+_codeforge_ensure_settings() {
+  bash "\$DEVCONTAINER_SCRIPTS/ensure-settings-generated.sh" --quiet || {
+    echo "CodeForge could not generate/deploy Claude settings. Run check-setup for details." >&2
+    return 1
+  }
+}
+
 _codeforge_claude_profile() {
   local settings_file="\$1"
   local prompt_file="\$2"
   shift 2
+  _codeforge_ensure_settings || return \$?
   CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" \\
     --settings "\$settings_file" \\
     --system-prompt-file "\$prompt_file" \\
@@ -149,27 +159,27 @@ _codeforge_claude_profile() {
     "\$@"
 }
 
-cc() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
+cc() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
 claude() { cc "\$@"; }
-cc5() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-45-200k.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
-cc6() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-200k.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
-cc61() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-1m-400k.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
-cc7() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
-cc71() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-47-1m-400k.json" "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" "\$@"; }
+cc5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
 
-ccw() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
-ccw5() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-45-200k.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
-ccw6() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-200k.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
-ccw61() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-1m-400k.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
-ccw7() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
-ccw71() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-47-1m-400k.json" "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" "\$@"; }
+ccw() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
 
-cc-orc() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
-cc-orc5() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-45-200k.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
-cc-orc6() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-200k.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
-cc-orc61() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-46-1m-400k.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
-cc-orc7() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
-cc-orc71() { _codeforge_claude_profile "\$CLAUDE_CONFIG_DIR/settings-opus-47-1m-400k.json" "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
 alias ccr-apply='codeforge config apply && (ccr restart 2>/dev/null || ccr start) && echo "CCR config applied and restarted"'
 alias omc-doctor='omc doctor --detail'
 omc-cc() {
@@ -191,7 +201,7 @@ cc-tools() {
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
   for cmd in claude cc cc5 cc6 cc61 cc7 cc71 ccw ccw5 ccw6 ccw61 ccw7 ccw71 ccraw cc-orc cc-orc5 cc-orc6 cc-orc61 cc-orc7 cc-orc71 codeforge ccr omc omc-cc ccusage ccburn claude-monitor karma-status karma-live-session-tracker karma-title-generator codex ccusage-codex \\
-             ct cargo ruff biome dprint shfmt shellcheck hadolint \\
+             rtk ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
              agent-browser gh docker git jq tmux bun go infocmp; do
     if command -v "\$cmd" >/dev/null 2>&1; then
@@ -212,13 +222,13 @@ BLOCK_EOF
 done
 
 echo "[setup-aliases] Aliases configured:"
-echo "  cc/claude   -> claude (opus-4-7, 200k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
+echo "  cc/claude   -> claude (opus-4-6, 200k ctx) with \$_CLAUDE_DIR/main-system-prompt.md"
 echo "  ccraw       -> vanilla claude without any config"
 echo "  cc5         -> claude (opus-4-5, 200k ctx)"
 echo "  cc6/cc61    -> claude (opus-4-6, 200k ctx / 1m bounded to 400k)"
 echo "  cc7/cc71    -> claude (opus-4-7, 200k ctx / 1m bounded to 400k)"
-echo "  ccw*        -> same model profiles with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
-echo "  cc-orc*     -> same model profiles with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md"
+echo "  ccw*        -> same model profiles with \$_CLAUDE_DIR/writing-system-prompt.md"
+echo "  cc-orc*     -> same model profiles with \$_CLAUDE_DIR/orchestrator-system-prompt.md"
 echo "  ccr-apply   -> redeploy claude-code-router config + restart daemon"
 echo "  omc-cc      -> launch Claude Code through oh-my-claude when installed"
 echo "  omc-doctor  -> diagnose oh-my-claude when installed"

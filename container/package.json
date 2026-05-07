@@ -3,7 +3,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "2.2.1",
+	"version": "3.0.0",
 	"description": "Complete development container that sets up Claude Code with modular devcontainer features, modern dev tools, and persistent configurations. Drop it into any project and get a production-ready AI development environment in minutes.",
 	"main": "setup.js",
 	"bin": {
@@ -38,13 +38,11 @@
 		"!.devcontainer/.env",
 		"!.devcontainer/.env.*",
 		"!.devcontainer/.secrets",
-		".codeforge/**/*",
-		"!.codeforge/.markers/**",
 		"setup.js",
 		"README.md"
 	],
 	"engines": {
-		"node": ">=14.0.0"
+		"node": ">=18.0.0"
 	},
 	"repository": {
 		"type": "git",

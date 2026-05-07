@@ -114,19 +114,20 @@ For the full architecture breakdown — hook pipeline, agent routing, skill load
 
 ## Configuration
 
-All configuration lives in `.devcontainer/` and deploys automatically on container start. Key files:
+Packaged defaults live in `.devcontainer/defaults/codeforge/`, generated Claude settings live in `.devcontainer/.generated/`, and project overrides/state live in `.codeforge/`. Key files:
 
 | File | What It Configures | User-Modifiable? |
 |------|--------------------|------------------|
-| `.codeforge/config/settings.json` | Model, plugins, permissions, environment variables | Yes |
-| `.codeforge/config/main-system-prompt.md` | Claude's behavioral guidelines and directives | Yes |
-| `.codeforge/config/keybindings.json` | Keyboard shortcuts | Yes |
-| `.codeforge/config/ccstatusline-settings.json` | Terminal status bar widgets and layout | Yes |
-| `.codeforge/file-manifest.json` | Which config files deploy and how they update | Yes |
+| `.devcontainer/defaults/codeforge/claude/settings/base.json` | Shared Claude settings source | Override via `.codeforge/claude/settings/base.json` |
+| `.devcontainer/defaults/codeforge/claude/settings/profiles/*.json` | Model-specific settings overlays | Override via `.codeforge/claude/settings/profiles/*.json` |
+| `.devcontainer/defaults/codeforge/claude/system-prompts/main.md` | Claude's behavioral guidelines and directives | Override via `.codeforge/claude/system-prompts/main.md` |
+| `.devcontainer/defaults/codeforge/claude/keybindings.json` | Keyboard shortcuts | Override via `.codeforge/claude/keybindings.json` |
+| `.devcontainer/defaults/codeforge/claude/statusline/settings.json` | Terminal status bar widgets and layout | Override via `.codeforge/claude/statusline/settings.json` |
+| `.devcontainer/defaults/codeforge/file-manifest.json` | Which config files deploy and how they update | Override entries via `.codeforge/file-manifest.json` |
 | `devcontainer.json` | Container image, features, runtimes, ports | Yes |
-| `.env` | Setup phase toggles (auth, plugins, aliases, etc.) | Yes |
+| `.codeforge/container.json` | Setup phase toggles (auth, plugins, aliases, etc.), Claude version lock, identity overrides | Yes |
 
-Config files use SHA-256 change detection — your edits persist across container rebuilds unless the source changes. Set a file's overwrite mode to `"never"` in `file-manifest.json` to permanently preserve your customizations.
+Config files use effective source resolution: `.codeforge/<src>` first, then generated output, then packaged defaults. Set a file's overwrite mode to `"never"` in `.codeforge/file-manifest.json` to preserve deployed customizations.
 
 For the complete configuration guide, see the [documentation site](https://codeforge.core-directive.com/customization/configuration/).
 
@@ -177,7 +178,7 @@ npm publish
 
 ## Changelog
 
-See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **2.1.0**.
+See [CHANGELOG.md](.devcontainer/CHANGELOG.md) for release history. Current version: **3.0.0**.
 
 ## Further Reading
 

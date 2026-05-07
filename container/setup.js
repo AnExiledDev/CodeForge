@@ -5,6 +5,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { execFileSync } = require("node:child_process");
 
 // ── Default preserve list ────────────────────────────────────────
 // Files in .devcontainer that should NOT overwrite user customizations.
@@ -54,6 +55,9 @@ function loadPreserveList(devcontainerDest) {
 // ── computeChecksum ──────────────────────────────────────────────
 // Returns SHA-256 hex digest of a file's contents.
 function computeChecksum(filePath) {
+	if (!fs.existsSync(filePath)) {
+		throw new Error(`File not found for checksum: ${filePath}`);
+	}
 	return crypto
 		.createHash("sha256")
 		.update(fs.readFileSync(filePath))
@@ -106,6 +110,35 @@ function writeChecksums(codeforgeDir, version, checksums) {
 	);
 }
 
+function ensureCodeforgeScaffold(codeforgeDir) {
+	fs.mkdirSync(path.join(codeforgeDir, ".markers"), { recursive: true });
+	fs.mkdirSync(path.join(codeforgeDir, ".checksums"), { recursive: true });
+	fs.mkdirSync(path.join(codeforgeDir, "data"), { recursive: true });
+
+	const readme = path.join(codeforgeDir, "README.md");
+	if (!fs.existsSync(readme)) {
+		fs.writeFileSync(
+			readme,
+			[
+				"# CodeForge Project Overrides",
+				"",
+				"This directory is intentionally small and user-owned.",
+				"",
+				"Packaged defaults live in `.devcontainer/defaults/codeforge/`. Put files here only when you want to override a packaged default, add project-local state, or store CodeForge marker files.",
+				"",
+				"Override files use the same logical path as packaged defaults. For example:",
+				"",
+				"- `.codeforge/claude/system-prompts/main.md`",
+				"- `.codeforge/claude/settings/base.json`",
+				"- `.codeforge/file-manifest.json`",
+				"",
+				"CodeForge may also create marker and audit files under `.codeforge/.markers/`.",
+				"",
+			].join("\n"),
+		);
+	}
+}
+
 // ── readChecksums ────────────────────────────────────────────────
 // Reads latest version's checksums from .checksums/ dir.
 // Returns { files: {} } if none found.
@@ -119,10 +152,14 @@ function readChecksums(codeforgeDir) {
 		.readdirSync(checksumsDir)
 		.filter((f) => f.endsWith(".json"))
 		.sort((a, b) => {
-			const pa = a.replace(".json", "").split(".").map(Number);
-			const pb = b.replace(".json", "").split(".").map(Number);
-			for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-				const diff = (pa[i] || 0) - (pb[i] || 0);
+			const parse = (v) => {
+				const m = v.replace(".json", "").match(/^(\d+)\.(\d+)\.(\d+)/);
+				return m ? [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])] : [0, 0, 0];
+			};
+			const pa = parse(a);
+			const pb = parse(b);
+			for (let i = 0; i < 3; i++) {
+				const diff = pa[i] - pb[i];
 				if (diff !== 0) return diff;
 			}
 			return 0;
@@ -262,10 +299,16 @@ function syncDirectory(src, dest, preserveSet) {
 			}
 
 			// Preserved files: skip overwrite, save package version as .codeforge-new
-			if (preserveSet.has(relativePath) && fs.existsSync(destPath)) {
-				fs.copyFileSync(srcPath, `${destPath}.codeforge-new`);
-				stats.preserved++;
-				stats.preservedFiles.push(relativePath);
+			if (preserveSet.has(relativePath)) {
+				if (fs.existsSync(destPath)) {
+					fs.copyFileSync(srcPath, `${destPath}.codeforge-new`);
+					stats.preserved++;
+					stats.preservedFiles.push(relativePath);
+					continue;
+				}
+				// Preserve-listed but missing at dest — copy and count as new
+				fs.copyFileSync(srcPath, destPath);
+				stats.added++;
 				continue;
 			}
 
@@ -312,7 +355,7 @@ function main() {
 		console.log("");
 		console.log("Subcommands:");
 		console.log(
-			"  config apply    Deploy .codeforge/config/ files to ~/.claude/",
+			"  config apply    Deploy effective CodeForge defaults plus overrides",
 		);
 		console.log("");
 		console.log(
@@ -325,11 +368,7 @@ function main() {
 	const packageDir = __dirname;
 	const devcontainerSrc = path.join(packageDir, ".devcontainer");
 	const devcontainerDest = path.join(currentDir, ".devcontainer");
-	const codeforgeSrc = path.join(packageDir, ".codeforge");
 	const codeforgeDest = path.join(currentDir, ".codeforge");
-	const packageVersion = JSON.parse(
-		fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
-	).version;
 
 	console.log("");
 
@@ -352,34 +391,8 @@ function main() {
 				"  Reset complete. All .devcontainer customizations removed.",
 			);
 
-			// .codeforge uses checksum-based preservation (not wipe)
-			if (fs.existsSync(codeforgeSrc)) {
-				if (fs.existsSync(codeforgeDest)) {
-					const codeforgeStats = syncCodeforgeDirectory(
-						codeforgeSrc,
-						codeforgeDest,
-					);
-					console.log("  .codeforge/ user modifications preserved.");
-					console.log(`    Updated:   ${codeforgeStats.updated} files`);
-					console.log(`    Added:     ${codeforgeStats.added} new files`);
-					console.log(
-						`    Preserved: ${codeforgeStats.preserved} user config files`,
-					);
-					if (codeforgeStats.defaultFiles.length > 0) {
-						console.log("");
-						console.log(
-							"  Review .default files for new defaults you may want to merge:",
-						);
-						for (const f of codeforgeStats.defaultFiles) {
-							console.log(`    ${f}.default`);
-						}
-					}
-				} else {
-					copyDirectory(codeforgeSrc, codeforgeDest);
-				}
-				const newChecksums = generateChecksums(codeforgeSrc);
-				writeChecksums(codeforgeDest, packageVersion, newChecksums);
-			}
+			ensureCodeforgeScaffold(codeforgeDest);
+			console.log("  .codeforge/ overrides/state scaffold ensured.");
 
 			console.log("");
 			printNextSteps();
@@ -418,33 +431,9 @@ function main() {
 				console.log("");
 			}
 
-			// .codeforge sync with checksum-based preservation
-			if (fs.existsSync(codeforgeSrc)) {
-				const codeforgeStats = syncCodeforgeDirectory(
-					codeforgeSrc,
-					codeforgeDest,
-				);
-				const newChecksums = generateChecksums(codeforgeSrc);
-				writeChecksums(codeforgeDest, packageVersion, newChecksums);
-
-				console.log("  .codeforge/ update:");
-				console.log(`    Updated:   ${codeforgeStats.updated} files`);
-				console.log(`    Added:     ${codeforgeStats.added} new files`);
-				console.log(
-					`    Preserved: ${codeforgeStats.preserved} user config files`,
-				);
-
-				if (codeforgeStats.defaultFiles.length > 0) {
-					console.log("");
-					console.log(
-						"  Review .default files for new defaults you may want to merge:",
-					);
-					for (const f of codeforgeStats.defaultFiles) {
-						console.log(`    ${f}.default`);
-					}
-				}
-				console.log("");
-			}
+			ensureCodeforgeScaffold(codeforgeDest);
+			console.log("  .codeforge/ overrides/state scaffold ensured.");
+			console.log("");
 
 			printNextSteps();
 		} else {
@@ -463,12 +452,7 @@ function main() {
 
 		try {
 			copyDirectory(devcontainerSrc, devcontainerDest);
-
-			if (fs.existsSync(codeforgeSrc)) {
-				copyDirectory(codeforgeSrc, codeforgeDest);
-				const checksums = generateChecksums(codeforgeSrc);
-				writeChecksums(codeforgeDest, packageVersion, checksums);
-			}
+			ensureCodeforgeScaffold(codeforgeDest);
 
 			console.log("  CodeForge DevContainer configuration installed!");
 			console.log("");
@@ -482,33 +466,83 @@ function main() {
 }
 
 // ── configApply ──────────────────────────────────────────────────
-// Deploys .codeforge/config/ files to ~/.claude/ using file-manifest.json.
+// Deploys effective CodeForge defaults plus optional .codeforge/ overrides.
 function configApply() {
 	const codeforgeDir =
 		process.env.CODEFORGE_DIR || path.join(process.cwd(), ".codeforge");
-	const manifest = path.join(codeforgeDir, "file-manifest.json");
+	const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
+	const devcontainerDir = path.join(workspaceRoot, ".devcontainer");
+	const defaultsRoot = path.join(devcontainerDir, "defaults", "codeforge");
+	const generatedRoot = path.join(devcontainerDir, ".generated", "codeforge");
+	const defaultManifest = path.join(defaultsRoot, "file-manifest.json");
+	const userManifest = path.join(codeforgeDir, "file-manifest.json");
 
-	if (!fs.existsSync(manifest)) {
-		console.error("Error: file-manifest.json not found at " + manifest);
+	if (!fs.existsSync(defaultManifest)) {
+		console.error(
+			"Error: default file-manifest.json not found at " + defaultManifest,
+		);
 		console.error("Are you in a CodeForge project directory?");
 		process.exit(1);
 	}
 
-	const entries = JSON.parse(fs.readFileSync(manifest, "utf-8"));
+	ensureCodeforgeScaffold(codeforgeDir);
+
+	const generator = path.join(
+		devcontainerDir,
+		"scripts",
+		"generate-settings-profiles.js",
+	);
+	if (fs.existsSync(generator)) {
+		execFileSync(process.execPath, [generator, "--if-stale"], {
+			stdio: "inherit",
+			env: {
+				...process.env,
+				WORKSPACE_ROOT: workspaceRoot,
+				CODEFORGE_DIR: codeforgeDir,
+			},
+		});
+	}
+
+	const defaultEntries = JSON.parse(fs.readFileSync(defaultManifest, "utf-8"));
+	const userEntries = fs.existsSync(userManifest)
+		? JSON.parse(fs.readFileSync(userManifest, "utf-8"))
+		: [];
+	const entries = mergeManifestEntries(defaultEntries, userEntries);
 	const claudeConfigDir =
 		process.env.CLAUDE_CONFIG_DIR ||
 		path.join(process.env.HOME || "/home/vscode", ".claude");
-	const workspaceRoot = process.env.WORKSPACE_ROOT || process.cwd();
 
 	function expandVars(val) {
-		return val
+		const expanded = val
 			.replace(/\$\{CLAUDE_CONFIG_DIR\}/g, claudeConfigDir)
 			.replace(/\$\{WORKSPACE_ROOT\}/g, workspaceRoot)
 			.replace(/\$\{HOME\}/g, process.env.HOME || "/home/vscode");
+		return path.resolve(expanded);
+	}
+
+	function isPathWithin(root, candidate) {
+		const relative = path.relative(path.resolve(root), path.resolve(candidate));
+		return (
+			relative === "" ||
+			(!relative.startsWith("..") && !path.isAbsolute(relative))
+		);
+	}
+
+	function resolveSource(src) {
+		for (const root of [codeforgeDir, generatedRoot, defaultsRoot]) {
+			const candidate = path.resolve(root, src);
+			if (!isPathWithin(root, candidate)) {
+				continue;
+			}
+			if (fs.existsSync(candidate)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	console.log("");
-	console.log("Applying .codeforge/config/ to Claude configuration...");
+	console.log("Applying effective CodeForge configuration...");
 	console.log("");
 
 	let deployed = 0;
@@ -532,17 +566,13 @@ function configApply() {
 			);
 		}
 
-		const codeforgeRoot = path.resolve(codeforgeDir);
-		const srcPath = path.resolve(codeforgeRoot, entry.src);
-		if (!srcPath.startsWith(codeforgeRoot + path.sep)) {
+		const srcPath = resolveSource(entry.src);
+		if (!srcPath) {
 			console.log(
-				"  Skip: " + entry.src + " (source path escapes .codeforge/)",
+				"  Skip: " +
+					entry.src +
+					" (not found in overrides, generated output, or defaults)",
 			);
-			skipped++;
-			continue;
-		}
-		if (!fs.existsSync(srcPath)) {
-			console.log("  Skip: " + entry.src + " (not found)");
 			skipped++;
 			continue;
 		}
@@ -595,6 +625,29 @@ function configApply() {
 	);
 }
 
+function mergeManifestEntries(defaultEntries, userEntries) {
+	const byId = new Map();
+	for (const entry of [...defaultEntries, ...userEntries]) {
+		const id = entry.id || entry.src;
+		if (!id) {
+			console.warn("Manifest entry missing id/src — skipping");
+			continue;
+		}
+		const previous = byId.get(id) || {};
+		const merged = {
+			...previous,
+			...entry,
+			id,
+			overwrite: entry.overwrite || previous.overwrite || "if-changed",
+		};
+		if (entry.disabled === true) {
+			merged.enabled = false;
+		}
+		byId.set(id, merged);
+	}
+	return [...byId.values()];
+}
+
 function printNextSteps() {
 	console.log("Next steps:");
 	console.log("  1. Open this folder in VS Code");
@@ -625,5 +678,7 @@ module.exports = {
 	loadPreserveList,
 	computeChecksum,
 	generateChecksums,
+	ensureCodeforgeScaffold,
+	mergeManifestEntries,
 	main,
 };

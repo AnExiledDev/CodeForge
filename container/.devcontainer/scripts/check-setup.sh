@@ -10,6 +10,11 @@ echo "━━━━━━━━━━━━━━━━━━━━"
 PASS=0
 FAIL=0
 WARN=0
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEVCONTAINER_DIR="$(dirname "$SCRIPT_DIR")"
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces}"
+CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT}/.codeforge}"
+CLAUDE_DIR="$HOME/.claude"
 
 check() {
 	local label="$1" cmd="$2"
@@ -38,11 +43,15 @@ echo "Core:"
 check "Claude Code installed" "command -v claude"
 warn_check "Claude native binary" "[ -x ~/.local/bin/claude ]"
 check "cc launcher configured" "type cc"
-check "Config directory exists" "[ -d '${CLAUDE_CONFIG_DIR:-$HOME/.claude}' ]"
-check "Settings file exists" "[ -f '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json' ]"
-check "Opus 4.7 1M settings profile exists" "[ -f '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings-opus-47-1m-400k.json' ]"
-check "Opus 4.6 settings profiles exist" "[ -f '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings-opus-46-200k.json' ] && [ -f '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings-opus-46-1m-400k.json' ]"
-check "Opus 4.5 settings profile exists" "[ -f '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings-opus-45-200k.json' ]"
+check "Config directory exists" "[ -d '$CLAUDE_DIR' ]"
+check ".codeforge overrides/state exists" "[ -d '$CODEFORGE_DIR/.markers' ]"
+check "Settings generation marker exists" "[ -f '$CODEFORGE_DIR/.markers/settings-generated-v3' ]"
+check "Generated settings are current" "node '$SCRIPT_DIR/generate-settings-profiles.js' --check"
+check "Settings file exists" "[ -f '$CLAUDE_DIR/settings.json' ]"
+check "Default settings matches Opus 4.6 200k" "cmp -s '$CLAUDE_DIR/settings.json' '$CLAUDE_DIR/settings-opus-46-200k.json'"
+check "Opus 4.7 settings profiles exist" "[ -f '$CLAUDE_DIR/settings-opus-47-200k.json' ] && [ -f '$CLAUDE_DIR/settings-opus-47-1m-400k.json' ]"
+check "Opus 4.6 settings profiles exist" "[ -f '$CLAUDE_DIR/settings-opus-46-200k.json' ] && [ -f '$CLAUDE_DIR/settings-opus-46-1m-400k.json' ]"
+check "Opus 4.5 settings profile exists" "[ -f '$CLAUDE_DIR/settings-opus-45-200k.json' ]"
 
 echo ""
 echo "Authentication:"

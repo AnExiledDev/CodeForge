@@ -1,128 +1,177 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-only
 # Copyright (c) 2026 Marcus Krueger
-# Configure Git (GitHub CLI) and NPM authentication from .secrets file or environment variables.
-# Environment variables override .secrets values, supporting Codespaces secrets and localEnv.
+# Configure authentication from Docker Compose secrets or environment variables.
+#
+# Secret resolution: env var (Codespaces) → /run/secrets/<name> (Docker Compose) → skip.
 # Auth failure should not block other setup steps, so set -e is intentionally omitted.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVCONTAINER_DIR="$(dirname "$SCRIPT_DIR")"
-SECRETS_FILE="$DEVCONTAINER_DIR/.secrets"
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces}"
+CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT}/.codeforge}"
+CONFIG_FILE="${CODEFORGE_DIR}/container.json"
 
-# Source .secrets file if it exists (env vars take precedence via :- defaults below)
-if [ -f "$SECRETS_FILE" ]; then
-    echo "[setup-auth] Loading tokens from .secrets file"
-    set -a
-    source "$SECRETS_FILE"
-    set +a
-else
-    echo "[setup-auth] No .secrets file found, using environment variables only"
-fi
+_USERNAME="${SUDO_USER:-${USER:-vscode}}"
+_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
+_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
+
+# --- Secret reader ---
+# Reads a secret from env var (Codespaces) or /run/secrets/ (Docker Compose).
+# Usage: value=$(read_secret <secret_name> <ENV_VAR_NAME>)
+read_secret() {
+    local name="$1" env_name="$2"
+    if [ -n "${!env_name:-}" ]; then
+        printf '%s' "${!env_name}"
+        return 0
+    fi
+    local f="/run/secrets/$name"
+    if [ -f "$f" ]; then
+        tr -d '\n' < "$f"
+        return 0
+    fi
+    return 1
+}
+
+# --- Identity override from container.json ---
+jq_val() {
+    [ -f "$CONFIG_FILE" ] && jq -r "$1" "$CONFIG_FILE" 2>/dev/null || echo ""
+}
 
 AUTH_CONFIGURED=false
 
 # --- GitHub CLI auth ---
-if [ -n "$GH_TOKEN" ]; then
+if _gh_token=$(read_secret gh_token GH_TOKEN); then
     echo "[setup-auth] Authenticating GitHub CLI..."
-    # Capture token value then unset env var — gh refuses --with-token when
-    # GH_TOKEN is already exported (it says "use the env var instead").
-    _gh_token="$GH_TOKEN"
+    # Unset GH_TOKEN before login — gh refuses --with-token when GH_TOKEN is exported
     unset GH_TOKEN
     if gh auth login --with-token <<< "$_gh_token" 2>/dev/null; then
         echo "[setup-auth] GitHub CLI authenticated"
         gh auth setup-git 2>/dev/null && echo "[setup-auth] Git credential helper configured"
         AUTH_CONFIGURED=true
+
+        # Derive git identity from GitHub API
+        _identity_name=$(jq_val '.identity.name // empty')
+        _identity_email=$(jq_val '.identity.email // empty')
+
+        if [ -z "$_identity_name" ]; then
+            _identity_name=$(gh api user -q .login 2>/dev/null || true)
+        fi
+        if [ -z "$_identity_email" ]; then
+            _identity_email=$(gh api user/emails -q '.[] | select(.primary) | .email' 2>/dev/null || true)
+            if [ -z "$_identity_email" ]; then
+                _gh_id=$(gh api user -q .id 2>/dev/null || true)
+                if [ -n "$_gh_id" ] && [ -n "$_identity_name" ]; then
+                    _identity_email="${_gh_id}+${_identity_name}@users.noreply.github.com"
+                fi
+            fi
+        fi
+
+        if [ -n "$_identity_name" ]; then
+            git config --global user.name "$_identity_name"
+            echo "[setup-auth] Git user.name set to $_identity_name"
+        fi
+        if [ -n "$_identity_email" ]; then
+            git config --global user.email "$_identity_email"
+            echo "[setup-auth] Git user.email set to $_identity_email"
+        fi
     else
         echo "[setup-auth] WARNING: GitHub CLI authentication failed"
     fi
-    unset _gh_token
+    unset _gh_token _identity_name _identity_email _gh_id
 else
     echo "[setup-auth] GH_TOKEN not set, skipping GitHub CLI auth"
 fi
 
-# --- Git user config ---
-if [ -n "$GH_USERNAME" ]; then
-    git config --global user.name "$GH_USERNAME"
-    echo "[setup-auth] Git user.name set to $GH_USERNAME"
-    unset GH_USERNAME
-fi
-
-if [ -n "$GH_EMAIL" ]; then
-    git config --global user.email "$GH_EMAIL"
-    echo "[setup-auth] Git user.email set to $GH_EMAIL"
-    unset GH_EMAIL
-fi
-
 # --- NPM auth ---
-if [ -n "$NPM_TOKEN" ]; then
+if _npm_token=$(read_secret npm_token NPM_TOKEN); then
     echo "[setup-auth] Configuring NPM registry auth..."
-    if npm config set "//registry.npmjs.org/:_authToken=$NPM_TOKEN" 2>/dev/null; then
+    if npm config set "//registry.npmjs.org/:_authToken=$_npm_token" 2>/dev/null; then
         echo "[setup-auth] NPM auth token configured"
         AUTH_CONFIGURED=true
     else
         echo "[setup-auth] WARNING: NPM auth configuration failed"
     fi
-    unset NPM_TOKEN
+    unset _npm_token
 else
     echo "[setup-auth] NPM_TOKEN not set, skipping NPM auth"
 fi
 
-# --- Claude auth token (from 'claude setup-token') ---
-# Long-lived tokens only — generated via: claude setup-token
-# Note: After unset, the token remains visible in /proc/<pid>/environ for the
-# lifetime of this process. This is a platform limitation of environment variables.
-_USERNAME="${SUDO_USER:-${USER:-vscode}}"
-_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
-_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
-CLAUDE_CRED_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
-CLAUDE_CRED_FILE="$CLAUDE_CRED_DIR/.credentials.json"
-if [ -n "$CLAUDE_AUTH_TOKEN" ]; then
-    # Validate token format (claude setup-token produces sk-ant-* tokens)
-    if [[ ! "$CLAUDE_AUTH_TOKEN" =~ ^sk-ant- ]]; then
-        echo "[setup-auth] WARNING: CLAUDE_AUTH_TOKEN doesn't match expected format (sk-ant-*), skipping"
-    elif [ -f "$CLAUDE_CRED_FILE" ]; then
-        echo "[setup-auth] .credentials.json already exists, skipping token injection"
-        # Verify permissions haven't been tampered with
-        perms=$(stat -c %a "$CLAUDE_CRED_FILE" 2>/dev/null)
-        if [ -n "$perms" ] && [ "$perms" != "600" ]; then
-            echo "[setup-auth] WARNING: .credentials.json has permissions $perms (expected 600), fixing"
-            chmod 600 "$CLAUDE_CRED_FILE"
-        fi
-        AUTH_CONFIGURED=true
-    else
-        echo "[setup-auth] Creating .credentials.json from CLAUDE_AUTH_TOKEN..."
-        # Create directory with restrictive permissions (matches credential file at 600)
-        ( umask 077; mkdir -p "$CLAUDE_CRED_DIR" )
-        # Escape JSON-special characters in token value (defense against malformed JSON
-        # if a token ever contains " or \ — unlikely with sk-ant-* but closes the gap)
-        ESCAPED_TOKEN=$(printf '%s' "$CLAUDE_AUTH_TOKEN" | sed 's/\\/\\\\/g; s/"/\\"/g')
-        # Write credentials with restrictive permissions from the start (no race window).
-        # Uses printf '%s' to avoid shell expansion of token value (defense against
-        # metacharacters in the token string — backticks, $(), quotes).
-        if ( umask 077; printf '{\n  "claudeAiOauth": {\n    "accessToken": "%s",\n    "refreshToken": "%s",\n    "expiresAt": 9999999999999,\n    "scopes": ["user:inference", "user:profile"]\n  }\n}\n' "$ESCAPED_TOKEN" "$ESCAPED_TOKEN" > "$CLAUDE_CRED_FILE" ); then
-            echo "[setup-auth] Claude auth token configured"
-            AUTH_CONFIGURED=true
+# --- Claude Code OAuth token ---
+# CLAUDE_CODE_OAUTH_TOKEN is Claude Code's native env var for headless/CI auth.
+# WARNING: CLAUDE_CODE_OAUTH_TOKEN does not work when ANTHROPIC_API_KEY is set.
+if _claude_token=$(read_secret claude_code_oauth_token CLAUDE_CODE_OAUTH_TOKEN); then
+    echo "[setup-auth] Configuring Claude Code OAuth token..."
+
+    for rc in "${_USER_HOME}/.bashrc" "${_USER_HOME}/.zshrc"; do
+        [ -f "$rc" ] || continue
+        grep -q "export CLAUDE_CODE_OAUTH_TOKEN=" "$rc" 2>/dev/null || \
+            printf 'export CLAUDE_CODE_OAUTH_TOKEN=%q\n' "$_claude_token" >> "$rc"
+    done
+
+    # Claude Code documents CLAUDE_CODE_OAUTH_TOKEN for setup-token auth, but
+    # some Linux/container first-run paths do not honor it reliably. Also write
+    # the same token to the native Linux credential file shape.
+    _CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
+    _CLAUDE_CREDENTIALS_FILE="${_CLAUDE_DIR}/.credentials.json"
+    _CLAUDE_EXPIRES_AT="$(($(date +%s) * 1000 + 365 * 24 * 60 * 60 * 1000))"
+    if command -v jq >/dev/null 2>&1; then
+        ( umask 077; mkdir -p "$_CLAUDE_DIR" )
+        _CLAUDE_CREDENTIALS_TMP="$(mktemp)"
+        if [ -f "$_CLAUDE_CREDENTIALS_FILE" ] && jq empty "$_CLAUDE_CREDENTIALS_FILE" 2>/dev/null; then
+            jq \
+                --arg token "$_claude_token" \
+                --argjson expiresAt "$_CLAUDE_EXPIRES_AT" \
+                '.claudeAiOauth = ((.claudeAiOauth // {}) + {
+                    accessToken: $token,
+                    refreshToken: (.claudeAiOauth.refreshToken // ""),
+                    expiresAt: $expiresAt,
+                    scopes: (.claudeAiOauth.scopes // ["user:inference", "user:profile", "user:sessions:claude_code"])
+                })' \
+                "$_CLAUDE_CREDENTIALS_FILE" > "$_CLAUDE_CREDENTIALS_TMP"
         else
-            echo "[setup-auth] WARNING: Failed to write .credentials.json — check permissions on $CLAUDE_CRED_DIR"
+            jq -n \
+                --arg token "$_claude_token" \
+                --argjson expiresAt "$_CLAUDE_EXPIRES_AT" \
+                '{
+                    claudeAiOauth: {
+                        accessToken: $token,
+                        refreshToken: "",
+                        expiresAt: $expiresAt,
+                        scopes: ["user:inference", "user:profile", "user:sessions:claude_code"]
+                    }
+                }' > "$_CLAUDE_CREDENTIALS_TMP"
         fi
+        install -m 600 "$_CLAUDE_CREDENTIALS_TMP" "$_CLAUDE_CREDENTIALS_FILE"
+        rm -f "$_CLAUDE_CREDENTIALS_TMP"
+        chown "$_USERNAME:$_USERNAME" "$_CLAUDE_CREDENTIALS_FILE" 2>/dev/null || true
+        echo "[setup-auth] Claude Code credentials file configured"
+    else
+        echo "[setup-auth] WARNING: jq not found; skipped Claude Code credentials file"
     fi
-    unset CLAUDE_AUTH_TOKEN
+    unset _CLAUDE_DIR _CLAUDE_CREDENTIALS_FILE _CLAUDE_CREDENTIALS_TMP _CLAUDE_EXPIRES_AT
+
+    echo "[setup-auth] CLAUDE_CODE_OAUTH_TOKEN configured"
+    AUTH_CONFIGURED=true
+
+    # Check for ANTHROPIC_API_KEY conflict
+    if _anthropic_key=$(read_secret anthropic_api_key ANTHROPIC_API_KEY 2>/dev/null); then
+        echo "[setup-auth] WARNING: Both CLAUDE_CODE_OAUTH_TOKEN and ANTHROPIC_API_KEY are set."
+        echo "[setup-auth]   CLAUDE_CODE_OAUTH_TOKEN will not work when ANTHROPIC_API_KEY is present."
+        echo "[setup-auth]   Remove the anthropic_api_key secret if you want OAuth token auth."
+    fi
+    unset _claude_token
 else
-    echo "[setup-auth] CLAUDE_AUTH_TOKEN not set, skipping Claude auth"
+    echo "[setup-auth] CLAUDE_CODE_OAUTH_TOKEN not set, skipping Claude auth"
 fi
+unset _anthropic_key
 
 # --- OpenAI Codex auth (API key) ---
-# For Codex CLI: set OPENAI_API_KEY in .secrets or as an environment variable.
-# Browser-based ChatGPT OAuth is also supported — run `codex` interactively.
 _CODEX_DIR="${CODEX_HOME:-${_USER_HOME}/.codex}"
 _CODEX_AUTH_FILE="$_CODEX_DIR/auth.json"
-if [ -n "$OPENAI_API_KEY" ]; then
-    # Validate token format (OpenAI API keys start with sk-)
-    if [[ ! "$OPENAI_API_KEY" =~ ^sk- ]]; then
-        echo "[setup-auth] WARNING: OPENAI_API_KEY doesn't match expected format (sk-*), skipping"
-    elif [ -f "$_CODEX_AUTH_FILE" ]; then
+if _openai_key=$(read_secret openai_api_key OPENAI_API_KEY); then
+    if [ -f "$_CODEX_AUTH_FILE" ]; then
         echo "[setup-auth] Codex auth.json already exists, skipping token injection"
-        # Verify permissions
         perms=$(stat -c %a "$_CODEX_AUTH_FILE" 2>/dev/null)
         if [ -n "$perms" ] && [ "$perms" != "600" ]; then
             echo "[setup-auth] WARNING: Codex auth.json has permissions $perms (expected 600), fixing"
@@ -132,46 +181,52 @@ if [ -n "$OPENAI_API_KEY" ]; then
     else
         echo "[setup-auth] Creating Codex auth.json from OPENAI_API_KEY..."
         ( umask 077; mkdir -p "$_CODEX_DIR" )
-        ESCAPED_KEY=$(printf '%s' "$OPENAI_API_KEY" | sed 's/\\/\\\\/g; s/"/\\"/g')
-        if ( umask 077; printf '{\n  "auth_mode": "apikey",\n  "OPENAI_API_KEY": "%s"\n}\n' "$ESCAPED_KEY" > "$_CODEX_AUTH_FILE" ); then
+        if command -v jq >/dev/null 2>&1; then
+            ( umask 077; jq -n --arg key "$_openai_key" '{auth_mode: "apikey", OPENAI_API_KEY: $key}' > "$_CODEX_AUTH_FILE" )
+        else
+            ESCAPED_KEY=$(printf '%s' "$_openai_key" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            ( umask 077; printf '{\n  "auth_mode": "apikey",\n  "OPENAI_API_KEY": "%s"\n}\n' "$ESCAPED_KEY" > "$_CODEX_AUTH_FILE" )
+        fi
+        if [ -f "$_CODEX_AUTH_FILE" ]; then
             echo "[setup-auth] Codex API key configured"
             AUTH_CONFIGURED=true
         else
             echo "[setup-auth] WARNING: Failed to write Codex auth.json — check permissions on $_CODEX_DIR"
         fi
     fi
-    unset OPENAI_API_KEY
+    unset _openai_key ESCAPED_KEY
 else
     echo "[setup-auth] OPENAI_API_KEY not set, skipping Codex auth"
 fi
 
 # --- Claude Code Router provider keys ---
-# Export provider API keys for CCR's $ENV_VAR interpolation in config.json.
-# Unlike Claude/Codex tokens which write to credential files then unset,
-# CCR keys must persist as env vars because CCR reads them at runtime.
+# CCR reads env vars at runtime via $ENV_VAR interpolation in config.json.
+# Keys must persist as env vars in shell rc files.
 _CCR_KEY_CONFIGURED=false
 for _CCR_VAR in ANTHROPIC_API_KEY DEEPSEEK_API_KEY GEMINI_API_KEY OPENROUTER_API_KEY; do
-    if [ -n "${!_CCR_VAR:-}" ]; then
-        # Write to shell rc files so they're available in interactive shells
-        grep -q "export ${_CCR_VAR}=" "${_USER_HOME}/.bashrc" 2>/dev/null || \
-            echo "export ${_CCR_VAR}=\"${!_CCR_VAR}\"" >> "${_USER_HOME}/.bashrc"
-        grep -q "export ${_CCR_VAR}=" "${_USER_HOME}/.zshrc" 2>/dev/null || \
-            echo "export ${_CCR_VAR}=\"${!_CCR_VAR}\"" >> "${_USER_HOME}/.zshrc"
-        echo "[setup-auth] ✓ ${_CCR_VAR} configured for claude-code-router"
+    _secret_name=$(echo "$_CCR_VAR" | tr '[:upper:]' '[:lower:]')
+    if _ccr_val=$(read_secret "$_secret_name" "$_CCR_VAR"); then
+        for rc in "${_USER_HOME}/.bashrc" "${_USER_HOME}/.zshrc"; do
+            [ -f "$rc" ] || continue
+            grep -q "export ${_CCR_VAR}=" "$rc" 2>/dev/null || \
+                echo "export ${_CCR_VAR}=\"${_ccr_val}\"" >> "$rc"
+        done
+        echo "[setup-auth] ${_CCR_VAR} configured for claude-code-router"
         _CCR_KEY_CONFIGURED=true
+        unset _ccr_val
     fi
 done
 if [ "$_CCR_KEY_CONFIGURED" = true ]; then
     AUTH_CONFIGURED=true
 else
-    echo "[setup-auth] No claude-code-router provider keys set (ANTHROPIC_API_KEY, DEEPSEEK_API_KEY, etc.)"
+    echo "[setup-auth] No claude-code-router provider keys set"
 fi
-unset _CCR_VAR _CCR_KEY_CONFIGURED
+unset _CCR_VAR _CCR_KEY_CONFIGURED _secret_name
 
 # --- Summary ---
 if [ "$AUTH_CONFIGURED" = true ]; then
     echo "[setup-auth] Auth configuration complete"
 else
-    echo "[setup-auth] No tokens provided — auth configuration skipped"
-    echo "[setup-auth] To configure, copy .secrets.example to .secrets and fill in your tokens"
+    echo "[setup-auth] No secrets provided — auth configuration skipped"
+    echo "[setup-auth] To configure, add secret files to .codeforge/secrets/ (one file per secret)"
 fi
