@@ -11,9 +11,12 @@ services:
       - codeforge-cache:/home/vscode/.cache
       - codeforge-npm-cache:/home/vscode/.npm
       - codeforge-bun-cache:/home/vscode/.bun/install/cache
+      # Workspace
+      - ..:/workspaces
     mem_limit: 6g
-    memswap_limit: 6g
+    memswap_limit: 6g  # Equal to mem_limit — swap disabled intentionally
     container_name: codeforge
+    command: sleep infinity
 
 volumes:
   codeforge-claude-config:
