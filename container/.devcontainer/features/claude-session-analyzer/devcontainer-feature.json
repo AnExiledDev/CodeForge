@@ -1,0 +1,20 @@
+{
+	"id": "claude-session-analyzer",
+	"version": "1.0.0",
+	"name": "Claude Session Quality Analyzer",
+	"description": "Python tool for measuring session quality: thinking depth, Read:Edit ratio, frustration indicators",
+	"documentationURL": "https://github.com/lucemia/claude-session-analyzer",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Git ref to install (use 'none' to skip)",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers-extra/features/uv"]
+}

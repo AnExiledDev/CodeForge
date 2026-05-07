@@ -1,0 +1,20 @@
+{
+	"id": "ccdiag",
+	"version": "1.0.0",
+	"name": "ccdiag - Claude Code Session Diagnostics",
+	"description": "CLI tool for analyzing Claude Code sessions: orphaned tool calls, errors, token usage, and API proxy",
+	"documentationURL": "https://github.com/kolkov/ccdiag",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Version to install (use 'none' to skip)",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/go"]
+}
