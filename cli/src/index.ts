@@ -40,7 +40,7 @@ const program = new Command();
 program
 	.name("codeforge")
 	.description("CLI for CodeForge development workflows (experimental)")
-	.version("0.1.0")
+	.version("3.0.0")
 	.option("--local", "Run against local host filesystem (skip container proxy)")
 	.option("--container <name>", "Target a specific container by name");
 
