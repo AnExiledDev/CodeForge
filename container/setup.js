@@ -479,7 +479,7 @@ function configApply() {
 
 	if (!fs.existsSync(defaultManifest)) {
 		console.error(
-			"Error: default file-manifest.json not found at " + defaultManifest,
+			`Error: default file-manifest.json not found at ${defaultManifest}`,
 		);
 		console.error("Are you in a CodeForge project directory?");
 		process.exit(1);

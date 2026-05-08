@@ -38,7 +38,7 @@ export function registerMountAddCommand(parent: Command): void {
 			}
 
 			// Convert to relative path from workspace root
-			const relPath = relative(workspaceRoot, absPath);
+			const relPath = relative(workspaceRoot, absPath).replaceAll("\\", "/");
 			if (relPath.startsWith("..")) {
 				console.error(
 					`Error: path must be within workspace root (${workspaceRoot})`,
