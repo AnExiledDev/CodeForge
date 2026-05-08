@@ -406,17 +406,32 @@ Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` pro
 
 15 previously active agents have been archived to `agents/_archived/`.
 
-### General Skills (23) — `skill-engine` plugin
+### General Skills (24) — `skill-engine` plugin
 
 Skills in `plugins/devs-marketplace/plugins/skill-engine/skills/` provide domain-specific coding references:
 
-`agent-browser` · `api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `sqlite` · `svelte5` · `team` · `testing` · `worktree`
+`agent-browser` · `api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `codeforge` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `sqlite` · `svelte5` · `team` · `testing` · `worktree`
 
 ### Spec Skills (3) — `spec-workflow` plugin
 
 Skills in `plugins/devs-marketplace/plugins/spec-workflow/skills/`:
 
 `spec` · `build` · `specs`
+
+### AI Environment Context
+
+CodeForge ships machine-readable environment documentation for AI assistants.
+Reference it from your project's `AGENTS.md` or `CLAUDE.md`:
+
+```
+@.devcontainer/AI-CONTEXT.md
+```
+
+This gives your AI knowledge of the container's toolchain, filesystem layout,
+safety constraints, and resource limits — preventing common errors like
+running blocked commands or writing outside the project directory.
+
+For deeper context on demand, use the `/codeforge` skill in Claude Code.
 
 ## Specification Workflow
 

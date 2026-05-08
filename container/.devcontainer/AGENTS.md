@@ -23,6 +23,15 @@ CodeForge devcontainer for AI-assisted development with Claude Code.
 
 Config files deploy via `defaults/codeforge/file-manifest.json` on every container start. Most deploy to `~/.claude/`; ccstatusline config deploys to `~/.config/ccstatusline/`. Each entry supports `overwrite`: `"if-changed"` (default, sha256), `"always"`, or `"never"`. Supported variables: `${WORKSPACE_ROOT}`, `${CODEFORGE_DIR}`, `${HOME}`.
 
+## AI Environment Reference
+
+Machine-readable environment context for AI assistants is in `AI-CONTEXT.md`.
+Users should reference this file from their project's AGENTS.md or CLAUDE.md:
+
+    @.devcontainer/AI-CONTEXT.md
+
+For deeper context, use the `/codeforge` skill (toolchain, filesystem, constraints).
+
 ## Commands
 
 | Command | Purpose |
@@ -63,7 +72,7 @@ Declared in `settings.json` under `enabledPlugins`, auto-activated on start:
 ### Active
 
 - **agent-system** — 4 custom agents (architect, claude-guide, explorer, generalist) + built-in agent redirection + `/verify-tests` skill
-- **skill-engine** — 2 coding knowledge packs (`/team`, `/agent-browser`) + auto-suggestion
+- **skill-engine** — 24 coding knowledge packs loaded on demand via `/skill` (e.g., `/codeforge`, `/team`, `/agent-browser`)
 - **auto-code-quality** — File tracking, syntax validation, `/cq` quality gate (format + lint + test on demand)
 - **session-context** — Git state injection, TODO harvesting, commit reminders
 - **workspace-scope-guard** — Blocks writes outside working directory
@@ -215,3 +224,30 @@ Available since Claude Code v2.1.78. Resolves to a dedicated data directory per 
 **Current state:** Not used in CodeForge plugins. Plugins store transient state in `/tmp/{prefix}-{session_id}`.
 
 **Future use:** When a plugin needs persistent state across sessions (cached configs, learned preferences, usage frequency), use `${CLAUDE_PLUGIN_DATA}` in hook commands instead of `/tmp/`.
+
+## AI Documentation Maintenance
+
+`AI-CONTEXT.md` is documentation FOR AI assistants, not humans.
+
+### Update Triggers
+
+- Feature added or removed from devcontainer.json
+- Safety plugin constraint changed
+- Tool added, removed, or replaced
+- Filesystem topology changed (new volumes, mount points)
+- Resource limits changed
+
+### Quality Standard
+
+- Facts, not prose. Declarative statements only.
+- Constraints before capabilities.
+- Tables for tool lists. No version numbers (they go stale).
+- ~700 token target, hard ceiling ~800 tokens.
+- No tutorials, no examples, no explanations of "why."
+- Test: "Would an AI need this to avoid an error?" If no, cut it.
+
+### /codeforge Skill Maintenance
+
+When AI-CONTEXT.md changes, check if the corresponding skill reference
+file needs updating. AI-CONTEXT.md is the summary; skill references
+are the deep dive.

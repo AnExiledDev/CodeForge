@@ -212,13 +212,5 @@
 		"destFilename": "config.toml",
 		"enabled": true,
 		"overwrite": "if-changed"
-	},
-	{
-		"id": "codex.agents",
-		"src": "codex/AGENTS.md",
-		"dest": "${HOME}/.codex",
-		"destFilename": "AGENTS.md",
-		"enabled": true,
-		"overwrite": "if-changed"
 	}
 ]

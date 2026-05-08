@@ -1,7 +1,5 @@
 {
 	"name": "skill-engine",
-	"description": "2 coding knowledge packs with auto-suggestion (21 archived for rewrite)",
-	"author": {
-		"name": "AnExiledDev"
-	}
+	"description": "Coding knowledge packs loaded on demand via /skill",
+	"author": { "name": "AnExiledDev" }
 }

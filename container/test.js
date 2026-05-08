@@ -95,7 +95,6 @@ const requiredFiles = [
 	".devcontainer/defaults/codeforge/claude/statusline/settings.json",
 	".devcontainer/defaults/codeforge/claude/router/config.json",
 	".devcontainer/defaults/codeforge/codex/config.toml",
-	".devcontainer/defaults/codeforge/codex/AGENTS.md",
 	".devcontainer/defaults/codeforge/rtk/config.toml",
 	".devcontainer/features/oh-my-claude/devcontainer-feature.json",
 	".devcontainer/features/claude-code-karma/devcontainer-feature.json",

@@ -29,6 +29,19 @@
 
 - **Enable shfmt, dprint, shellcheck, hadolint** — previously disabled (`"version": "none"`), now set to `"latest"`. Provides shell formatting, markdown/TOML/Dockerfile formatting, shell linting, and Dockerfile linting out of the box.
 
+### Documentation
+
+- **Add AI-CONTEXT.md** — machine-readable environment reference for AI assistants. Covers toolchain, filesystem, constraints, auth, and persistence in ~700 tokens. Referenced from AGENTS.md with user guidance in README.md.
+
+### Skill Engine
+
+- **Add `/codeforge` skill** — on-demand deep container context (toolchain inventory, filesystem map, safety constraints). Complements the static AI-CONTEXT.md with detailed reference files.
+- **Remove skill auto-suggestion** — removed `skill-suggester.py` and the `UserPromptSubmit` hook. Skills are now loaded on demand via `/skill` only. The auto-suggestion system had only 2 active matchers and added latency to every prompt.
+
+### Removed
+
+- **Remove Codex AGENTS.md** — removed the single-line `@AGENTS.md` self-referencing file from packaged defaults and file-manifest. Codex config.toml is unaffected.
+
 ### Secrets & Configuration
 
 - **Docker Compose secrets** — secrets now use Docker Compose file-based secrets mounted at `/run/secrets/`. Place secret files in `.codeforge/secrets/` (one file per secret, raw value only). The `generate-compose.mjs` init script auto-discovers secrets and generates the compose override. Supported secrets: `gh_token`, `npm_token`, `claude_code_oauth_token`, `openai_api_key`, `anthropic_api_key`, `deepseek_api_key`, `gemini_api_key`, `openrouter_api_key`. Env vars (Codespaces) remain supported as a fallback.
