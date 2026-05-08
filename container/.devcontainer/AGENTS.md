@@ -101,7 +101,7 @@ The `~/.claude/` directory is backed by a Docker named volume (`codeforge-claude
 
 **Claude Code auth:** Set `claude_code_oauth_token` (from `claude setup-token`) in `.codeforge/secrets/`. The token is exported as `CLAUDE_CODE_OAUTH_TOKEN` env var for Claude Code's native headless auth. **WARNING:** `CLAUDE_CODE_OAUTH_TOKEN` does not work when `ANTHROPIC_API_KEY` is also set.
 
-**GitHub auth + identity:** Set `gh_token` in `.codeforge/secrets/`. On container start, `setup-auth.sh` authenticates via `gh auth login`, configures the git credential helper, and derives `user.name` and `user.email` from the GitHub API. Override identity via `.codeforge/container.json` `identity` section.
+**GitHub auth + identity:** Two options: (1) set `gh_token` in `.codeforge/secrets/` for fully automated auth, or (2) run `gh auth login` manually after container build — credentials persist via the `codeforge-gh-config` Docker named volume across rebuilds. On container start, `setup-auth.sh` detects either source, derives `user.name` and `user.email` from the GitHub API, and configures the git credential helper. The credential helper (`gh auth setup-git`) runs unconditionally on every start, so git operations work immediately after a manual `gh auth login`. Override identity via `.codeforge/container.json` `identity` section.
 
 **Codex CLI:** Set `openai_api_key` in `.codeforge/secrets/`. Credentials (`~/.codex/`) are backed by a separate Docker named volume.
 

@@ -40,6 +40,38 @@ jq_val() {
 
 AUTH_CONFIGURED=false
 
+# --- Git identity from GitHub API ---
+# Derives user.name and user.email from gh CLI or container.json overrides.
+# Requires an active gh auth session.
+_configure_git_identity() {
+    local _identity_name _identity_email _gh_id
+
+    _identity_name=$(jq_val '.identity.name // empty')
+    _identity_email=$(jq_val '.identity.email // empty')
+
+    if [ -z "$_identity_name" ]; then
+        _identity_name=$(gh api user -q .login 2>/dev/null || true)
+    fi
+    if [ -z "$_identity_email" ]; then
+        _identity_email=$(gh api user/emails -q '.[] | select(.primary) | .email' 2>/dev/null || true)
+        if [ -z "$_identity_email" ]; then
+            _gh_id=$(gh api user -q .id 2>/dev/null || true)
+            if [ -n "$_gh_id" ] && [ -n "$_identity_name" ]; then
+                _identity_email="${_gh_id}+${_identity_name}@users.noreply.github.com"
+            fi
+        fi
+    fi
+
+    if [ -n "$_identity_name" ]; then
+        git config --global user.name "$_identity_name"
+        echo "[setup-auth] Git user.name set to $_identity_name"
+    fi
+    if [ -n "$_identity_email" ]; then
+        git config --global user.email "$_identity_email"
+        echo "[setup-auth] Git user.email set to $_identity_email"
+    fi
+}
+
 # --- GitHub CLI auth ---
 if _gh_token=$(read_secret gh_token GH_TOKEN); then
     echo "[setup-auth] Authenticating GitHub CLI..."
@@ -47,41 +79,25 @@ if _gh_token=$(read_secret gh_token GH_TOKEN); then
     unset GH_TOKEN
     if gh auth login --with-token <<< "$_gh_token" 2>/dev/null; then
         echo "[setup-auth] GitHub CLI authenticated"
-        gh auth setup-git 2>/dev/null && echo "[setup-auth] Git credential helper configured"
         AUTH_CONFIGURED=true
-
-        # Derive git identity from GitHub API
-        _identity_name=$(jq_val '.identity.name // empty')
-        _identity_email=$(jq_val '.identity.email // empty')
-
-        if [ -z "$_identity_name" ]; then
-            _identity_name=$(gh api user -q .login 2>/dev/null || true)
-        fi
-        if [ -z "$_identity_email" ]; then
-            _identity_email=$(gh api user/emails -q '.[] | select(.primary) | .email' 2>/dev/null || true)
-            if [ -z "$_identity_email" ]; then
-                _gh_id=$(gh api user -q .id 2>/dev/null || true)
-                if [ -n "$_gh_id" ] && [ -n "$_identity_name" ]; then
-                    _identity_email="${_gh_id}+${_identity_name}@users.noreply.github.com"
-                fi
-            fi
-        fi
-
-        if [ -n "$_identity_name" ]; then
-            git config --global user.name "$_identity_name"
-            echo "[setup-auth] Git user.name set to $_identity_name"
-        fi
-        if [ -n "$_identity_email" ]; then
-            git config --global user.email "$_identity_email"
-            echo "[setup-auth] Git user.email set to $_identity_email"
-        fi
+        _configure_git_identity
     else
         echo "[setup-auth] WARNING: GitHub CLI authentication failed"
     fi
-    unset _gh_token _identity_name _identity_email _gh_id
+    unset _gh_token
+elif gh auth status &>/dev/null; then
+    # No token secret provided, but gh is already authenticated from a previous
+    # manual `gh auth login` (credentials persisted via Docker named volume).
+    echo "[setup-auth] GitHub CLI already authenticated (persisted credentials)"
+    AUTH_CONFIGURED=true
+    _configure_git_identity
 else
-    echo "[setup-auth] GH_TOKEN not set, skipping GitHub CLI auth"
+    echo "[setup-auth] GH_TOKEN not set and no persisted login, skipping GitHub CLI auth"
 fi
+
+# Always configure git credential helper — works with or without active login.
+# This ensures manual `gh auth login` works immediately for git operations.
+gh auth setup-git 2>/dev/null && echo "[setup-auth] Git credential helper configured"
 
 # --- NPM auth ---
 if _npm_token=$(read_secret npm_token NPM_TOKEN); then

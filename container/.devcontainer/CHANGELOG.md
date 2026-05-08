@@ -12,6 +12,7 @@
 
 ### Bug Fixes
 
+- **Fix git credential helper not configured without `GH_TOKEN` secret** — `gh auth setup-git` was nested inside the `GH_TOKEN` block, so it only ran when a token secret was provided. Now runs unconditionally on every container start, enabling manual `gh auth login` to work immediately for git operations. Also detects persisted GitHub CLI credentials (from Docker named volume) and derives git identity without requiring a secret.
 - **Fix named volume ownership for all mount points** — `setup.sh` only fixed `root:root` ownership on `~/.claude`, leaving 6 other Docker named volumes unfixed. `~/.config/gh` and `~/.bun/install/cache` were actively broken (`gh auth login` would fail with `permission denied`). Now loops over all volume mount points from `docker-compose.yml`.
 
 ### Developer Tooling
