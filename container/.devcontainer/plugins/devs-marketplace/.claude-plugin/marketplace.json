@@ -60,11 +60,11 @@
 		},
 		{
 			"name": "skill-engine",
-			"description": "2 coding knowledge packs with auto-suggestion (21 archived for rewrite)",
+			"description": "Coding knowledge packs loaded on demand via /skill",
 			"version": "1.0.0",
 			"source": "./plugins/skill-engine",
 			"category": "development",
-			"keywords": ["skills", "knowledge", "auto-suggestion"]
+			"keywords": ["skills", "knowledge"]
 		},
 		{
 			"name": "spec-workflow",

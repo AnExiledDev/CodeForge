@@ -1,143 +1,215 @@
 [
 	{
-		"src": "config/settings.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.state",
+		"src": "claude/claude.json",
+		"dest": "${HOME}",
+		"destFilename": ".claude.json",
+		"enabled": true,
+		"overwrite": "never"
+	},
+	{
+		"id": "codeforge.container-config",
+		"src": "container.json",
+		"dest": "${CODEFORGE_DIR}",
+		"destFilename": "container.json",
+		"enabled": true,
+		"overwrite": "never"
+	},
+	{
+		"id": "claude.settings.default",
+		"src": "claude/settings/settings.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/settings-opus-47-1m-400k.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.settings.opus-46-200k",
+		"src": "claude/settings/settings-opus-46-200k.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/settings-opus-46-200k.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.settings.opus-46-1m-400k",
+		"src": "claude/settings/settings-opus-46-1m-400k.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/settings-opus-46-1m-400k.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.settings.opus-47-200k",
+		"src": "claude/settings/settings-opus-47-200k.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/settings-opus-45-200k.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.settings.opus-47-1m-400k",
+		"src": "claude/settings/settings-opus-47-1m-400k.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/keybindings.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.settings.opus-45-200k",
+		"src": "claude/settings/settings-opus-45-200k.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/main-system-prompt.md",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.keybindings",
+		"src": "claude/keybindings.json",
+		"dest": "${HOME}/.claude",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/spec-workflow.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.system-prompts.main",
+		"src": "claude/system-prompts/main.md",
+		"dest": "${HOME}/.claude",
+		"destFilename": "main-system-prompt.md",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"id": "claude.system-prompts.writing",
+		"src": "claude/system-prompts/writing.md",
+		"dest": "${HOME}/.claude",
+		"destFilename": "writing-system-prompt.md",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"id": "claude.system-prompts.orchestrator",
+		"src": "claude/system-prompts/orchestrator.md",
+		"dest": "${HOME}/.claude",
+		"destFilename": "orchestrator-system-prompt.md",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"id": "claude.rule.spec-workflow",
+		"src": "claude/rules/spec-workflow.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": false,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/workspace-scope.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.workspace-scope",
+		"src": "claude/rules/workspace-scope.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/session-search.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.session-search",
+		"src": "claude/rules/session-search.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/auto-memory.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.auto-memory",
+		"src": "claude/rules/auto-memory.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/explicit-start.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.explicit-start",
+		"src": "claude/rules/explicit-start.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/plan-presentation.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.plan-presentation",
+		"src": "claude/rules/plan-presentation.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/scope-discipline.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.scope-discipline",
+		"src": "claude/rules/scope-discipline.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/surface-decisions.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.surface-decisions",
+		"src": "claude/rules/surface-decisions.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/rules/zero-tolerance-bugs.md",
-		"dest": "${CLAUDE_CONFIG_DIR}/rules",
+		"id": "claude.rule.zero-tolerance-bugs",
+		"src": "claude/rules/zero-tolerance-bugs.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/writing-system-prompt.md",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.rule.rtk-awareness",
+		"src": "claude/rules/rtk-awareness.md",
+		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/orchestrator-system-prompt.md",
-		"dest": "${CLAUDE_CONFIG_DIR}",
-		"enabled": true,
-		"overwrite": "if-changed"
-	},
-	{
-		"src": "config/ccstatusline-settings.json",
+		"id": "claude.statusline.user",
+		"src": "claude/statusline/settings.json",
 		"dest": "${HOME}/.config/ccstatusline",
 		"destFilename": "settings.json",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/ccstatusline-settings.json",
+		"id": "claude.statusline.template",
+		"src": "claude/statusline/settings.json",
 		"dest": "/usr/local/share/ccstatusline",
 		"destFilename": "settings.template.json",
 		"enabled": true,
 		"overwrite": "always"
 	},
 	{
-		"src": "config/disabled-hooks.json",
-		"dest": "${CLAUDE_CONFIG_DIR}",
+		"id": "claude.disabled-hooks",
+		"src": "claude/disabled-hooks.json",
+		"dest": "${HOME}/.claude",
+		"destFilename": "disabled-hooks.json",
 		"enabled": true,
 		"overwrite": "never"
 	},
 	{
-		"src": "config/codex-config.toml",
-		"dest": "${HOME}/.codex",
+		"id": "claude.router.config",
+		"src": "claude/router/config.json",
+		"dest": "${HOME}/.claude-code-router",
+		"destFilename": "config.json",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"id": "claude.hook.rtk-rewrite",
+		"src": "claude/hooks/rtk-rewrite.sh",
+		"dest": "${HOME}/.claude/hooks",
+		"enabled": true,
+		"overwrite": "if-changed"
+	},
+	{
+		"id": "rtk.config",
+		"src": "rtk/config.toml",
+		"dest": "${HOME}/.config/rtk",
 		"destFilename": "config.toml",
 		"enabled": true,
 		"overwrite": "if-changed"
 	},
 	{
-		"src": "config/claude-code-router.json",
-		"dest": "${HOME}/.claude-code-router",
-		"destFilename": "config.json",
+		"id": "codex.config",
+		"src": "codex/config.toml",
+		"dest": "${HOME}/.codex",
+		"destFilename": "config.toml",
 		"enabled": true,
 		"overwrite": "if-changed"
 	}

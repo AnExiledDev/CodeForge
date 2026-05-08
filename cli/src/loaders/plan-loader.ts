@@ -26,7 +26,9 @@ export async function loadPlans(): Promise<PlanMeta[]> {
 				}
 
 				results.push({ slug, filePath: entry, title, content });
-			} catch {}
+			} catch (err) {
+				if (process.env.DEBUG) console.error(`[plan-loader] ${err}`);
+			}
 		}
 	} catch {
 		// Directory doesn't exist — return empty

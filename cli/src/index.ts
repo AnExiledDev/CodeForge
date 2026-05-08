@@ -9,6 +9,8 @@ import { registerContainerLsCommand } from "./commands/container/ls.js";
 import { registerContainerRebuildCommand } from "./commands/container/rebuild.js";
 import { registerContainerShellCommand } from "./commands/container/shell.js";
 import { registerContainerUpCommand } from "./commands/container/up.js";
+import { registerDoctorCommand } from "./commands/doctor/index.js";
+import { registerMountAddCommand } from "./commands/mount/add.js";
 import { registerIndexBuildCommand } from "./commands/index/build.js";
 import { registerIndexCleanCommand } from "./commands/index/clean.js";
 import { registerIndexSearchCommand } from "./commands/index/search.js";
@@ -23,6 +25,10 @@ import { registerPluginHooksCommand } from "./commands/plugin/hooks.js";
 import { registerPluginListCommand } from "./commands/plugin/list.js";
 import { registerPluginShowCommand } from "./commands/plugin/show.js";
 import { registerPluginSkillsCommand } from "./commands/plugin/skills.js";
+import { registerHooksDisableCommand } from "./commands/hooks/disable.js";
+import { registerHooksEnableCommand } from "./commands/hooks/enable.js";
+import { registerHooksListCommand } from "./commands/hooks/list.js";
+import { registerHooksStatusCommand } from "./commands/hooks/status.js";
 import { registerProxyCommand } from "./commands/proxy.js";
 import { registerListCommand } from "./commands/session/list.js";
 import { registerSearchCommand } from "./commands/session/search.js";
@@ -39,7 +45,7 @@ const program = new Command();
 program
 	.name("codeforge")
 	.description("CLI for CodeForge development workflows (experimental)")
-	.version("0.1.0")
+	.version("3.0.0")
 	.option("--local", "Run against local host filesystem (skip container proxy)")
 	.option("--container <name>", "Target a specific container by name");
 
@@ -74,6 +80,15 @@ registerPluginHooksCommand(plugin);
 registerPluginAgentsCommand(plugin);
 registerPluginSkillsCommand(plugin);
 
+const hooks = program
+	.command("hooks")
+	.description("Manage plugin hook enablement");
+
+registerHooksListCommand(hooks);
+registerHooksDisableCommand(hooks);
+registerHooksEnableCommand(hooks);
+registerHooksStatusCommand(hooks);
+
 const config = program
 	.command("config")
 	.description("Manage Claude Code configuration");
@@ -103,7 +118,14 @@ registerContainerExecCommand(container);
 registerContainerLsCommand(container);
 registerContainerShellCommand(container);
 
+const mount = program
+	.command("mount")
+	.description("Manage volume mount configuration");
+
+registerMountAddCommand(mount);
+
 registerProxyCommand(program);
+registerDoctorCommand(program);
 
 // Proxy middleware: when outside container and not --local, proxy existing commands into container
 program.hook("preAction", async (_thisCommand, actionCommand) => {

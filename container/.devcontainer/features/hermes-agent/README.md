@@ -57,7 +57,7 @@ Both files land inside the `~/.hermes/` Docker named volume (`codeforge-hermes-c
 
 ### Using MiniMax
 
-If you already have `MINIMAX_API_KEY` in `.devcontainer/.secrets`, it is exported into the container environment. When `hermes setup` prompts for the API key, paste the value from `echo $MINIMAX_API_KEY`.
+If you have `MINIMAX_API_KEY` set as an environment variable (e.g., via `.codeforge/secrets/minimax_api_key`), it is available in the container. When `hermes setup` prompts for the API key, paste the value from `echo $MINIMAX_API_KEY`.
 
 ### Why No Auto-Seeding?
 

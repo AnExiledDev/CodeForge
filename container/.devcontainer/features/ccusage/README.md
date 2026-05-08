@@ -109,9 +109,7 @@ ccusage-codex monthly --json
 
 This feature creates a shell alias that points to `npx -y ccusage@<version>`, which automatically downloads and runs the latest version of ccusage without requiring a global installation.
 
-ccusage automatically reads from Claude Code's JSONL usage logs located in:
-- `~/.claude/` (default)
-- `$CLAUDE_CONFIG_DIR` (if customized)
+ccusage automatically reads from Claude Code's JSONL usage logs located in `~/.claude/`.
 
 ## Advanced Options
 

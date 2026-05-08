@@ -69,7 +69,8 @@ else
 fi
 
 # Widget config is managed by file-manifest.json (deployed by setup-config.sh)
-# Source: .codeforge/config/ccstatusline-settings.json
+# Source: .devcontainer/defaults/codeforge/claude/statusline/settings.json
+# Override: .codeforge/claude/statusline/settings.json
 # Deployed to: ~/.config/ccstatusline/settings.json (if-changed)
 # Template:    /usr/local/share/ccstatusline/settings.template.json (always)
 echo "[ccstatusline] Widget config managed by file-manifest.json"
@@ -175,6 +176,54 @@ GITCHANGES_EOF
 chmod +x /usr/local/bin/ccstatusline-git-changes
 echo "[ccstatusline] ✓ Git-changes helper installed at /usr/local/bin/ccstatusline-git-changes"
 
+# Create session-usage helper script (5-hour rate limit with reset time)
+echo "[ccstatusline] Creating session-usage helper..."
+cat > /usr/local/bin/ccstatusline-session-usage <<'SESSIONUSAGE_EOF'
+#!/bin/bash
+# Reads Claude Code JSON from stdin, outputs 5-hour rate limit with reset time
+# Format: 5h: X% (HH:MM)
+INPUT=$(cat)
+FIVE=$(echo "$INPUT" | jq -r '.rate_limits.five_hour.used_percentage // empty' 2>/dev/null)
+FIVE_RESET=$(echo "$INPUT" | jq -r '.rate_limits.five_hour.resets_at // empty' 2>/dev/null)
+
+[ -z "$FIVE" ] && exit 0
+
+OUT="5h: $(printf '%.0f' "$FIVE")%"
+if [ -n "$FIVE_RESET" ]; then
+    # Handle both Unix timestamp formats (integer and float)
+    RESET_TIME=$(date -d "@$FIVE_RESET" '+%H:%M' 2>/dev/null || date -r "${FIVE_RESET%.*}" '+%H:%M' 2>/dev/null)
+    [ -n "$RESET_TIME" ] && OUT="$OUT ($RESET_TIME)"
+fi
+echo "$OUT"
+SESSIONUSAGE_EOF
+
+chmod +x /usr/local/bin/ccstatusline-session-usage
+echo "[ccstatusline] ✓ Session-usage helper installed at /usr/local/bin/ccstatusline-session-usage"
+
+# Create weekly-usage helper script (7-day rate limit with reset time)
+echo "[ccstatusline] Creating weekly-usage helper..."
+cat > /usr/local/bin/ccstatusline-weekly-usage <<'WEEKLYUSAGE_EOF'
+#!/bin/bash
+# Reads Claude Code JSON from stdin, outputs 7-day rate limit with reset time
+# Format: 7d: X% (Day HH:MM)
+INPUT=$(cat)
+WEEK=$(echo "$INPUT" | jq -r '.rate_limits.seven_day.used_percentage // empty' 2>/dev/null)
+WEEK_RESET=$(echo "$INPUT" | jq -r '.rate_limits.seven_day.resets_at // empty' 2>/dev/null)
+
+[ -z "$WEEK" ] && exit 0
+
+OUT="7d: $(printf '%.0f' "$WEEK")%"
+if [ -n "$WEEK_RESET" ]; then
+    # Handle both Unix timestamp formats (integer and float)
+    RESET_TIME=$(date -d "@$WEEK_RESET" '+%a %H:%M' 2>/dev/null || date -r "${WEEK_RESET%.*}" '+%a %H:%M' 2>/dev/null)
+    [ -n "$RESET_TIME" ] && OUT="$OUT ($RESET_TIME)"
+fi
+echo "$OUT"
+WEEKLYUSAGE_EOF
+
+chmod +x /usr/local/bin/ccstatusline-weekly-usage
+echo "[ccstatusline] ✓ Weekly-usage helper installed at /usr/local/bin/ccstatusline-weekly-usage"
+
 # Create wrapper script to protect configuration
 echo "[ccstatusline] Creating wrapper script..."
 cat > /usr/local/bin/ccstatusline-wrapper <<'WRAPPER_EOF'
@@ -256,7 +305,7 @@ fi
 USERNAME="${SUDO_USER:-vscode}"
 _USER_HOME=$(getent passwd "$USERNAME" 2>/dev/null | cut -d: -f6)
 _USER_HOME="${_USER_HOME:-/home/$USERNAME}"
-SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}/settings.json"
+SETTINGS_FILE="${_USER_HOME}/.claude/settings.json"
 
 # Ensure directory exists
 mkdir -p "$(dirname "${SETTINGS_FILE}")"
@@ -296,7 +345,7 @@ echo "  ccstatusline Installation Complete"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Configuration:"
-echo "  • Source: .codeforge/config/ccstatusline-settings.json"
+echo "  • Source: .devcontainer/defaults/codeforge/claude/statusline/settings.json"
 echo "  • Deployed to: ~/.config/ccstatusline/settings.json (by file-manifest)"
 echo "  • Template: /usr/local/share/ccstatusline/settings.template.json"
 echo "  • User: ${USERNAME}"
@@ -308,7 +357,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "1. Widget config is deployed automatically on container start"
 echo ""
-echo "2. To customize: edit .codeforge/config/ccstatusline-settings.json"
+echo "2. To customize: create/edit .codeforge/claude/statusline/settings.json"
 echo "   Changes deploy on next container start (if-changed)"
 echo ""
 echo "3. Test manually:"

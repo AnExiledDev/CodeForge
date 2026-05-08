@@ -1,8 +1,10 @@
 export interface ManifestEntry {
+	id: string;
 	src: string;
 	dest: string;
 	destFilename?: string;
 	enabled?: boolean;
+	disabled?: boolean;
 	overwrite: "if-changed" | "always" | "never";
 }
 

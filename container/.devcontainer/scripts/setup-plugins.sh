@@ -30,7 +30,7 @@ for plugin in "${OFFICIAL_PLUGINS[@]}"; do
     if claude plugin install "$plugin" 2>/dev/null; then
         echo "[setup-plugins] Installed: $plugin"
     else
-        echo "[setup-plugins] Warning: Failed to install $plugin (may already exist)"
+        echo "[setup-plugins] Warning: Failed to install $plugin (may already exist)" >&2
     fi
 done
 

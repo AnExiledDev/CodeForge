@@ -1,5 +1,5 @@
 {
-	"description": "Code quality: file collection on edit, syntax validation, task tracking, and /cq quality gate at stop",
+	"description": "Code quality: file collection on edit, syntax validation, activity tracking (subagents + background bash), and /cq quality gate on demand",
 	"hooks": {
 		"PostToolUse": [
 			{
@@ -16,36 +16,59 @@
 						"timeout": 5
 					}
 				]
-			}
-		],
-		"TaskCreated": [
+			},
 			{
+				"matcher": "Bash",
 				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/task-tracker.py",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
 						"timeout": 3
 					}
 				]
 			}
 		],
-		"TaskCompleted": [
+		"PreToolUse": [
 			{
+				"matcher": "Bash",
 				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/task-tracker.py",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
 						"timeout": 3
 					}
 				]
 			}
 		],
-		"Stop": [
+		"PostToolUseFailure": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStart": [
 			{
 				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/quality-gate.py",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
 						"timeout": 3
 					}
 				]

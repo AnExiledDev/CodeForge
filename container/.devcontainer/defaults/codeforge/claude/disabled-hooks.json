@@ -1,0 +1,9 @@
+{
+	"disabled": [
+		"git-state-injector",
+		"ticket-linker",
+		"spec-reminder",
+		"commit-reminder",
+		"preference-awareness"
+	]
+}

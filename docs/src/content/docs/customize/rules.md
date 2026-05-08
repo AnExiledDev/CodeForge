@@ -11,7 +11,7 @@ Rules are Markdown files that define hard constraints applied to every Claude Co
 
 Rule files are Markdown documents placed in `.claude/rules/`. Claude Code loads every `.md` file in this directory at session start and treats their contents as mandatory instructions. The filename is descriptive but does not affect loading -- all files are loaded equally.
 
-Rules are deployed from `.codeforge/config/rules/` to `~/.claude/rules/` via the file manifest on every container start. You can also add rules directly to `.claude/rules/` in your project.
+Packaged rules live in `.devcontainer/defaults/codeforge/claude/rules/` and deploy to `~/.claude/rules/` via the file manifest on every container start. To override a packaged rule, use the same logical path under `.codeforge/claude/rules/`. You can also add rules directly to `.claude/rules/` in your project.
 
 ### Rule Precedence
 
@@ -109,13 +109,14 @@ Claude treats rule file content as mandatory. If you write "consider using X," C
 
 To make a rule deploy automatically to all projects:
 
-1. Create the rule file in `.codeforge/config/rules/`
+1. Create the rule file in `.codeforge/claude/rules/`
 2. Add an entry to `.codeforge/file-manifest.json`:
 
 ```json
 {
-  "src": "config/rules/my-rule.md",
-  "dest": "${CLAUDE_CONFIG_DIR}/rules",
+  "id": "claude.rule.my-rule",
+  "src": "claude/rules/my-rule.md",
+  "dest": "${HOME}/.claude/rules",
   "enabled": true,
   "overwrite": "if-changed"
 }

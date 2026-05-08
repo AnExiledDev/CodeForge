@@ -1,14 +1,10 @@
 # skill-engine
 
-Claude Code plugin that provides 23 coding knowledge packs (skills) with automatic suggestion based on user prompts. Each skill contains domain-specific instructions and reference material that Claude loads on demand via the `/skill` command.
+Claude Code plugin that provides 24 coding knowledge packs (skills). Each skill contains domain-specific instructions and reference material that Claude loads on demand via the `/skill` command.
 
 ## What It Does
 
-Two capabilities:
-
-1. **Skill library** — 23 skills covering frameworks, tools, and development patterns. Each skill is a structured knowledge pack with a `SKILL.md` entrypoint and `references/` subdirectory containing detailed reference docs.
-
-2. **Auto-suggestion** — A `UserPromptSubmit` hook watches user prompts for keyword matches and suggests relevant skills as context, so Claude can proactively load the right knowledge.
+A skill library of 24 skills covering frameworks, tools, and development patterns. Each skill is a structured knowledge pack with a `SKILL.md` entrypoint and `references/` subdirectory containing detailed reference docs.
 
 ### Skill Catalog
 
@@ -19,6 +15,7 @@ Two capabilities:
 | ast-grep-patterns | Semantic code search patterns by language |
 | claude-agent-sdk | Building custom agents with the Agent SDK (TypeScript) |
 | claude-code-headless | CLI flags, output parsing, SDK and MCP integration |
+| codeforge | Container environment context: toolchain, filesystem, constraints |
 | debugging | Error patterns, log locations, diagnosis procedures |
 | dependency-management | Package managers, ecosystem commands, license compliance |
 | docker | Dockerfile patterns, docker-compose services |
@@ -38,35 +35,7 @@ Two capabilities:
 | testing | Testing frameworks, FastAPI testing, Svelte testing |
 | worktree | Git worktree lifecycle, EnterWorktree, parallel development |
 
-### Auto-Suggestion
-
-The `skill-suggester.py` hook scores user prompts against keyword maps for each skill using weighted matching. Suggestions are ranked by confidence and capped at **3 skills maximum** per prompt.
-
-Each skill defines:
-- **Phrases** — `(substring, weight)` tuples. Weight 0.0–1.0 reflects specificity (e.g., `("build a fastapi app", 1.0)` vs `("pydantic model", 0.3)`)
-- **Terms** — Whole-word regex patterns, all scored at 0.6
-- **Negative patterns** — Substrings that instantly disqualify a skill (e.g., `"pydanticai"` suppresses `fastapi`)
-- **Context guards** — Required co-occurring words for low-confidence matches. When the best score is below 0.6, at least one guard word must appear in the prompt or the match is dropped
-- **Priority** — Integer tie-breaker (10 = commands, 7 = tech, 5 = patterns, 3 = generic)
-
 ## How It Works
-
-### Hook Lifecycle
-
-```
-User submits a prompt
-  |
-  +-> UserPromptSubmit fires
-        |
-        +-> skill-suggester.py
-              |
-              +-> Check negative patterns (instant disqualify)
-              +-> Score phrases (best weight) and terms (0.6)
-              +-> Enforce context guards on low-confidence matches
-              +-> Rank by score desc, priority desc
-              +-> Return top 3 as additionalContext
-              +-> No matches above threshold? -> Silent (no output)
-```
 
 ### Skill Structure
 
@@ -82,20 +51,6 @@ skills/
 ```
 
 Skills are loaded via Claude Code's `/skill` slash command (e.g., `/skill fastapi`). The `SKILL.md` file is the primary document Claude reads; references are loaded as needed for deeper detail.
-
-### Exit Code Behavior
-
-| Exit Code | Meaning |
-|-----------|---------|
-| 0 | Suggestion injected (or no match — silent) |
-
-The hook never blocks operations.
-
-### Timeouts
-
-| Hook | Timeout |
-|------|---------|
-| Skill suggestion (UserPromptSubmit) | 3s |
 
 ## Installation
 
@@ -132,15 +87,14 @@ skill-engine/
 +-- .claude-plugin/
 |   +-- plugin.json                  # Plugin metadata
 +-- hooks/
-|   +-- hooks.json                   # UserPromptSubmit hook registration
-+-- scripts/
-|   +-- skill-suggester.py           # Weighted scoring skill auto-suggestion
+|   +-- hooks.json                   # Hook registration (empty — no active hooks)
 +-- skills/
-|   +-- agent-browser/                # 23 skill directories
+|   +-- agent-browser/               # 24 skill directories
 |   +-- api-design/
 |   +-- ast-grep-patterns/
 |   +-- claude-agent-sdk/
 |   +-- claude-code-headless/
+|   +-- codeforge/
 |   +-- debugging/
 |   +-- dependency-management/
 |   +-- docker/
@@ -164,5 +118,4 @@ skill-engine/
 
 ## Requirements
 
-- Python 3.11+
 - Claude Code with plugin hook support (skills)

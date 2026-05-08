@@ -3,338 +3,335 @@
 // Copyright (c) 2026 Marcus Krueger
 
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 const {
 	copyDirectory,
 	computeChecksum,
+	ensureCodeforgeScaffold,
 	generateChecksums,
-	syncCodeforgeDirectory,
+	mergeManifestEntries,
 	main,
 } = require("./setup.js");
 
-function runTests() {
-	console.log("🧪 Running CodeForge package tests...\n");
+const root = __dirname;
+const defaultsDir = path.join(root, ".devcontainer", "defaults", "codeforge");
+const generatedSettingsDir = path.join(
+	root,
+	".devcontainer",
+	".generated",
+	"codeforge",
+	"claude",
+	"settings",
+);
 
-	// Test 1: copyDirectory function exists
-	console.log("✓ Test 1: copyDirectory function exists");
+let failed = false;
 
-	// Test 2: main function exists
-	console.log("✓ Test 2: main function exists");
+function pass(message) {
+	console.log(`ok - ${message}`);
+}
 
-	// Test 3: Check required files exist
-	const requiredFiles = [
-		"package.json",
-		"setup.js",
-		"README.md",
-		".devcontainer/devcontainer.json",
-		".devcontainer/scripts/setup.sh",
-		".devcontainer/scripts/generate-settings-profiles.js",
-		".devcontainer/defaults/codeforge/config/settings.base.json",
-		".devcontainer/defaults/codeforge/config/settings.json",
-		".devcontainer/defaults/codeforge/config/settings-opus-47-1m-400k.json",
-		".devcontainer/defaults/codeforge/config/settings-opus-46-200k.json",
-		".devcontainer/defaults/codeforge/config/settings-opus-46-1m-400k.json",
-		".devcontainer/defaults/codeforge/config/settings-opus-45-200k.json",
-		".devcontainer/defaults/codeforge/file-manifest.json",
-		".devcontainer/features/oh-my-claude/devcontainer-feature.json",
-		".devcontainer/features/oh-my-claude/install.sh",
-		".devcontainer/features/oh-my-claude/README.md",
-	];
+function fail(message) {
+	console.log(`not ok - ${message}`);
+	failed = true;
+}
 
-	let allFilesExist = true;
-	requiredFiles.forEach((file) => {
-		if (fs.existsSync(path.join(__dirname, file))) {
-			console.log(
-				`✓ Test 3.${requiredFiles.indexOf(file) + 1}: ${file} exists`,
-			);
-		} else {
-			console.log(
-				`❌ Test 3.${requiredFiles.indexOf(file) + 1}: ${file} missing`,
-			);
-			allFilesExist = false;
-		}
-	});
-
-	// Test 4: Package.json has correct structure
-	const packageJson = JSON.parse(
-		fs.readFileSync(path.join(__dirname, "package.json"), "utf8"),
-	);
-	const requiredFields = ["name", "version", "bin", "files"];
-	let packageValid = true;
-
-	requiredFields.forEach((field) => {
-		if (packageJson[field]) {
-			console.log(
-				`✓ Test 4.${requiredFields.indexOf(field) + 1}: package.json has ${field}`,
-			);
-		} else {
-			console.log(
-				`❌ Test 4.${requiredFields.indexOf(field) + 1}: package.json missing ${field}`,
-			);
-			packageValid = false;
-		}
-	});
-
-	// Test 5: Setup script is executable
-	let setupExecutable = true;
-	const setupStat = fs.statSync(path.join(__dirname, "setup.js"));
-	if (setupStat.mode & 0o111) {
-		console.log("✓ Test 5: setup.js is executable");
+function assert(condition, message) {
+	if (condition) {
+		pass(message);
 	} else {
-		console.log("❌ Test 5: setup.js is not executable");
-		setupExecutable = false;
-	}
-
-	// Test 6: New checksum and sync functions exist
-	let checksumFunctionsExist = true;
-	if (typeof computeChecksum === "function") {
-		console.log("✓ Test 6.1: computeChecksum function exists");
-	} else {
-		console.log("❌ Test 6.1: computeChecksum function missing");
-		checksumFunctionsExist = false;
-	}
-	if (typeof generateChecksums === "function") {
-		console.log("✓ Test 6.2: generateChecksums function exists");
-	} else {
-		console.log("❌ Test 6.2: generateChecksums function missing");
-		checksumFunctionsExist = false;
-	}
-	if (typeof syncCodeforgeDirectory === "function") {
-		console.log("✓ Test 6.3: syncCodeforgeDirectory function exists");
-	} else {
-		console.log("❌ Test 6.3: syncCodeforgeDirectory function missing");
-		checksumFunctionsExist = false;
-	}
-
-	// Test 7: generateChecksums produces expected structure
-	let checksumStructureValid = true;
-	const defaultsDir = path.join(
-		__dirname,
-		".devcontainer",
-		"defaults",
-		"codeforge",
-	);
-	if (fs.existsSync(defaultsDir)) {
-		const checksums = generateChecksums(defaultsDir);
-		if (typeof checksums === "object" && checksums !== null) {
-			const keys = Object.keys(checksums);
-			if (keys.length > 0) {
-				const firstValue = checksums[keys[0]];
-				if (typeof firstValue === "string" && firstValue.length === 64) {
-					console.log(
-						"✓ Test 7: generateChecksums returns valid SHA-256 hex map",
-					);
-				} else {
-					console.log(
-						"❌ Test 7: generateChecksums values are not SHA-256 hex strings",
-					);
-					checksumStructureValid = false;
-				}
-			} else {
-				console.log("❌ Test 7: generateChecksums returned empty map");
-				checksumStructureValid = false;
-			}
-		} else {
-			console.log("❌ Test 7: generateChecksums did not return an object");
-			checksumStructureValid = false;
-		}
-	} else {
-		console.log(
-			"❌ Test 7: .devcontainer/defaults/codeforge/ not found, skipping",
-		);
-		checksumStructureValid = false;
-	}
-
-	// Test 8: Defaults directory has expected config structure
-	let defaultsStructureValid = true;
-	const expectedSubdirs = ["config"];
-	const expectedFiles = [
-		"file-manifest.json",
-		"config/settings.base.json",
-		"config/settings.json",
-		"config/settings-opus-47-1m-400k.json",
-		"config/settings-opus-46-200k.json",
-		"config/settings-opus-46-1m-400k.json",
-		"config/settings-opus-45-200k.json",
-	];
-
-	if (fs.existsSync(defaultsDir)) {
-		for (const subdir of expectedSubdirs) {
-			const subdirPath = path.join(defaultsDir, subdir);
-			if (
-				!fs.existsSync(subdirPath) ||
-				!fs.statSync(subdirPath).isDirectory()
-			) {
-				console.log(`❌ Test 8: Missing expected subdirectory: ${subdir}`);
-				defaultsStructureValid = false;
-			}
-		}
-		for (const file of expectedFiles) {
-			const filePath = path.join(defaultsDir, file);
-			if (!fs.existsSync(filePath)) {
-				console.log(`❌ Test 8: Missing expected file: ${file}`);
-				defaultsStructureValid = false;
-			}
-		}
-		if (defaultsStructureValid) {
-			console.log("✓ Test 8: Defaults directory has expected structure");
-		}
-	} else {
-		console.log("❌ Test 8: .devcontainer/defaults/codeforge/ not found");
-		defaultsStructureValid = false;
-	}
-
-	// Test 9: Settings profiles are generated from base + overlays
-	let settingsProfilesValid = true;
-	const configDir = path.join(defaultsDir, "config");
-	const profileDir = path.join(configDir, "settings-profiles");
-	const profileMatrix = [
-		["opus-47-200k.json", "settings.json"],
-		["opus-47-1m-400k.json", "settings-opus-47-1m-400k.json"],
-		["opus-46-200k.json", "settings-opus-46-200k.json"],
-		["opus-46-1m-400k.json", "settings-opus-46-1m-400k.json"],
-		["opus-45-200k.json", "settings-opus-45-200k.json"],
-	];
-	const profileEnvKeys = [
-		"ANTHROPIC_MODEL",
-		"ANTHROPIC_DEFAULT_OPUS_MODEL",
-		"CLAUDE_CODE_MAX_CONTEXT_TOKENS",
-		"CLAUDE_CODE_AUTO_COMPACT_WINDOW",
-		"CLAUDE_CODE_EFFORT_LEVEL",
-		"MAX_THINKING_TOKENS",
-		"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING",
-	];
-	const readJson = (filePath) => JSON.parse(fs.readFileSync(filePath, "utf8"));
-	const isObject = (value) =>
-		value !== null && typeof value === "object" && !Array.isArray(value);
-	const merge = (base, overlay) => {
-		const result = { ...base };
-		for (const [key, value] of Object.entries(overlay)) {
-			if (isObject(value) && isObject(result[key])) {
-				result[key] = merge(result[key], value);
-			} else {
-				result[key] = value;
-			}
-		}
-		return result;
-	};
-	const stripProfileFields = (settings) => {
-		const stripped = JSON.parse(JSON.stringify(settings));
-		delete stripped.model;
-		delete stripped.autoCompactWindow;
-		delete stripped.effortLevel;
-		if (stripped.env) {
-			for (const key of profileEnvKeys) {
-				delete stripped.env[key];
-			}
-		}
-		return stripped;
-	};
-	try {
-		const base = readJson(path.join(configDir, "settings.base.json"));
-		for (const [overlayFile, outputFile] of profileMatrix) {
-			const overlay = readJson(path.join(profileDir, overlayFile));
-			const generated = readJson(path.join(configDir, outputFile));
-			const expected = merge(base, overlay);
-			if (JSON.stringify(generated) !== JSON.stringify(expected)) {
-				console.log(`❌ Test 9: ${outputFile} is stale`);
-				settingsProfilesValid = false;
-			}
-			if (
-				JSON.stringify(stripProfileFields(generated)) !==
-				JSON.stringify(stripProfileFields(base))
-			) {
-				console.log(
-					`❌ Test 9: ${outputFile} diverges from base outside profile fields`,
-				);
-				settingsProfilesValid = false;
-			}
-		}
-		if (settingsProfilesValid) {
-			console.log("✓ Test 9: Settings profiles preserve shared base settings");
-		}
-	} catch (error) {
-		console.log(`❌ Test 9: Settings profile validation failed: ${error}`);
-		settingsProfilesValid = false;
-	}
-
-	// Test 10: oh-my-claude feature stays aligned with CodeForge ownership
-	let omcFeatureValid = true;
-	const omcInstallPath = path.join(
-		__dirname,
-		".devcontainer",
-		"features",
-		"oh-my-claude",
-		"install.sh",
-	);
-	const omcFeatureJsonPath = path.join(
-		__dirname,
-		".devcontainer",
-		"features",
-		"oh-my-claude",
-		"devcontainer-feature.json",
-	);
-	if (fs.existsSync(omcInstallPath) && fs.existsSync(omcFeatureJsonPath)) {
-		const omcInstall = fs.readFileSync(omcInstallPath, "utf8");
-		const omcFeature = JSON.parse(fs.readFileSync(omcFeatureJsonPath, "utf8"));
-		if (
-			omcInstall.includes("--skip-hooks") &&
-			omcInstall.includes("--skip-mcp")
-		) {
-			console.log("✓ Test 10.1: oh-my-claude install skips hooks and MCP");
-		} else {
-			console.log("❌ Test 10.1: oh-my-claude install must skip hooks and MCP");
-			omcFeatureValid = false;
-		}
-		if (!/omc proxy (start|stop|restart)/.test(omcInstall)) {
-			console.log(
-				"✓ Test 10.2: oh-my-claude install avoids stale daemon commands",
-			);
-		} else {
-			console.log(
-				"❌ Test 10.2: oh-my-claude install uses stale daemon commands",
-			);
-			omcFeatureValid = false;
-		}
-		if (
-			omcFeature.options &&
-			!omcFeature.options.autostart &&
-			!omcFeature.options.installLaunchAliases
-		) {
-			console.log(
-				"✓ Test 10.3: oh-my-claude feature delegates aliases to setup-aliases.sh and has no autostart",
-			);
-		} else {
-			console.log(
-				"❌ Test 10.3: oh-my-claude feature should not own aliases (setup-aliases.sh does) and should not autostart",
-			);
-			omcFeatureValid = false;
-		}
-	} else {
-		console.log("❌ Test 10: oh-my-claude feature files missing");
-		omcFeatureValid = false;
-	}
-
-	// Summary
-	console.log("\n📊 Test Results:");
-	if (
-		allFilesExist &&
-		packageValid &&
-		setupExecutable &&
-		checksumFunctionsExist &&
-		checksumStructureValid &&
-		defaultsStructureValid &&
-		settingsProfilesValid &&
-		omcFeatureValid
-	) {
-		console.log("🎉 All tests passed! Package is ready for distribution.");
-		process.exit(0);
-	} else {
-		console.log("❌ Some tests failed. Check the errors above.");
-		process.exit(1);
+		fail(message);
 	}
 }
 
-if (require.main === module) {
-	runTests();
+function readJson(file) {
+	return JSON.parse(fs.readFileSync(file, "utf8"));
 }
+
+function exists(relativePath) {
+	return fs.existsSync(path.join(root, relativePath));
+}
+
+console.log("Running CodeForge package tests\n");
+
+assert(typeof copyDirectory === "function", "copyDirectory export exists");
+assert(typeof main === "function", "main export exists");
+assert(typeof computeChecksum === "function", "computeChecksum export exists");
+assert(
+	typeof generateChecksums === "function",
+	"generateChecksums export exists",
+);
+assert(
+	typeof ensureCodeforgeScaffold === "function",
+	"ensureCodeforgeScaffold export exists",
+);
+assert(
+	typeof mergeManifestEntries === "function",
+	"mergeManifestEntries export exists",
+);
+
+const requiredFiles = [
+	"package.json",
+	"setup.js",
+	"README.md",
+	".devcontainer/devcontainer.json",
+	".devcontainer/scripts/setup.sh",
+	".devcontainer/scripts/setup-config.sh",
+	".devcontainer/scripts/setup-migrate-codeforge.sh",
+	".devcontainer/scripts/setup-migrate-codeforge-v3.sh",
+	".devcontainer/scripts/ensure-settings-generated.sh",
+	".devcontainer/scripts/generate-settings-profiles.js",
+	".devcontainer/defaults/codeforge/file-manifest.json",
+	".devcontainer/defaults/codeforge/claude/settings/base.json",
+	".devcontainer/defaults/codeforge/claude/settings/profiles/opus-45-200k.json",
+	".devcontainer/defaults/codeforge/claude/settings/profiles/opus-46-200k.json",
+	".devcontainer/defaults/codeforge/claude/settings/profiles/opus-46-1m-400k.json",
+	".devcontainer/defaults/codeforge/claude/settings/profiles/opus-47-200k.json",
+	".devcontainer/defaults/codeforge/claude/settings/profiles/opus-47-1m-400k.json",
+	".devcontainer/defaults/codeforge/claude/system-prompts/main.md",
+	".devcontainer/defaults/codeforge/claude/system-prompts/writing.md",
+	".devcontainer/defaults/codeforge/claude/system-prompts/orchestrator.md",
+	".devcontainer/defaults/codeforge/claude/statusline/settings.json",
+	".devcontainer/defaults/codeforge/claude/router/config.json",
+	".devcontainer/defaults/codeforge/codex/config.toml",
+	".devcontainer/defaults/codeforge/rtk/config.toml",
+	".devcontainer/features/oh-my-claude/devcontainer-feature.json",
+	".devcontainer/features/claude-code-karma/devcontainer-feature.json",
+];
+for (const file of requiredFiles) {
+	assert(exists(file), `${file} exists`);
+}
+
+const removedSourceFiles = [
+	".devcontainer/defaults/codeforge/config/settings.json",
+	".devcontainer/defaults/codeforge/config/settings-opus-45-200k.json",
+	".devcontainer/defaults/codeforge/config/settings-opus-46-200k.json",
+	".devcontainer/defaults/codeforge/config/settings-opus-46-1m-400k.json",
+	".devcontainer/defaults/codeforge/config/settings-opus-47-1m-400k.json",
+];
+for (const file of removedSourceFiles) {
+	assert(!exists(file), `${file} is not a packaged source file`);
+}
+
+const packageJson = readJson(path.join(root, "package.json"));
+assert(packageJson.name, "package.json has name");
+assert(packageJson.version, "package.json has version");
+assert(packageJson.bin, "package.json has bin");
+assert(Array.isArray(packageJson.files), "package.json has files list");
+assert(
+	!packageJson.files.some((entry) => entry.startsWith(".codeforge")),
+	"package does not publish a .codeforge defaults tree",
+);
+
+const scaffoldDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-scaffold-"),
+);
+ensureCodeforgeScaffold(scaffoldDir);
+assert(
+	fs.existsSync(path.join(scaffoldDir, "README.md")),
+	"scaffold writes README",
+);
+assert(
+	fs.existsSync(path.join(scaffoldDir, ".markers")),
+	"scaffold creates marker directory",
+);
+assert(
+	fs.existsSync(path.join(scaffoldDir, "data")),
+	"scaffold creates data directory",
+);
+fs.rmSync(scaffoldDir, { recursive: true, force: true });
+
+const checksums = generateChecksums(defaultsDir);
+assert(Object.keys(checksums).length > 0, "generateChecksums sees defaults");
+assert(
+	Object.values(checksums).every(
+		(value) => typeof value === "string" && value.length === 64,
+	),
+	"generateChecksums returns SHA-256 hex values",
+);
+
+const generatorMarkerDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-marker-"),
+);
+execFileSync(
+	process.execPath,
+	[
+		path.join(
+			root,
+			".devcontainer",
+			"scripts",
+			"generate-settings-profiles.js",
+		),
+	],
+	{
+		cwd: root,
+		stdio: "inherit",
+		env: {
+			...process.env,
+			WORKSPACE_ROOT: root,
+			CODEFORGE_DIR: generatorMarkerDir,
+		},
+	},
+);
+
+const generatedDefault = readJson(
+	path.join(generatedSettingsDir, "settings.json"),
+);
+const generatedOpus46 = readJson(
+	path.join(generatedSettingsDir, "settings-opus-46-200k.json"),
+);
+assert(
+	JSON.stringify(generatedDefault) === JSON.stringify(generatedOpus46),
+	"settings.json matches opus-46-200k",
+);
+
+const nonOneMillionOutputs = [
+	"settings.json",
+	"settings-opus-46-200k.json",
+	"settings-opus-47-200k.json",
+	"settings-opus-45-200k.json",
+];
+for (const output of nonOneMillionOutputs) {
+	const settings = readJson(path.join(generatedSettingsDir, output));
+	assert(
+		settings.env?.CLAUDE_CODE_DISABLE_1M_CONTEXT === "1",
+		`${output} disables 1M context`,
+	);
+}
+for (const output of [
+	"settings-opus-46-1m-400k.json",
+	"settings-opus-47-1m-400k.json",
+]) {
+	const settings = readJson(path.join(generatedSettingsDir, output));
+	assert(
+		!("CLAUDE_CODE_DISABLE_1M_CONTEXT" in (settings.env ?? {})),
+		`${output} does not disable 1M context`,
+	);
+}
+assert(
+	fs.existsSync(
+		path.join(generatorMarkerDir, ".markers", "settings-generated-v3"),
+	),
+	"settings generator writes v3 marker",
+);
+fs.rmSync(generatorMarkerDir, { recursive: true, force: true });
+
+const legacyProfileDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-legacy-profile-"),
+);
+const legacyOverrideDir = path.join(
+	legacyProfileDir,
+	"claude",
+	"settings",
+	"profiles",
+);
+fs.mkdirSync(legacyOverrideDir, { recursive: true });
+fs.writeFileSync(
+	path.join(legacyOverrideDir, "opus-46-200k.json"),
+	`${JSON.stringify(
+		{
+			model: "claude-opus-4-6",
+			autoCompactWindow: 200000,
+			env: {
+				CLAUDE_CODE_MAX_CONTEXT_TOKENS: "200000",
+				CLAUDE_CODE_AUTO_COMPACT_WINDOW: "200000",
+			},
+		},
+		null,
+		"\t",
+	)}\n`,
+);
+execFileSync(
+	process.execPath,
+	[
+		path.join(
+			root,
+			".devcontainer",
+			"scripts",
+			"generate-settings-profiles.js",
+		),
+	],
+	{
+		cwd: root,
+		stdio: "inherit",
+		env: {
+			...process.env,
+			WORKSPACE_ROOT: root,
+			CODEFORGE_DIR: legacyProfileDir,
+		},
+	},
+);
+const generatedLegacyProfile = readJson(
+	path.join(generatedSettingsDir, "settings-opus-46-200k.json"),
+);
+assert(
+	generatedLegacyProfile.env?.CLAUDE_CODE_DISABLE_1M_CONTEXT === "1",
+	"legacy non-1M profile override disables 1M context",
+);
+fs.rmSync(legacyProfileDir, { recursive: true, force: true });
+
+const manifest = readJson(path.join(defaultsDir, "file-manifest.json"));
+assert(manifest.length > 0, "default manifest has entries");
+assert(
+	manifest.every((entry) => entry.id),
+	"default manifest entries have stable ids",
+);
+assert(
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: literal env var placeholder
+	manifest.find((entry) => entry.id === "claude.state")?.dest === "${HOME}",
+	"Claude state deploys to home directory",
+);
+const merged = mergeManifestEntries(manifest, [
+	{ id: manifest[0].id, disabled: true, src: manifest[0].src },
+	{
+		id: "custom.example",
+		src: "claude/system-prompts/main.md",
+		// biome-ignore lint/suspicious/noTemplateCurlyInString: literal env var placeholder
+		dest: "${CLAUDE_CONFIG_DIR}",
+		overwrite: "if-changed",
+	},
+]);
+assert(
+	merged.find((entry) => entry.id === manifest[0].id)?.enabled === false,
+	"user manifest can disable a default by id",
+);
+assert(
+	merged.some((entry) => entry.id === "custom.example"),
+	"user manifest can add entries by id",
+);
+for (const entry of manifest) {
+	const source = [
+		path.join(root, ".devcontainer", ".generated", "codeforge", entry.src),
+		path.join(defaultsDir, entry.src),
+	].find((candidate) => fs.existsSync(candidate));
+	assert(Boolean(source), `manifest source exists: ${entry.id}`);
+}
+
+const migrationScript = fs.readFileSync(
+	path.join(root, ".devcontainer", "scripts", "setup-migrate-codeforge-v3.sh"),
+	"utf8",
+);
+assert(
+	migrationScript.includes("config-layout-v3") &&
+		migrationScript.includes("config-layout-v3-report.md"),
+	"v3 migration script writes marker and report",
+);
+
+const setupScript = fs.readFileSync(
+	path.join(root, ".devcontainer", "scripts", "setup.sh"),
+	"utf8",
+);
+assert(
+	setupScript.includes("setup-migrate-codeforge-v3.sh") &&
+		setupScript.includes("ensure-settings-generated.sh"),
+	"setup runs v3 migration and settings generation",
+);
+
+console.log("");
+if (failed) {
+	console.log("Some tests failed.");
+	process.exit(1);
+}
+
+console.log("All tests passed.");

@@ -72,6 +72,16 @@ export function registerProxyCommand(parent: Command): void {
 					process.exit(1);
 				}
 
+				if (
+					proxyPort < 1 ||
+					proxyPort > 65535 ||
+					webPort < 1 ||
+					webPort > 65535
+				) {
+					console.error(`${chalk.red("✗")} Port must be between 1 and 65535.`);
+					process.exit(1);
+				}
+
 				if (await isPortInUse(proxyPort)) {
 					console.error(
 						`${chalk.red("✗")} Port ${proxyPort} is already in use.`,

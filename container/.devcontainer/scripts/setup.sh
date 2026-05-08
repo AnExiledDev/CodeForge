@@ -5,79 +5,92 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEVCONTAINER_DIR="$(dirname "$SCRIPT_DIR")"
-ENV_FILE="$DEVCONTAINER_DIR/.env"
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces}"
+CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT}/.codeforge}"
+CONFIG_FILE="${CODEFORGE_DIR}/container.json"
 
-# Load configuration
-if [ -f "$ENV_FILE" ]; then
-    set -a
-    source "$ENV_FILE"
-    set +a
+# --- Migration warnings for removed config files ---
+if [ -f "$DEVCONTAINER_DIR/.env" ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  MIGRATION: .devcontainer/.env is no longer used"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  Setup config has moved to .codeforge/container.json"
+    echo "  Delete .devcontainer/.env after migrating your settings."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+fi
+if [ -f "$DEVCONTAINER_DIR/.secrets" ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  MIGRATION: .devcontainer/.secrets is no longer used"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  Secrets have moved to .codeforge/secrets/ (one file per secret)."
+    echo "  See AGENTS.md for the new secret names and setup instructions."
+    echo "  Delete .devcontainer/.secrets after migrating your tokens."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
 fi
 
-# Deprecation guard: .env may still set CLAUDE_CONFIG_DIR=/workspaces/.claude
-# (pre-v2.0 default). Since .env is gitignored, PR updates can't fix it.
-# Override with warning so all child scripts use the correct home location.
-if [ "$CLAUDE_CONFIG_DIR" = "/workspaces/.claude" ]; then
-    echo "[setup] WARNING: CLAUDE_CONFIG_DIR=/workspaces/.claude is deprecated (moved to home dir in v2.0)"
-    echo "[setup]   Updating .devcontainer/.env automatically."
-    CLAUDE_CONFIG_DIR="$HOME/.claude"
-    # Fix the file on disk so subsequent restarts don't trigger this guard
-    if [ -f "$ENV_FILE" ]; then
-        sed -i 's|^CLAUDE_CONFIG_DIR=.*/workspaces/\.claude.*|# CLAUDE_CONFIG_DIR removed (v2.0: now uses $HOME/.claude)|' "$ENV_FILE"
-        echo "[setup]   .env updated — CLAUDE_CONFIG_DIR line commented out."
+# --- Load configuration from .codeforge/container.json ---
+jq_val() {
+    [ -f "$CONFIG_FILE" ] && jq -r "$1" "$CONFIG_FILE" 2>/dev/null || echo "$2"
+}
+
+SETUP_CONFIG=$(jq_val '.setup.config // true' true)
+SETUP_ALIASES=$(jq_val '.setup.aliases // true' true)
+SETUP_AUTH=$(jq_val '.setup.auth // true' true)
+SETUP_PLUGINS=$(jq_val '.setup.plugins // true' true)
+SETUP_UPDATE_CLAUDE=$(jq_val '.setup.updateClaude // true' true)
+SETUP_PROJECTS=$(jq_val '.setup.projects // true' true)
+SETUP_TERMINAL=$(jq_val '.setup.terminal // true' true)
+SETUP_POSTSTART=$(jq_val '.setup.poststart // true' true)
+CLAUDE_VERSION_LOCK=$(jq_val '.claude.versionLock // empty' "")
+CODEFORGE_TIMEZONE=$(jq_val '.timezone // "America/Chicago"' "America/Chicago")
+
+export CODEFORGE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE CLAUDE_VERSION_LOCK SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
+
+# --- Configure timezone ---
+if [ -n "$CODEFORGE_TIMEZONE" ]; then
+    export TZ="$CODEFORGE_TIMEZONE"
+    # Persist for all shells via profile.d
+    if [ ! -f /etc/profile.d/codeforge-tz.sh ] || ! grep -q "TZ=\"$CODEFORGE_TIMEZONE\"" /etc/profile.d/codeforge-tz.sh 2>/dev/null; then
+        sudo tee /etc/profile.d/codeforge-tz.sh > /dev/null <<TZEOF
+export TZ="$CODEFORGE_TIMEZONE"
+TZEOF
+        sudo chmod 0644 /etc/profile.d/codeforge-tz.sh
     fi
 fi
-
-# Deprecation guard: CONFIG_SOURCE_DIR may still point to /workspaces/.claude
-# (pre-v2.0 default was to keep config source in workspace .claude dir).
-# Override with correct path.
-if [ "$CONFIG_SOURCE_DIR" = "/workspaces/.claude" ]; then
-    echo "[setup] WARNING: CONFIG_SOURCE_DIR=/workspaces/.claude is deprecated (moved to .devcontainer/config in v2.0)"
-    echo "[setup]   Updating .devcontainer/.env automatically."
-    CONFIG_SOURCE_DIR="$DEVCONTAINER_DIR/config"
-    if [ -f "$ENV_FILE" ]; then
-        sed -i 's|^CONFIG_SOURCE_DIR=.*/workspaces/\.claude.*|# CONFIG_SOURCE_DIR removed (v2.0: now uses .devcontainer/config)|' "$ENV_FILE"
-        echo "[setup]   .env updated — CONFIG_SOURCE_DIR line commented out."
-    fi
-fi
-
-# Deprecation guard: CONFIG_SOURCE_DIR may still point to .devcontainer/config
-# (pre-v2.0 default). Redirect to .codeforge.
-if [ "$CONFIG_SOURCE_DIR" = "$DEVCONTAINER_DIR/config" ] || [ "$CONFIG_SOURCE_DIR" = "/workspaces/.devcontainer/config" ]; then
-    echo "[setup] WARNING: CONFIG_SOURCE_DIR pointing to .devcontainer/config is deprecated (moved to .codeforge in v2.0)"
-    echo "[setup]   Redirecting to .codeforge."
-    : "${CODEFORGE_DIR:=${WORKSPACE_ROOT:?}/.codeforge}"
-    unset CONFIG_SOURCE_DIR
-    if [ -f "$ENV_FILE" ]; then
-        sed -i 's|^CONFIG_SOURCE_DIR=.*\.devcontainer/config.*|# CONFIG_SOURCE_DIR removed (v2.0: now uses .codeforge)|' "$ENV_FILE"
-        echo "[setup]   .env updated — CONFIG_SOURCE_DIR line commented out."
-    fi
-fi
-
-# Apply defaults for any unset variables
-: "${CLAUDE_CONFIG_DIR:=$HOME/.claude}"
-: "${CODEFORGE_DIR:=${WORKSPACE_ROOT:?}/.codeforge}"
-: "${CONFIG_SOURCE_DIR:=$CODEFORGE_DIR}"
-: "${SETUP_CONFIG:=true}"
-: "${SETUP_ALIASES:=true}"
-: "${SETUP_AUTH:=true}"
-: "${SETUP_PLUGINS:=true}"
-: "${SETUP_UPDATE_CLAUDE:=true}"
-: "${SETUP_PROJECTS:=true}"
-: "${SETUP_TERMINAL:=true}"
-: "${SETUP_POSTSTART:=true}"
-
-export CLAUDE_CONFIG_DIR CONFIG_SOURCE_DIR CODEFORGE_DIR SETUP_CONFIG SETUP_ALIASES SETUP_AUTH SETUP_PLUGINS SETUP_UPDATE_CLAUDE CLAUDE_VERSION_LOCK SETUP_PROJECTS SETUP_TERMINAL SETUP_POSTSTART
 
 # Fix named volume ownership — Docker creates named volumes as root:root
-# regardless of remoteUser. This is the only setup script requiring sudo.
-if ! sudo chown "$(id -un):$(id -gn)" "$HOME/.claude" 2>/dev/null; then
-    echo "[setup] WARNING: Could not fix volume ownership on $HOME/.claude — subsequent scripts may fail"
-fi
+# regardless of remoteUser. Every mount point from docker-compose.yml must
+# be listed here. This is the only setup script requiring sudo.
+_VOLUME_MOUNTS=(
+    "$HOME/.claude"
+    "$HOME/.codex"
+    "$HOME/.hermes"
+    "$HOME/.config/gh"
+    "$HOME/.cache"
+    "$HOME/.npm"
+    "$HOME/.bun/install/cache"
+)
+_OWNER="$(id -un):$(id -gn)"
+for _vol in "${_VOLUME_MOUNTS[@]}"; do
+    [ -d "$_vol" ] || continue
+    if ! sudo chown "$_OWNER" "$_vol" 2>/dev/null; then
+        echo "[setup] WARNING: Could not fix volume ownership on $_vol"
+    fi
+done
+unset _VOLUME_MOUNTS _OWNER _vol
 
-# Mark workspace as safe for Git — bind-mounted workspace may have
-# different uid than container user, causing "dubious ownership"
-# errors (CVE-2022-24765)
+# Mark all project directories as safe for Git — bind-mounted workspace may
+# have different uid than container user, causing "dubious ownership"
+# errors (CVE-2022-24765). Scans for .git dirs and worktree files.
+while IFS= read -r gitdir; do
+    project_dir="$(dirname "$gitdir")"
+    git config --global --add safe.directory "$project_dir" 2>/dev/null
+done < <(find "$WORKSPACE_ROOT" -maxdepth 6 \( -name .git -type d -o -name .git -type f \) 2>/dev/null)
+# Also add workspace root as a catch-all
 if ! git config --global --add safe.directory "${WORKSPACE_ROOT:-/workspaces}" 2>/dev/null; then
     echo "[setup] WARNING: Could not configure git safe.directory — git operations may show 'dubious ownership' errors"
 fi
@@ -107,7 +120,6 @@ run_script() {
                 local exit_code=$?
                 echo "FAILED (exit $exit_code)"
                 SETUP_RESULTS+=("$name:failed")
-                # Show output on failure for diagnostics
                 echo "$output" | sed 's/^/    /'
             fi
         else
@@ -146,7 +158,9 @@ run_poststart_hooks() {
 
 run_script "$SCRIPT_DIR/setup-migrate-claude.sh" "true"
 run_script "$SCRIPT_DIR/setup-migrate-codeforge.sh" "true"
+run_script "$SCRIPT_DIR/setup-migrate-codeforge-v3.sh" "true"
 run_script "$SCRIPT_DIR/setup-auth.sh" "$SETUP_AUTH"
+run_script "$SCRIPT_DIR/ensure-settings-generated.sh" "$SETUP_CONFIG"
 run_script "$SCRIPT_DIR/setup-config.sh" "$SETUP_CONFIG"
 run_script "$SCRIPT_DIR/setup-aliases.sh" "$SETUP_ALIASES"
 run_script "$SCRIPT_DIR/setup-plugins.sh" "$SETUP_PLUGINS"
@@ -155,9 +169,9 @@ run_script "$SCRIPT_DIR/setup-terminal.sh" "$SETUP_TERMINAL"
 
 # Background the update to avoid blocking container start
 if [ "$SETUP_UPDATE_CLAUDE" = "true" ] && [ -f "$SCRIPT_DIR/setup-update-claude.sh" ]; then
-    CLAUDE_UPDATE_LOG="${CLAUDE_UPDATE_LOG:-/workspaces/.tmp/claude-update.log}"
+    CLAUDE_UPDATE_LOG="${CLAUDE_UPDATE_LOG:-/tmp/claude-update.log}"
     mkdir -p "$(dirname "$CLAUDE_UPDATE_LOG")"
-    bash "$SCRIPT_DIR/setup-update-claude.sh" >>"$CLAUDE_UPDATE_LOG" 2>&1 &
+    ( bash "$SCRIPT_DIR/setup-update-claude.sh" >>"$CLAUDE_UPDATE_LOG" 2>&1 && touch /tmp/.claude-update-ok || touch /tmp/.claude-update-failed ) &
     disown
     SETUP_RESULTS+=("setup-update-claude:background")
 else

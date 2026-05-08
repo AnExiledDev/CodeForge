@@ -1,0 +1,7 @@
+{
+	"_meta": { "model": "claude-opus-4-7[1m]", "contextWindow": 400000 },
+	"effortLevel": "max",
+	"env": {
+		"CLAUDE_CODE_EFFORT_LEVEL": "max"
+	}
+}

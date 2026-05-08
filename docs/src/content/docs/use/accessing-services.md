@@ -5,7 +5,7 @@ sidebar:
   order: 10
 ---
 
-CodeForge runs inside a Docker container. When a service inside the container listens on a port (e.g., a dev server on port 3000), you need a forwarding mechanism to access it from your host machine. Which mechanism to use depends on your DevContainer client.
+CodeForge runs inside a Docker container. When a service inside the container listens on a port (e.g., a dev server on port 4321), you need a forwarding mechanism to access it from your host machine. Which mechanism to use depends on your DevContainer client.
 
 :::tip[When to read this page]
 If you use VS Code, you usually only need this page when automatic forwarding is not enough. If you use the DevContainer CLI, JetBrains, or direct SSH, this page matters much earlier.
@@ -15,9 +15,29 @@ If you use VS Code, you usually only need this page when automatic forwarding is
 
 | Mechanism | Client | Discovery | Setup Required |
 |-----------|--------|-----------|----------------|
-| VS Code auto-detect | VS Code only | Dynamic — all ports | None |
+| Docker Compose port mapping | Any client | Static — configured ports | None (built-in) |
+| VS Code auto-detect | VS Code only | Dynamic — output-based | None |
 | devcontainer-bridge (`dbr`) | Any terminal client | Dynamic — polls `/proc/net/tcp` | Host daemon required |
 | SSH tunneling | Any SSH client | Manual | Per-port command |
+
+### Docker Compose Port Mapping (Primary)
+
+CodeForge maps all known service ports in `docker-compose.yml`, bound to `127.0.0.1`. This is the primary forwarding mechanism — it works with every client, requires no setup, and is independent of VS Code.
+
+| Port | Service | Lifecycle |
+|------|---------|-----------|
+| 7847 | Claude Code Karma Dashboard | Auto-started |
+| 7848 | Claude Code Karma API | Auto-started |
+| 37777 | Claude-Mem Worker | Auto-started |
+| 4321 | Astro docs dev server | On-demand (`npm run dev` in `docs/`) |
+| 8081 | mitmproxy | On-demand (`codeforge proxy`) |
+| 9119 | ccdiag API Proxy | On-demand (`ccdiag proxy`) |
+
+With **WSL mirrored networking**, these ports are accessible on `localhost` from Windows with no additional configuration. On macOS/Linux, Docker Desktop forwards them to `localhost` natively.
+
+:::note
+On-demand ports (4321, 8081, 9119) are mapped at container startup but only become accessible when the corresponding service is running. Connections are refused until the service starts.
+:::
 
 ## Windows: Mirrored Networking (Recommended)
 
@@ -31,18 +51,18 @@ This replaces the need for `dbr` (which does not support Windows) and eliminates
 
 ## VS Code Auto-Detect
 
-VS Code automatically detects ports opened inside the container and forwards them to your host. CodeForge configures this in `devcontainer.json`:
+VS Code provides supplementary port detection on top of the Docker Compose mappings. CodeForge uses `output` mode (`remote.autoForwardPortsSource`), which detects ports printed to VS Code terminals.
 
-- **All ports** are auto-forwarded with a notification prompt
+:::caution[VS Code forwarding is supplementary, not primary]
+Docker Compose port mappings handle all known service ports reliably. VS Code auto-detect is a bonus for dynamically-allocated ports (e.g., OAuth callbacks, ephemeral dev servers). Do not rely on it as your only forwarding mechanism — it only works while VS Code is actively connected and has known reliability issues when backgrounded.
+:::
 
-No setup required — ports appear in the VS Code **Ports** panel as services start. Click the local address to open in your browser.
-
-:::caution[Requires VS Code to be running]
-Port forwarding only works while VS Code is open and connected to the devcontainer. If you close VS Code or disconnect, all forwarded ports become inaccessible. For persistent port forwarding that doesn't depend on your editor, use [devcontainer-bridge](#devcontainer-bridge-dbr).
+:::note[Why not `hybrid` mode?]
+VS Code's `hybrid` port detection mode has [known reliability issues](https://github.com/microsoft/vscode/issues/200795) — it silently stops working after detecting 20+ ports, which is common in feature-rich devcontainers. The `output` mode is less aggressive but more reliable. Docker Compose port mappings compensate for the reduced detection scope.
 :::
 
 :::note
-This only works inside VS Code and GitHub Codespaces. The `devcontainer` CLI, JetBrains Gateway, and DevPod ignore `portsAttributes` in `devcontainer.json`.
+`portsAttributes` labels only work inside VS Code and GitHub Codespaces. The `devcontainer` CLI, JetBrains Gateway, and DevPod ignore them — but Docker Compose port mappings work with all clients.
 :::
 
 ## devcontainer-bridge (`dbr`)
@@ -103,6 +123,9 @@ For one-off port forwarding or environments where `dbr` isn't available, use SSH
 # Forward a single port
 ssh -L 3000:localhost:3000 <container-user>@<container-host>
 
+# Forward Claude Code Karma and its API
+ssh -L 7847:localhost:7847 -L 7848:localhost:7848 <container-user>@<container-host>
+
 # Forward multiple ports
 ssh -L 3000:localhost:3000 -L 8080:localhost:8080 <container-user>@<container-host>
 ```
@@ -111,15 +134,17 @@ This requires SSH access to the container, which is available when connecting vi
 
 ## Which Should I Use?
 
-| If you use... | Recommended mechanism |
-|---------------|----------------------|
+Docker Compose port mappings work with **all clients** — known service ports are always forwarded. The table below covers supplementary mechanisms for dynamic ports or enhanced UX.
+
+| If you use... | Supplementary mechanism |
+|---------------|------------------------|
 | **Windows (any client)** | **Mirrored networking** — [zero config after setup](/start-here/windows-networking/) |
-| VS Code | Auto-detect (built-in, zero config) |
-| DevContainer CLI | `dbr` (dynamic, automatic) — see the [CLI guide](/start-here/devcontainer-cli/) |
+| VS Code | Auto-detect labels + notifications (built-in) |
+| DevContainer CLI | `dbr` for dynamic ports — see the [CLI guide](/start-here/devcontainer-cli/) |
 | JetBrains Gateway | Gateway's built-in forwarding, or `dbr` as fallback |
 | Codespaces | Auto-detect (built-in to Codespaces) |
 | DevPod | DevPod's built-in SSH tunneling, or `dbr` |
-| Direct SSH | SSH tunneling for specific ports, or `dbr` for all ports |
+| Direct SSH | SSH tunneling for dynamic ports, or `dbr` for all ports |
 
 ## Browser Automation (CDP)
 
@@ -127,17 +152,28 @@ For browser automation using agent-browser's host Chrome connection, Windows use
 
 ## Configuration
 
-Port forwarding behavior is configured in `.devcontainer/devcontainer.json`:
+Port forwarding is configured at two levels:
+
+### Docker Compose (all clients)
+
+Service ports are mapped in `.devcontainer/docker-compose.yml` under `ports:`, bound to `127.0.0.1` for security. This is the primary forwarding mechanism and works with every client.
+
+To add a new port, add a line to the `ports:` section:
+
+```yaml
+ports:
+  - "127.0.0.1:YOUR_PORT:YOUR_PORT"  # Description
+```
+
+### VS Code labels (VS Code / Codespaces only)
+
+Port labels and notification behavior are configured via `portsAttributes` in `.devcontainer/devcontainer.json`:
 
 ```jsonc
 "portsAttributes": {
-    "*": {
-        "onAutoForward": "notify"
-    }
+    "7847": { "label": "Claude Code Karma", "onAutoForward": "notify" },
+    "*": { "onAutoForward": "notify" }
 }
 ```
 
-- `forwardPorts` — static port list for specific services you always want forwarded
-- `portsAttributes` — labels and behavior for auto-detected ports (VS Code / Codespaces only)
-
-These settings are ignored by non-VS Code clients. Use `dbr` or SSH tunneling instead.
+These settings are ignored by non-VS Code clients. Docker Compose port mappings and `dbr` work regardless.

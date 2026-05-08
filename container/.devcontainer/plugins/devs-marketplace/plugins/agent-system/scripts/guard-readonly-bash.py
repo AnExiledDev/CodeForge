@@ -22,7 +22,7 @@ import re
 import sys
 import os
 
-# Hook gate — check .codeforge/config/disabled-hooks.json
+# Hook gate - check ~/.claude/disabled-hooks.json
 _dh = os.path.join(os.getcwd(), ".codeforge", "config", "disabled-hooks.json")
 if os.path.exists(_dh):
     with open(_dh) as _f:

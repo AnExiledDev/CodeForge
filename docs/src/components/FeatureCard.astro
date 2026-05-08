@@ -9,6 +9,7 @@ const { title, description, icon } = Astro.props;
 ---
 
 <div class="feature-card">
+	{/* SAFETY: icon must be a trusted SVG string literal, never user input */}
 	<div class="feature-card__icon" set:html={icon} />
 	<h3 class="feature-card__title">{title}</h3>
 	<p class="feature-card__description">{description}</p>

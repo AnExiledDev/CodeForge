@@ -44,16 +44,18 @@ Authentication credentials are stored in `~/.claude/` and persist across contain
 
 ### Long-Lived Token Authentication
 
-For headless or automated environments, you can use a long-lived auth token instead of browser login:
+For headless or automated environments, use a long-lived auth token:
 
 1. Generate a token: `claude setup-token`
-2. Add to `.devcontainer/.secrets`:
+2. Create the secret file:
    ```bash
-   CLAUDE_AUTH_TOKEN=sk-ant-oat01-your-token-here
+   echo "sk-ant-oat01-your-token-here" > .codeforge/secrets/claude_code_oauth_token
    ```
-3. On next container start, `setup-auth.sh` will create `~/.claude/.credentials.json` automatically.
+3. On next container start, `setup-auth.sh` exports `CLAUDE_CODE_OAUTH_TOKEN` and writes the token to Claude Code's Linux credential file automatically.
 
-You can also set `CLAUDE_AUTH_TOKEN` as a Codespaces secret for cloud environments.
+You can also set `CLAUDE_CODE_OAUTH_TOKEN` as a Codespaces secret for cloud environments.
+
+> **Note:** `CLAUDE_CODE_OAUTH_TOKEN` does not work when `ANTHROPIC_API_KEY` is also set.
 
 For more options, see the [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code).
 
@@ -80,43 +82,38 @@ Get an API key from [platform.openai.com/api-keys](https://platform.openai.com/a
 
 ### Automatic Token Setup
 
-Add your API key to `.devcontainer/.secrets`:
+Create the secret file:
 
 ```bash
-OPENAI_API_KEY=sk-your-key-here
+echo "sk-your-key-here" > .codeforge/secrets/openai_api_key
 ```
 
 On next container start, `setup-auth.sh` will create `~/.codex/auth.json` automatically. You can also set `OPENAI_API_KEY` as a Codespaces secret.
 
 ## GitHub & NPM Authentication
 
-### Automatic Auth via `.secrets` (Recommended)
+### Automatic Auth via Secrets (Recommended)
 
-CodeForge can automatically configure GitHub CLI, git identity, and NPM auth on every container start. Copy the template and fill in your tokens:
-
-```bash
-cp .devcontainer/.secrets.example .devcontainer/.secrets
-```
-
-Edit `.devcontainer/.secrets`:
+CodeForge automatically configures GitHub CLI, git identity, and NPM auth on every container start using Docker Compose secrets. Create secret files in `.codeforge/secrets/`:
 
 ```bash
-GH_TOKEN=ghp_your_token_here
-GH_USERNAME=your-github-username
-GH_EMAIL=your-email@example.com
-NPM_TOKEN=npm_your_token_here
+mkdir -p .codeforge/secrets
+echo "ghp_your_token_here" > .codeforge/secrets/gh_token
+echo "npm_your_token_here" > .codeforge/secrets/npm_token
 ```
 
 On the next container start (or rebuild), `setup-auth.sh` will:
 - Authenticate `gh` CLI and configure git credential helper
-- Set `git config --global user.name` and `user.email`
+- Derive `git config --global user.name` and `user.email` from the GitHub API
 - Set NPM registry auth token
 
-The `.secrets` file is gitignored at two levels (root `.*` + `.devcontainer/.gitignore`) and will never be committed.
+The `.codeforge/secrets/` directory is gitignored and will never be committed.
 
-**Environment variable fallback**: For Codespaces or CI, set `GH_TOKEN`, `GH_USERNAME`, `GH_EMAIL`, and/or `NPM_TOKEN` as environment variables (e.g., via Codespaces secrets or `localEnv` in `devcontainer.json`). Environment variables take precedence over `.secrets` file values.
+**Identity override**: To use a different name or email than your GitHub profile, set `identity.name` and `identity.email` in `.codeforge/container.json`.
 
-Disable automatic auth by setting `SETUP_AUTH=false` in `.devcontainer/.env`.
+**Environment variable fallback**: For Codespaces or CI, set `GH_TOKEN` and/or `NPM_TOKEN` as environment variables (e.g., via Codespaces secrets). Environment variables take precedence over Docker secrets.
+
+Disable automatic auth by setting `setup.auth` to `false` in `.codeforge/container.json`.
 
 ### Interactive Login (Alternative)
 
@@ -155,9 +152,11 @@ Expected output shows your authenticated account and token scopes.
 
 ### Credential Persistence
 
-GitHub CLI credentials are automatically persisted across container rebuilds. The container is configured to store credentials in `/workspaces/.gh/` (via `GH_CONFIG_DIR`), which is part of the bind-mounted workspace. Claude Code credentials persist via a Docker named volume mounted at `~/.claude/`.
+GitHub CLI credentials are persisted across container rebuilds via a Docker named volume mounted at `~/.config/gh/` (via `GH_CONFIG_DIR`). Claude Code credentials persist via a separate Docker named volume mounted at `~/.claude/`.
 
-**You only need to authenticate once.** After running `gh auth login` or configuring `.secrets`, your credentials will survive container rebuilds and be available in future sessions.
+**You only need to authenticate once.** After running `gh auth login` or setting up secrets in `.codeforge/secrets/`, your credentials will survive container rebuilds and be available in future sessions.
+
+> **Note:** If upgrading from a previous CodeForge version, you'll need to run `gh auth login` once after your first rebuild. Previous credentials in `/workspaces/.gh/` are not migrated to the new volume.
 
 ## Using Claude Code
 
@@ -251,49 +250,69 @@ curl http://$CDP_HOST:9223/json/version
 | `ccburn` | Visual token burn rate tracker with pace indicators |
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
 | `claude-monitor` | Real-time usage tracking |
-| `codeforge-dashboard` | Session analytics dashboard — auto-launches on start (port 7847) |
+| `karma-status` | Claude Code Karma dashboard status and logs |
+| `claude-code-karma` | Session analytics dashboard — auto-launches on start (UI port 7847, API port 7848) |
 | `ccr` | Claude Code Router — routes API calls to alternate LLM providers (auto-starts on port 3456) |
 
 ## Configuration
 
-### Environment Variables
+### Container Configuration
 
-Copy `.devcontainer/.env.example` to `.devcontainer/.env` and customize:
+Setup behavior is configured via `.codeforge/container.json`. A default is deployed on first start. Example:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CLAUDE_CONFIG_DIR` | `/home/vscode/.claude` | Claude configuration directory |
-| `SETUP_CONFIG` | `true` | Copy config files during setup (per `file-manifest.json`) |
-| `SETUP_ALIASES` | `true` | Add `cc`/`claude`/`ccraw` aliases to shell |
-| `SETUP_AUTH` | `true` | Configure Git/NPM auth from `.secrets` |
-| `SETUP_PLUGINS` | `true` | Install official plugins + register marketplace |
-| `SETUP_UPDATE_CLAUDE` | `true` | Auto-update Claude Code on container start |
-| `SETUP_TERMINAL` | `true` | Configure VS Code Shift+Enter keybinding for Claude Code terminal |
-| `SETUP_PROJECTS` | `true` | Auto-detect projects for VS Code Project Manager |
-| `SETUP_POSTSTART` | `true` | Run post-start hooks from `/usr/local/devcontainer-poststart.d/` |
-| `PLUGIN_BLACKLIST` | `""` | Comma-separated plugin names to skip |
+```json
+{
+  "setup": {
+    "config": true, "aliases": true, "auth": true,
+    "plugins": true, "updateClaude": true, "terminal": true,
+    "poststart": true, "projects": true
+  },
+  "identity": { "name": null, "email": null },
+  "claude": { "versionLock": null },
+  "plugins": { "blacklist": [], "official": ["frontend-design@claude-plugins-official"] }
+}
+```
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `setup.config` | `true` | Deploy config files (per `file-manifest.json`) |
+| `setup.aliases` | `true` | Add `cc`/`claude`/`ccraw` aliases to shell |
+| `setup.auth` | `true` | Configure auth from Docker secrets |
+| `setup.plugins` | `true` | Install official plugins + register marketplace |
+| `setup.updateClaude` | `true` | Auto-update Claude Code on container start |
+| `setup.terminal` | `true` | Configure VS Code Shift+Enter keybinding |
+| `setup.projects` | `true` | Auto-detect projects for VS Code Project Manager |
+| `setup.poststart` | `true` | Run post-start hooks |
+| `identity.name` | `null` | Override git user.name (derived from GitHub API by default) |
+| `identity.email` | `null` | Override git user.email (derived from GitHub API by default) |
+| `claude.versionLock` | `null` | Pin Claude Code to a specific version |
+| `plugins.blacklist` | `[]` | Plugin names to skip during installation |
 
 ### Claude Code Settings
 
-Default settings are in `.codeforge/config/settings.json`. File copying is controlled by `.codeforge/file-manifest.json`, which specifies per-file overwrite behavior (`"if-changed"`, `"always"`, or `"never"`).
+Default settings inputs are in `.devcontainer/defaults/codeforge/claude/settings/`. CodeForge generates final `settings*.json` files into `.devcontainer/.generated/codeforge/claude/settings/` and deploys them to `~/.claude/`. Project overrides use matching paths under `.codeforge/claude/settings/`.
 
 To add a custom config file, append an entry to `file-manifest.json`:
 ```json
 {
-  "src": "my-config.json",
+  "id": "custom.my-config",
+  "src": "claude/my-config.json",
   "dest": "${WORKSPACE_ROOT}",
   "overwrite": "if-changed"
 }
 ```
 
 Key defaults:
-- **Model**: Claude Opus 4-6
+- **Model**: Claude Opus 4-6 200k by default
 - **Default mode**: Plan (prompts before executing)
 - **Max output tokens**: 64,000
+- **Session retention**: 90 days
+
+Claude Code Karma can read these settings in its dashboard, but CodeForge patches Karma so it cannot write `~/.claude/settings.json`.
 
 ### Keybindings
 
-Default keybindings are in `.codeforge/config/keybindings.json` (empty by default — Claude Code defaults apply). Customize by adding entries to the `bindings` array.
+Default keybindings are in `.devcontainer/defaults/codeforge/claude/keybindings.json` (empty by default; Claude Code defaults apply). Customize by adding an override at `.codeforge/claude/keybindings.json`.
 
 **VS Code Terminal Passthrough**: `Ctrl+P` and `Ctrl+F` are configured to pass through to the terminal (via `terminal.integrated.commandsToSkipShell`) so Claude Code receives them. Other VS Code shortcuts that conflict with Claude Code:
 
@@ -310,7 +329,7 @@ For conflicting shortcuts, use Meta (Alt) variants or add custom keybindings.
 
 ### System Prompt
 
-The default system prompt is in `.codeforge/config/main-system-prompt.md`. Override it by creating a `.claude/main-system-prompt.md` in your project directory.
+The default system prompt is in `.devcontainer/defaults/codeforge/claude/system-prompts/main.md`. Override it with `.codeforge/claude/system-prompts/main.md`.
 
 ## Custom Features
 
@@ -321,6 +340,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `tmux` | Terminal multiplexer with Catppuccin theme for Agent Teams |
 | `agent-browser` | Headless browser automation for AI agents |
 | `claude-monitor` | Real-time token usage monitoring with ML predictions |
+| `claude-code-karma` | Local Claude Code session analytics dashboard with live tracking and generated titles |
 | `ccusage` | Usage analytics CLI |
 | `ccburn` | Visual token burn rate tracker with pace indicators |
 | `ccstatusline` | Status bar display (integrated into Claude Code, not standalone CLI) |
@@ -334,7 +354,6 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | `hadolint` | Dockerfile linter (disabled by default) |
 | `dprint` | Pluggable formatter for Markdown/YAML/TOML (disabled by default) |
 | `ccms` | Claude Code session history search |
-| `claude-session-dashboard` | Local session analytics dashboard with web UI |
 | `codex-cli` | OpenAI Codex CLI terminal coding agent |
 | `hermes-agent` | Nous Research Hermes Agent CLI (interactive `hermes setup` on first use) |
 | `notify-hook` | Desktop notifications on Claude completion |
@@ -345,7 +364,7 @@ CodeForge includes custom devcontainer features. Any feature can be disabled by 
 | Plugin | Description |
 |--------|-------------|
 | `dangerous-command-blocker` | Blocks destructive bash commands (rm -rf, sudo rm, chmod 777, force push) |
-| `protected-files-guard` | Blocks modifications to .env, lock files, .git/, and credentials |
+| `protected-files-guard` | Blocks modifications to secrets, lock files, .git/, and credentials |
 | `workspace-scope-guard` | Enforces working directory scope — blocks writes and warns on reads outside the project |
 
 ### auto-code-quality
@@ -358,16 +377,17 @@ Features create shell aliases during container build (e.g., `ccusage`, `ccburn`)
 
 ## Credential Management
 
-Three methods for providing GitHub/NPM credentials, in order of precedence:
+Secrets are provided via Docker Compose file-based secrets in `.codeforge/secrets/` (one file per secret, raw value). Resolution order:
 
-1. **Environment variables** — Set `GH_TOKEN`, `GH_USERNAME`, `GH_EMAIL`, `NPM_TOKEN` as environment variables (e.g., via Codespaces secrets or `localEnv` in `devcontainer.json`)
-2. **`.secrets` file** — Create `.devcontainer/.secrets` with token values (see template at `.secrets.example`). Auto-configured by `setup-auth.sh` on container start
-3. **Interactive login** — Run `gh auth login` for GitHub CLI, then set git identity manually
+1. **Environment variables** — Set `GH_TOKEN`, `NPM_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, etc. as env vars (e.g., via Codespaces secrets)
+2. **Docker secrets** — Place secret files in `.codeforge/secrets/` (auto-mounted at `/run/secrets/` via Docker Compose)
+3. **Interactive login** — Run `gh auth login` for GitHub CLI
 
-All methods persist across container rebuilds via the bind-mounted `/workspaces/.gh/` directory.
+Supported secrets: `gh_token`, `npm_token`, `claude_code_oauth_token`, `openai_api_key`, `anthropic_api_key`, `deepseek_api_key`, `gemini_api_key`, `openrouter_api_key`.
 
-4. **`.secrets` file with `CLAUDE_AUTH_TOKEN`** — Long-lived Claude auth token from `claude setup-token`. Auto-creates `~/.claude/.credentials.json` on container start.
-5. **`.secrets` file with `OPENAI_API_KEY`** — OpenAI API key for Codex CLI. Auto-creates `~/.codex/auth.json` on container start.
+All credentials persist across container rebuilds via Docker named volumes.
+
+> **Note:** `CLAUDE_CODE_OAUTH_TOKEN` does not work when `ANTHROPIC_API_KEY` is also set.
 
 ## Agents & Skills
 
@@ -386,17 +406,32 @@ Agent definitions in `plugins/devs-marketplace/plugins/agent-system/agents/` pro
 
 15 previously active agents have been archived to `agents/_archived/`.
 
-### General Skills (23) — `skill-engine` plugin
+### General Skills (24) — `skill-engine` plugin
 
 Skills in `plugins/devs-marketplace/plugins/skill-engine/skills/` provide domain-specific coding references:
 
-`agent-browser` · `api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `sqlite` · `svelte5` · `team` · `testing` · `worktree`
+`agent-browser` · `api-design` · `ast-grep-patterns` · `claude-agent-sdk` · `claude-code-headless` · `codeforge` · `debugging` · `dependency-management` · `docker` · `docker-py` · `documentation-patterns` · `fastapi` · `git-forensics` · `migration-patterns` · `performance-profiling` · `pydantic-ai` · `refactoring-patterns` · `security-checklist` · `skill-building` · `sqlite` · `svelte5` · `team` · `testing` · `worktree`
 
 ### Spec Skills (3) — `spec-workflow` plugin
 
 Skills in `plugins/devs-marketplace/plugins/spec-workflow/skills/`:
 
 `spec` · `build` · `specs`
+
+### AI Environment Context
+
+CodeForge ships machine-readable environment documentation for AI assistants.
+Reference it from your project's `AGENTS.md` or `CLAUDE.md`:
+
+```
+@.devcontainer/AI-CONTEXT.md
+```
+
+This gives your AI knowledge of the container's toolchain, filesystem layout,
+safety constraints, and resource limits — preventing common errors like
+running blocked commands or writing outside the project directory.
+
+For deeper context on demand, use the `/codeforge` skill in Claude Code.
 
 ## Specification Workflow
 
@@ -470,8 +505,8 @@ The `setup-projects.sh` script auto-detects projects under `/workspaces/` and ma
 
 - **Authentication required**: Run `claude` once to authenticate before using `cc`
 - **Plan mode default**: The container starts in "plan" mode, which prompts for approval before making changes
-- **Config is managed by manifest**: `.codeforge/file-manifest.json` controls which files are copied and when — default `overwrite: "if-changed"` uses sha256 comparison. Persistent changes go in `.codeforge/config/settings.json`
-- **GitHub auth persists**: Run `gh auth login` once or configure `.secrets`; credentials survive container rebuilds
+- **Config is managed by manifest**: `.devcontainer/defaults/codeforge/file-manifest.json` provides defaults, and optional `.codeforge/file-manifest.json` overrides entries by `id`. Persistent changes go in `.codeforge/` override paths, not in generated `settings.json`
+- **GitHub auth persists**: Run `gh auth login` once or set up `.codeforge/secrets/gh_token`; credentials survive container rebuilds
 - **Agent Teams needs tmux**: Split panes only work inside tmux. Use the "Claude Teams (tmux)" VS Code terminal profile or `.codeforge/scripts/connect-external-terminal.sh` from WezTerm/iTerm2
 
 ## Troubleshooting
@@ -483,7 +518,7 @@ Common issues and solutions. For detailed troubleshooting, see the [Troubleshoot
 | `cc: command not found` | Run `source ~/.bashrc` or open a new terminal |
 | `claude` fails during startup | Background update may be in progress — wait 10s and retry |
 | GitHub push fails | Run `gh auth status` to check authentication |
-| Plugin not loading | Check `enabledPlugins` in `.codeforge/config/settings.json` |
+| Plugin not loading | Check `enabledPlugins` in generated `~/.claude/settings.json` and the source under `claude/settings/base.json` |
 | Feature not installed | Check `devcontainer.json` for `"version": "none"` |
 | Tool version/status | Run `cc-tools` to list all tools with version info |
 | Full health check | Run `check-setup` to verify setup status |

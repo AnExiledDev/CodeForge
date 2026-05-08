@@ -33,6 +33,7 @@ Files that typically contain API keys, database passwords, and other credentials
 | `credentials.json` | `credentials.json`, `config/credentials.json` |
 | `secrets.yaml` / `secrets.yml` / `secrets.json` | Any secrets file |
 | `.secrets` | `.secrets` |
+| `.codeforge/secrets/` | `.codeforge/secrets/*` |
 
 ### Lock Files
 

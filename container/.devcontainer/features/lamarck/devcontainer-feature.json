@@ -1,0 +1,26 @@
+{
+	"id": "lamarck",
+	"version": "1.0.0",
+	"name": "Lamarck - Skill Analysis & Learning",
+	"description": "Analyzes Claude Code sessions to extract learnings into MEMORY.md. Unique skill analysis capability.",
+	"documentationURL": "https://github.com/johnlindquist/lamarck",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "npm version (use 'none' to skip)",
+			"default": "latest"
+		},
+		"cronInterval": {
+			"type": "string",
+			"description": "Cron interval for batch processing",
+			"default": "4h",
+			"enum": ["2h", "4h", "6h", "12h", "disabled"]
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": ["ghcr.io/devcontainers/features/node"]
+}

@@ -1,2 +1,3 @@
+# Used for running container plugin tests via pytest. See container/CLAUDE.md.
 [tool.pytest.ini_options]
 testpaths = ["container/tests"]

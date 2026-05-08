@@ -15,6 +15,7 @@ Intercepts file operations and checks target paths against a set of protected pa
 | Lock files | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `poetry.lock`, `Cargo.lock`, `composer.lock`, `uv.lock` | Must be modified via package manager |
 | Certificates & keys | `.pem`, `.key`, `.crt`, `.p12`, `.pfx` | Sensitive cryptographic material |
 | Credential files | `credentials.json`, `secrets.yaml`, `secrets.yml`, `secrets.json`, `.secrets` | Contains secrets |
+| Docker secrets | `.codeforge/secrets/` | Contains Docker Compose secrets |
 | Auth directories | `.ssh/`, `.aws/` | Contains authentication data |
 | Auth config files | `.netrc`, `.npmrc`, `.pypirc` | Contains authentication credentials |
 | SSH private keys | `id_rsa`, `id_ed25519`, `id_ecdsa` | SSH private key files |

@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import { homedir } from "os";
 import { basename, dirname, resolve } from "path";
 import type { SettingsJson } from "../schemas/config.js";
@@ -79,7 +80,9 @@ export async function loadPluginDetail(installPath: string): Promise<{
 				});
 			}
 		}
-	} catch {}
+	} catch (err) {
+		if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+	}
 
 	// Agents
 	try {
@@ -96,9 +99,13 @@ export async function loadPluginDetail(installPath: string): Promise<{
 					description: fm.description || "",
 					filename: basename(entry),
 				});
-			} catch {}
+			} catch (err) {
+				if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+			}
 		}
-	} catch {}
+	} catch (err) {
+		if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+	}
 
 	// Skills
 	try {
@@ -116,9 +123,13 @@ export async function loadPluginDetail(installPath: string): Promise<{
 					description: fm.description || "",
 					dirname: dir,
 				});
-			} catch {}
+			} catch (err) {
+				if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+			}
 		}
-	} catch {}
+	} catch (err) {
+		if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+	}
 
 	// Scripts
 	try {
@@ -129,7 +140,9 @@ export async function loadPluginDetail(installPath: string): Promise<{
 		})) {
 			scripts.push(basename(entry));
 		}
-	} catch {}
+	} catch (err) {
+		if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+	}
 
 	return { hooks, agents, skills, scripts };
 }
@@ -144,15 +157,13 @@ export function findSettingsPaths(): {
 	let dir = process.cwd();
 
 	while (true) {
-		const candidate = resolve(dir, ".codeforge/config/settings.json");
-		try {
-			const stat = Bun.file(candidate);
-			// Check if file exists by accessing size — throws if missing
-			if (stat.size !== undefined) {
+		for (const candidate of settingsSourceCandidates(dir)) {
+			if (existsSync(candidate)) {
 				source = candidate;
 				break;
 			}
-		} catch {}
+		}
+		if (source) break;
 
 		const parent = resolve(dir, "..");
 		if (parent === dir) break;
@@ -163,19 +174,33 @@ export function findSettingsPaths(): {
 		try {
 			const workspaceRoot = findWorkspacePath();
 			if (workspaceRoot) {
-				const fallback = resolve(
-					workspaceRoot,
-					".codeforge/config/settings.json",
-				);
-				const stat = Bun.file(fallback);
-				if (stat.size !== undefined) {
-					source = fallback;
+				for (const fallback of settingsSourceCandidates(workspaceRoot)) {
+					if (existsSync(fallback)) {
+						source = fallback;
+						break;
+					}
 				}
 			}
-		} catch {}
+		} catch (err) {
+			if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+		}
 	}
 
 	return { deployed, source };
+}
+
+function settingsSourceCandidates(workspaceRoot: string): string[] {
+	return [
+		resolve(
+			workspaceRoot,
+			".devcontainer/.generated/codeforge/claude/settings/settings.json",
+		),
+		resolve(workspaceRoot, ".codeforge/claude/settings/base.json"),
+		resolve(
+			workspaceRoot,
+			".devcontainer/defaults/codeforge/claude/settings/base.json",
+		),
+	];
 }
 
 function resolveEnabled(
@@ -248,7 +273,9 @@ export async function loadInstalledPlugins(): Promise<PluginInfo[]> {
 			).json();
 			description = pluginJson.description || "";
 			author = pluginJson.author?.name || "";
-		} catch {}
+		} catch (err) {
+			if (process.env.DEBUG) console.error(`[plugin-loader] ${err}`);
+		}
 
 		const detail = await loadPluginDetail(entry.installPath);
 

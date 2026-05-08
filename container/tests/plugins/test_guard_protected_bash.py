@@ -167,6 +167,7 @@ class TestBlockedBashWrites:
             ("sed -i 's/x/y/' package-lock.json", "package-lock.json"),
             ("cat > .ssh/config", ".ssh/config"),
             ("mv old credentials.json", "credentials.json"),
+            ("cp token .codeforge/secrets/gh_token", ".codeforge/secrets/gh_token"),
         ],
         ids=[
             "redirect-to-env",
@@ -175,6 +176,7 @@ class TestBlockedBashWrites:
             "sed-to-package-lock",
             "cat-to-ssh-config",
             "mv-to-credentials",
+            "cp-to-codeforge-secrets",
         ],
     )
     def test_protected_file_write_is_blocked(self, command, blocked_path):

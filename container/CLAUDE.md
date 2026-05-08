@@ -28,4 +28,4 @@ All user-facing changes MUST be reflected in documentation:
 
 ### User Configuration
 
-All user-customizable configuration files belong in `.codeforge/`. New config files go in `.codeforge/config/`, with a corresponding entry in `.codeforge/file-manifest.json`.
+Packaged defaults belong in `.devcontainer/defaults/codeforge/`. `.codeforge/` is only for project overrides and state. New config defaults should go under the relevant `claude/`, `codex/`, or `rtk/` subfolder and get a stable `id` in `.devcontainer/defaults/codeforge/file-manifest.json`; project overrides use the same logical path under `.codeforge/`.

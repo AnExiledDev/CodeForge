@@ -13,7 +13,7 @@ This page mostly covers components that are **Optional** or **Disabled by defaul
 
 ## Per-Hook Disable
 
-Individual hooks can be disabled without turning off their entire plugin. The file `.codeforge/config/disabled-hooks.json` contains a `"disabled"` array of script names:
+Individual hooks can be disabled without turning off their entire plugin. The source override is `.codeforge/claude/disabled-hooks.json`, deployed to `~/.claude/disabled-hooks.json`, and contains a `"disabled"` array of script names:
 
 ```json
 {
@@ -192,7 +192,7 @@ OpenAI's open-source terminal coding agent. Enabled by default — set `"version
 
 ### Configuration
 
-The feature installs Codex CLI via npm and creates `~/.codex/` for credentials and configuration. A user-editable `config.toml` is deployed from `.codeforge/config/codex-config.toml` via the file manifest.
+The feature installs Codex CLI via npm and creates `~/.codex/` for credentials and configuration. The packaged default is `.devcontainer/defaults/codeforge/codex/config.toml`; override it with `.codeforge/codex/config.toml`.
 
 ```json
 "./features/codex-cli": {}
@@ -203,7 +203,7 @@ The feature installs Codex CLI via npm and creates `~/.codex/` for credentials a
 Codex CLI requires an OpenAI account. Two methods:
 
 1. **Browser login** — run `codex` and select "Sign in with ChatGPT" (requires ChatGPT Plus, Pro, Business, Edu, or Enterprise plan)
-2. **API key** — set `OPENAI_API_KEY` in `.devcontainer/.secrets` or as a Codespaces secret. On container start, `setup-auth.sh` auto-creates `~/.codex/auth.json`.
+2. **API key** — place your key in `.codeforge/secrets/openai_api_key` or set `OPENAI_API_KEY` as a Codespaces secret. On container start, `setup-auth.sh` auto-creates `~/.codex/auth.json`.
 
 Credentials persist across container rebuilds via a Docker named volume (`codeforge-codex-config-${devcontainerId}`).
 
@@ -237,7 +237,7 @@ hermes setup
 
 Pick a provider (Anthropic, OpenAI, MiniMax, local, etc.), paste an API key, and choose a default model. The wizard writes `~/.hermes/config.yaml` and `~/.hermes/.env`.
 
-If you already have `MINIMAX_API_KEY` in `.devcontainer/.secrets`, paste `echo $MINIMAX_API_KEY` into the wizard when prompted.
+If you already have a MiniMax API key, place it in `.codeforge/secrets/` and paste the value into the wizard when prompted.
 
 `~/.hermes/` is backed by the `codeforge-hermes-config-${devcontainerId}` Docker named volume, so setup is a one-time cost per devcontainer instance.
 

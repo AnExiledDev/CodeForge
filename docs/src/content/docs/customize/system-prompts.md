@@ -11,7 +11,8 @@ System prompts define how Claude Code behaves during your sessions -- its coding
 
 The main system prompt is loaded for every `cc` or `claude` session. It is the single most influential file in shaping how Claude works with your code.
 
-**Location:** `.codeforge/config/main-system-prompt.md`
+**Packaged default:** `.devcontainer/defaults/codeforge/claude/system-prompts/main.md`
+**Project override:** `.codeforge/claude/system-prompts/main.md`
 **Deployed to:** `~/.claude/main-system-prompt.md`
 
 ### What It Controls
@@ -52,7 +53,8 @@ Each section is self-contained. You can edit, remove, or add sections independen
 
 The writing system prompt is activated when you launch Claude with the `ccw` command. It replaces the development-focused prompt with one tuned for creative fiction writing.
 
-**Location:** `.codeforge/config/writing-system-prompt.md`
+**Packaged default:** `.devcontainer/defaults/codeforge/claude/system-prompts/writing.md`
+**Project override:** `.codeforge/claude/system-prompts/writing.md`
 **Deployed to:** `~/.claude/writing-system-prompt.md`
 
 ### Key Differences from Main Prompt
@@ -70,7 +72,8 @@ Use `cc` for coding sessions and `ccw` for writing sessions. Both are shell alia
 
 The orchestrator system prompt is activated when you launch Claude with the `cc-orc` command. It configures a delegation-first orchestrator mode where Claude prioritizes decomposing work into subagent tasks rather than doing everything inline.
 
-**Location:** `.codeforge/config/orchestrator-system-prompt.md`
+**Packaged default:** `.devcontainer/defaults/codeforge/claude/system-prompts/orchestrator.md`
+**Project override:** `.codeforge/claude/system-prompts/orchestrator.md`
 **Deployed to:** `~/.claude/orchestrator-system-prompt.md`
 
 ### Key Differences from Main Prompt
@@ -87,7 +90,7 @@ Use `cc` for standard coding sessions, `ccw` for writing sessions, and `cc-orc` 
 
 ### Editing the Main Prompt
 
-To change development behavior, edit `.codeforge/config/main-system-prompt.md`. Your changes are deployed to `~/.claude/` on the next container start via the file manifest.
+To change development behavior, create or edit `.codeforge/claude/system-prompts/main.md`. Your override is deployed to `~/.claude/` on the next container start via the file manifest.
 
 For changes to take effect immediately (without restarting the container), edit the deployed copy at `~/.claude/main-system-prompt.md` directly. Be aware that this copy will be overwritten on the next container rebuild unless you change the overwrite mode in `file-manifest.json`.
 
@@ -182,12 +185,14 @@ Rules override the system prompt when they conflict. CLAUDE.md provides context 
 
 ## Deployment and File Manifest
 
-Both system prompts are listed in `file-manifest.json` and deployed to `~/.claude/` on every container start:
+The system prompts are listed in `.devcontainer/defaults/codeforge/file-manifest.json` and deployed to `~/.claude/` on every container start:
 
 ```json
 {
-  "src": "config/main-system-prompt.md",
-  "dest": "${CLAUDE_CONFIG_DIR}",
+  "id": "claude.system-prompts.main",
+  "src": "claude/system-prompts/main.md",
+  "dest": "${HOME}/.claude",
+  "destFilename": "main-system-prompt.md",
   "enabled": true,
   "overwrite": "if-changed"
 }
@@ -196,7 +201,7 @@ Both system prompts are listed in `file-manifest.json` and deployed to `~/.claud
 The `if-changed` mode means your deployed copy is only overwritten when the source file's SHA-256 hash changes. If you want to make persistent local edits to the deployed prompt, change the overwrite mode to `"never"` so your changes survive container rebuilds.
 
 :::note[Two Copies]
-The source file at `.codeforge/config/main-system-prompt.md` is the canonical version. The deployed copy at `~/.claude/main-system-prompt.md` is what Claude Code actually loads. Edits to the source are deployed on next container start. Edits to the deployed copy take effect immediately but may be overwritten.
+The effective source is resolved from `.codeforge/claude/system-prompts/main.md` first, then `.devcontainer/defaults/codeforge/claude/system-prompts/main.md`. The deployed copy at `~/.claude/main-system-prompt.md` is what Claude Code actually loads. Edits to the deployed copy take effect immediately but may be overwritten.
 :::
 
 ## Related

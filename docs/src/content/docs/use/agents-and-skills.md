@@ -18,7 +18,7 @@ Examples:
 
 - Ask for an implementation plan and the **architect** agent takes the lead.
 - Ask to explore the codebase and the **explorer** agent is used.
-- Ask for tests and the **test-writer** agent handles framework-aware test generation.
+- Ask for help implementing a feature and the **generalist** agent handles code generation with full tool access.
 
 ## What Agents Change
 

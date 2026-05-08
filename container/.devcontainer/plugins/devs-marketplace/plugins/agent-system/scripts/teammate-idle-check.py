@@ -13,7 +13,7 @@ import json
 import os
 import sys
 
-# Hook gate — check .codeforge/config/disabled-hooks.json
+# Hook gate - check ~/.claude/disabled-hooks.json
 _dh = os.path.join(os.getcwd(), ".codeforge", "config", "disabled-hooks.json")
 if os.path.exists(_dh):
     with open(_dh) as _f:
@@ -23,7 +23,7 @@ if os.path.exists(_dh):
 
 def find_incomplete_tasks(teammate_name: str) -> list[str]:
     """Scan task directories for incomplete tasks owned by this teammate."""
-    config_dir = os.environ.get("CLAUDE_CONFIG_DIR", os.path.expanduser("~/.claude"))
+    config_dir = os.path.expanduser("~/.claude")
     tasks_base = os.path.join(config_dir, "tasks")
 
     if not os.path.isdir(tasks_base):
