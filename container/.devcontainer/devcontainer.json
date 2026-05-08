@@ -116,6 +116,7 @@
 		"./features/claude-code-native",
 		"./features/codex-cli",
 		"./features/hermes-agent",
+		"./features/zsh-completions",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
@@ -161,6 +162,7 @@
 		"./features/claude-code-native": {},
 		"./features/codex-cli": {},
 		"./features/hermes-agent": {},
+		"./features/zsh-completions": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
