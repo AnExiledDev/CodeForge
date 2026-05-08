@@ -10,6 +10,10 @@
 
 - **Container timezone** — new `timezone` field in `.codeforge/container.json` (default: `America/Chicago`). Set to any IANA timezone (e.g., `America/New_York`, `Europe/London`). Applied via `TZ` env var on container start.
 
+### Authentication
+
+- **Browser opener for `gh auth login`** — tools that need to open a browser (like `gh auth login`) now get a friendly fallback instead of a wall of "executable not found" errors. In VS Code terminals, URLs open on the host automatically via VS Code's built-in forwarding. In external terminals (Windows Terminal, tmux, etc.), the URL is printed cleanly for manual copy. Set via `$BROWSER` env var with conditional fallback — does not override VS Code's native browser handler.
+
 ### Bug Fixes
 
 - **Fix git credential helper not configured without `GH_TOKEN` secret** — `gh auth setup-git` was nested inside the `GH_TOKEN` block, so it only ran when a token secret was provided. Now runs unconditionally on every container start, enabling manual `gh auth login` to work immediately for git operations. Also detects persisted GitHub CLI credentials (from Docker named volume) and derives git identity without requiring a secret.

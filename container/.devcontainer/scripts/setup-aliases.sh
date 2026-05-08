@@ -104,6 +104,11 @@ export DEVCONTAINER_SCRIPTS="${DEVCONTAINER_SCRIPTS}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
+# Browser opener — lets tools (gh, npm, etc.) open URLs on the host.
+# VS Code sets BROWSER in its own terminals; this fallback covers external
+# terminals (Windows Terminal, tmux, etc.) with a friendly "copy this URL" message.
+export BROWSER="\${BROWSER:-${DEVCONTAINER_SCRIPTS}/open-browser.sh}"
+
 # Terminal color defaults — Docker sets TERM=xterm (8 colors); upgrade to 256-color
 if [ "\$TERM" = "xterm" ] || [ -z "\$TERM" ]; then
     export TERM=xterm-256color
