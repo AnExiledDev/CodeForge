@@ -234,6 +234,14 @@
 			"label": "ccdiag API Proxy",
 			"onAutoForward": "silent"
 		},
+		"4321": {
+			"label": "Astro Docs Dev Server",
+			"onAutoForward": "notify"
+		},
+		"8081": {
+			"label": "mitmproxy (codeforge proxy)",
+			"onAutoForward": "notify"
+		},
 		"*": {
 			"onAutoForward": "notify"
 		}
@@ -280,7 +288,7 @@
 					"wenbopan.vscode-terminal-osc-notifier": ["ui"]
 				},
 				"remote.defaultExtensionsIfInstalledLocally": [],
-				"remote.autoForwardPortsSource": "hybrid",
+				"remote.autoForwardPortsSource": "output",
 
 				// --- Git ---
 				"git.autofetch": false,

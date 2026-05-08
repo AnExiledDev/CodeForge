@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Networking
+
+- **Docker-native port forwarding** — all service ports are now mapped in `docker-compose.yml` via `ports:` bound to `127.0.0.1`. This provides reliable port forwarding independent of VS Code, and works with WSL mirrored networking out of the box. Mapped ports: Karma Dashboard (7847), Karma API (7848), Claude-Mem Worker (37777), Astro docs dev server (4321), mitmproxy (8081), ccdiag API Proxy (9119).
+- **Switch VS Code port detection to `output` mode** — `remote.autoForwardPortsSource` changed from `hybrid` to `output`. The `hybrid` mode has known reliability issues (silently stops working after detecting 20+ ports). The `output` mode is less aggressive but more reliable, and Docker Compose port mappings now handle the primary forwarding.
+- **Add missing port labels** — added `portsAttributes` entries for the Astro docs dev server (4321) and mitmproxy/codeforge proxy (8081) so VS Code shows proper labels when these ports are detected.
+
 ### Status Line
 
 - **Rate limit reset times** — the 5-hour and 7-day rate limit widgets now display when limits reset (e.g., `5h: 42% (14:30)` and `7d: 15% (Mon 09:00)`). Uses custom-command scripts instead of built-in ccstatusline types.
