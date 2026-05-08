@@ -16,8 +16,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: container/package-lock.json
       - run: npm test
         working-directory: container
 
@@ -28,10 +26,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: container/package-lock.json
-      - run: npm ci
-        working-directory: container
       - run: npx @biomejs/biome check setup.js test.js
         working-directory: container
 

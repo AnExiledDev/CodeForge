@@ -469,7 +469,7 @@ describe("checkWslConfig", () => {
 		expect(result!.message).toMatch(/RAM|meminfo/i);
 	});
 
-	test("includes fix action with .wslconfig generation", async () => {
+	test.skipIf(process.platform !== "linux")("includes fix action with .wslconfig generation", async () => {
 		const result = await checkWslConfig(true);
 		expect(result).not.toBeNull();
 		expect(result!.fix).toBeDefined();
