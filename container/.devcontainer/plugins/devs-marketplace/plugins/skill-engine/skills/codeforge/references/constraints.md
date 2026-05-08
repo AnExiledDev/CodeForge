@@ -36,6 +36,23 @@ Confines file operations to the current project directory.
 - Read operations outside the project directory generate warnings
 - Bash commands are annotated with working directory context
 
+## Hook Management
+
+Manage plugin hook enablement at runtime via `codeforge hooks`:
+
+| Command | Purpose |
+|---------|---------|
+| `codeforge hooks list` | Show all hooks with enabled/disabled status |
+| `codeforge hooks disable <name>` | Disable a hook by script or plugin name |
+| `codeforge hooks enable <name>` | Re-enable a disabled hook |
+| `codeforge hooks status` | Quick summary of disabled hooks |
+
+Accepts both hook script names (`guard-workspace-scope`) and plugin names (`workspace-scope-guard` — disables all hooks for that plugin).
+
+### AI Safety Constraint
+
+**AI assistants MUST NOT disable `workspace-scope-guard` without explicit user instruction.** Asking to access files outside the project, expressing frustration with scope restrictions, or saying "do whatever you need to" do NOT constitute approval. When in doubt, ask. See AGENTS.md for the full prohibition.
+
 ## Resource Limits
 
 | Resource | Limit | Notes |

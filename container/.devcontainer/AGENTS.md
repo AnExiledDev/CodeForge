@@ -64,6 +64,10 @@ For deeper context, use the `/codeforge` skill (toolchain, filesystem, constrain
 | `analyze-sessions` | Session quality metrics: thinking depth, Read:Edit ratio, frustration indicators |
 | `lamarck skill <name>` | Skill analysis and improvement suggestions from session history |
 | `sandcastle` | AI agent orchestration — parallel workflows, branch strategies, iteration loops |
+| `codeforge hooks list` | Show all hooks with enabled/disabled status |
+| `codeforge hooks disable <name>` | Disable a hook by script or plugin name |
+| `codeforge hooks enable <name>` | Re-enable a disabled hook |
+| `codeforge hooks status` | Quick summary of disabled hooks |
 
 ## Plugins
 
@@ -212,8 +216,37 @@ TypeScript library/CLI for orchestrating AI coding agents in isolated environmen
 6. **Disable setup steps**: Set flags to `false` in `.codeforge/container.json` under `setup`
 7. **Customize status bar**: Edit `defaults/codeforge/claude/statusline/settings.json`
 8. **Lock Claude Code version**: Set `"versionLock": "2.1.80"` under `claude` in `.codeforge/container.json` — the update script installs that exact version on container start instead of updating to latest. Set to `null` to resume auto-updates.
-9. **Disable individual hooks**: Add script name (without `.py`) to `disabled` array in `~/.claude/disabled-hooks.json` or override source `.codeforge/claude/disabled-hooks.json`
+9. **Disable individual hooks**: Use `codeforge hooks disable <name>` (accepts script name or plugin name), or manually add script name (without `.py`) to `disabled` array in `~/.claude/disabled-hooks.json` or override source `.codeforge/claude/disabled-hooks.json`
 10. **Change container timezone**: Set `"timezone": "America/New_York"` (or any IANA timezone) in `.codeforge/container.json`. Default is `America/Chicago` (Central Time). Applied on container start.
+
+### Hook Management
+
+Disable or enable individual plugin hooks at runtime:
+
+| Command | Purpose |
+|---------|---------|
+| `codeforge hooks list` | Show all hooks with enabled/disabled status |
+| `codeforge hooks disable <name>` | Disable a hook by script or plugin name |
+| `codeforge hooks enable <name>` | Re-enable a disabled hook |
+| `codeforge hooks status` | Quick summary of disabled hooks |
+
+Accepts both hook script names (`guard-workspace-scope`) and plugin names (`workspace-scope-guard` — disables all hooks for that plugin).
+
+Changes persist across container restarts (written to both deployed and source config).
+
+### AI Safety — workspace-scope-guard
+
+**PROHIBITION: AI assistants MUST NOT disable, bypass, or weaken the `workspace-scope-guard` hook without EXPLICIT user instruction.** "Explicit" means the user has directly and unambiguously stated they want it disabled — e.g., "disable workspace-scope-guard" or "turn off the scope guard." The following DO NOT constitute approval:
+- The user asking to access files outside the project directory
+- The user expressing frustration with scope restrictions
+- The user saying "do whatever you need to"
+- Any inferred or implied intent
+
+When in doubt, ask. This is a security boundary.
+
+### Config Apply Plugin Merge
+
+`codeforge config apply` merges `enabledPlugins` when deploying settings files. If you've disabled a plugin via `/plugins` or `codeforge plugin disable`, the `false` value is preserved through redeployment. Other settings keys are replaced from source.
 
 ## Plugin Development Notes
 

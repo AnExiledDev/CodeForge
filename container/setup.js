@@ -614,15 +614,49 @@ function configApply() {
 			}
 		}
 
-		fs.copyFileSync(srcPath, destPath);
-		console.log("  Deployed: " + entry.src + " → " + destPath);
-		deployed++;
+		if (
+			entry.id &&
+			entry.id.startsWith("claude.settings") &&
+			fs.existsSync(destPath) &&
+			mergeSettingsFile(srcPath, destPath)
+		) {
+			console.log("  Deployed: " + entry.src + " → " + destPath + " (merged)");
+			deployed++;
+		} else {
+			fs.copyFileSync(srcPath, destPath);
+			console.log("  Deployed: " + entry.src + " → " + destPath);
+			deployed++;
+		}
 	}
 
 	console.log("");
 	console.log(
 		"Config apply complete: " + deployed + " deployed, " + skipped + " skipped",
 	);
+}
+
+function mergeSettingsFile(srcPath, destPath) {
+	try {
+		const src = JSON.parse(fs.readFileSync(srcPath, "utf-8"));
+		const dest = JSON.parse(fs.readFileSync(destPath, "utf-8"));
+
+		if (!dest.enabledPlugins) return false;
+
+		// Start with source, overlay user's false values for enabledPlugins
+		const merged = { ...src };
+		if (!merged.enabledPlugins) merged.enabledPlugins = {};
+
+		for (const [key, value] of Object.entries(dest.enabledPlugins)) {
+			if (value === false) {
+				merged.enabledPlugins[key] = false;
+			}
+		}
+
+		fs.writeFileSync(destPath, JSON.stringify(merged, null, 2) + "\n");
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 function mergeManifestEntries(defaultEntries, userEntries) {

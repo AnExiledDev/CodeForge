@@ -1,7 +1,13 @@
 import chalk from "chalk";
 import { spawnSync } from "child_process";
 import type { Command } from "commander";
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "fs";
+import {
+	copyFileSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "fs";
 import { homedir } from "os";
 import { basename, dirname, resolve } from "path";
 import {
@@ -46,6 +52,32 @@ function filesAreIdentical(a: string, b: string): boolean {
 		const contentA = readFileSync(a);
 		const contentB = readFileSync(b);
 		return contentA.equals(contentB);
+	} catch {
+		return false;
+	}
+}
+
+function mergeSettingsForDeploy(srcPath: string, destPath: string): boolean {
+	try {
+		const srcContent = readFileSync(srcPath, "utf-8");
+		const destContent = readFileSync(destPath, "utf-8");
+		const srcSettings = JSON.parse(srcContent);
+		const destSettings = JSON.parse(destContent);
+
+		if (!destSettings.enabledPlugins) return false;
+
+		// Start with source, overlay user's false values for enabledPlugins
+		const merged = { ...srcSettings };
+		if (!merged.enabledPlugins) merged.enabledPlugins = {};
+
+		for (const [key, value] of Object.entries(destSettings.enabledPlugins)) {
+			if (value === false) {
+				merged.enabledPlugins[key] = false;
+			}
+		}
+
+		writeFileSync(destPath, JSON.stringify(merged, null, 2) + "\n");
+		return true;
 	} catch {
 		return false;
 	}
@@ -161,11 +193,22 @@ export function registerConfigApplyCommand(parent: Command): void {
 						);
 					} else {
 						mkdirSync(dirname(dest), { recursive: true });
-						copyFileSync(src, dest);
-						updated++;
-						console.log(
-							`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (updated)`,
-						);
+						if (
+							entry.id.startsWith("claude.settings") &&
+							destExists &&
+							mergeSettingsForDeploy(src, dest)
+						) {
+							updated++;
+							console.log(
+								`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (merged)`,
+							);
+						} else {
+							copyFileSync(src, dest);
+							updated++;
+							console.log(
+								`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (updated)`,
+							);
+						}
 					}
 				}
 

@@ -24,6 +24,10 @@ import { registerPluginHooksCommand } from "./commands/plugin/hooks.js";
 import { registerPluginListCommand } from "./commands/plugin/list.js";
 import { registerPluginShowCommand } from "./commands/plugin/show.js";
 import { registerPluginSkillsCommand } from "./commands/plugin/skills.js";
+import { registerHooksDisableCommand } from "./commands/hooks/disable.js";
+import { registerHooksEnableCommand } from "./commands/hooks/enable.js";
+import { registerHooksListCommand } from "./commands/hooks/list.js";
+import { registerHooksStatusCommand } from "./commands/hooks/status.js";
 import { registerProxyCommand } from "./commands/proxy.js";
 import { registerListCommand } from "./commands/session/list.js";
 import { registerSearchCommand } from "./commands/session/search.js";
@@ -74,6 +78,15 @@ registerPluginDisableCommand(plugin);
 registerPluginHooksCommand(plugin);
 registerPluginAgentsCommand(plugin);
 registerPluginSkillsCommand(plugin);
+
+const hooks = program
+	.command("hooks")
+	.description("Manage plugin hook enablement");
+
+registerHooksListCommand(hooks);
+registerHooksDisableCommand(hooks);
+registerHooksEnableCommand(hooks);
+registerHooksStatusCommand(hooks);
 
 const config = program
 	.command("config")
