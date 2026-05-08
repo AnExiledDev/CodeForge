@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Features
+
+- **Rust toolchain enabled by default** — `ghcr.io/devcontainers/features/rust:1.5.0` is now included as a standard devcontainer feature, enabling Rust-based tools out of the box.
+- **ccms (session history search) enabled** — now that Rust is available, `ccms` is included as a default feature instead of requiring manual opt-in.
+
 ### Performance
 
 - **Deeper volume detection** — `codeforge doctor` volume scan now searches to depth 8 (was 4), catching `node_modules` in deeply nested project structures like `projects/<org>/<project>/<subdir>/node_modules`.

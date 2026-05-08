@@ -47,7 +47,7 @@ For deeper context, use the `/codeforge` skill (toolchain, filesystem, constrain
 | `rtk discover` | List all commands RTK can compress |
 | `rtk status` | Show RTK version and configuration |
 | `hermes` | Nous Research Hermes Agent CLI (run `hermes setup` on first use) |
-| `ccms` | Session history search _(disabled — requires Rust toolchain; uncomment in devcontainer.json to enable)_ |
+| `ccms` | Session history search |
 | `codeforge proxy` | Launch Claude Code through mitmproxy — inspect API traffic in browser (port 8081) |
 | `ccr start` / `ccr stop` | Claude Code Router daemon control |
 | `ccr-apply` | Redeploy router config + restart daemon |
