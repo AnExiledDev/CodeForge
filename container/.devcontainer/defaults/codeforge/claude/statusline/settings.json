@@ -154,6 +154,11 @@
 				"id": "session-usage",
 				"type": "session-usage",
 				"rawValue": true,
+				"metadata": {
+					"absolute": "false",
+					"compact": "true",
+					"cursor": "true"
+				},
 				"color": "brightWhite",
 				"backgroundColor": "bgBlue"
 			},
@@ -162,7 +167,8 @@
 				"type": "reset-timer",
 				"rawValue": true,
 				"metadata": {
-					"absolute": "true",
+					"dateMode": "true",
+					"hourFormat": "true",
 					"compact": "true"
 				},
 				"color": "black",
@@ -172,6 +178,11 @@
 				"id": "weekly-usage",
 				"type": "weekly-usage",
 				"rawValue": true,
+				"metadata": {
+					"absolute": "false",
+					"compact": "true",
+					"cursor": "true"
+				},
 				"color": "brightWhite",
 				"backgroundColor": "bgMagenta"
 			},
@@ -180,7 +191,8 @@
 				"type": "weekly-reset-timer",
 				"rawValue": true,
 				"metadata": {
-					"absolute": "true",
+					"dateMode": "true",
+					"hourFormat": "true",
 					"compact": "true"
 				},
 				"color": "brightWhite",

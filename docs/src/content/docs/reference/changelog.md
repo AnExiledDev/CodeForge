@@ -49,6 +49,46 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Unreleased
 
+### Networking
+
+- **Docker-native port forwarding** — all service ports are now mapped in `docker-compose.yml` via `ports:` bound to `127.0.0.1`. This provides reliable port forwarding independent of VS Code, and works with WSL mirrored networking out of the box. Mapped ports: Karma Dashboard (7847), Karma API (7848), Claude-Mem Worker (37777), Astro docs dev server (4321), mitmproxy (8081), ccdiag API Proxy (9119).
+- **Switch VS Code port detection to `output` mode** — `remote.autoForwardPortsSource` changed from `hybrid` to `output`. The `hybrid` mode has known reliability issues (silently stops working after detecting 20+ ports). The `output` mode is less aggressive but more reliable, and Docker Compose port mappings now handle the primary forwarding.
+- **Add missing port labels** — added `portsAttributes` entries for the Astro docs dev server (4321) and mitmproxy/codeforge proxy (8081) so VS Code shows proper labels when these ports are detected.
+
+### Status Line
+
+- **Rate limit reset times** — the 5-hour and 7-day rate limit widgets now display when limits reset (e.g., `5h: 42% (14:30)` and `7d: 15% (Mon 09:00)`). Uses custom-command scripts instead of built-in ccstatusline types.
+
+### Configuration
+
+- **Container timezone** — new `timezone` field in `.codeforge/container.json` (default: `America/Chicago`). Set to any IANA timezone (e.g., `America/New_York`, `Europe/London`). Applied via `TZ` env var on container start.
+
+### Authentication
+
+- **Browser opener for `gh auth login`** — tools that need to open a browser (like `gh auth login`) now get a friendly fallback instead of a wall of "executable not found" errors. In VS Code terminals, URLs open on the host automatically via VS Code's built-in forwarding. In external terminals (Windows Terminal, tmux, etc.), the URL is printed cleanly for manual copy. Set via `$BROWSER` env var with conditional fallback — does not override VS Code's native browser handler.
+
+### Bug Fixes
+
+- **Fix git credential helper not configured without `GH_TOKEN` secret** — `gh auth setup-git` was nested inside the `GH_TOKEN` block, so it only ran when a token secret was provided. Now runs unconditionally on every container start, enabling manual `gh auth login` to work immediately for git operations. Also detects persisted GitHub CLI credentials (from Docker named volume) and derives git identity without requiring a secret.
+- **Fix named volume ownership for all mount points** — `setup.sh` only fixed `root:root` ownership on `~/.claude`, leaving 6 other Docker named volumes unfixed. `~/.config/gh` and `~/.bun/install/cache` were actively broken (`gh auth login` would fail with `permission denied`). Now loops over all volume mount points from `docker-compose.yml`.
+
+### Developer Tooling
+
+- **Enable shfmt, dprint, shellcheck, hadolint** — previously disabled (`"version": "none"`), now set to `"latest"`. Provides shell formatting, markdown/TOML/Dockerfile formatting, shell linting, and Dockerfile linting out of the box.
+
+### Documentation
+
+- **Add AI-CONTEXT.md** — machine-readable environment reference for AI assistants. Covers toolchain, filesystem, constraints, auth, and persistence in ~700 tokens. Referenced from AGENTS.md with user guidance in README.md.
+
+### Skill Engine
+
+- **Add `/codeforge` skill** — on-demand deep container context (toolchain inventory, filesystem map, safety constraints). Complements the static AI-CONTEXT.md with detailed reference files.
+- **Remove skill auto-suggestion** — removed `skill-suggester.py` and the `UserPromptSubmit` hook. Skills are now loaded on demand via `/skill` only. The auto-suggestion system had only 2 active matchers and added latency to every prompt.
+
+### Removed
+
+- **Remove Codex AGENTS.md** — removed the single-line `@AGENTS.md` self-referencing file from packaged defaults and file-manifest. Codex config.toml is unaffected.
+
 ### Secrets & Configuration
 
 - **Docker Compose secrets** — secrets now use Docker Compose file-based secrets mounted at `/run/secrets/`. Place secret files in `.codeforge/secrets/` (one file per secret, raw value only). The `generate-compose.mjs` init script auto-discovers secrets and generates the compose override. Supported secrets: `gh_token`, `npm_token`, `claude_code_oauth_token`, `openai_api_key`, `anthropic_api_key`, `deepseek_api_key`, `gemini_api_key`, `openrouter_api_key`. Env vars (Codespaces) remain supported as a fallback.
