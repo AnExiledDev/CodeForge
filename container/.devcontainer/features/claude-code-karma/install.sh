@@ -184,7 +184,7 @@ if [ "${AUTOSTART}" = "true" ]; then
 	mkdir -p /usr/local/devcontainer-poststart.d
 	cat > /usr/local/devcontainer-poststart.d/44-claude-code-karma.sh <<EOF
 #!/bin/bash
-set -euo pipefail
+set -uo pipefail
 
 KARMA_HOME="${INSTALL_DIR}"
 KARMA_USER="${USERNAME}"
@@ -193,16 +193,53 @@ API_PORT="\${CODEFORGE_KARMA_API_PORT:-${API_PORT}}"
 FRONTEND_PORT="\${CODEFORGE_KARMA_FRONTEND_PORT:-${FRONTEND_PORT}}"
 API_LOG="/tmp/claude-code-karma-api.log"
 FRONTEND_LOG="/tmp/claude-code-karma-frontend.log"
+MAX_RESTARTS=10
 
-start_as_user() {
+supervise() {
 	local name="\$1"
 	shift
-	if [ "\${KARMA_USER}" = "root" ]; then
-		HOME="\${KARMA_USER_HOME}" "\$@" &
-	else
-		sudo -u "\${KARMA_USER}" HOME="\${KARMA_USER_HOME}" "\$@" &
-	fi
-	echo \$! > "/tmp/claude-code-karma-\${name}.pid"
+	local backoff=1
+	local failures=0
+	local child_pid=0
+	trap 'kill \${child_pid} 2>/dev/null; exit 0' TERM INT HUP
+
+	while [ \${failures} -lt \${MAX_RESTARTS} ]; do
+		"\$@" &
+		child_pid=\$!
+		wait \${child_pid} 2>/dev/null
+		rc=\$?
+
+		if [ \${rc} -eq 0 ]; then
+			failures=0
+			backoff=1
+		else
+			failures=\$((failures + 1))
+		fi
+
+		if [ \${failures} -ge \${MAX_RESTARTS} ]; then
+			echo "[claude-code-karma] \${name}: \${MAX_RESTARTS} consecutive failures, giving up"
+			return 1
+		fi
+
+		echo "[claude-code-karma] \${name}: exited (rc=\${rc}), restart in \${backoff}s [\${failures}/\${MAX_RESTARTS}]"
+		sleep \${backoff}
+		backoff=\$((backoff * 2))
+		[ \${backoff} -gt 30 ] && backoff=30
+	done
+}
+
+run_api() {
+	cd "\${KARMA_HOME}/api"
+	export CLAUDE_KARMA_CLAUDE_BASE="\${KARMA_USER_HOME}/.claude"
+	export CLAUDE_KARMA_CORS_ORIGINS="[\"http://localhost:\${FRONTEND_PORT}\",\"http://127.0.0.1:\${FRONTEND_PORT}\"]"
+	exec "\${KARMA_HOME}/api/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port "\${API_PORT}"
+}
+
+run_frontend() {
+	cd "\${KARMA_HOME}/frontend"
+	export HOST=0.0.0.0
+	export PORT="\${FRONTEND_PORT}"
+	exec node build/index.js
 }
 
 if [ -f /usr/local/share/nvm/nvm.sh ]; then
@@ -213,31 +250,29 @@ fi
 mkdir -p "\${KARMA_USER_HOME}/.claude_karma"
 chown -R "\${KARMA_USER}:" "\${KARMA_USER_HOME}/.claude_karma" 2>/dev/null || true
 
-if [ ! -f /tmp/claude-code-karma-api.pid ] || ! kill -0 "\$(cat /tmp/claude-code-karma-api.pid)" 2>/dev/null; then
-	(
-		cd "\${KARMA_HOME}/api"
-		export CLAUDE_KARMA_CLAUDE_BASE="\${KARMA_USER_HOME}/.claude"
-		export CLAUDE_KARMA_CORS_ORIGINS="[\"http://localhost:\${FRONTEND_PORT}\",\"http://127.0.0.1:\${FRONTEND_PORT}\"]"
-		exec "\${KARMA_HOME}/api/.venv/bin/uvicorn" main:app --host 0.0.0.0 --port "\${API_PORT}"
-	) >>"\${API_LOG}" 2>&1 &
-	echo \$! > /tmp/claude-code-karma-api.pid
-	echo "[claude-code-karma] API started on port \${API_PORT}"
-else
-	echo "[claude-code-karma] API already running"
-fi
+# Stop existing supervisors before restarting
+for svc in api frontend; do
+	pid_file="/tmp/claude-code-karma-\${svc}.pid"
+	if [ -f "\${pid_file}" ]; then
+		old_pid="\$(cat "\${pid_file}")"
+		if kill -0 "\${old_pid}" 2>/dev/null; then
+			kill "\${old_pid}" 2>/dev/null || true
+			for _i in 1 2 3; do
+				kill -0 "\${old_pid}" 2>/dev/null || break
+				sleep 1
+			done
+		fi
+		rm -f "\${pid_file}"
+	fi
+done
 
-if [ ! -f /tmp/claude-code-karma-frontend.pid ] || ! kill -0 "\$(cat /tmp/claude-code-karma-frontend.pid)" 2>/dev/null; then
-	(
-		cd "\${KARMA_HOME}/frontend"
-		export HOST=0.0.0.0
-		export PORT="\${FRONTEND_PORT}"
-		exec node build/index.js
-	) >>"\${FRONTEND_LOG}" 2>&1 &
-	echo \$! > /tmp/claude-code-karma-frontend.pid
-	echo "[claude-code-karma] Frontend started on port \${FRONTEND_PORT}"
-else
-	echo "[claude-code-karma] Frontend already running"
-fi
+(supervise api run_api) >>"\${API_LOG}" 2>&1 &
+echo \$! > /tmp/claude-code-karma-api.pid
+echo "[claude-code-karma] API started on port \${API_PORT} (supervised)"
+
+(supervise frontend run_frontend) >>"\${FRONTEND_LOG}" 2>&1 &
+echo \$! > /tmp/claude-code-karma-frontend.pid
+echo "[claude-code-karma] Frontend started on port \${FRONTEND_PORT} (supervised)"
 EOF
 	chmod +x /usr/local/devcontainer-poststart.d/44-claude-code-karma.sh
 	echo "[claude-code-karma] Post-start hook installed"

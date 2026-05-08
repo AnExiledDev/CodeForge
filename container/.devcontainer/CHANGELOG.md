@@ -6,6 +6,7 @@
 
 - **Rust toolchain enabled by default** — `ghcr.io/devcontainers/features/rust:1.5.0` is now included as a standard devcontainer feature, enabling Rust-based tools out of the box.
 - **ccms (session history search) enabled** — now that Rust is available, `ccms` is included as a default feature instead of requiring manual opt-in.
+- **Karma process supervision** — Karma API and frontend are now wrapped in a supervised respawn loop with exponential backoff (1s→30s cap, max 10 consecutive failures). Processes auto-restart if they crash instead of silently dying.
 
 ### Performance
 
