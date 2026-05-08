@@ -106,7 +106,7 @@ function writeChecksums(codeforgeDir, version, checksums) {
 	};
 	fs.writeFileSync(
 		path.join(checksumsDir, `${version}.json`),
-		JSON.stringify(data, null, "\t") + "\n",
+		`${JSON.stringify(data, null, "\t")}\n`,
 	);
 }
 
@@ -154,7 +154,9 @@ function readChecksums(codeforgeDir) {
 		.sort((a, b) => {
 			const parse = (v) => {
 				const m = v.replace(".json", "").match(/^(\d+)\.(\d+)\.(\d+)/);
-				return m ? [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])] : [0, 0, 0];
+				return m
+					? [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)]
+					: [0, 0, 0];
 			};
 			const pa = parse(a);
 			const pb = parse(b);
