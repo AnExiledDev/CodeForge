@@ -124,9 +124,14 @@ assert(
 	"package does not publish a .codeforge defaults tree",
 );
 
-const scaffoldDir = fs.mkdtempSync(path.join(os.tmpdir(), "codeforge-scaffold-"));
+const scaffoldDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-scaffold-"),
+);
 ensureCodeforgeScaffold(scaffoldDir);
-assert(fs.existsSync(path.join(scaffoldDir, "README.md")), "scaffold writes README");
+assert(
+	fs.existsSync(path.join(scaffoldDir, "README.md")),
+	"scaffold writes README",
+);
 assert(
 	fs.existsSync(path.join(scaffoldDir, ".markers")),
 	"scaffold creates marker directory",
@@ -146,10 +151,19 @@ assert(
 	"generateChecksums returns SHA-256 hex values",
 );
 
-const generatorMarkerDir = fs.mkdtempSync(path.join(os.tmpdir(), "codeforge-marker-"));
+const generatorMarkerDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-marker-"),
+);
 execFileSync(
 	process.execPath,
-	[path.join(root, ".devcontainer", "scripts", "generate-settings-profiles.js")],
+	[
+		path.join(
+			root,
+			".devcontainer",
+			"scripts",
+			"generate-settings-profiles.js",
+		),
+	],
 	{
 		cwd: root,
 		stdio: "inherit",
@@ -161,7 +175,9 @@ execFileSync(
 	},
 );
 
-const generatedDefault = readJson(path.join(generatedSettingsDir, "settings.json"));
+const generatedDefault = readJson(
+	path.join(generatedSettingsDir, "settings.json"),
+);
 const generatedOpus46 = readJson(
 	path.join(generatedSettingsDir, "settings-opus-46-200k.json"),
 );
@@ -194,12 +210,16 @@ for (const output of [
 	);
 }
 assert(
-	fs.existsSync(path.join(generatorMarkerDir, ".markers", "settings-generated-v3")),
+	fs.existsSync(
+		path.join(generatorMarkerDir, ".markers", "settings-generated-v3"),
+	),
 	"settings generator writes v3 marker",
 );
 fs.rmSync(generatorMarkerDir, { recursive: true, force: true });
 
-const legacyProfileDir = fs.mkdtempSync(path.join(os.tmpdir(), "codeforge-legacy-profile-"));
+const legacyProfileDir = fs.mkdtempSync(
+	path.join(os.tmpdir(), "codeforge-legacy-profile-"),
+);
 const legacyOverrideDir = path.join(
 	legacyProfileDir,
 	"claude",
@@ -209,7 +229,7 @@ const legacyOverrideDir = path.join(
 fs.mkdirSync(legacyOverrideDir, { recursive: true });
 fs.writeFileSync(
 	path.join(legacyOverrideDir, "opus-46-200k.json"),
-	JSON.stringify(
+	`${JSON.stringify(
 		{
 			model: "claude-opus-4-6",
 			autoCompactWindow: 200000,
@@ -220,11 +240,18 @@ fs.writeFileSync(
 		},
 		null,
 		"\t",
-	) + "\n",
+	)}\n`,
 );
 execFileSync(
 	process.execPath,
-	[path.join(root, ".devcontainer", "scripts", "generate-settings-profiles.js")],
+	[
+		path.join(
+			root,
+			".devcontainer",
+			"scripts",
+			"generate-settings-profiles.js",
+		),
+	],
 	{
 		cwd: root,
 		stdio: "inherit",
@@ -246,8 +273,12 @@ fs.rmSync(legacyProfileDir, { recursive: true, force: true });
 
 const manifest = readJson(path.join(defaultsDir, "file-manifest.json"));
 assert(manifest.length > 0, "default manifest has entries");
-assert(manifest.every((entry) => entry.id), "default manifest entries have stable ids");
 assert(
+	manifest.every((entry) => entry.id),
+	"default manifest entries have stable ids",
+);
+assert(
+	// biome-ignore lint/suspicious/noTemplateCurlyInString: literal env var placeholder
 	manifest.find((entry) => entry.id === "claude.state")?.dest === "${HOME}",
 	"Claude state deploys to home directory",
 );
@@ -256,6 +287,7 @@ const merged = mergeManifestEntries(manifest, [
 	{
 		id: "custom.example",
 		src: "claude/system-prompts/main.md",
+		// biome-ignore lint/suspicious/noTemplateCurlyInString: literal env var placeholder
 		dest: "${CLAUDE_CONFIG_DIR}",
 		overwrite: "if-changed",
 	},
@@ -286,7 +318,10 @@ assert(
 	"v3 migration script writes marker and report",
 );
 
-const setupScript = fs.readFileSync(path.join(root, ".devcontainer", "scripts", "setup.sh"), "utf8");
+const setupScript = fs.readFileSync(
+	path.join(root, ".devcontainer", "scripts", "setup.sh"),
+	"utf8",
+);
 assert(
 	setupScript.includes("setup-migrate-codeforge-v3.sh") &&
 		setupScript.includes("ensure-settings-generated.sh"),

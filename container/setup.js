@@ -591,7 +591,7 @@ function configApply() {
 		);
 		if (!destAllowed) {
 			console.log(
-				"  Skip: " + entry.dest + " (destination outside allowed directories)",
+				`  Skip: ${entry.dest} (destination outside allowed directories)`,
 			);
 			skipped++;
 			continue;
@@ -602,7 +602,7 @@ function configApply() {
 		fs.mkdirSync(destDir, { recursive: true });
 
 		if (entry.overwrite === "never" && fs.existsSync(destPath)) {
-			console.log("  Skip: " + filename + " (exists, overwrite=never)");
+			console.log(`  Skip: ${filename} (exists, overwrite=never)`);
 			skipped++;
 			continue;
 		}
@@ -622,18 +622,18 @@ function configApply() {
 			fs.existsSync(destPath) &&
 			mergeSettingsFile(srcPath, destPath)
 		) {
-			console.log("  Deployed: " + entry.src + " → " + destPath + " (merged)");
+			console.log(`  Deployed: ${entry.src} → ${destPath} (merged)`);
 			deployed++;
 		} else {
 			fs.copyFileSync(srcPath, destPath);
-			console.log("  Deployed: " + entry.src + " → " + destPath);
+			console.log(`  Deployed: ${entry.src} → ${destPath}`);
 			deployed++;
 		}
 	}
 
 	console.log("");
 	console.log(
-		"Config apply complete: " + deployed + " deployed, " + skipped + " skipped",
+		`Config apply complete: ${deployed} deployed, ${skipped} skipped`,
 	);
 }
 
@@ -654,7 +654,7 @@ function mergeSettingsFile(srcPath, destPath) {
 			}
 		}
 
-		fs.writeFileSync(destPath, JSON.stringify(merged, null, 2) + "\n");
+		fs.writeFileSync(destPath, `${JSON.stringify(merged, null, 2)}\n`);
 		return true;
 	} catch {
 		return false;
