@@ -71,6 +71,7 @@
 		"./features/rtk",
 		"./features/codex-cli",
 		"./features/hermes-agent",
+		"./features/zsh-completions",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
@@ -122,6 +123,7 @@
 		"./features/rtk": {},
 		"./features/codex-cli": {},
 		"./features/hermes-agent": {},
+		"./features/zsh-completions": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
