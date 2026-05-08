@@ -10,6 +10,7 @@ import { registerContainerRebuildCommand } from "./commands/container/rebuild.js
 import { registerContainerShellCommand } from "./commands/container/shell.js";
 import { registerContainerUpCommand } from "./commands/container/up.js";
 import { registerDoctorCommand } from "./commands/doctor/index.js";
+import { registerMountAddCommand } from "./commands/mount/add.js";
 import { registerIndexBuildCommand } from "./commands/index/build.js";
 import { registerIndexCleanCommand } from "./commands/index/clean.js";
 import { registerIndexSearchCommand } from "./commands/index/search.js";
@@ -116,6 +117,12 @@ registerContainerRebuildCommand(container);
 registerContainerExecCommand(container);
 registerContainerLsCommand(container);
 registerContainerShellCommand(container);
+
+const mount = program
+	.command("mount")
+	.description("Manage volume mount configuration");
+
+registerMountAddCommand(mount);
 
 registerProxyCommand(program);
 registerDoctorCommand(program);

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Performance
+
+- **Deeper volume detection** — `codeforge doctor` volume scan now searches to depth 8 (was 4), catching `node_modules` in deeply nested project structures like `projects/<org>/<project>/<subdir>/node_modules`.
+- **Auto-detect git safe directories on startup** — container startup now scans for all git repositories under the workspace and registers them as `safe.directory`, preventing "dubious ownership" errors. Previously only `/workspaces` itself was registered.
+
+### Doctor
+
+- **New git safe directory check** — `codeforge doctor` now detects project directories missing from git's `safe.directory` list and offers an immediate fix via `--fix --only git`. No rebuild required.
+- **Standardized rebuild messaging** — fix mode now shows specific rebuild instructions (normal vs. full/no-cache) with exact VS Code and CLI commands, replacing the previous generic warning.
+
+### CLI
+
+- **New `codeforge mount add` command** — manually register directories for Docker volume mounting without going through doctor's auto-detection. Usage: `codeforge mount add <path>`.
+
 ### Networking
 
 - **Docker-native port forwarding** — all service ports are now mapped in `docker-compose.yml` via `ports:` bound to `127.0.0.1`. This provides reliable port forwarding independent of VS Code, and works with WSL mirrored networking out of the box. Mapped ports: Karma Dashboard (7847), Karma API (7848), Claude-Mem Worker (37777), Astro docs dev server (4321), mitmproxy (8081), ccdiag API Proxy (9119).

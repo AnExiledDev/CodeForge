@@ -83,9 +83,14 @@ for _vol in "${_VOLUME_MOUNTS[@]}"; do
 done
 unset _VOLUME_MOUNTS _OWNER _vol
 
-# Mark workspace as safe for Git — bind-mounted workspace may have
-# different uid than container user, causing "dubious ownership"
-# errors (CVE-2022-24765)
+# Mark all project directories as safe for Git — bind-mounted workspace may
+# have different uid than container user, causing "dubious ownership"
+# errors (CVE-2022-24765). Scans for .git dirs and worktree files.
+while IFS= read -r gitdir; do
+    project_dir="$(dirname "$gitdir")"
+    git config --global --add safe.directory "$project_dir" 2>/dev/null
+done < <(find "$WORKSPACE_ROOT" -maxdepth 6 \( -name .git -type d -o -name .git -type f \) 2>/dev/null)
+# Also add workspace root as a catch-all
 if ! git config --global --add safe.directory "${WORKSPACE_ROOT:-/workspaces}" 2>/dev/null; then
     echo "[setup] WARNING: Could not configure git safe.directory — git operations may show 'dubious ownership' errors"
 fi

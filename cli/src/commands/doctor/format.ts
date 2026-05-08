@@ -31,6 +31,7 @@ export function formatText(report: DoctorReport, useColor: boolean): string {
 	const categoryConfig: { key: CheckCategory; label: string }[] = [
 		{ key: "auth", label: "Authentication" },
 		{ key: "environment", label: "Environment" },
+		{ key: "git", label: "Git" },
 		{ key: "volumes", label: "Volumes" },
 		{ key: "wsl", label: "WSL" },
 	];

@@ -183,6 +183,20 @@ describe("formatText", () => {
 		expect(output).toContain("Volumes:");
 	});
 
+	test("renders Git category when git checks present", () => {
+		const report = makeReport([
+			makeCheck({
+				name: "Git safe directories",
+				category: "git",
+				status: "warn",
+				message: "2 projects missing safe.directory",
+				hint: "Run codeforge doctor --fix --only git",
+			}),
+		]);
+		const output = formatText(report, false);
+		expect(output).toContain("Git:");
+	});
+
 	test("hides WSL category when no WSL checks present", () => {
 		const report = makeReport([
 			makeCheck({
@@ -348,7 +362,57 @@ describe("type/structure", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4. Volume detection tests (checks/volumes.ts)
+// 4. Git safe directory tests (checks/git.ts)
+// ---------------------------------------------------------------------------
+
+describe("checkGitSafeDirectories", () => {
+	const {
+		checkGitSafeDirectories,
+	} = require("../src/commands/doctor/checks/git.js");
+	const { mkdirSync, rmSync } = require("node:fs");
+
+	const GIT_TEST_ROOT = "/tmp/git-safe-test";
+
+	beforeEach(() => {
+		rmSync(GIT_TEST_ROOT, { recursive: true, force: true });
+	});
+
+	afterEach(() => {
+		rmSync(GIT_TEST_ROOT, { recursive: true, force: true });
+	});
+
+	test("returns pass when no git repositories found", async () => {
+		mkdirSync(GIT_TEST_ROOT, { recursive: true });
+		const result = await checkGitSafeDirectories(GIT_TEST_ROOT);
+		expect(result.status).toBe("pass");
+		expect(result.category).toBe("git");
+		expect(result.message).toContain("no git repositories");
+	});
+
+	test("returns correct category and name", async () => {
+		mkdirSync(`${GIT_TEST_ROOT}/my-project/.git`, { recursive: true });
+		const result = await checkGitSafeDirectories(GIT_TEST_ROOT);
+		expect(result.category).toBe("git");
+		expect(result.name).toBe("Git safe directories");
+	});
+
+	test("detects projects and returns pass or warn with fix", async () => {
+		mkdirSync(`${GIT_TEST_ROOT}/project-a/.git`, { recursive: true });
+		mkdirSync(`${GIT_TEST_ROOT}/project-b/.git`, { recursive: true });
+
+		const result = await checkGitSafeDirectories(GIT_TEST_ROOT);
+		expect(result).toBeDefined();
+		expect(result.category).toBe("git");
+		expect(["pass", "warn"]).toContain(result.status);
+		if (result.status === "warn") {
+			expect(result.fix).toBeDefined();
+			expect(result.fix!.requiresRebuild).toBe(false);
+		}
+	});
+});
+
+// ---------------------------------------------------------------------------
+// 5. Volume detection tests (checks/volumes.ts)
 // ---------------------------------------------------------------------------
 
 describe("checkVolumeCandidates", () => {
@@ -379,7 +443,7 @@ describe("checkVolumeCandidates", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 5. WSL checks tests (checks/wsl.ts)
+// 6. WSL checks tests (checks/wsl.ts)
 // ---------------------------------------------------------------------------
 
 describe("checkWslConfig", () => {
@@ -450,7 +514,7 @@ describe("checkDefenderExclusions", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6. Fix mode tests (fix.ts)
+// 7. Fix mode tests (fix.ts)
 // ---------------------------------------------------------------------------
 
 describe("runFixMode", () => {
@@ -629,6 +693,82 @@ describe("runFixMode", () => {
 
 		expect(envApply).toHaveBeenCalledTimes(1);
 		expect(authApply).not.toHaveBeenCalled();
+	});
+
+	test("category filter works with 'git'", async () => {
+		const gitApply = mock(() =>
+			Promise.resolve({ applied: true, message: "Fixed git" }),
+		);
+		const envApply = mock(() =>
+			Promise.resolve({ applied: true, message: "Fixed env" }),
+		);
+
+		const checks: CheckResult[] = [
+			makeCheck({
+				name: "Git check",
+				category: "git",
+				status: "warn",
+				fix: makeFix({ apply: gitApply }),
+			}),
+			makeCheck({
+				name: "Env check",
+				category: "environment",
+				status: "warn",
+				fix: makeFix({ apply: envApply }),
+			}),
+		];
+
+		await runFixMode(checks, { yes: true, dryRun: false, only: "git" });
+
+		expect(gitApply).toHaveBeenCalledTimes(1);
+		expect(envApply).not.toHaveBeenCalled();
+	});
+
+	test("rebuildType renders specific rebuild guidance", async () => {
+		const applyFn = mock(() =>
+			Promise.resolve({ applied: true, message: "Added volume" }),
+		);
+
+		const checks: CheckResult[] = [
+			makeCheck({
+				name: "Volume check",
+				category: "volumes",
+				status: "warn",
+				fix: makeFix({
+					apply: applyFn,
+					requiresRebuild: true,
+					rebuildType: "normal",
+				}),
+			}),
+		];
+
+		await runFixMode(checks, { yes: true, dryRun: false });
+
+		expect(applyFn).toHaveBeenCalledTimes(1);
+		// The rebuild warning should have been logged (via @clack/prompts)
+	});
+
+	test("rebuildType 'full' renders no-cache rebuild guidance", async () => {
+		const applyFn = mock(() =>
+			Promise.resolve({ applied: true, message: "Changed image" }),
+		);
+
+		const checks: CheckResult[] = [
+			makeCheck({
+				name: "Image check",
+				category: "environment",
+				status: "warn",
+				fix: makeFix({
+					apply: applyFn,
+					requiresRebuild: true,
+					rebuildType: "full",
+				}),
+			}),
+		];
+
+		await runFixMode(checks, { yes: true, dryRun: false });
+
+		expect(applyFn).toHaveBeenCalledTimes(1);
 	});
 
 	test("unknown --only category exits with error", async () => {

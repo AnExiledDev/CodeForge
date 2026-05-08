@@ -1,4 +1,4 @@
-export type CheckCategory = "auth" | "environment" | "volumes" | "wsl";
+export type CheckCategory = "auth" | "environment" | "git" | "volumes" | "wsl";
 
 export interface FixResult {
 	applied: boolean;
@@ -11,6 +11,7 @@ export interface FixAction {
 	detail: string; // full explanation
 	impact: string; // "1 env var change" or "requires rebuild"
 	requiresRebuild: boolean;
+	rebuildType?: "normal" | "full"; // "normal" = recreate container, "full" = rebuild image (no cache)
 	apply: () => Promise<FixResult>;
 }
 

@@ -18,6 +18,7 @@ interface FixOptions {
 const CATEGORY_LABELS: Record<CheckCategory, string> = {
 	auth: "Authentication",
 	environment: "Environment",
+	git: "Git",
 	volumes: "Volumes",
 	wsl: "WSL",
 };
@@ -26,6 +27,7 @@ const categoryMap: Record<string, CheckCategory> = {
 	auth: "auth",
 	env: "environment",
 	environment: "environment",
+	git: "git",
 	volumes: "volumes",
 	wsl: "wsl",
 };
@@ -79,9 +81,24 @@ async function applyFixes(fixes: CheckResult[]): Promise<void> {
 		}
 	}
 
-	const needsRebuild = fixes.some((f) => f.fix!.requiresRebuild);
-	if (needsRebuild) {
-		log.warn("Some changes require a container rebuild to take effect.");
+	const rebuildFixes = fixes.filter((f) => f.fix!.requiresRebuild);
+	if (rebuildFixes.length > 0) {
+		const needsFull = rebuildFixes.some(
+			(f) => f.fix!.rebuildType === "full",
+		);
+		if (needsFull) {
+			log.warn(
+				"Some changes require a full container rebuild (no cache) to take effect.\n" +
+					"  From VS Code: Ctrl+Shift+P → 'Dev Containers: Rebuild Without Cache'\n" +
+					"  From host terminal: codeforge container rebuild --no-cache",
+			);
+		} else {
+			log.warn(
+				"Some changes require a container rebuild to take effect.\n" +
+					"  From VS Code: Ctrl+Shift+P → 'Dev Containers: Rebuild Container'\n" +
+					"  From host terminal: codeforge container rebuild",
+			);
+		}
 	}
 }
 
@@ -107,7 +124,7 @@ export async function runFixMode(
 		const cat = categoryMap[options.only];
 		if (!cat) {
 			console.error(
-				`Unknown category: ${options.only}. Valid: auth, env, volumes, wsl`,
+				`Unknown category: ${options.only}. Valid: auth, env, git, volumes, wsl`,
 			);
 			process.exit(1);
 		}

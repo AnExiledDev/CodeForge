@@ -1,6 +1,8 @@
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { basename, dirname, join, relative } from "node:path";
+import { readMountsJson, writeMountsJson } from "../mounts.js";
+import type { MountEntry } from "../mounts.js";
 import type { CheckResult } from "../types.js";
 import { SLOW_FS_TYPES, spawn } from "../util.js";
 
@@ -8,6 +10,7 @@ interface VolumeCandidate {
 	pattern: string;
 	contextFiles: string[];
 }
+
 
 const VOLUME_CANDIDATES: VolumeCandidate[] = [
 	{ pattern: "node_modules", contextFiles: ["package.json"] },
@@ -33,18 +36,6 @@ const VOLUME_CANDIDATES: VolumeCandidate[] = [
 ];
 
 const CANDIDATE_NAMES = VOLUME_CANDIDATES.map((c) => c.pattern);
-
-interface MountsJson {
-	version: number;
-	volumes: MountEntry[];
-}
-
-interface MountEntry {
-	path: string;
-	source: "auto" | "user";
-	signal: string;
-	added: string;
-}
 
 function hasContextFile(
 	dirPath: string,
@@ -77,19 +68,6 @@ function todayIso(): string {
 	return new Date().toISOString().slice(0, 10);
 }
 
-async function readMountsJson(filePath: string): Promise<MountsJson> {
-	try {
-		const raw = await readFile(filePath, "utf-8");
-		const parsed = JSON.parse(raw) as MountsJson;
-		if (parsed.version === 1 && Array.isArray(parsed.volumes)) {
-			return parsed;
-		}
-	} catch {
-		// file doesn't exist or is invalid
-	}
-	return { version: 1, volumes: [] };
-}
-
 function sanitizeName(name: string): string {
 	return name.replace(/[^a-zA-Z0-9-]/g, "-").replace(/^-+|-+$/g, "");
 }
@@ -104,7 +82,7 @@ export async function checkVolumeCandidates(
 	const { stdout, exitCode } = await spawn("find", [
 		workspaceRoot,
 		"-maxdepth",
-		"4",
+		"8",
 		"-type",
 		"d",
 		"(",
@@ -161,6 +139,7 @@ export async function checkVolumeCandidates(
 				detail: `Registers ${relPath} in .codeforge/mounts.json so CodeForge can mount it as a Docker volume instead of a bind mount, significantly improving I/O performance.`,
 				impact: "requires rebuild",
 				requiresRebuild: true,
+				rebuildType: "normal",
 				apply: async (): Promise<{
 					applied: boolean;
 					message: string;
@@ -193,11 +172,7 @@ export async function checkVolumeCandidates(
 						mounts.volumes.push(entry);
 					}
 
-					await writeFile(
-						mountsPath,
-						JSON.stringify(mounts, null, "\t") + "\n",
-						"utf-8",
-					);
+					await writeMountsJson(mountsPath, mounts);
 
 					// Check if Docker Compose infrastructure exists
 					const composeExists = existsSync(

@@ -6,6 +6,7 @@ import {
 	checkTmpdir,
 	checkWorkspaceFs,
 } from "./checks/environment.js";
+import { checkGitSafeDirectories } from "./checks/git.js";
 import { checkVolumeCandidates } from "./checks/volumes.js";
 import { checkDefenderExclusions, checkWslConfig } from "./checks/wsl.js";
 import { runFixMode } from "./fix.js";
@@ -21,7 +22,7 @@ export function registerDoctorCommand(parent: Command): void {
 		.option("--fix", "Enter interactive fix mode")
 		.option("-y, --yes", "Skip TUI prompts, apply all fixes")
 		.option("--dry-run", "Show what --fix would change without applying")
-		.option("--only <category>", "Filter fixes: auth, env, volumes, wsl")
+		.option("--only <category>", "Filter fixes: auth, env, git, volumes, wsl")
 		.action(async (options) => {
 			const workspaceRoot = process.env.WORKSPACE_ROOT || "/workspaces";
 
@@ -41,12 +42,14 @@ export function registerDoctorCommand(parent: Command): void {
 				(c) => c.name === "Workspace filesystem" && c.status === "warn",
 			);
 
-			// Run volume + WSL checks (WSL checks return null when not WSL)
-			const [volumeChecks, wslConfigCheck, defenderCheck] = await Promise.all([
-				checkVolumeCandidates(workspaceRoot),
-				checkWslConfig(isWsl),
-				checkDefenderExclusions(isWsl),
-			]);
+			// Run git + volume + WSL checks (WSL checks return null when not WSL)
+			const [gitCheck, volumeChecks, wslConfigCheck, defenderCheck] =
+				await Promise.all([
+					checkGitSafeDirectories(workspaceRoot),
+					checkVolumeCandidates(workspaceRoot),
+					checkWslConfig(isWsl),
+					checkDefenderExclusions(isWsl),
+				]);
 
 			// Assemble all checks, filtering out nulls from WSL checks
 			const wslChecks = [wslConfigCheck, defenderCheck].filter(
@@ -56,6 +59,7 @@ export function registerDoctorCommand(parent: Command): void {
 			const checks: CheckResult[] = [
 				...authChecks,
 				...envChecks,
+				gitCheck,
 				...volumeChecks,
 				...wslChecks,
 			];
