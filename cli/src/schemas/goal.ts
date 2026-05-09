@@ -61,3 +61,57 @@ export interface GoalEventRow {
 	created_at: string;
 	payload_json: string;
 }
+
+// --- Session 2: Goal State Layer types ---
+
+export type GoalStatus = "active" | "paused" | "cleared" | "done";
+
+export type GoalEventKind =
+	| "goal_created"
+	| "goal_paused"
+	| "goal_resumed"
+	| "goal_cleared"
+	| "goal_completed"
+	| "hook_event"
+	| "tool_event"
+	| "evaluation"
+	| "error";
+
+export interface GoalState {
+	id: string;
+	active: boolean;
+	paused: boolean;
+	status: GoalStatus;
+	objective: string;
+	currentCheckpoint: string;
+	loopCount: number;
+	maxLoops: number;
+	failedValidationCount: number;
+	repeatedInstructionCount: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface GoalEvent {
+	goalId: string | null;
+	sessionId: string | null;
+	cwd: string;
+	kind: GoalEventKind;
+	payload: Record<string, unknown>;
+}
+
+export interface Evidence {
+	gitStatus: string[];
+	gitDiffStat: string[];
+	gitDiffNames: string[];
+	uncheckedPlanItems: string[];
+	checkedPlanItems: string[];
+	recentValidationCommands: string[];
+	changedFilesSinceGoalStart: string[];
+}
+
+export interface CreateGoalInput {
+	cwd: string;
+	objective: string;
+	sessionId?: string;
+}

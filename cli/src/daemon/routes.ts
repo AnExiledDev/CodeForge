@@ -1,6 +1,17 @@
 import type { Database } from "bun:sqlite";
 import { statSync } from "fs";
-import type { DaemonConfig, HealthResponse, StatusResponse } from "../schemas/goal.js";
+import type { DaemonConfig, GoalState, HealthResponse, StatusResponse } from "../schemas/goal.js";
+import { recordEvent } from "./event-recorder.js";
+import {
+	GoalConflictError,
+	GoalNotFoundError,
+	InvalidTransitionError,
+	clearGoal,
+	createGoal,
+	getActiveGoal,
+	pauseGoal,
+	resumeGoal,
+} from "./goal-manager.js";
 
 let serverStartTime = Date.now();
 
@@ -48,6 +59,179 @@ function handleStatus(db: Database, config: DaemonConfig): Response {
 	return json(body);
 }
 
+async function parseJsonBody(req: Request): Promise<Record<string, unknown> | null> {
+	try {
+		return (await req.json()) as Record<string, unknown>;
+	} catch {
+		return null;
+	}
+}
+
+function handleGoalSet(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+	const objective = body.objective as string | undefined;
+	const sessionId = body.sessionId as string | undefined;
+
+	if (!cwd || !objective) {
+		return json({ error: "Missing required fields: cwd, objective" }, 400);
+	}
+
+	try {
+		const goal = createGoal(db, { cwd, objective, sessionId });
+		const state: GoalState = JSON.parse(goal.state_json);
+		return json({ goal: state }, 201);
+	} catch (err) {
+		if (err instanceof GoalConflictError) {
+			return json({ error: err.message }, 409);
+		}
+		throw err;
+	}
+}
+
+function handleGoalCurrent(db: Database, url: URL): Response {
+	const cwd = url.searchParams.get("cwd");
+	if (!cwd) {
+		return json({ error: "Missing required query parameter: cwd" }, 400);
+	}
+
+	const goal = getActiveGoal(db, cwd);
+	if (!goal) {
+		return json({ error: "No active goal" }, 404);
+	}
+
+	const state: GoalState = JSON.parse(goal.state_json);
+	return json({ goal: state });
+}
+
+function handleGoalPause(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+	if (!cwd) {
+		return json({ error: "Missing required field: cwd" }, 400);
+	}
+
+	const active = getActiveGoal(db, cwd);
+	if (!active) {
+		return json({ error: "No active goal" }, 404);
+	}
+
+	try {
+		const updated = pauseGoal(db, active.id);
+		const state: GoalState = JSON.parse(updated.state_json);
+		return json({ goal: state });
+	} catch (err) {
+		if (err instanceof InvalidTransitionError) {
+			return json({ error: err.message }, 409);
+		}
+		throw err;
+	}
+}
+
+function handleGoalResume(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+	if (!cwd) {
+		return json({ error: "Missing required field: cwd" }, 400);
+	}
+
+	const active = getActiveGoal(db, cwd);
+	if (!active) {
+		return json({ error: "No active goal" }, 404);
+	}
+
+	try {
+		const updated = resumeGoal(db, active.id);
+		const state: GoalState = JSON.parse(updated.state_json);
+		return json({ goal: state });
+	} catch (err) {
+		if (err instanceof InvalidTransitionError) {
+			return json({ error: err.message }, 409);
+		}
+		throw err;
+	}
+}
+
+function handleGoalClear(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+	if (!cwd) {
+		return json({ error: "Missing required field: cwd" }, 400);
+	}
+
+	const active = getActiveGoal(db, cwd);
+	if (!active) {
+		return json({ error: "No active goal" }, 404);
+	}
+
+	try {
+		const updated = clearGoal(db, active.id);
+		const state: GoalState = JSON.parse(updated.state_json);
+		return json({ goal: state });
+	} catch (err) {
+		if (err instanceof InvalidTransitionError) {
+			return json({ error: err.message }, 409);
+		}
+		throw err;
+	}
+}
+
+function handleEventsHook(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+	const kind = body.kind as string | undefined;
+
+	if (!cwd || !kind) {
+		return json({ error: "Missing required fields: cwd, kind" }, 400);
+	}
+
+	recordEvent(db, {
+		goalId: (body.goalId as string) ?? null,
+		sessionId: (body.sessionId as string) ?? null,
+		cwd,
+		kind: kind as "hook_event",
+		payload: (body.payload as Record<string, unknown>) ?? {},
+	});
+
+	return json({ ok: true }, 201);
+}
+
+function handleEventsTool(db: Database, body: Record<string, unknown>): Response {
+	const cwd = body.cwd as string | undefined;
+
+	if (!cwd) {
+		return json({ error: "Missing required field: cwd" }, 400);
+	}
+
+	const toolName = body.toolName as string | undefined;
+	const status = body.status as string | undefined;
+	const inputJson = body.input as Record<string, unknown> | undefined;
+	const outputExcerpt = body.outputExcerpt as string | undefined;
+
+	// Insert into tool_events table directly
+	const now = new Date().toISOString();
+	db.prepare(
+		`INSERT INTO tool_events (goal_id, session_id, cwd, created_at, tool_name, status, input_json, output_excerpt, payload_json)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	).run(
+		(body.goalId as string) ?? null,
+		(body.sessionId as string) ?? null,
+		cwd,
+		now,
+		toolName ?? null,
+		status ?? null,
+		inputJson ? JSON.stringify(inputJson) : null,
+		outputExcerpt ?? null,
+		JSON.stringify(body),
+	);
+
+	// Also record as a generic event
+	recordEvent(db, {
+		goalId: (body.goalId as string) ?? null,
+		sessionId: (body.sessionId as string) ?? null,
+		cwd,
+		kind: "tool_event",
+		payload: body,
+	});
+
+	return json({ ok: true }, 201);
+}
+
 export function handleRequest(
 	req: Request,
 	ctx: { db: Database; config: DaemonConfig },
@@ -62,6 +246,37 @@ export function handleRequest(
 
 	if (method === "GET" && pathname === "/status") {
 		return handleStatus(ctx.db, ctx.config);
+	}
+
+	if (method === "GET" && pathname === "/goal/current") {
+		return handleGoalCurrent(ctx.db, url);
+	}
+
+	// POST routes require JSON body parsing
+	if (method === "POST") {
+		return (async () => {
+			const body = await parseJsonBody(req);
+			if (!body) {
+				return json({ error: "Invalid JSON body" }, 400);
+			}
+
+			switch (pathname) {
+				case "/goal/set":
+					return handleGoalSet(ctx.db, body);
+				case "/goal/pause":
+					return handleGoalPause(ctx.db, body);
+				case "/goal/resume":
+					return handleGoalResume(ctx.db, body);
+				case "/goal/clear":
+					return handleGoalClear(ctx.db, body);
+				case "/events/hook":
+					return handleEventsHook(ctx.db, body);
+				case "/events/tool":
+					return handleEventsTool(ctx.db, body);
+				default:
+					return json({ error: "Not found" }, 404);
+			}
+		})();
 	}
 
 	return json({ error: "Not found" }, 404);
