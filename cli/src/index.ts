@@ -31,6 +31,8 @@ import { registerHooksEnableCommand } from "./commands/hooks/enable.js";
 import { registerHooksListCommand } from "./commands/hooks/list.js";
 import { registerHooksStatusCommand } from "./commands/hooks/status.js";
 import { registerGoalDaemonCommand } from "./commands/goal/daemon.js";
+import { registerGoalDoctorCommand } from "./commands/goal/doctor.js";
+import { registerGoalInstallCommand } from "./commands/goal/install.js";
 import { registerGoalResetCommand } from "./commands/goal/reset.js";
 import { registerGoalStatusCommand } from "./commands/goal/status.js";
 import { registerProxyCommand } from "./commands/proxy.js";
@@ -132,6 +134,8 @@ registerMountListCommand(mount);
 const goal = program.command("goal").description("Goal daemon and lifecycle");
 
 registerGoalDaemonCommand(goal);
+registerGoalInstallCommand(goal);
+registerGoalDoctorCommand(goal);
 registerGoalStatusCommand(goal);
 registerGoalResetCommand(goal);
 
