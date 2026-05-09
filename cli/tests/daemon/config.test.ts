@@ -18,7 +18,16 @@ describe("loadDaemonConfig", () => {
 		expect(config.pidPath).toBe(
 			join(tmp, ".codeforge", "goal", "daemon.pid"),
 		);
-		expect(config.models).toEqual({});
+		expect(config.models).toEqual({
+			planner: [
+				"openrouter:meta-llama/llama-4-scout",
+				"openrouter:qwen/qwen3-30b-a3b",
+			],
+			evaluator: [
+				"groq:meta-llama/llama-4-scout-17b-16e-instruct",
+				"openrouter:meta-llama/llama-4-scout",
+			],
+		});
 		expect(config.limits.maxGoalLoops).toBe(30);
 		expect(config.limits.maxRepeatedInstructions).toBe(3);
 		expect(config.limits.maxFailedValidations).toBe(5);

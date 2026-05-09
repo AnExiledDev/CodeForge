@@ -1,7 +1,11 @@
 import type { Database } from "bun:sqlite";
-import { statSync } from "fs";
+import { existsSync, readFileSync, statSync } from "fs";
+import { join } from "path";
 import type { DaemonConfig, GoalState, HealthResponse, StatusResponse } from "../schemas/goal.js";
+import { evaluateGoal } from "./agents/evaluator.js";
+import { formatPlanMd, generatePlan } from "./agents/planner.js";
 import { recordEvent } from "./event-recorder.js";
+import { gatherEvidence } from "./evidence.js";
 import {
 	GoalConflictError,
 	GoalNotFoundError,
@@ -9,8 +13,11 @@ import {
 	clearGoal,
 	createGoal,
 	getActiveGoal,
+	incrementLoopCount,
 	pauseGoal,
 	resumeGoal,
+	updateGoalWithPlan,
+	writePlanMd,
 } from "./goal-manager.js";
 
 let serverStartTime = Date.now();
@@ -67,7 +74,11 @@ async function parseJsonBody(req: Request): Promise<Record<string, unknown> | nu
 	}
 }
 
-function handleGoalSet(db: Database, body: Record<string, unknown>): Response {
+async function handleGoalSet(
+	db: Database,
+	body: Record<string, unknown>,
+	config: DaemonConfig,
+): Promise<Response> {
 	const cwd = body.cwd as string | undefined;
 	const objective = body.objective as string | undefined;
 	const sessionId = body.sessionId as string | undefined;
@@ -76,16 +87,32 @@ function handleGoalSet(db: Database, body: Record<string, unknown>): Response {
 		return json({ error: "Missing required fields: cwd, objective" }, 400);
 	}
 
+	let goal;
 	try {
-		const goal = createGoal(db, { cwd, objective, sessionId });
-		const state: GoalState = JSON.parse(goal.state_json);
-		return json({ goal: state }, 201);
+		goal = createGoal(db, { cwd, objective, sessionId });
 	} catch (err) {
 		if (err instanceof GoalConflictError) {
 			return json({ error: err.message }, 409);
 		}
 		throw err;
 	}
+
+	// Attempt to generate a plan — failure is non-fatal
+	let plan = null;
+	try {
+		const result = await generatePlan(config, db, { objective, cwd });
+		if (result) {
+			plan = result.plan;
+			const planMd = formatPlanMd(plan);
+			writePlanMd(cwd, planMd);
+			goal = updateGoalWithPlan(db, goal.id, plan);
+		}
+	} catch {
+		// Planner failure is non-fatal — goal was already created
+	}
+
+	const state: GoalState = JSON.parse(goal.state_json);
+	return json({ goal: state, plan }, 201);
 }
 
 function handleGoalCurrent(db: Database, url: URL): Response {
@@ -232,6 +259,73 @@ function handleEventsTool(db: Database, body: Record<string, unknown>): Response
 	return json({ ok: true }, 201);
 }
 
+async function handleGoalEvaluateStop(
+	db: Database,
+	body: Record<string, unknown>,
+	config: DaemonConfig,
+): Promise<Response> {
+	const cwd = body.cwd as string | undefined;
+	if (!cwd) {
+		return json({ error: "Missing required field: cwd" }, 400);
+	}
+
+	const active = getActiveGoal(db, cwd);
+	if (!active) {
+		// No active goal — allow stop
+		return json({
+			evaluation: {
+				decision: "allow",
+				status: "done",
+				reason: "No active goal — nothing to evaluate",
+				confidence: 1.0,
+				missingEvidence: [],
+				completedCriteria: [],
+				incompleteCriteria: [],
+			},
+		});
+	}
+
+	const goalState: GoalState = JSON.parse(active.state_json);
+	const evidence = await gatherEvidence(cwd, active.id, db);
+
+	// Read plan.md and progress.md if they exist
+	const planPath = join(cwd, ".claude", "goal", "plan.md");
+	const progressPath = join(cwd, ".claude", "goal", "progress.md");
+	const planMd = existsSync(planPath) ? readFileSync(planPath, "utf-8") : null;
+	const progressMd = existsSync(progressPath) ? readFileSync(progressPath, "utf-8") : null;
+
+	const lastAssistantMessage = body.lastAssistantMessage as string | undefined;
+
+	const { evaluation, provider, modelId } = await evaluateGoal(config, db, {
+		goal: goalState,
+		evidence,
+		planMd,
+		progressMd,
+		lastAssistantMessage,
+	});
+
+	// Store evaluation in goal_evaluations table
+	db.prepare(
+		`INSERT INTO goal_evaluations (goal_id, created_at, decision, status, reason, next_instruction, confidence, evidence_json, model_info_json)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	).run(
+		active.id,
+		new Date().toISOString(),
+		evaluation.decision,
+		evaluation.status,
+		evaluation.reason,
+		evaluation.nextInstruction ?? null,
+		evaluation.confidence,
+		JSON.stringify(evidence),
+		JSON.stringify({ provider, modelId }),
+	);
+
+	// Increment loop count
+	incrementLoopCount(db, active.id);
+
+	return json({ evaluation });
+}
+
 export function handleRequest(
 	req: Request,
 	ctx: { db: Database; config: DaemonConfig },
@@ -262,13 +356,15 @@ export function handleRequest(
 
 			switch (pathname) {
 				case "/goal/set":
-					return handleGoalSet(ctx.db, body);
+					return handleGoalSet(ctx.db, body, ctx.config);
 				case "/goal/pause":
 					return handleGoalPause(ctx.db, body);
 				case "/goal/resume":
 					return handleGoalResume(ctx.db, body);
 				case "/goal/clear":
 					return handleGoalClear(ctx.db, body);
+				case "/goal/evaluate-stop":
+					return handleGoalEvaluateStop(ctx.db, body, ctx.config);
 				case "/events/hook":
 					return handleEventsHook(ctx.db, body);
 				case "/events/tool":

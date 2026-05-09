@@ -17,7 +17,16 @@ function defaultConfig(cwd: string): DaemonConfig {
 		dbPath: join(cwd, ".codeforge", "goal", "daemon.db"),
 		logPath: join(cwd, ".codeforge", "goal", "logs", "daemon.log"),
 		pidPath: join(cwd, ".codeforge", "goal", "daemon.pid"),
-		models: {} as ModelConfig,
+		models: {
+			planner: [
+				"openrouter:meta-llama/llama-4-scout",
+				"openrouter:qwen/qwen3-30b-a3b",
+			],
+			evaluator: [
+				"groq:meta-llama/llama-4-scout-17b-16e-instruct",
+				"openrouter:meta-llama/llama-4-scout",
+			],
+		},
 		limits: { ...DEFAULT_LIMITS },
 	};
 }

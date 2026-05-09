@@ -1,5 +1,7 @@
 export interface ModelConfig {
-	[role: string]: string;
+	planner: string[];
+	evaluator: string[];
+	[role: string]: string[];
 }
 
 export interface LimitsConfig {
@@ -68,6 +70,7 @@ export type GoalStatus = "active" | "paused" | "cleared" | "done";
 
 export type GoalEventKind =
 	| "goal_created"
+	| "goal_planned"
 	| "goal_paused"
 	| "goal_resumed"
 	| "goal_cleared"
@@ -115,3 +118,46 @@ export interface CreateGoalInput {
 	objective: string;
 	sessionId?: string;
 }
+
+// --- Session 4: Zod schemas for AI agents ---
+
+import { z } from "zod";
+
+export const GoalPlanSchema = z.object({
+	objective: z.string(),
+	successCriteria: z.array(z.string()),
+	milestones: z.array(
+		z.object({
+			id: z.string(),
+			title: z.string(),
+			description: z.string(),
+			done: z.boolean().default(false),
+			validation: z.string().optional(),
+		}),
+	),
+	suggestedValidationCommands: z.array(z.string()),
+	risks: z.array(z.string()),
+	nextCheckpoint: z.string(),
+});
+
+export type GoalPlan = z.infer<typeof GoalPlanSchema>;
+
+export const GoalEvaluationSchema = z.object({
+	decision: z.enum(["allow", "block"]),
+	status: z.enum([
+		"done",
+		"continue",
+		"blocked",
+		"needs_user",
+		"paused",
+		"budget_limited",
+	]),
+	reason: z.string(),
+	nextInstruction: z.string().optional(),
+	confidence: z.number().min(0).max(1),
+	missingEvidence: z.array(z.string()).default([]),
+	completedCriteria: z.array(z.string()).default([]),
+	incompleteCriteria: z.array(z.string()).default([]),
+});
+
+export type GoalEvaluation = z.infer<typeof GoalEvaluationSchema>;

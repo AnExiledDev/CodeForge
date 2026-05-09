@@ -3,6 +3,7 @@ import { mkdirSync, renameSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import type {
 	CreateGoalInput,
+	GoalPlan,
 	GoalRow,
 	GoalState,
 	GoalStatus,
@@ -309,6 +310,51 @@ export function listRecentGoals(
 			"SELECT * FROM goals WHERE cwd = ? ORDER BY created_at DESC LIMIT ?",
 		)
 		.all(cwd, limit) as GoalRow[];
+}
+
+export function writePlanMd(cwd: string, planMd: string): void {
+	const goalDir = join(cwd, ".claude", "goal");
+	mkdirSync(goalDir, { recursive: true });
+
+	const planPath = join(goalDir, "plan.md");
+	const tmpPath = `${planPath}.tmp.${process.pid}`;
+	writeFileSync(tmpPath, planMd);
+	renameSync(tmpPath, planPath);
+}
+
+export function updateGoalWithPlan(
+	db: Database,
+	goalId: string,
+	plan: GoalPlan,
+): GoalRow {
+	const goal = getGoal(db, goalId);
+	if (!goal) {
+		throw new GoalNotFoundError(`Goal not found: ${goalId}`);
+	}
+
+	const now = nowISO();
+	const state = buildGoalState(goal);
+	state.currentCheckpoint = plan.nextCheckpoint;
+	state.updatedAt = now;
+
+	const stateObj = { ...state, plan };
+	const stateJson = JSON.stringify(stateObj);
+
+	db.prepare(
+		"UPDATE goals SET updated_at = ?, state_json = ? WHERE id = ?",
+	).run(now, stateJson, goalId);
+
+	writeStateJson(goal.cwd, state);
+
+	recordEvent(db, {
+		goalId,
+		sessionId: goal.session_id,
+		cwd: goal.cwd,
+		kind: "goal_planned",
+		payload: { plan },
+	});
+
+	return getGoal(db, goalId)!;
 }
 
 // Custom error classes for typed error handling in routes

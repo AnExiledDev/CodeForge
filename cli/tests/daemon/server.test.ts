@@ -14,7 +14,7 @@ function testConfig(tmp: string): DaemonConfig {
 		dbPath: join(tmp, "daemon.db"),
 		logPath: join(tmp, "logs", "daemon.log"),
 		pidPath: join(tmp, "daemon.pid"),
-		models: {},
+		models: { planner: [], evaluator: [] },
 		limits: {
 			maxGoalLoops: 30,
 			maxRepeatedInstructions: 3,
