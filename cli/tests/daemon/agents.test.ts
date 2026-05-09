@@ -568,9 +568,9 @@ describe("route integration", () => {
 				});
 
 				expect(res.status).toBe(200);
-				const data = (await res.json()) as { evaluation: GoalEvaluation };
-				expect(data.evaluation.decision).toBeDefined();
-				expect(data.evaluation.reason).toBeDefined();
+				const data = (await res.json()) as { decision: string; reason: string };
+				expect(data.decision).toBeDefined();
+				expect(data.reason).toBeDefined();
 			} finally {
 				if (origGroq !== undefined) {
 					process.env.GROQ_API_KEY = origGroq;
@@ -593,10 +593,10 @@ describe("route integration", () => {
 			});
 
 			expect(res.status).toBe(200);
-			const data = (await res.json()) as { evaluation: GoalEvaluation };
-			expect(data.evaluation.decision).toBe("allow");
-			expect(data.evaluation.status).toBe("done");
-			expect(data.evaluation.reason).toContain("No active goal");
+			const data = (await res.json()) as { decision: string; status: string; reason: string };
+			expect(data.decision).toBe("allow");
+			expect(data.status).toBe("done");
+			expect(data.reason).toContain("No active goal");
 		});
 
 		test("returns 400 when cwd missing", async () => {

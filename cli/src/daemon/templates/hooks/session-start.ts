@@ -30,7 +30,7 @@ async function main(): Promise<void> {
 			const data = await res.json() as { goal?: { objective: string; status: string; currentCheckpoint: string; loopCount: number; maxLoops: number } };
 			if (data.goal && data.goal.status === "active") {
 				const g = data.goal;
-				const context = [
+				const lines = [
 					"[Goal Daemon] Active goal detected:",
 					\`  Objective: \${g.objective}\`,
 					\`  Checkpoint: \${g.currentCheckpoint}\`,
@@ -39,8 +39,18 @@ async function main(): Promise<void> {
 					"Read .claude/goal/plan.md for the full plan.",
 					"Update .claude/goal/progress.md as you complete work.",
 					"The Stop hook will verify your work before allowing you to stop.",
-				].join("\\n");
-				console.log(JSON.stringify({ additionalContext: context }));
+				];
+
+				// Check for handoff.md from a previous compaction/session
+				const fs = await import("fs");
+				const path = await import("path");
+				const handoffPath = path.join(cwd, ".claude", "goal", "handoff.md");
+				if (fs.existsSync(handoffPath)) {
+					lines.push("");
+					lines.push("Read .claude/goal/handoff.md for context from the previous session.");
+				}
+
+				console.log(JSON.stringify({ additionalContext: lines.join("\\n") }));
 				return;
 			}
 		}

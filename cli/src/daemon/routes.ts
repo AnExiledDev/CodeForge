@@ -1,11 +1,9 @@
 import type { Database } from "bun:sqlite";
-import { existsSync, readFileSync, statSync } from "fs";
-import { join } from "path";
+import { statSync } from "fs";
 import type { DaemonConfig, GoalState, HealthResponse, StatusResponse } from "../schemas/goal.js";
-import { evaluateGoal } from "./agents/evaluator.js";
 import { formatPlanMd, generatePlan } from "./agents/planner.js";
+import { evaluateStop } from "./evaluator.js";
 import { recordEvent } from "./event-recorder.js";
-import { gatherEvidence } from "./evidence.js";
 import {
 	GoalConflictError,
 	GoalNotFoundError,
@@ -13,7 +11,6 @@ import {
 	clearGoal,
 	createGoal,
 	getActiveGoal,
-	incrementLoopCount,
 	pauseGoal,
 	resumeGoal,
 	updateGoalWithPlan,
@@ -269,61 +266,12 @@ async function handleGoalEvaluateStop(
 		return json({ error: "Missing required field: cwd" }, 400);
 	}
 
-	const active = getActiveGoal(db, cwd);
-	if (!active) {
-		// No active goal — allow stop
-		return json({
-			evaluation: {
-				decision: "allow",
-				status: "done",
-				reason: "No active goal — nothing to evaluate",
-				confidence: 1.0,
-				missingEvidence: [],
-				completedCriteria: [],
-				incompleteCriteria: [],
-			},
-		});
-	}
+	const sessionId = (body.sessionId as string) ?? "";
+	const hookPayload = (body.hookPayload as Record<string, unknown>) ?? body;
 
-	const goalState: GoalState = JSON.parse(active.state_json);
-	const evidence = await gatherEvidence(cwd, active.id, db);
+	const result = await evaluateStop(db, cwd, sessionId, hookPayload, config);
 
-	// Read plan.md and progress.md if they exist
-	const planPath = join(cwd, ".claude", "goal", "plan.md");
-	const progressPath = join(cwd, ".claude", "goal", "progress.md");
-	const planMd = existsSync(planPath) ? readFileSync(planPath, "utf-8") : null;
-	const progressMd = existsSync(progressPath) ? readFileSync(progressPath, "utf-8") : null;
-
-	const lastAssistantMessage = body.lastAssistantMessage as string | undefined;
-
-	const { evaluation, provider, modelId } = await evaluateGoal(config, db, {
-		goal: goalState,
-		evidence,
-		planMd,
-		progressMd,
-		lastAssistantMessage,
-	});
-
-	// Store evaluation in goal_evaluations table
-	db.prepare(
-		`INSERT INTO goal_evaluations (goal_id, created_at, decision, status, reason, next_instruction, confidence, evidence_json, model_info_json)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-	).run(
-		active.id,
-		new Date().toISOString(),
-		evaluation.decision,
-		evaluation.status,
-		evaluation.reason,
-		evaluation.nextInstruction ?? null,
-		evaluation.confidence,
-		JSON.stringify(evidence),
-		JSON.stringify({ provider, modelId }),
-	);
-
-	// Increment loop count
-	incrementLoopCount(db, active.id);
-
-	return json({ evaluation });
+	return json(result);
 }
 
 export function handleRequest(

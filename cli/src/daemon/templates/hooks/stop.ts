@@ -40,9 +40,22 @@ async function main(): Promise<void> {
 		clearTimeout(timer);
 
 		if (res.ok) {
-			const data = await res.json() as { decision: string; reason?: string };
+			const data = await res.json() as {
+				decision: string;
+				reason?: string;
+				nextInstruction?: string;
+				loopCount?: number;
+				maxLoops?: number;
+			};
 			if (data.decision === "block") {
-				console.log(JSON.stringify({ decision: "block", reason: data.reason ?? "Goal not yet complete" }));
+				let reason = data.reason ?? "Goal not yet complete";
+				if (data.nextInstruction) {
+					reason += "\\n\\nNext:\\n" + data.nextInstruction;
+				}
+				if (typeof data.loopCount === "number" && typeof data.maxLoops === "number") {
+					reason += \` (loop \${data.loopCount}/\${data.maxLoops})\`;
+				}
+				console.log(JSON.stringify({ decision: "block", reason }));
 				return;
 			}
 		}

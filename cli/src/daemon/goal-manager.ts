@@ -359,6 +359,118 @@ export function updateGoalWithPlan(
 
 // Custom error classes for typed error handling in routes
 
+export function incrementFailedValidationCount(
+	db: Database,
+	goalId: string,
+): GoalRow {
+	const goal = getGoal(db, goalId);
+	if (!goal) {
+		throw new GoalNotFoundError(`Goal not found: ${goalId}`);
+	}
+
+	const now = nowISO();
+	const newCount = goal.failed_validation_count + 1;
+	const state = buildGoalState(goal);
+	state.failedValidationCount = newCount;
+	state.updatedAt = now;
+
+	db.prepare(
+		"UPDATE goals SET failed_validation_count = ?, updated_at = ?, state_json = ? WHERE id = ?",
+	).run(newCount, now, JSON.stringify(state), goalId);
+
+	writeStateJson(goal.cwd, state);
+
+	return getGoal(db, goalId)!;
+}
+
+export function incrementRepeatedInstructionCount(
+	db: Database,
+	goalId: string,
+): GoalRow {
+	const goal = getGoal(db, goalId);
+	if (!goal) {
+		throw new GoalNotFoundError(`Goal not found: ${goalId}`);
+	}
+
+	const now = nowISO();
+	const newCount = goal.repeated_instruction_count + 1;
+	const state = buildGoalState(goal);
+	state.repeatedInstructionCount = newCount;
+	state.updatedAt = now;
+
+	db.prepare(
+		"UPDATE goals SET repeated_instruction_count = ?, updated_at = ?, state_json = ? WHERE id = ?",
+	).run(newCount, now, JSON.stringify(state), goalId);
+
+	writeStateJson(goal.cwd, state);
+
+	return getGoal(db, goalId)!;
+}
+
+export function resetRepeatedInstructionCount(
+	db: Database,
+	goalId: string,
+): GoalRow {
+	const goal = getGoal(db, goalId);
+	if (!goal) {
+		throw new GoalNotFoundError(`Goal not found: ${goalId}`);
+	}
+
+	if (goal.repeated_instruction_count === 0) {
+		return goal;
+	}
+
+	const now = nowISO();
+	const state = buildGoalState(goal);
+	state.repeatedInstructionCount = 0;
+	state.updatedAt = now;
+
+	db.prepare(
+		"UPDATE goals SET repeated_instruction_count = 0, updated_at = ?, state_json = ? WHERE id = ?",
+	).run(now, JSON.stringify(state), goalId);
+
+	writeStateJson(goal.cwd, state);
+
+	return getGoal(db, goalId)!;
+}
+
+function normalizeInstruction(instruction: string): string {
+	return instruction.toLowerCase().trim().replace(/\s+/g, " ");
+}
+
+export function getRecentEvaluationInstructions(
+	db: Database,
+	goalId: string,
+	limit = 5,
+): string[] {
+	const rows = db
+		.prepare(
+			`SELECT next_instruction FROM goal_evaluations
+			 WHERE goal_id = ? AND next_instruction IS NOT NULL
+			 ORDER BY created_at DESC LIMIT ?`,
+		)
+		.all(goalId, limit) as Array<{ next_instruction: string }>;
+
+	return rows.map((r) => r.next_instruction);
+}
+
+export function isRepeatedInstruction(
+	db: Database,
+	goalId: string,
+	currentInstruction: string,
+	threshold = 3,
+): boolean {
+	const recent = getRecentEvaluationInstructions(db, goalId, threshold);
+	if (recent.length < threshold) {
+		return false;
+	}
+
+	const normalized = normalizeInstruction(currentInstruction);
+	return recent
+		.slice(0, threshold)
+		.every((inst) => normalizeInstruction(inst) === normalized);
+}
+
 export class GoalConflictError extends Error {
 	constructor(message: string) {
 		super(message);
