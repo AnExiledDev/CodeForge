@@ -11,6 +11,7 @@ import { registerContainerShellCommand } from "./commands/container/shell.js";
 import { registerContainerUpCommand } from "./commands/container/up.js";
 import { registerDoctorCommand } from "./commands/doctor/index.js";
 import { registerMountAddCommand } from "./commands/mount/add.js";
+import { registerMountListCommand } from "./commands/mount/list.js";
 import { registerIndexBuildCommand } from "./commands/index/build.js";
 import { registerIndexCleanCommand } from "./commands/index/clean.js";
 import { registerIndexSearchCommand } from "./commands/index/search.js";
@@ -29,6 +30,9 @@ import { registerHooksDisableCommand } from "./commands/hooks/disable.js";
 import { registerHooksEnableCommand } from "./commands/hooks/enable.js";
 import { registerHooksListCommand } from "./commands/hooks/list.js";
 import { registerHooksStatusCommand } from "./commands/hooks/status.js";
+import { registerGoalDaemonCommand } from "./commands/goal/daemon.js";
+import { registerGoalResetCommand } from "./commands/goal/reset.js";
+import { registerGoalStatusCommand } from "./commands/goal/status.js";
 import { registerProxyCommand } from "./commands/proxy.js";
 import { registerListCommand } from "./commands/session/list.js";
 import { registerSearchCommand } from "./commands/session/search.js";
@@ -123,6 +127,13 @@ const mount = program
 	.description("Manage volume mount configuration");
 
 registerMountAddCommand(mount);
+registerMountListCommand(mount);
+
+const goal = program.command("goal").description("Goal daemon and lifecycle");
+
+registerGoalDaemonCommand(goal);
+registerGoalStatusCommand(goal);
+registerGoalResetCommand(goal);
 
 registerProxyCommand(program);
 registerDoctorCommand(program);
@@ -139,7 +150,7 @@ program.hook("preAction", async (_thisCommand, actionCommand) => {
 	while (cmd.parent && cmd.parent !== program) {
 		cmd = cmd.parent;
 	}
-	if (cmd.name() === "container" || cmd.name() === "proxy") return;
+	if (cmd.name() === "container" || cmd.name() === "proxy" || cmd.name() === "goal") return;
 
 	// Proxy into running container
 	try {
