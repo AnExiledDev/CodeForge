@@ -17,10 +17,12 @@
 
 - **New git safe directory check** — `codeforge doctor` now detects project directories missing from git's `safe.directory` list and offers an immediate fix via `--fix --only git`. No rebuild required.
 - **Standardized rebuild messaging** — fix mode now shows specific rebuild instructions (normal vs. full/no-cache) with exact VS Code and CLI commands, replacing the previous generic warning.
+- **Progress spinner during checks** — `codeforge doctor` now shows a spinner with phase-level messages while running authentication, environment, git, and volume checks. Suppressed automatically for `--format json` output.
 
 ### CLI
 
 - **New `codeforge mount add` command** — manually register directories for Docker volume mounting without going through doctor's auto-detection. Usage: `codeforge mount add <path>`.
+- **New `codeforge mount list` command** — display all configured volume mount directories with path, source, signal, and date added. Supports `--format json` for scripting.
 
 ### Networking
 
@@ -44,6 +46,8 @@
 
 - **Fix git credential helper not configured without `GH_TOKEN` secret** — `gh auth setup-git` was nested inside the `GH_TOKEN` block, so it only ran when a token secret was provided. Now runs unconditionally on every container start, enabling manual `gh auth login` to work immediately for git operations. Also detects persisted GitHub CLI credentials (from Docker named volume) and derives git identity without requiring a secret.
 - **Fix named volume ownership for all mount points** — `setup.sh` only fixed `root:root` ownership on `~/.claude`, leaving 6 other Docker named volumes unfixed. `~/.config/gh` and `~/.bun/install/cache` were actively broken (`gh auth login` would fail with `permission denied`). Now loops over all volume mount points from `docker-compose.yml`.
+- **Fix volume detection missing `v9fs` and `virtiofs` filesystems** — `codeforge doctor` failed to detect slow bind-mounted directories (like `node_modules`) on `v9fs` (Docker Desktop 9p VFS layer) and `virtiofs` filesystems because they were missing from the slow filesystem type list. These are now recognized as volume mount candidates.
+- **Fix git email set to API error JSON when GitHub email is private** — when `gh api user/emails` returns a 404 (token lacks `user:email` scope or email privacy enabled), the JSON error blob was captured as `user.email`. Moved `|| true` outside the command substitution so failures clear the variable, allowing the noreply email fallback to activate correctly.
 
 ### Developer Tooling
 
