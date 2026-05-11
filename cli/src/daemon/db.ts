@@ -125,12 +125,37 @@ CREATE TABLE IF NOT EXISTS model_failures (
 );
 `;
 
+// Schema version tracks DB structure changes. Increment when altering tables.
+// Checked on open so future migrations have a reliable starting point.
+const CURRENT_SCHEMA_VERSION = 1;
+
 export function openGoalDatabase(dbPath: string): Database {
 	mkdirSync(dirname(dbPath), { recursive: true });
 	const db = new Database(dbPath, { create: true });
+	// WAL mode required — daemon and hooks write concurrently to this DB
 	db.exec("PRAGMA journal_mode = WAL;");
 	db.exec("PRAGMA foreign_keys = ON;");
-	db.exec(CREATE_TABLES_SQL);
+
+	const { user_version: version } = db.prepare("PRAGMA user_version").get() as {
+		user_version: number;
+	};
+
+	if (version === 0) {
+		// Fresh database — create tables and stamp version
+		db.exec(CREATE_TABLES_SQL);
+		db.exec(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION};`);
+	} else if (version === CURRENT_SCHEMA_VERSION) {
+		// Schema matches — ensure tables exist (idempotent CREATE IF NOT EXISTS)
+		db.exec(CREATE_TABLES_SQL);
+	} else {
+		// Future: run migrations from `version` to CURRENT_SCHEMA_VERSION
+		db.close();
+		throw new Error(
+			`Goal database schema version mismatch: found v${version}, expected v${CURRENT_SCHEMA_VERSION}. ` +
+				"A future CLI version may have created this DB. Upgrade codeforge or delete the DB to reset.",
+		);
+	}
+
 	return db;
 }
 

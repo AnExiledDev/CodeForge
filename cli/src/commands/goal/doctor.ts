@@ -1,7 +1,7 @@
 import { spinner } from "@clack/prompts";
 import chalk from "chalk";
 import type { Command } from "commander";
-import { accessSync, constants, existsSync, readFileSync, writeFileSync, unlinkSync } from "fs";
+import { existsSync, unlinkSync, writeFileSync } from "fs";
 import { join } from "path";
 import { loadDaemonConfig } from "../../daemon/config.js";
 import { hasGoalHooks } from "../../daemon/templates/settings-patch.js";
@@ -115,13 +115,12 @@ function checkConfigFile(projectRoot: string): GoalCheckResult {
 }
 
 async function checkDaemonHealth(port: number): Promise<GoalCheckResult> {
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 3_000);
 	try {
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), 3_000);
 		const res = await fetch(`http://127.0.0.1:${port}/health`, {
 			signal: controller.signal,
 		});
-		clearTimeout(timer);
 		if (res.ok) {
 			return {
 				name: "Daemon reachable",
@@ -142,20 +141,27 @@ async function checkDaemonHealth(port: number): Promise<GoalCheckResult> {
 			message: `Daemon not reachable on port ${port}`,
 			hint: "Start the daemon with 'codeforge goal daemon'",
 		};
+	} finally {
+		clearTimeout(timer);
 	}
 }
 
 async function checkDbWritable(port: number): Promise<GoalCheckResult> {
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), 3_000);
 	try {
-		const controller = new AbortController();
-		const timer = setTimeout(() => controller.abort(), 3_000);
 		const res = await fetch(`http://127.0.0.1:${port}/status`, {
 			signal: controller.signal,
 		});
-		clearTimeout(timer);
 		if (res.ok) {
-			const data = (await res.json()) as { db?: { path: string; size: number } };
-			if (data.db) {
+			const data: unknown = await res.json();
+			const hasDb =
+				data &&
+				typeof data === "object" &&
+				"db" in data &&
+				data.db &&
+				typeof data.db === "object";
+			if (hasDb) {
 				return {
 					name: "DB writable",
 					status: "pass",
@@ -176,6 +182,8 @@ async function checkDbWritable(port: number): Promise<GoalCheckResult> {
 			message: "Cannot check DB (daemon not reachable)",
 			hint: "Start the daemon first",
 		};
+	} finally {
+		clearTimeout(timer);
 	}
 }
 
@@ -252,7 +260,10 @@ function checkGitAvailable(): GoalCheckResult {
 	}
 }
 
-function formatGoalDoctorText(report: GoalDoctorReport, useColor: boolean): string {
+function formatGoalDoctorText(
+	report: GoalDoctorReport,
+	useColor: boolean,
+): string {
 	const c = {
 		bold: useColor ? chalk.bold : (s: string) => s,
 		green: useColor ? chalk.green : (s: string) => s,
@@ -343,7 +354,9 @@ export function registerGoalDoctorCommand(parent: Command): void {
 				Promise.resolve(checkConfigFile(projectRoot)),
 				Promise.resolve(checkGoalDirWritable(projectRoot)),
 				Promise.resolve(checkEnvVar("GROQ_API_KEY", "GROQ_API_KEY")),
-				Promise.resolve(checkEnvVar("OPENROUTER_API_KEY", "OPENROUTER_API_KEY")),
+				Promise.resolve(
+					checkEnvVar("OPENROUTER_API_KEY", "OPENROUTER_API_KEY"),
+				),
 				Promise.resolve(checkGitAvailable()),
 				checkDaemonHealth(port),
 				checkDbWritable(port),

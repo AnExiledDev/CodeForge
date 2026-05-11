@@ -14,6 +14,19 @@ function generateGoalId(): string {
 	return `goal_${crypto.randomUUID()}`;
 }
 
+/** Re-read a goal row after mutation. Throws if the row vanished — indicates DB corruption or race. */
+function mustGetGoal(db: Database, goalId: string): GoalRow {
+	const row = db
+		.prepare("SELECT * FROM goals WHERE id = ?")
+		.get(goalId) as GoalRow | null;
+	if (!row) {
+		throw new Error(
+			`Goal ${goalId} disappeared after mutation — possible DB corruption`,
+		);
+	}
+	return row;
+}
+
 function nowISO(): string {
 	return new Date().toISOString();
 }
@@ -55,10 +68,7 @@ function writeInitialProgress(cwd: string, objective: string): void {
 	writeFileSync(progressPath, content);
 }
 
-export function createGoal(
-	db: Database,
-	input: CreateGoalInput,
-): GoalRow {
+export function createGoal(db: Database, input: CreateGoalInput): GoalRow {
 	const existing = getActiveGoal(db, input.cwd);
 	if (existing) {
 		throw new GoalConflictError(
@@ -110,13 +120,10 @@ export function createGoal(
 		payload: { objective: input.objective },
 	});
 
-	return getGoal(db, id)!;
+	return mustGetGoal(db, id);
 }
 
-export function getActiveGoal(
-	db: Database,
-	cwd: string,
-): GoalRow | null {
+export function getActiveGoal(db: Database, cwd: string): GoalRow | null {
 	return (
 		(db
 			.prepare(
@@ -126,10 +133,7 @@ export function getActiveGoal(
 	);
 }
 
-export function getGoal(
-	db: Database,
-	goalId: string,
-): GoalRow | null {
+export function getGoal(db: Database, goalId: string): GoalRow | null {
 	return (
 		(db
 			.prepare("SELECT * FROM goals WHERE id = ?")
@@ -170,7 +174,7 @@ export function pauseGoal(db: Database, goalId: string): GoalRow {
 		payload: {},
 	});
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function resumeGoal(db: Database, goalId: string): GoalRow {
@@ -203,7 +207,7 @@ export function resumeGoal(db: Database, goalId: string): GoalRow {
 		payload: {},
 	});
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function clearGoal(db: Database, goalId: string): GoalRow {
@@ -238,7 +242,7 @@ export function clearGoal(db: Database, goalId: string): GoalRow {
 		payload: {},
 	});
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function completeGoal(db: Database, goalId: string): GoalRow {
@@ -273,13 +277,10 @@ export function completeGoal(db: Database, goalId: string): GoalRow {
 		payload: {},
 	});
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
-export function incrementLoopCount(
-	db: Database,
-	goalId: string,
-): GoalRow {
+export function incrementLoopCount(db: Database, goalId: string): GoalRow {
 	const goal = getGoal(db, goalId);
 	if (!goal) {
 		throw new GoalNotFoundError(`Goal not found: ${goalId}`);
@@ -297,7 +298,7 @@ export function incrementLoopCount(
 
 	writeStateJson(goal.cwd, state);
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function listRecentGoals(
@@ -354,7 +355,7 @@ export function updateGoalWithPlan(
 		payload: { plan },
 	});
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 // Custom error classes for typed error handling in routes
@@ -380,7 +381,7 @@ export function incrementFailedValidationCount(
 
 	writeStateJson(goal.cwd, state);
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function incrementRepeatedInstructionCount(
@@ -404,7 +405,7 @@ export function incrementRepeatedInstructionCount(
 
 	writeStateJson(goal.cwd, state);
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 export function resetRepeatedInstructionCount(
@@ -431,7 +432,7 @@ export function resetRepeatedInstructionCount(
 
 	writeStateJson(goal.cwd, state);
 
-	return getGoal(db, goalId)!;
+	return mustGetGoal(db, goalId);
 }
 
 function normalizeInstruction(instruction: string): string {

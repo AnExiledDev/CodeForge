@@ -1,7 +1,13 @@
 /**
  * Template for the Stop hook script (goal-stop.ts).
  * The generated script reads stdin, calls the daemon's evaluate-stop endpoint,
- * and outputs a hook decision. Returns "allow" if the daemon is unreachable.
+ * and outputs a hook decision.
+ *
+ * WHY fail-open (default to "allow" on ANY error): This hook runs inside Claude Code's
+ * hook system. If it blocks, Claude cannot proceed. A crashed daemon, network timeout,
+ * or malformed response must NEVER trap the user in a session they can't exit.
+ * The cost of a false-allow is one unnecessary stop; the cost of a false-block is
+ * a stuck session requiring force-kill.
  */
 export function generateStopHook(port: number = 17332): string {
 	return `#!/usr/bin/env bun

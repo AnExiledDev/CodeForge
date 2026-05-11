@@ -1,8 +1,9 @@
 import type { Database } from "bun:sqlite";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
-import type { DaemonConfig, GoalEvaluation, GoalState } from "../schemas/goal.js";
+import type { DaemonConfig, GoalState } from "../schemas/goal.js";
 import { evaluateGoal } from "./agents/evaluator.js";
+import { detectEscapeCondition } from "./escape-hatches.js";
 import { gatherEvidence } from "./evidence.js";
 import {
 	getActiveGoal,
@@ -31,67 +32,17 @@ function checkEscapeHatches(
 	goalState: GoalState,
 	config: DaemonConfig,
 ): EvaluateStopResult | null {
-	// Goal is paused — user explicitly paused, allow stop
-	if (goalState.paused) {
-		return {
-			decision: "allow",
-			status: "paused",
-			reason: "Goal is paused — allowing stop",
-			confidence: 1.0,
-			loopCount: goalState.loopCount,
-			maxLoops: goalState.maxLoops,
-		};
-	}
+	const condition = detectEscapeCondition(goalState, config.limits);
+	if (!condition) return null;
 
-	// Goal is not active (cleared/done) — allow stop
-	if (goalState.status !== "active") {
-		return {
-			decision: "allow",
-			status: goalState.status,
-			reason: `Goal status is '${goalState.status}' — allowing stop`,
-			confidence: 1.0,
-			loopCount: goalState.loopCount,
-			maxLoops: goalState.maxLoops,
-		};
-	}
-
-	// Loop budget exhausted
-	if (goalState.loopCount >= config.limits.maxGoalLoops) {
-		return {
-			decision: "allow",
-			status: "budget_limited",
-			reason: `Loop count (${goalState.loopCount}) reached limit (${config.limits.maxGoalLoops}) — allowing stop to prevent runaway`,
-			confidence: 1.0,
-			loopCount: goalState.loopCount,
-			maxLoops: goalState.maxLoops,
-		};
-	}
-
-	// Repeated instruction detection
-	if (goalState.repeatedInstructionCount >= config.limits.maxRepeatedInstructions) {
-		return {
-			decision: "allow",
-			status: "blocked",
-			reason: `Same instruction repeated ${goalState.repeatedInstructionCount} times — likely infinite loop, allowing stop`,
-			confidence: 1.0,
-			loopCount: goalState.loopCount,
-			maxLoops: goalState.maxLoops,
-		};
-	}
-
-	// Failed validation limit
-	if (goalState.failedValidationCount >= config.limits.maxFailedValidations) {
-		return {
-			decision: "allow",
-			status: "needs_user",
-			reason: `Failed validation count (${goalState.failedValidationCount}) reached limit (${config.limits.maxFailedValidations}) — needs human intervention`,
-			confidence: 1.0,
-			loopCount: goalState.loopCount,
-			maxLoops: goalState.maxLoops,
-		};
-	}
-
-	return null;
+	return {
+		decision: "allow",
+		status: condition.status,
+		reason: condition.reason,
+		confidence: 1.0,
+		loopCount: goalState.loopCount,
+		maxLoops: goalState.maxLoops,
+	};
 }
 
 /**
@@ -107,7 +58,7 @@ function checkEscapeHatches(
 export async function evaluateStop(
 	db: Database,
 	cwd: string,
-	sessionId: string,
+	_sessionId: string,
 	hookPayload: Record<string, unknown>,
 	config: DaemonConfig,
 ): Promise<EvaluateStopResult> {
@@ -142,9 +93,13 @@ export async function evaluateStop(
 	const planPath = join(cwd, ".claude", "goal", "plan.md");
 	const progressPath = join(cwd, ".claude", "goal", "progress.md");
 	const planMd = existsSync(planPath) ? readFileSync(planPath, "utf-8") : null;
-	const progressMd = existsSync(progressPath) ? readFileSync(progressPath, "utf-8") : null;
+	const progressMd = existsSync(progressPath)
+		? readFileSync(progressPath, "utf-8")
+		: null;
 
-	const lastAssistantMessage = hookPayload.lastAssistantMessage as string | undefined;
+	const lastAssistantMessage = hookPayload.lastAssistantMessage as
+		| string
+		| undefined;
 
 	// 4. Call AI evaluator
 	const { evaluation, provider, modelId } = await evaluateGoal(config, db, {
@@ -156,15 +111,20 @@ export async function evaluateStop(
 	});
 
 	// 5. Store evaluation
-	storeEvaluation(db, active.id, {
-		decision: evaluation.decision,
-		status: evaluation.status,
-		reason: evaluation.reason,
-		nextInstruction: evaluation.nextInstruction,
-		confidence: evaluation.confidence,
-		loopCount: goalState.loopCount,
-		maxLoops: goalState.maxLoops,
-	}, { provider, modelId, evidence });
+	storeEvaluation(
+		db,
+		active.id,
+		{
+			decision: evaluation.decision,
+			status: evaluation.status,
+			reason: evaluation.reason,
+			nextInstruction: evaluation.nextInstruction,
+			confidence: evaluation.confidence,
+			loopCount: goalState.loopCount,
+			maxLoops: goalState.maxLoops,
+		},
+		{ provider, modelId, evidence },
+	);
 
 	// 6. Increment loop count
 	incrementLoopCount(db, active.id);
@@ -222,6 +182,8 @@ function storeEvaluation(
 		result.nextInstruction ?? null,
 		result.confidence,
 		meta?.evidence ? JSON.stringify(meta.evidence) : "{}",
-		meta ? JSON.stringify({ provider: meta.provider, modelId: meta.modelId }) : '{"provider":"local","modelId":"escape-hatch"}',
+		meta
+			? JSON.stringify({ provider: meta.provider, modelId: meta.modelId })
+			: '{"provider":"local","modelId":"escape-hatch"}',
 	);
 }

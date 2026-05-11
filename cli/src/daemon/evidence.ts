@@ -3,6 +3,9 @@ import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import type { Evidence } from "../schemas/goal.js";
 
+// Timeout for git subprocesses — prevents a hung git from blocking evaluation indefinitely.
+const GIT_TIMEOUT_MS = 30_000;
+
 async function runGit(cwd: string, args: string[]): Promise<string[]> {
 	try {
 		const proc = Bun.spawn(["git", ...args], {
@@ -10,11 +13,24 @@ async function runGit(cwd: string, args: string[]): Promise<string[]> {
 			stdout: "pipe",
 			stderr: "pipe",
 		});
-		const output = await new Response(proc.stdout).text();
-		await proc.exited;
+
+		// Read stdout and wait for exit concurrently, race against timeout
+		const outputPromise = new Response(proc.stdout).text();
+		const timeout = new Promise<"timeout">((resolve) =>
+			setTimeout(() => resolve("timeout"), GIT_TIMEOUT_MS),
+		);
+		const race = await Promise.race([proc.exited, timeout]);
+
+		if (race === "timeout") {
+			proc.kill();
+			return [];
+		}
+
 		if (proc.exitCode !== 0) {
 			return [];
 		}
+
+		const output = await outputPromise;
 		return output
 			.trim()
 			.split("\n")
@@ -70,13 +86,15 @@ function queryRecentValidationCommands(
 		"%bun test%",
 	];
 
-	const placeholders = validationPatterns.map(() => "input_json LIKE ?").join(" OR ");
+	const placeholders = validationPatterns
+		.map(() => "input_json LIKE ?")
+		.join(" OR ");
 	const query = `SELECT input_json FROM tool_events WHERE goal_id = ? AND (${placeholders}) ORDER BY created_at DESC LIMIT 20`;
 
 	try {
-		const rows = db
-			.prepare(query)
-			.all(goalId, ...validationPatterns) as Array<{ input_json: string }>;
+		const rows = db.prepare(query).all(goalId, ...validationPatterns) as Array<{
+			input_json: string;
+		}>;
 
 		return rows
 			.map((row) => {

@@ -1,3 +1,4 @@
+import { confirm, isCancel } from "@clack/prompts";
 import type { Command } from "commander";
 import { rmSync } from "fs";
 import { join } from "path";
@@ -17,9 +18,10 @@ export function registerGoalResetCommand(parent: Command): void {
 			const baseUrl = `http://127.0.0.1:${port}`;
 
 			if (!options.yes) {
-				process.stdout.write("Clear the active goal? (y/N) ");
-				const answer = await readLine();
-				if (answer.toLowerCase() !== "y") {
+				const shouldClear = await confirm({
+					message: "Clear the active goal?",
+				});
+				if (isCancel(shouldClear) || !shouldClear) {
 					console.log("Aborted.");
 					return;
 				}
@@ -35,8 +37,12 @@ export function registerGoalResetCommand(parent: Command): void {
 				if (res.ok) {
 					console.log("Goal cleared.");
 				} else {
-					const data = (await res.json()) as { error: string };
-					console.log(`Could not clear goal: ${data.error}`);
+					const data = await parseJsonResponse(res);
+					const errorMsg =
+						data && typeof data.error === "string"
+							? data.error
+							: `HTTP ${res.status}`;
+					console.log(`Could not clear goal: ${errorMsg}`);
 					process.exit(1);
 				}
 			} catch {
@@ -59,14 +65,12 @@ export function registerGoalResetCommand(parent: Command): void {
 		});
 }
 
-function readLine(): Promise<string> {
-	return new Promise((resolve) => {
-		const stdin = process.stdin;
-		stdin.setEncoding("utf-8");
-		stdin.resume();
-		stdin.once("data", (data: string) => {
-			stdin.pause();
-			resolve(data.trim());
-		});
-	});
+/** Safely parse JSON from a fetch response — returns null on failure. */
+function parseJsonResponse(
+	res: Response,
+): Promise<Record<string, unknown> | null> {
+	return res.json().catch(() => null) as Promise<Record<
+		string,
+		unknown
+	> | null>;
 }

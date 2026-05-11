@@ -2,7 +2,11 @@ import type { Database } from "bun:sqlite";
 import type { LanguageModel } from "ai";
 import { generateObject } from "ai";
 import type { DaemonConfig, Evidence, GoalState } from "../../schemas/goal.js";
-import { type GoalEvaluation, GoalEvaluationSchema } from "../../schemas/goal.js";
+import {
+	type GoalEvaluation,
+	GoalEvaluationSchema,
+} from "../../schemas/goal.js";
+import { detectEscapeCondition } from "../escape-hatches.js";
 import { withFallback } from "./model-router.js";
 
 const EVALUATOR_SYSTEM_PROMPT = `You are a skeptical evaluator for a software development goal managed by an AI coding agent (Claude Code). You decide whether the agent should stop or continue working.
@@ -38,34 +42,28 @@ export interface EvaluatorResult {
 
 /**
  * Check if the evaluator should short-circuit without calling the model.
- * Returns an evaluation if short-circuit applies, null otherwise.
+ * Defense-in-depth: the orchestrator also checks these conditions, but this
+ * prevents wasted API calls if evaluateGoal is ever called directly.
  */
 function checkShortCircuit(input: EvaluatorInput): GoalEvaluation | null {
-	if (input.goal.paused) {
-		return {
-			decision: "allow",
-			status: "paused",
-			reason: "Goal is paused — allowing stop without evaluation",
-			confidence: 1.0,
-			missingEvidence: [],
-			completedCriteria: [],
-			incompleteCriteria: [],
-		};
-	}
+	// Use shared escape condition detection (same logic as orchestrator)
+	const condition = detectEscapeCondition(input.goal, {
+		maxGoalLoops: input.goal.maxLoops,
+		maxRepeatedInstructions: Number.MAX_SAFE_INTEGER, // Only orchestrator tracks these
+		maxFailedValidations: Number.MAX_SAFE_INTEGER,
+	});
 
-	if (input.goal.loopCount >= input.goal.maxLoops) {
-		return {
-			decision: "allow",
-			status: "budget_limited",
-			reason: `Loop count (${input.goal.loopCount}) has reached or exceeded maxLoops (${input.goal.maxLoops}) — allowing stop to prevent runaway`,
-			confidence: 1.0,
-			missingEvidence: [],
-			completedCriteria: [],
-			incompleteCriteria: [],
-		};
-	}
+	if (!condition) return null;
 
-	return null;
+	return {
+		decision: "allow",
+		status: condition.status as GoalEvaluation["status"],
+		reason: condition.reason,
+		confidence: 1.0,
+		missingEvidence: [],
+		completedCriteria: [],
+		incompleteCriteria: [],
+	};
 }
 
 function buildEvaluatorPrompt(input: EvaluatorInput): string {
@@ -96,15 +94,21 @@ function buildEvaluatorPrompt(input: EvaluatorInput): string {
 	}
 
 	if (input.evidence.checkedPlanItems.length > 0) {
-		parts.push(`### Completed Plan Items\n${input.evidence.checkedPlanItems.map((i) => `- [x] ${i}`).join("\n")}`);
+		parts.push(
+			`### Completed Plan Items\n${input.evidence.checkedPlanItems.map((i) => `- [x] ${i}`).join("\n")}`,
+		);
 	}
 
 	if (input.evidence.uncheckedPlanItems.length > 0) {
-		parts.push(`### Incomplete Plan Items\n${input.evidence.uncheckedPlanItems.map((i) => `- [ ] ${i}`).join("\n")}`);
+		parts.push(
+			`### Incomplete Plan Items\n${input.evidence.uncheckedPlanItems.map((i) => `- [ ] ${i}`).join("\n")}`,
+		);
 	}
 
 	if (input.evidence.recentValidationCommands.length > 0) {
-		parts.push(`### Recent Validation Commands\n${input.evidence.recentValidationCommands.join("\n")}`);
+		parts.push(
+			`### Recent Validation Commands\n${input.evidence.recentValidationCommands.join("\n")}`,
+		);
 	}
 
 	if (input.lastAssistantMessage) {

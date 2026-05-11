@@ -7,6 +7,15 @@ interface GoalCurrentResponse {
 	goal: GoalState;
 }
 
+/** Validate that a parsed JSON object has the expected goal response shape. */
+function isGoalResponse(data: unknown): data is GoalCurrentResponse {
+	if (!data || typeof data !== "object") return false;
+	const obj = data as Record<string, unknown>;
+	if (!obj.goal || typeof obj.goal !== "object") return false;
+	const goal = obj.goal as Record<string, unknown>;
+	return typeof goal.id === "string" && typeof goal.objective === "string";
+}
+
 export function registerGoalStatusCommand(parent: Command): void {
 	parent
 		.command("status")
@@ -29,7 +38,10 @@ export function registerGoalStatusCommand(parent: Command): void {
 				daemonReachable = true;
 
 				if (res.ok) {
-					goalData = (await res.json()) as GoalCurrentResponse;
+					const parsed: unknown = await res.json();
+					if (isGoalResponse(parsed)) {
+						goalData = parsed;
+					}
 				}
 			} catch {
 				// Daemon not reachable
@@ -73,7 +85,11 @@ export function registerGoalStatusCommand(parent: Command): void {
 			console.log(`Updated:    ${g.updatedAt}`);
 			console.log("");
 			console.log("Artifacts:");
-			console.log(`  state.json:    ${join(cwd, ".claude", "goal", "state.json")}`);
-			console.log(`  progress.md:   ${join(cwd, ".claude", "goal", "progress.md")}`);
+			console.log(
+				`  state.json:    ${join(cwd, ".claude", "goal", "state.json")}`,
+			);
+			console.log(
+				`  progress.md:   ${join(cwd, ".claude", "goal", "progress.md")}`,
+			);
 		});
 }

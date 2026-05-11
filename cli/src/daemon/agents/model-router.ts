@@ -30,7 +30,9 @@ const ROLE_TIMEOUTS: Record<ModelRole, number> = {
 export function parseModelString(modelString: string): ParsedModel {
 	const colonIdx = modelString.indexOf(":");
 	if (colonIdx === -1) {
-		throw new Error(`Invalid model string "${modelString}" — expected "provider:model-id"`);
+		throw new Error(
+			`Invalid model string "${modelString}" — expected "provider:model-id"`,
+		);
 	}
 	return {
 		provider: modelString.slice(0, colonIdx),
@@ -43,7 +45,9 @@ function createLanguageModel(parsed: ParsedModel): LanguageModel {
 		case "groq": {
 			const apiKey = process.env.GROQ_API_KEY;
 			if (!apiKey) {
-				throw new MissingApiKeyError("GROQ_API_KEY environment variable is not set");
+				throw new MissingApiKeyError(
+					"GROQ_API_KEY environment variable is not set",
+				);
 			}
 			const groq = createGroq({ apiKey });
 			return groq(parsed.modelId);
@@ -51,7 +55,9 @@ function createLanguageModel(parsed: ParsedModel): LanguageModel {
 		case "openrouter": {
 			const apiKey = process.env.OPENROUTER_API_KEY;
 			if (!apiKey) {
-				throw new MissingApiKeyError("OPENROUTER_API_KEY environment variable is not set");
+				throw new MissingApiKeyError(
+					"OPENROUTER_API_KEY environment variable is not set",
+				);
 			}
 			const or = createOpenRouter({ apiKey });
 			return or(parsed.modelId);
@@ -81,74 +87,6 @@ export function logModelCall(db: Database, record: ModelCallRecord): void {
 
 export function getTimeoutForRole(role: ModelRole): number {
 	return ROLE_TIMEOUTS[role];
-}
-
-function isRetryableError(err: unknown): boolean {
-	if (err instanceof MissingApiKeyError) return false;
-	if (err instanceof Error) {
-		const msg = err.message.toLowerCase();
-		if (msg.includes("429") || msg.includes("rate limit")) return true;
-		if (msg.includes("timeout") || msg.includes("timed out")) return true;
-		if (msg.includes("503") || msg.includes("502")) return true;
-	}
-	return true;
-}
-
-export interface ModelWithMeta {
-	model: LanguageModel;
-	provider: string;
-	modelId: string;
-	timeoutMs: number;
-}
-
-/**
- * Resolve a model for a given role, trying each configured model in order.
- * Returns the first model that can be constructed (has valid API key, etc.).
- * Logs failures for models that cannot be constructed.
- */
-export function resolveModel(
-	config: DaemonConfig,
-	role: ModelRole,
-	db: Database,
-): ModelWithMeta | null {
-	const modelList = config.models[role] ?? [];
-	const timeoutMs = getTimeoutForRole(role);
-
-	for (let i = 0; i < modelList.length; i++) {
-		const modelStr = modelList[i];
-		const parsed = parseModelString(modelStr);
-		const start = Date.now();
-
-		try {
-			const model = createLanguageModel(parsed);
-			logModelCall(db, {
-				task: role,
-				provider: parsed.provider,
-				model: parsed.modelId,
-				status: "success",
-				durationMs: Date.now() - start,
-			});
-			return { model, provider: parsed.provider, modelId: parsed.modelId, timeoutMs };
-		} catch (err) {
-			const elapsed = Date.now() - start;
-			logModelCall(db, {
-				task: role,
-				provider: parsed.provider,
-				model: parsed.modelId,
-				status: "failure",
-				durationMs: elapsed,
-				errorClass: err instanceof Error ? err.constructor.name : "Unknown",
-				errorMessage: err instanceof Error ? err.message : String(err),
-				fallbackUsed: i < modelList.length - 1 ? modelList[i + 1] : undefined,
-			});
-
-			if (!isRetryableError(err) && i < modelList.length - 1) {
-				continue;
-			}
-		}
-	}
-
-	return null;
 }
 
 /**

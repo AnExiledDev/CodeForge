@@ -10,6 +10,9 @@ function isLoopback(host: string): boolean {
 }
 
 export async function startServer(config: DaemonConfig): Promise<Server> {
+	// Bind to loopback ONLY — this is a local sidecar, not a network service.
+	// Exposing on 0.0.0.0 would let any machine on the network control goals and
+	// inject instructions into Claude sessions. No auth layer exists to protect it.
 	if (!isLoopback(config.host)) {
 		throw new Error(
 			`Refusing to bind to non-loopback address: ${config.host}. The daemon must listen on 127.0.0.1 or localhost.`,

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 import { join, resolve } from "path";
-import type { DaemonConfig, LimitsConfig, ModelConfig } from "../schemas/goal.js";
+import type { DaemonConfig, LimitsConfig } from "../schemas/goal.js";
 
 const DEFAULT_LIMITS: LimitsConfig = {
 	maxGoalLoops: 30,
@@ -31,7 +31,10 @@ function defaultConfig(cwd: string): DaemonConfig {
 	};
 }
 
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+function deepMerge(
+	target: Record<string, unknown>,
+	source: Record<string, unknown>,
+): Record<string, unknown> {
 	const result = { ...target };
 	for (const key of Object.keys(source)) {
 		const srcVal = source[key];
@@ -83,5 +86,42 @@ export function loadDaemonConfig(cwd?: string): DaemonConfig {
 		parsed,
 	) as unknown as DaemonConfig;
 
+	validateConfig(merged);
 	return merged;
+}
+
+/** Basic config validation — catches obvious typos before they cause cryptic failures downstream. */
+function validateConfig(config: DaemonConfig): void {
+	if (
+		typeof config.port !== "number" ||
+		config.port < 1 ||
+		config.port > 65535
+	) {
+		throw new Error(`Invalid daemon port: ${config.port} — must be 1-65535`);
+	}
+	if (!config.host || typeof config.host !== "string") {
+		throw new Error("Invalid daemon host: must be a non-empty string");
+	}
+	if (!config.dbPath || typeof config.dbPath !== "string") {
+		throw new Error("Invalid daemon dbPath: must be a non-empty string");
+	}
+	if (!config.models || typeof config.models !== "object") {
+		throw new Error("Invalid daemon config: models must be an object");
+	}
+	if (
+		!Array.isArray(config.models.evaluator) ||
+		config.models.evaluator.length === 0
+	) {
+		throw new Error(
+			"Invalid daemon config: models.evaluator must be a non-empty array",
+		);
+	}
+	if (
+		!Array.isArray(config.models.planner) ||
+		config.models.planner.length === 0
+	) {
+		throw new Error(
+			"Invalid daemon config: models.planner must be a non-empty array",
+		);
+	}
 }

@@ -1,12 +1,16 @@
 import type { Database } from "bun:sqlite";
 import { statSync } from "fs";
-import type { DaemonConfig, GoalState, HealthResponse, StatusResponse } from "../schemas/goal.js";
+import type {
+	DaemonConfig,
+	GoalState,
+	HealthResponse,
+	StatusResponse,
+} from "../schemas/goal.js";
 import { formatPlanMd, generatePlan } from "./agents/planner.js";
 import { evaluateStop } from "./evaluator.js";
 import { recordEvent } from "./event-recorder.js";
 import {
 	GoalConflictError,
-	GoalNotFoundError,
 	InvalidTransitionError,
 	clearGoal,
 	createGoal,
@@ -16,6 +20,9 @@ import {
 	updateGoalWithPlan,
 	writePlanMd,
 } from "./goal-manager.js";
+
+// Reject request bodies > 1MB to prevent memory exhaustion from oversized payloads.
+const MAX_BODY_BYTES = 1_048_576;
 
 let serverStartTime = Date.now();
 
@@ -63,7 +70,9 @@ function handleStatus(db: Database, config: DaemonConfig): Response {
 	return json(body);
 }
 
-async function parseJsonBody(req: Request): Promise<Record<string, unknown> | null> {
+async function parseJsonBody(
+	req: Request,
+): Promise<Record<string, unknown> | null> {
 	try {
 		return (await req.json()) as Record<string, unknown>;
 	} catch {
@@ -127,7 +136,10 @@ function handleGoalCurrent(db: Database, url: URL): Response {
 	return json({ goal: state });
 }
 
-function handleGoalPause(db: Database, body: Record<string, unknown>): Response {
+function handleGoalPause(
+	db: Database,
+	body: Record<string, unknown>,
+): Response {
 	const cwd = body.cwd as string | undefined;
 	if (!cwd) {
 		return json({ error: "Missing required field: cwd" }, 400);
@@ -150,7 +162,10 @@ function handleGoalPause(db: Database, body: Record<string, unknown>): Response 
 	}
 }
 
-function handleGoalResume(db: Database, body: Record<string, unknown>): Response {
+function handleGoalResume(
+	db: Database,
+	body: Record<string, unknown>,
+): Response {
 	const cwd = body.cwd as string | undefined;
 	if (!cwd) {
 		return json({ error: "Missing required field: cwd" }, 400);
@@ -173,7 +188,10 @@ function handleGoalResume(db: Database, body: Record<string, unknown>): Response
 	}
 }
 
-function handleGoalClear(db: Database, body: Record<string, unknown>): Response {
+function handleGoalClear(
+	db: Database,
+	body: Record<string, unknown>,
+): Response {
 	const cwd = body.cwd as string | undefined;
 	if (!cwd) {
 		return json({ error: "Missing required field: cwd" }, 400);
@@ -196,7 +214,10 @@ function handleGoalClear(db: Database, body: Record<string, unknown>): Response 
 	}
 }
 
-function handleEventsHook(db: Database, body: Record<string, unknown>): Response {
+function handleEventsHook(
+	db: Database,
+	body: Record<string, unknown>,
+): Response {
 	const cwd = body.cwd as string | undefined;
 	const kind = body.kind as string | undefined;
 
@@ -215,7 +236,10 @@ function handleEventsHook(db: Database, body: Record<string, unknown>): Response
 	return json({ ok: true }, 201);
 }
 
-function handleEventsTool(db: Database, body: Record<string, unknown>): Response {
+function handleEventsTool(
+	db: Database,
+	body: Record<string, unknown>,
+): Response {
 	const cwd = body.cwd as string | undefined;
 
 	if (!cwd) {
@@ -297,6 +321,11 @@ export function handleRequest(
 	// POST routes require JSON body parsing
 	if (method === "POST") {
 		return (async () => {
+			const contentLength = Number(req.headers.get("content-length") ?? "0");
+			if (contentLength > MAX_BODY_BYTES) {
+				return json({ error: "Request body too large" }, 413);
+			}
+
 			const body = await parseJsonBody(req);
 			if (!body) {
 				return json({ error: "Invalid JSON body" }, 400);

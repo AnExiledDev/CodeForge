@@ -1,4 +1,10 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "fs";
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+	copyFileSync,
+} from "fs";
 import { dirname, join } from "path";
 
 interface HookEntry {
@@ -16,6 +22,10 @@ interface SettingsJson {
 	[key: string]: unknown;
 }
 
+// WHY matcher:"" (empty string): Claude Code's hook schema uses matchers to filter which
+// tool/event triggers the hook. An empty matcher means "match everything" — our hooks
+// handle filtering internally via the daemon (e.g., checking if an active goal exists).
+// This avoids maintaining regex matchers that would drift from daemon logic.
 const GOAL_HOOKS: Record<string, string> = {
 	Stop: "bun run .claude/hooks/goal-stop.ts",
 	SessionStart: "bun run .claude/hooks/goal-session-start.ts",
@@ -28,9 +38,11 @@ const GOAL_HOOKS: Record<string, string> = {
  * Merges with existing hooks — appends ours, does not replace existing ones.
  * If our hooks already exist (match by command path), updates in place.
  */
-export function patchSettings(
-	projectRoot: string,
-): { patched: boolean; created: boolean; backedUp: boolean } {
+export function patchSettings(projectRoot: string): {
+	patched: boolean;
+	created: boolean;
+	backedUp: boolean;
+} {
 	const settingsPath = join(projectRoot, ".claude", "settings.json");
 	const result = { patched: false, created: false, backedUp: false };
 
@@ -91,7 +103,7 @@ export function patchSettings(
 	}
 
 	mkdirSync(dirname(settingsPath), { recursive: true });
-	writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n");
+	writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 	result.patched = true;
 
 	return result;

@@ -1,5 +1,11 @@
 import type { Command } from "commander";
-import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "fs";
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	unlinkSync,
+	writeFileSync,
+} from "fs";
 import { dirname } from "path";
 import { loadDaemonConfig } from "../../daemon/config.js";
 
@@ -9,6 +15,8 @@ export function registerGoalDaemonCommand(parent: Command): void {
 		.description("Start the goal daemon HTTP server")
 		.option("--port <port>", "Override daemon port", Number.parseInt)
 		.option("--detach", "Fork to background and write PID file")
+		// WHY --_foreground is hidden: detach mode spawns a child with this flag to re-enter
+		// the same CLI binary but skip the fork logic. Users should never pass it directly.
 		.option("--_foreground", "Internal: run in foreground (used by --detach)")
 		.action(async (options) => {
 			const config = loadDaemonConfig();
@@ -18,7 +26,7 @@ export function registerGoalDaemonCommand(parent: Command): void {
 			}
 
 			if (options._foreground || !options.detach) {
-				// Foreground mode: start server directly
+				// Foreground mode: start server directly (default — simplest for dev/debug)
 				const { startServer } = await import("../../daemon/server.js");
 				const server = await startServer(config);
 
@@ -35,13 +43,23 @@ export function registerGoalDaemonCommand(parent: Command): void {
 				return;
 			}
 
-			// Detach mode: spawn a child process in foreground mode
+			// Detach mode: spawn a child process in foreground mode.
+			// Uses process.execPath (bun binary) and Bun.main (CLI entry point)
+			// instead of process.argv which is fragile when invoked via symlinks or wrappers.
 			mkdirSync(dirname(config.logPath), { recursive: true });
 			mkdirSync(dirname(config.pidPath), { recursive: true });
 
 			const logFile = Bun.file(config.logPath);
 
-			const args = [process.argv[0], "run", process.argv[1], "goal", "daemon", "--_foreground"];
+			const entryPoint = Bun.main;
+			const args = [
+				process.execPath,
+				"run",
+				entryPoint,
+				"goal",
+				"daemon",
+				"--_foreground",
+			];
 			if (options.port) {
 				args.push("--port", String(options.port));
 			}
@@ -92,7 +110,9 @@ export function registerGoalDaemonCommand(parent: Command): void {
 			} catch (err) {
 				const code = (err as NodeJS.ErrnoException).code;
 				if (code === "ESRCH") {
-					console.log(`Daemon process (PID ${pid}) not found. Cleaning up PID file.`);
+					console.log(
+						`Daemon process (PID ${pid}) not found. Cleaning up PID file.`,
+					);
 				} else {
 					console.error(`Failed to stop daemon: ${err}`);
 				}
