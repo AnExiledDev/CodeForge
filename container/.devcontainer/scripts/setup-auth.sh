@@ -50,10 +50,10 @@ _configure_git_identity() {
     _identity_email=$(jq_val '.identity.email // empty')
 
     if [ -z "$_identity_name" ]; then
-        _identity_name=$(gh api user -q .login 2>/dev/null || true)
+        _identity_name=$(gh api user -q .login 2>/dev/null) || _identity_name=""
     fi
     if [ -z "$_identity_email" ]; then
-        _identity_email=$(gh api user/emails -q '.[] | select(.primary) | .email' 2>/dev/null || true)
+        _identity_email=$(gh api user/emails -q '.[] | select(.primary) | .email' 2>/dev/null) || _identity_email=""
         if [ -z "$_identity_email" ]; then
             _gh_id=$(gh api user -q .id 2>/dev/null || true)
             if [ -n "$_gh_id" ] && [ -n "$_identity_name" ]; then

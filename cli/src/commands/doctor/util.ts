@@ -2,10 +2,13 @@ export const SLOW_FS_TYPES = [
 	"smb",
 	"smb2",
 	"9p",
+	"v9fs",
 	"drvfs",
 	"cifs",
 	"nfs",
 	"fuse.drvfs",
+	"virtiofs",
+	"fuse.virtiofs",
 ];
 
 export async function spawn(

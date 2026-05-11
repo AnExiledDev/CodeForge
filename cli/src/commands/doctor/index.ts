@@ -1,3 +1,4 @@
+import { spinner } from "@clack/prompts";
 import type { Command } from "commander";
 import { checkGhAuth, checkGitUser } from "./checks/auth.js";
 import {
@@ -25,6 +26,10 @@ export function registerDoctorCommand(parent: Command): void {
 		.option("--only <category>", "Filter fixes: auth, env, git, volumes, wsl")
 		.action(async (options) => {
 			const workspaceRoot = process.env.WORKSPACE_ROOT || "/workspaces";
+			const showSpinner = options.format !== "json";
+			const s = showSpinner ? spinner() : null;
+
+			s?.start("Checking authentication and environment...");
 
 			// Run auth + environment checks in parallel
 			const [authChecks, envChecks] = await Promise.all([
@@ -42,6 +47,8 @@ export function registerDoctorCommand(parent: Command): void {
 				(c) => c.name === "Workspace filesystem" && c.status === "warn",
 			);
 
+			s?.message("Scanning workspace for git repos and volume candidates...");
+
 			// Run git + volume + WSL checks (WSL checks return null when not WSL)
 			const [gitCheck, volumeChecks, wslConfigCheck, defenderCheck] =
 				await Promise.all([
@@ -50,6 +57,8 @@ export function registerDoctorCommand(parent: Command): void {
 					checkWslConfig(isWsl),
 					checkDefenderExclusions(isWsl),
 				]);
+
+			s?.stop("Checks complete");
 
 			// Assemble all checks, filtering out nulls from WSL checks
 			const wslChecks = [wslConfigCheck, defenderCheck].filter(
