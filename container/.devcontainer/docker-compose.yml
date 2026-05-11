@@ -1,0 +1,37 @@
+services:
+  codeforge:
+    image: mcr.microsoft.com/devcontainers/python:3.14
+    ports:
+      # Auto-started services
+      - "127.0.0.1:7847:7847"   # Claude Code Karma Dashboard
+      - "127.0.0.1:7848:7848"   # Claude Code Karma API
+      - "127.0.0.1:37777:37777" # Claude-Mem Worker
+      # On-demand services
+      - "127.0.0.1:4321:4321"   # Astro docs dev server
+      - "127.0.0.1:8081:8081"   # mitmproxy (codeforge proxy)
+      - "127.0.0.1:9119:9119"   # ccdiag API Proxy
+    volumes:
+      # Persistent config volumes
+      - codeforge-claude-config:/home/vscode/.claude
+      - codeforge-codex-config:/home/vscode/.codex
+      - codeforge-hermes-config:/home/vscode/.hermes
+      - codeforge-gh-config:/home/vscode/.config/gh
+      # Cache volumes
+      - codeforge-cache:/home/vscode/.cache
+      - codeforge-npm-cache:/home/vscode/.npm
+      - codeforge-bun-cache:/home/vscode/.bun/install/cache
+      # Workspace
+      - ..:/workspaces
+    mem_limit: 6g
+    memswap_limit: 6g  # Equal to mem_limit — swap disabled intentionally
+    container_name: codeforge
+    command: sleep infinity
+
+volumes:
+  codeforge-claude-config:
+  codeforge-codex-config:
+  codeforge-hermes-config:
+  codeforge-gh-config:
+  codeforge-cache:
+  codeforge-npm-cache:
+  codeforge-bun-cache:

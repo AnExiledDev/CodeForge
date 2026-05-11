@@ -126,7 +126,7 @@ if ! command -v npx &>/dev/null; then
 fi
 
 # Check if credentials exist (ccburn needs OAuth token)
-CRED_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json"
+CRED_FILE="$HOME/.claude/.credentials.json"
 if [ ! -f "$CRED_FILE" ]; then
     echo "ccburn: awaiting auth"
     exit 0

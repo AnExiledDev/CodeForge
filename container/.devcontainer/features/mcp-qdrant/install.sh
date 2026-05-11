@@ -196,7 +196,7 @@ _USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
 _USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
 
 # Ensure settings.json exists
-SETTINGS_FILE="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}/settings.json"
+SETTINGS_FILE="${_USER_HOME}/.claude/settings.json"
 if [ ! -f "$SETTINGS_FILE" ]; then
     echo "[mcp-qdrant] ERROR: $SETTINGS_FILE not found"
     exit 1

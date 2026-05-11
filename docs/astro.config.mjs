@@ -38,13 +38,44 @@ export default defineConfig({
 				Header: "./src/components/Header.astro",
 			},
 			editLink: {
-				baseUrl: "https://github.com/AnExiledDev/CodeForge/edit/main/docs/",
+				baseUrl:
+					process.env.GITHUB_EDIT_BASE ||
+					"https://github.com/AnExiledDev/CodeForge/edit/main/docs/",
 			},
 			head: [
 				{
 					tag: "meta",
 					attrs: {
 						name: "og:image",
+						content: "/og-image.png",
+					},
+				},
+				{
+					tag: "meta",
+					attrs: {
+						property: "og:title",
+						content: "CodeForge — Your AI Dev Environment",
+					},
+				},
+				{
+					tag: "meta",
+					attrs: {
+						property: "og:description",
+						content:
+							"A batteries-included Claude Code setup with plugins, agents, skills, and automation.",
+					},
+				},
+				{
+					tag: "meta",
+					attrs: {
+						name: "twitter:card",
+						content: "summary_large_image",
+					},
+				},
+				{
+					tag: "meta",
+					attrs: {
+						name: "twitter:image",
 						content: "/og-image.png",
 					},
 				},
@@ -92,6 +123,10 @@ export default defineConfig({
 							{
 								label: "Before You Install",
 								slug: "start-here/before-you-install",
+							},
+							{
+								label: "Windows Networking",
+								slug: "start-here/windows-networking",
 							},
 							{
 								label: "Install in VS Code",

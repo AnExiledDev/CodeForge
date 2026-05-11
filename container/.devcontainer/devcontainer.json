@@ -1,50 +1,33 @@
 {
 	"name": "CodeForge - ${localWorkspaceFolderBasename}",
-	"image": "mcr.microsoft.com/devcontainers/python:3.14",
+	"dockerComposeFile": ["docker-compose.yml", "docker-compose.codeforge.yml"],
+	"service": "codeforge",
+	"initializeCommand": "node .devcontainer/scripts/generate-compose.mjs",
 
 	"workspaceFolder": "/workspaces",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces,type=bind",
 
-	"mounts": [
-		{
-			"source": "codeforge-claude-config-${devcontainerId}",
-			"target": "/home/vscode/.claude",
-			"type": "volume"
-		},
-		{
-			"source": "codeforge-codex-config-${devcontainerId}",
-			"target": "/home/vscode/.codex",
-			"type": "volume"
-		}
-	],
-
 	"remoteEnv": {
 		"WORKSPACE_ROOT": "/workspaces",
-		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
-		"GH_CONFIG_DIR": "/workspaces/.gh",
-		"TMPDIR": "/workspaces/.tmp",
+		"GH_CONFIG_DIR": "/home/vscode/.config/gh",
+		"HERMES_CDP_ENDPOINT": "http://host.docker.internal:9223",
 		"TERM": "${localEnv:TERM:xterm-256color}",
 		"COLORTERM": "truecolor",
-		"CLAUDECODE": null
+		"RTK_AUTO_ALLOW": "${localEnv:RTK_AUTO_ALLOW}",
+		"TZ": "${localEnv:TZ:America/Chicago}"
 	},
 
 	"secrets": {
 		"GH_TOKEN": {
-			"description": "GitHub Personal Access Token (optional - for git auth)",
+			"description": "GitHub Personal Access Token (optional - for git auth + identity)",
 			"documentationUrl": "https://github.com/settings/tokens"
 		},
 		"NPM_TOKEN": {
 			"description": "NPM auth token (optional - for npm registry)",
 			"documentationUrl": "https://www.npmjs.com/settings/~/tokens"
 		},
-		"GH_USERNAME": {
-			"description": "GitHub username for git config (optional)"
-		},
-		"GH_EMAIL": {
-			"description": "GitHub email for git config (optional)"
-		},
-		"CLAUDE_AUTH_TOKEN": {
-			"description": "Claude long-lived auth token from 'claude setup-token' (optional - sk-ant-oat01-*)",
+		"CLAUDE_CODE_OAUTH_TOKEN": {
+			"description": "Claude Code OAuth token from 'claude setup-token' (optional - sk-ant-*)",
 			"documentationUrl": "https://docs.anthropic.com/en/docs/claude-code/cli-reference#claude-setup-token"
 		},
 		"OPENAI_API_KEY": {
@@ -52,7 +35,7 @@
 			"documentationUrl": "https://platform.openai.com/api-keys"
 		},
 		"ANTHROPIC_API_KEY": {
-			"description": "Anthropic API key for claude-code-router (optional - sk-ant-api03-*)",
+			"description": "Anthropic API key for claude-code-router (optional - conflicts with CLAUDE_CODE_OAUTH_TOKEN)",
 			"documentationUrl": "https://console.anthropic.com/settings/keys"
 		},
 		"DEEPSEEK_API_KEY": {
@@ -66,22 +49,6 @@
 		"OPENROUTER_API_KEY": {
 			"description": "OpenRouter API key for claude-code-router (optional)",
 			"documentationUrl": "https://openrouter.ai/keys"
-		},
-		"KIMI_API_KEY": {
-			"description": "Moonshot Kimi API key for oh-my-claude (optional)",
-			"documentationUrl": "https://platform.moonshot.cn/"
-		},
-		"ZHIPU_API_KEY": {
-			"description": "ZhiPu GLM API key for oh-my-claude (optional)",
-			"documentationUrl": "https://open.bigmodel.cn/"
-		},
-		"ALIYUN_API_KEY": {
-			"description": "Aliyun DashScope API key for oh-my-claude (optional)",
-			"documentationUrl": "https://dashscope.console.aliyun.com/"
-		},
-		"MINIMAX_API_KEY": {
-			"description": "MiniMax API key for oh-my-claude (optional)",
-			"documentationUrl": "https://platform.minimaxi.com/"
 		}
 	},
 
@@ -98,15 +65,25 @@
 		"ghcr.io/devcontainers/features/docker-outside-of-docker",
 		"ghcr.io/devcontainers-extra/features/uv",
 		"ghcr.io/rails/devcontainer/features/bun",
+		"ghcr.io/devcontainers/features/go",
 		"./features/codeforge-cli",
 		"./features/claude-code-native",
+		"./features/rtk",
 		"./features/codex-cli",
+		"./features/hermes-agent",
+		"./features/zsh-completions",
 		"./features/tmux",
 		"./features/agent-browser",
 		"./features/claude-monitor",
+		"./features/claude-code-karma",
 		"./features/ccusage",
-		// "./features/claude-code-router",
-		// "./features/oh-my-claude",  // disabled — needs refinement (omc install modifies settings.json)
+		"./features/claude-code-router",
+		"./features/oh-my-claude",
+		"./features/claude-mem",
+		"./features/lamarck",
+		"./features/ccdiag",
+		"./features/claude-session-analyzer",
+		"./features/sandcastle",
 		// "./features/ccburn",
 		"./features/ccstatusline",
 		"./features/ast-grep",
@@ -137,35 +114,68 @@
 		"ghcr.io/rails/devcontainer/features/bun:1.0.2": {
 			"version": "latest"
 		},
-		// Uncomment to add Rust toolchain:
-		// "ghcr.io/devcontainers/features/rust:1.5.0": {
-		// 	"version": "latest"
-		// },
-		// Uncomment to add Go runtime (not installed by default):
-		// "ghcr.io/devcontainers/features/go:1": {},
+		"ghcr.io/devcontainers/features/rust:1.5.0": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/go:1": {},
 		"./features/claude-code-native": {},
+		"./features/rtk": {},
 		"./features/codex-cli": {},
+		"./features/hermes-agent": {},
+		"./features/zsh-completions": {},
 		"./features/tmux": {},
 		"./features/ccusage": {
 			"version": "latest",
 			"shells": "both",
 			"username": "automatic"
 		},
-		// "./features/claude-code-router": {
-		// 	"version": "latest",
-		// 	"shells": "both",
-		// 	"username": "automatic",
-		// 	"autostart": "true"
-		// },
-		// oh-my-claude — disabled; needs refinement (omc install modifies settings.json)
-		// "./features/oh-my-claude": {
-		// 	"version": "latest",
-		// 	"autostart": true,
-		// 	"providerAgentsOnly": true
-		// },
+		"./features/claude-code-router": {
+			"version": "none",
+			"shells": "both",
+			"username": "automatic",
+			"autostart": "false"
+		},
+		// oh-my-claude — disabled by default. Set version to latest/semver only when you want OMC alongside CodeForge aliases.
+		"./features/oh-my-claude": {
+			"version": "none",
+			"shells": "both",
+			"username": "automatic",
+			"providerAgentsOnly": true
+		},
+		"./features/claude-mem": {
+			"version": "v12.6.2",
+			"workerPort": "37777",
+			"autostart": "true",
+			"chromaMode": "local",
+			"username": "automatic"
+		},
+		"./features/lamarck": {
+			"version": "latest",
+			"cronInterval": "4h",
+			"username": "automatic"
+		},
+		"./features/ccdiag": {
+			"version": "latest",
+			"username": "automatic"
+		},
+		"./features/claude-session-analyzer": {
+			"version": "latest",
+			"username": "automatic"
+		},
+		"./features/sandcastle": {
+			"version": "latest",
+			"username": "automatic"
+		},
 		"./features/claude-monitor": {
 			"version": "latest",
 			"installer": "uv",
+			"username": "automatic"
+		},
+		"./features/claude-code-karma": {
+			"version": "4067d87ee5c85eb7d2877890ba6174115f0bee2e",
+			"apiPort": "7848",
+			"frontendPort": "7847",
+			"autostart": "true",
 			"username": "automatic"
 		},
 		// ccburn — disabled; replaced by native ccstatusline session-usage/weekly-usage widgets
@@ -177,8 +187,7 @@
 		"./features/ccstatusline": {
 			"username": "automatic"
 		},
-		// Uncomment to add ccms (requires Rust):
-		// "./features/ccms": {},
+		"./features/ccms": {},
 		"./features/ast-grep": {},
 		"./features/tree-sitter": {},
 		"./features/lsp-servers": { "version": "none" },
@@ -192,13 +201,13 @@
 			"version": "latest",
 			"username": "automatic"
 		},
-		"./features/shfmt": { "version": "none" },
+		"./features/shfmt": { "version": "latest" },
 		"./features/dprint": {
-			"version": "none",
+			"version": "latest",
 			"username": "automatic"
 		},
-		"./features/shellcheck": { "version": "none" },
-		"./features/hadolint": { "version": "none" },
+		"./features/shellcheck": { "version": "latest" },
+		"./features/hadolint": { "version": "latest" },
 		"./features/biome": {},
 		"./features/codeforge-cli": {},
 		"./features/notify-hook": {
@@ -209,6 +218,30 @@
 	},
 
 	"portsAttributes": {
+		"7847": {
+			"label": "Claude Code Karma",
+			"onAutoForward": "notify"
+		},
+		"7848": {
+			"label": "Claude Code Karma API",
+			"onAutoForward": "silent"
+		},
+		"37777": {
+			"label": "Claude-Mem Worker/UI",
+			"onAutoForward": "silent"
+		},
+		"9119": {
+			"label": "ccdiag API Proxy",
+			"onAutoForward": "silent"
+		},
+		"4321": {
+			"label": "Astro Docs Dev Server",
+			"onAutoForward": "notify"
+		},
+		"8081": {
+			"label": "mitmproxy (codeforge proxy)",
+			"onAutoForward": "notify"
+		},
 		"*": {
 			"onAutoForward": "notify"
 		}
@@ -222,6 +255,7 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
+				// --- Terminal ---
 				"terminal.integrated.profiles.linux": {
 					"zsh": {
 						"path": "zsh"
@@ -243,24 +277,115 @@
 					"-workbench.action.quickOpen",
 					"-workbench.action.terminal.focusFind"
 				],
+				"terminal.integrated.fontFamily": "CaskaydiaCove Nerd Font, JetBrains Mono, Cascadia Code, Consolas, monospace",
+				"terminal.integrated.fontSize": 14,
+				"terminal.integrated.lineHeight": 1.2,
+				"terminal.integrated.enableVisualBell": true,
+				"terminal.integrated.initialHint": false,
+
+				// --- Remote ---
 				"remote.extensionKind": {
 					"wenbopan.vscode-terminal-osc-notifier": ["ui"]
 				},
-				"projectManager.git.baseFolders": ["/workspaces"],
-				"projectManager.git.maxDepthRecursion": 2,
-				"projectManager.showProjectNameInStatusBar": true,
-				"projectManager.openInNewWindowWhenClickingInStatusBar": false,
-				"projectManager.projectsLocation": "/workspaces/.config/project-manager",
+				"remote.defaultExtensionsIfInstalledLocally": [],
+				"remote.autoForwardPortsSource": "output",
+
+				// --- Git ---
 				"git.autofetch": false,
-				"git.autorefresh": false
+				"git.autorefresh": false,
+				"git.addAICoAuthor": "off",
+
+				// --- Theme / Appearance ---
+				"workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+				"workbench.iconTheme": "material-icon-theme",
+				"workbench.productIconTheme": "fluent-icons",
+
+				// --- Font ---
+				"editor.fontFamily": "JetBrains Mono, Cascadia Code, Fira Code, Consolas, 'Courier New', monospace",
+				"editor.fontLigatures": true,
+				"editor.lineHeight": 24,
+				"editor.fontWeight": "450",
+				"editor.letterSpacing": 0.2,
+				"editor.fontSize": 12,
+
+				// --- Editor Behavior ---
+				"editor.semanticHighlighting.enabled": true,
+				"editor.bracketPairColorization.enabled": true,
+				"editor.guides.bracketPairs": "active",
+				"editor.guides.indentation": true,
+				"editor.guides.highlightActiveIndentation": true,
+				"editor.cursorBlinking": "smooth",
+				"editor.cursorSmoothCaretAnimation": "on",
+				"editor.cursorStyle": "line",
+				"editor.smoothScrolling": true,
+				"editor.minimap.enabled": true,
+				"editor.minimap.renderCharacters": false,
+				"editor.minimap.scale": 1,
+				"editor.stickyScroll.enabled": true,
+				"editor.renderWhitespace": "selection",
+				"editor.renderLineHighlight": "all",
+				"editor.wordWrap": "off",
+
+				// --- Workbench Layout ---
+				"workbench.tree.indent": 18,
+				"workbench.tree.renderIndentGuides": "always",
+				"workbench.editor.showTabs": "multiple",
+				"workbench.editor.tabSizing": "shrink",
+				"workbench.editor.highlightModifiedTabs": true,
+				"workbench.activityBar.location": "top",
+				"workbench.activityBar.compact": true,
+				"workbench.sideBar.location": "right",
+
+				// --- Window ---
+				"window.commandCenter": false,
+				"window.titleBarStyle": "custom",
+				"window.title": "${dirty}${rootName}${separator}${activeRepositoryBranchName}",
+				"window.confirmBeforeClose": "keyboardOnly",
+				"window.restoreWindows": "preserve",
+				"window.newWindowDimensions": "maximized",
+
+				// --- Extension: Error Lens ---
+				"errorLens.enabled": true,
+				"errorLens.messageEnabled": true,
+				"errorLens.gutterIconsEnabled": true,
+
+				// --- Extension: Material Icon Theme ---
+				"material-icon-theme.folders.theme": "specific",
+				"material-icon-theme.hidesExplorerArrows": false,
+				"material-icon-theme.opacity": 1,
+				"material-icon-theme.saturation": 1,
+
+				// --- Extension: Workspace Wiki ---
+				"workspaceWiki.showHiddenFiles": true,
+				"workspaceWiki.showIgnoredFiles": true,
+
+				// --- Misc ---
+				"accessibility.signals.terminalBell": { "sound": "on" },
+				"chat.agent.enabled": false
 			},
 			"extensions": [
 				"wenbopan.vscode-terminal-osc-notifier",
 				"GitHub.vscode-github-actions",
-				"alefragnani.project-manager"
+				"ms-azuretools.vscode-docker",
+				"biomejs.biome",
+				"vitest.explorer",
+				"usernamehw.errorlens",
+				"eamodio.gitlens",
+				"Gruntfuggly.todo-tree",
+				"johnpapa.vscode-peacock",
+				"miguelsolorio.fluent-icons",
+				"oderwat.indent-rainbow",
+				"NarasimaPandiyan.jetbrainsmono",
+				"sugatoray.vscode-markdown-extension-pack",
+				"AlanWalk.markdown-navigation",
+				"ms-vscode.Theme-MarkdownKit",
+				"PKief.material-icon-theme",
+				"monokai.theme-monokai-pro-vscode",
+				"johannes-exe-or-something.org-viewer",
+				"mrmryb.project-hub",
+				"tomoki1207.pdf",
+				"alexjsully.workspace-wiki"
 			]
 		}
-	},
-
-	"runArgs": ["--memory=6g", "--memory-swap=12g", "--name=codeforge"]
+	}
 }

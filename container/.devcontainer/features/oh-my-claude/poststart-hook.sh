@@ -1,52 +1,32 @@
 #!/bin/bash
-# Auto-start oh-my-claude proxy
+# SPDX-License-Identifier: GPL-3.0-only
 
-# Source NVM
-if [ -f /usr/local/share/nvm/nvm.sh ]; then
-    source /usr/local/share/nvm/nvm.sh
+# Post-start hook for oh-my-claude:
+# 1. Filter role agents (keep provider-only) — runs on every start for idempotency
+# 2. Status message
+
+if ! command -v omc >/dev/null 2>&1; then
+	echo "[oh-my-claude] omc not found; skipping"
+	exit 0
 fi
 
-if ! command -v omc &>/dev/null; then
-    echo "[oh-my-claude] omc not found in PATH, skipping auto-start"
-    exit 0
+# Filter role agents that overlap with CodeForge's agent-system plugin.
+# This runs on every container start to handle cases where omc install
+# was run manually or the feature install didn't complete cleanup.
+AGENTS_DIR="${HOME}/.claude/agents"
+if [ -d "${AGENTS_DIR}" ]; then
+	FILTERED=0
+	for agent in \
+		sisyphus prometheus claude-reviewer claude-scout oracle \
+		ui-designer analyst librarian document-writer navigator hephaestus; do
+		if [ -f "${AGENTS_DIR}/${agent}.md" ]; then
+			rm -f "${AGENTS_DIR}/${agent}.md"
+			FILTERED=$((FILTERED + 1))
+		fi
+	done
+	if [ "${FILTERED}" -gt 0 ]; then
+		echo "[oh-my-claude] Filtered ${FILTERED} role agents (provider-only mode)"
+	fi
 fi
 
-# Check if already running
-if omc proxy status &>/dev/null; then
-    echo "[oh-my-claude] Proxy already running"
-    exit 0
-fi
-
-# Check for config
-OMC_CONFIG="${HOME}/.oh-my-claude/config.json"
-if [ ! -f "$OMC_CONFIG" ]; then
-    echo "[oh-my-claude] No config at ${OMC_CONFIG} — skipping auto-start"
-    echo "[oh-my-claude] Run 'codeforge config apply' to deploy config, then 'omc proxy start'"
-    exit 0
-fi
-
-# Check for at least one Chinese provider API key
-_HAS_KEY=false
-for _VAR in KIMI_API_KEY ZHIPU_API_KEY ALIYUN_API_KEY MINIMAX_API_KEY DEEPSEEK_API_KEY; do
-    if [ -n "${!_VAR:-}" ]; then
-        _HAS_KEY=true
-        break
-    fi
-done
-
-if [ "$_HAS_KEY" = "false" ]; then
-    echo "[oh-my-claude] No provider API keys configured — skipping auto-start"
-    exit 0
-fi
-
-# Start with supervisor
-(
-    while true; do
-        omc proxy start 2>&1 | tee -a /tmp/oh-my-claude.log
-        echo "[oh-my-claude] Proxy exited, restarting in 2s..."
-        sleep 2
-    done
-) &
-SUPERVISOR_PID=$!
-echo $SUPERVISOR_PID > /tmp/oh-my-claude-supervisor.pid
-echo "[oh-my-claude] Proxy started with supervisor (PID: $SUPERVISOR_PID)"
+echo "[oh-my-claude] Installed; launch per-session proxy with 'omc cc'"

@@ -93,6 +93,20 @@ export function registerIndexBuildCommand(parent: Command): void {
 						}
 					}
 
+					// Read all file content BEFORE any DB mutations
+					const fileData = new Map<
+						string,
+						{ hash: string; content: string; ext: string; lang: string }
+					>();
+					for (const relPath of filesToProcess) {
+						const absPath = resolve(workspaceRoot, relPath);
+						const ext = "." + (relPath.split(".").pop() ?? "");
+						const lang = getLanguageForExtension(ext) ?? "unknown";
+						const hash = await hashFileContent(absPath);
+						const content = await Bun.file(absPath).text();
+						fileData.set(relPath, { hash, content, ext, lang });
+					}
+
 					// Delete old data for changed + deleted files
 					for (const file of [
 						...scanned.changedFiles,
@@ -101,21 +115,17 @@ export function registerIndexBuildCommand(parent: Command): void {
 						deleteFileAndSymbols(db, file);
 					}
 
-					// Insert file records first (symbols have FK to files)
+					// Insert file records using cached data
 					const fileRecords: IndexedFile[] = [];
 					for (const relPath of filesToProcess) {
-						const absPath = resolve(workspaceRoot, relPath);
-						const ext = "." + (relPath.split(".").pop() ?? "");
-						const lang = getLanguageForExtension(ext) ?? "unknown";
-						const hash = await hashFileContent(absPath);
-						const content = await Bun.file(absPath).text();
-						const lineCount = content.split("\n").length;
-						const size = Buffer.byteLength(content, "utf-8");
+						const data = fileData.get(relPath)!;
+						const lineCount = data.content.split("\n").length;
+						const size = Buffer.byteLength(data.content, "utf-8");
 						fileRecords.push({
 							path: relPath,
-							hash,
+							hash: data.hash,
 							size,
-							language: lang,
+							language: data.lang,
 							lineCount,
 							lastIndexed: new Date()
 								.toISOString()

@@ -6,8 +6,6 @@
 # Idempotent: removes the entire managed block then re-writes it fresh.
 # Safe to run on every container start via postStartCommand.
 
-CLAUDE_DIR="${CLAUDE_CONFIG_DIR:?CLAUDE_CONFIG_DIR not set}"
-
 echo "[setup-aliases] Configuring Claude aliases..."
 
 # Resolve check-setup path once (used inside the block we write)
@@ -24,7 +22,8 @@ for rc in ~/.bashrc ~/.zshrc; do
 		ls -t "${rc}.bak."* 2>/dev/null | tail -n +4 | xargs rm -f 2>/dev/null || true
 
 		# --- 2. Remove existing managed block (if present) ---
-		sed -i '/# === CodeForge Claude aliases START/,/# === CodeForge Claude aliases END/d' "$rc"
+		tmp="$(mktemp)"
+		sed '/# === CodeForge Claude aliases START/,/# === CodeForge Claude aliases END/d' "$rc" > "$tmp" && mv "$tmp" "$rc"
 
 		# --- 3. Legacy cleanup (pre-marker formats only) ---
 		# These remove remnants from versions that predated the block-marker system.
@@ -61,29 +60,76 @@ for rc in ~/.bashrc ~/.zshrc; do
 		sed -i "/^alias claude='/d" "$rc"
 		sed -i "/^alias ccraw='/d" "$rc"
 		sed -i "/^alias ccw='/d" "$rc"
+		sed -i "/^alias cc5='/d" "$rc"
+		sed -i "/^alias cc6='/d" "$rc"
+		sed -i "/^alias cc61='/d" "$rc"
 		sed -i "/^alias cc7='/d" "$rc"
+		sed -i "/^alias cc71='/d" "$rc"
+		sed -i "/^alias ccw5='/d" "$rc"
+		sed -i "/^alias ccw6='/d" "$rc"
+		sed -i "/^alias ccw61='/d" "$rc"
 		sed -i "/^alias ccw7='/d" "$rc"
+		sed -i "/^alias ccw71='/d" "$rc"
+		sed -i "/^alias cc-orc='/d" "$rc"
+		sed -i "/^alias cc-orc5='/d" "$rc"
+		sed -i "/^alias cc-orc6='/d" "$rc"
+		sed -i "/^alias cc-orc61='/d" "$rc"
 		sed -i "/^alias cc-orc7='/d" "$rc"
+		sed -i "/^alias cc-orc71='/d" "$rc"
+		sed -i "/^alias omc-apply='/d" "$rc"
+		sed -i "/^alias omc-doctor='/d" "$rc"
+		sed -i "/^alias omc-deepseek='/d" "$rc"
+		sed -i "/^alias omc-kimi='/d" "$rc"
+		sed -i "/^alias omc-qwen='/d" "$rc"
+		sed -i "/^alias omc-zhipu='/d" "$rc"
+		sed -i "/^alias omc-minimax='/d" "$rc"
 		sed -i '/^alias check-setup=/d' "$rc"
 		# cc-tools function from old format
 		if grep -q "^cc-tools()" "$rc" 2>/dev/null; then
 			sed -i '/^cc-tools() {/,/^}/d' "$rc"
+		fi
+		if grep -q "^omc-cc()" "$rc" 2>/dev/null; then
+			sed -i '/^omc-cc() {/,/^}/d' "$rc"
 		fi
 
 		# --- 5. Write fresh managed block ---
 		cat >>"$rc" <<BLOCK_EOF
 
 ${BLOCK_START}
-export CLAUDE_CONFIG_DIR="${CLAUDE_CONFIG_DIR}"
-export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/workspaces/.gh}"
+_CLAUDE_DIR="\$HOME/.claude"
+export GH_CONFIG_DIR="${GH_CONFIG_DIR:-/home/vscode/.config/gh}"
+export WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces}"
+export CODEFORGE_DIR="${CODEFORGE_DIR:-${WORKSPACE_ROOT:-/workspaces}/.codeforge}"
+export DEVCONTAINER_SCRIPTS="${DEVCONTAINER_SCRIPTS}"
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
+
+# Browser opener — lets tools (gh, npm, etc.) open URLs on the host.
+# VS Code sets BROWSER in its own terminals; this fallback covers external
+# terminals (Windows Terminal, tmux, etc.) with a friendly "copy this URL" message.
+export BROWSER="\${BROWSER:-${DEVCONTAINER_SCRIPTS}/open-browser.sh}"
 
 # Terminal color defaults — Docker sets TERM=xterm (8 colors); upgrade to 256-color
 if [ "\$TERM" = "xterm" ] || [ -z "\$TERM" ]; then
     export TERM=xterm-256color
 fi
 export COLORTERM="\${COLORTERM:-truecolor}"
+
+# Terminal keybind hardening — disable signals that cause problems in
+# Docker-attached panes (suspend closes pane, flow-control freezes
+# terminal). EOF and QUIT rebound to esoteric combos for emergency use.
+stty susp undef      # Kill Ctrl+Z — suspend closes Docker-attached panes
+stty -ixon           # Kill Ctrl+S/Q — flow control freezes terminal
+stty werase undef    # Kill Ctrl+W — conflicts with Windows Terminal close-tab
+stty quit '^]'       # Rebind Ctrl+\ (SIGQUIT) → Ctrl+] (emergency only)
+stty eof '^^'        # Rebind Ctrl+D (EOF) → Ctrl+^ (emergency only)
+# zsh bindkey cleanup — stty handles the terminal layer, but zsh's line
+# editor has its own bindings that bypass stty or conflict with pane hotkeys
+if [ -n "\$ZSH_VERSION" ]; then
+    bindkey -r '^W'   # Remove backward-kill-word (stty werase already disabled)
+    bindkey -r '^[w'  # Remove copy-region-as-kill (unused emacs kill-ring op)
+    bindkey -r '^[q'  # Remove push-line (niche; frees Alt+Q for terminal use)
+fi
 
 # Native binary (installed by claude-code-native feature)
 _CLAUDE_BIN="\$HOME/.local/bin/claude"
@@ -95,46 +141,72 @@ else
     _CLAUDE_WRAP="command"
 fi
 
-# oh-my-claude tools to disable (memory, preferences, coworker - keep only proxy tools)
-_OMC_DISALLOWED_TOOLS=(
-    --disallowedTools
-    mcp__oh-my-claude__remember
-    mcp__oh-my-claude__recall
-    mcp__oh-my-claude__get_memory
-    mcp__oh-my-claude__forget
-    mcp__oh-my-claude__list_memories
-    mcp__oh-my-claude__memory_status
-    mcp__oh-my-claude__compact_memories
-    mcp__oh-my-claude__clear_memories
-    mcp__oh-my-claude__summarize_memories
-    mcp__oh-my-claude__add_preference
-    mcp__oh-my-claude__list_preferences
-    mcp__oh-my-claude__get_preference
-    mcp__oh-my-claude__update_preference
-    mcp__oh-my-claude__delete_preference
-    mcp__oh-my-claude__match_preferences
-    mcp__oh-my-claude__preference_stats
-    mcp__oh-my-claude__coworker_task
-)
-
-alias cc='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias claude='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
 alias ccraw='command "\$_CLAUDE_BIN"'
-alias ccw='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias cc-orc='CLAUDE_CODE_MAX_CONTEXT_TOKENS=200000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias cc7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/main-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias ccw7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/writing-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
-alias cc-orc7='CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000 CLAUDE_CODE_AUTO_COMPACT_WINDOW=400000 CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" --model claude-opus-4-7 --system-prompt-file "\$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md" --permission-mode plan --allow-dangerously-skip-permissions --thinking-display summarized "\${_OMC_DISALLOWED_TOOLS[@]}"'
+
+_codeforge_ensure_settings() {
+  bash "\$DEVCONTAINER_SCRIPTS/ensure-settings-generated.sh" --quiet || {
+    echo "CodeForge could not generate/deploy Claude settings. Run check-setup for details." >&2
+    return 1
+  }
+}
+
+_codeforge_claude_profile() {
+  local settings_file="\$1"
+  local prompt_file="\$2"
+  shift 2
+  _codeforge_ensure_settings || return \$?
+  CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 "\$_CLAUDE_WRAP" "\$_CLAUDE_BIN" \\
+    --settings "\$settings_file" \\
+    --system-prompt-file "\$prompt_file" \\
+    --permission-mode plan \\
+    --allow-dangerously-skip-permissions \\
+    --thinking-display summarized \\
+    "\$@"
+}
+
+cc() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+claude() { cc "\$@"; }
+cc5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+cc71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/main-system-prompt.md" "\$@"; }
+
+ccw() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+ccw71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/writing-system-prompt.md" "\$@"; }
+
+cc-orc() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc5() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-45-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc6() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc61() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-46-1m-400k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc7() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-200k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
+cc-orc71() { _codeforge_claude_profile "\$_CLAUDE_DIR/settings-opus-47-1m-400k.json" "\$_CLAUDE_DIR/orchestrator-system-prompt.md" "\$@"; }
 alias ccr-apply='codeforge config apply && (ccr restart 2>/dev/null || ccr start) && echo "CCR config applied and restarted"'
-alias omc-apply='codeforge config apply && (omc proxy restart 2>/dev/null || omc proxy start) && echo "OMC config applied and proxy restarted"'
+alias omc-doctor='omc doctor --detail'
+omc-cc() {
+  if ! command -v omc >/dev/null 2>&1; then
+    echo "oh-my-claude is not installed" >&2
+    return 127
+  fi
+  omc cc "\$@"
+}
+alias omc-deepseek='omc cc -p ds'
+alias omc-kimi='omc cc -p km'
+alias omc-qwen='omc cc -p ay'
+alias omc-zhipu='omc cc -p zp'
+alias omc-minimax='omc cc -p mm-cn'
 
 cc-tools() {
   echo "CodeForge Available Tools"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━"
   printf "  %-20s %s\n" "COMMAND" "STATUS"
   echo "  ────────────────────────────────────"
-  for cmd in claude cc ccw ccraw cc-orc codeforge ccr omc ccusage ccburn claude-monitor codex ccusage-codex \\
-             ct cargo ruff biome dprint shfmt shellcheck hadolint \\
+  for cmd in claude cc cc5 cc6 cc61 cc7 cc71 ccw ccw5 ccw6 ccw61 ccw7 ccw71 ccraw cc-orc cc-orc5 cc-orc6 cc-orc61 cc-orc7 cc-orc71 codeforge ccr omc omc-cc ccusage ccburn claude-monitor karma-status karma-live-session-tracker karma-title-generator codex ccusage-codex \\
+             rtk ct cargo ruff biome dprint shfmt shellcheck hadolint \\
              ast-grep tree-sitter pyright typescript-language-server \\
              agent-browser gh docker git jq tmux bun go infocmp; do
     if command -v "\$cmd" >/dev/null 2>&1; then
@@ -155,14 +227,15 @@ BLOCK_EOF
 done
 
 echo "[setup-aliases] Aliases configured:"
-echo "  cc          -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
-echo "  claude      -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
+echo "  cc/claude   -> claude (opus-4-6, 200k ctx) with \$_CLAUDE_DIR/main-system-prompt.md"
 echo "  ccraw       -> vanilla claude without any config"
-echo "  ccw         -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
-echo "  cc-orc      -> claude (opus-4-5, 200k ctx) with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
-echo "  cc7         -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/main-system-prompt.md"
-echo "  ccw7        -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/writing-system-prompt.md"
-echo "  cc-orc7     -> claude (opus-4-7, 400k ctx) with \$CLAUDE_CONFIG_DIR/orchestrator-system-prompt.md (delegation mode)"
+echo "  cc5         -> claude (opus-4-5, 200k ctx)"
+echo "  cc6/cc61    -> claude (opus-4-6, 200k ctx / 1m bounded to 400k)"
+echo "  cc7/cc71    -> claude (opus-4-7, 200k ctx / 1m bounded to 400k)"
+echo "  ccw*        -> same model profiles with \$_CLAUDE_DIR/writing-system-prompt.md"
+echo "  cc-orc*     -> same model profiles with \$_CLAUDE_DIR/orchestrator-system-prompt.md"
 echo "  ccr-apply   -> redeploy claude-code-router config + restart daemon"
+echo "  omc-cc      -> launch Claude Code through oh-my-claude when installed"
+echo "  omc-doctor  -> diagnose oh-my-claude when installed"
 echo "  cc-tools    -> list all available CodeForge tools"
 echo "  check-setup -> verify CodeForge setup health"

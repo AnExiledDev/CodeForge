@@ -1,9 +1,19 @@
 import chalk from "chalk";
+import { spawnSync } from "child_process";
 import type { Command } from "commander";
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "fs";
+import {
+	copyFileSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	writeFileSync,
+} from "fs";
 import { homedir } from "os";
 import { basename, dirname, resolve } from "path";
-import { loadFileManifest } from "../../loaders/config-loader.js";
+import {
+	loadFileManifest,
+	resolveManifestSource,
+} from "../../loaders/config-loader.js";
 
 interface ConfigApplyOptions {
 	dryRun?: boolean;
@@ -15,7 +25,10 @@ function findWorkspaceRoot(): string | null {
 	let dir = process.cwd();
 
 	while (true) {
-		if (existsSync(resolve(dir, ".codeforge"))) {
+		if (
+			existsSync(resolve(dir, ".codeforge")) ||
+			existsSync(resolve(dir, ".devcontainer/defaults/codeforge"))
+		) {
 			return dir;
 		}
 		const parent = resolve(dir, "..");
@@ -26,7 +39,11 @@ function findWorkspaceRoot(): string | null {
 
 function expandVariables(path: string): string {
 	return path
-		.replace(/\$\{CLAUDE_CONFIG_DIR\}/g, resolve(homedir(), ".claude"))
+		.replace(/\$\{WORKSPACE_ROOT\}/g, findWorkspaceRoot() ?? process.cwd())
+		.replace(
+			/\$\{CODEFORGE_DIR\}/g,
+			resolve(findWorkspaceRoot() ?? process.cwd(), ".codeforge"),
+		)
 		.replace(/\$\{HOME\}/g, homedir());
 }
 
@@ -35,6 +52,32 @@ function filesAreIdentical(a: string, b: string): boolean {
 		const contentA = readFileSync(a);
 		const contentB = readFileSync(b);
 		return contentA.equals(contentB);
+	} catch {
+		return false;
+	}
+}
+
+function mergeSettingsForDeploy(srcPath: string, destPath: string): boolean {
+	try {
+		const srcContent = readFileSync(srcPath, "utf-8");
+		const destContent = readFileSync(destPath, "utf-8");
+		const srcSettings = JSON.parse(srcContent);
+		const destSettings = JSON.parse(destContent);
+
+		if (!destSettings.enabledPlugins) return false;
+
+		// Start with source, overlay user's false values for enabledPlugins
+		const merged = { ...srcSettings };
+		if (!merged.enabledPlugins) merged.enabledPlugins = {};
+
+		for (const [key, value] of Object.entries(destSettings.enabledPlugins)) {
+			if (value === false) {
+				merged.enabledPlugins[key] = false;
+			}
+		}
+
+		writeFileSync(destPath, JSON.stringify(merged, null, 2) + "\n");
+		return true;
 	} catch {
 		return false;
 	}
@@ -56,9 +99,27 @@ export function registerConfigApplyCommand(parent: Command): void {
 				const workspaceRoot = findWorkspaceRoot();
 				if (!workspaceRoot) {
 					console.error(
-						"Error: Could not find .codeforge/ directory in any parent",
+						"Error: Could not find CodeForge workspace in any parent",
 					);
 					process.exit(1);
+				}
+
+				const generator = resolve(
+					workspaceRoot,
+					".devcontainer/scripts/generate-settings-profiles.js",
+				);
+				if (existsSync(generator)) {
+					const result = spawnSync("node", [generator, "--if-stale"], {
+						stdio: "inherit",
+						env: {
+							...process.env,
+							WORKSPACE_ROOT: workspaceRoot,
+							CODEFORGE_DIR: resolve(workspaceRoot, ".codeforge"),
+						},
+					});
+					if (result.status !== 0) {
+						process.exit(result.status ?? 1);
+					}
 				}
 
 				const manifest = await loadFileManifest(workspaceRoot);
@@ -83,7 +144,14 @@ export function registerConfigApplyCommand(parent: Command): void {
 						continue;
 					}
 
-					const src = resolve(workspaceRoot, ".codeforge", entry.src);
+					const src = resolveManifestSource(workspaceRoot, entry.src);
+					if (!src) {
+						skipped++;
+						console.log(
+							`  ${chalk.yellow("\u2717")} ${entry.src} (source missing)`,
+						);
+						continue;
+					}
 					const destDir = expandVariables(entry.dest);
 					const destFilename = entry.destFilename ?? basename(entry.src);
 					const dest = resolve(destDir, destFilename);
@@ -103,6 +171,8 @@ export function registerConfigApplyCommand(parent: Command): void {
 							continue;
 						}
 
+						// Note: TOCTOU race possible if file changes between check and copy.
+						// Acceptable for config deployment — files are not security-sensitive.
 						if (
 							entry.overwrite === "if-changed" &&
 							destExists &&
@@ -123,11 +193,22 @@ export function registerConfigApplyCommand(parent: Command): void {
 						);
 					} else {
 						mkdirSync(dirname(dest), { recursive: true });
-						copyFileSync(src, dest);
-						updated++;
-						console.log(
-							`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (updated)`,
-						);
+						if (
+							entry.id.startsWith("claude.settings") &&
+							destExists &&
+							mergeSettingsForDeploy(src, dest)
+						) {
+							updated++;
+							console.log(
+								`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (merged)`,
+							);
+						} else {
+							copyFileSync(src, dest);
+							updated++;
+							console.log(
+								`  ${chalk.green("\u2713")} ${entry.src} \u2192 ${displayDest} (updated)`,
+							);
+						}
 					}
 				}
 

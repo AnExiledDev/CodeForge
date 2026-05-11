@@ -1,5 +1,5 @@
 {
-	"description": "Agent redirection, subagent configuration, and team quality gate hooks",
+	"description": "Agent redirection and team orchestration hooks",
 	"hooks": {
 		"PreToolUse": [
 			{
@@ -20,17 +20,6 @@
 						"type": "command",
 						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/teammate-idle-check.py",
 						"timeout": 10
-					}
-				]
-			}
-		],
-		"TaskCompleted": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/task-completed-check.py",
-						"timeout": 60
 					}
 				]
 			}

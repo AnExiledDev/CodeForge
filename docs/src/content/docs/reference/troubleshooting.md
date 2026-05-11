@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-description: Symptom-first troubleshooting for install, container, authentication, commands, plugins, ports, and performance issues.
+description: Symptom-first troubleshooting for install, container, authentication, commands, plugins, ports, performance, and debugging with logs.
 sidebar:
   order: 7
 ---
@@ -65,7 +65,7 @@ gh auth status
 gh auth login
 ```
 
-Or configure `GH_TOKEN` in `.devcontainer/.secrets`.
+Or place your token in `.codeforge/secrets/gh_token`.
 
 ### Codex CLI
 
@@ -144,12 +144,132 @@ Check:
 2. Your distro is using WSL 2, not WSL 1.
 3. Docker Desktop was restarted after settings changes.
 
+## Agent-Browser Cannot Connect to Host Chrome
+
+Symptom: `agent-browser connect` fails with connection refused, timeout, or empty response.
+
+Check these in order:
+
+1. **Are you using the resolved IPv4 address?** Inside a container, `localhost` refers to the container itself. Chrome CDP also rejects `Host: host.docker.internal`, so resolve `host.docker.internal` to IPv4 and use that IP with port 9223 after running `.devcontainer\scripts\start-hermes-chrome.ps1` on the host.
+
+2. **Is Chrome remote debugging actually enabled?**
+   - Windows: run `.\.devcontainer\scripts\start-hermes-chrome.ps1` from an Administrator PowerShell. It launches Chrome on `127.0.0.1:9222` and creates `0.0.0.0:9223 -> 127.0.0.1:9222`.
+   - Chrome 136+: Chrome must be launched with both `--remote-debugging-port=9222` **and** `--user-data-dir`. Chrome 136+ silently ignores the port flag without a user data directory.
+   - Verify from the Windows host: `Invoke-WebRequest http://127.0.0.1:9222/json/version` and `Invoke-WebRequest http://127.0.0.1:9223/json/version` should return JSON.
+
+3. **Is the port reachable from the container?**
+   ```bash
+   CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+   curl http://$CDP_HOST:9223/json/version
+   ```
+   If this fails, the portproxy/firewall path is not reachable. Windows users should enable [mirrored networking](/start-here/windows-networking/) and check `netsh interface portproxy show v4tov4`.
+
+4. **Is another Chrome instance blocking the port?** Only one Chrome process can listen on a given debug port. Close other Chrome instances or use a different port.
+
+5. **Firewall blocking?** Windows Firewall may block incoming connections on port 9223. The host helper creates an inbound rule named `Hermes Chrome CDP 9223`; confirm it is enabled.
+
+6. **Seeing HTTP 500 from Chrome?** If the response says `Host header is specified and is not an IP address or localhost`, you used `host.docker.internal` directly. Use the resolved IPv4 address instead.
+
+## Mirrored Networking Not Working
+
+Symptom: After enabling mirrored networking in `.wslconfig`, ports are still not accessible between host and container.
+
+Check these in order:
+
+1. **Did you restart WSL?** Changes to `.wslconfig` require `wsl --shutdown` from PowerShell, then restarting your WSL distribution or Docker Desktop.
+
+2. **Is mirrored mode actually active?** Run `wsl --status` from PowerShell and look for "Networking mode: Mirrored".
+
+3. **VPN conflict?** Cisco AnyConnect and some VPN clients break mirrored networking. Disconnect the VPN and test again. See the [Windows Networking guide](/start-here/windows-networking/#vpn-conflicts) for workarounds.
+
+4. **Windows update regression?** Microsoft occasionally ships updates that break mirrored mode. Check [WSL GitHub Issues](https://github.com/microsoft/WSL/issues) for known regressions. Revert to NAT mode as a temporary workaround.
+
+5. **Docker Desktop version?** Mirrored networking requires Docker Desktop 4.26.0 or later. Update Docker Desktop if you're on an older version.
+
+## Debugging with Logs
+
+Use this section when you need to capture, find, or increase the verbosity of container logs.
+
+### Capturing Build and Startup Logs
+
+The devcontainer CLI writes structured JSON to stdout and human-readable progress to stderr. Separate them to capture both:
+
+```bash
+# Capture build logs (stderr) and result (stdout) separately
+devcontainer build --workspace-folder . > result.json 2> build.log
+
+# Capture startup logs the same way
+devcontainer up --workspace-folder . > result.json 2> up.log
+
+# Increase verbosity with --log-level (trace, debug, info, warn, error)
+devcontainer build --workspace-folder . --log-level trace 2> build.log
+
+# Machine-parseable log lines on stderr
+devcontainer up --workspace-folder . --log-format json 2> up.log
+```
+
+For lower-level Docker build output, disable BuildKit's fancy progress display:
+
+```bash
+BUILDKIT_PROGRESS=plain devcontainer build --workspace-folder . 2> build.log
+```
+
+### Capturing Runtime Container Logs
+
+Once a container is running, use `docker logs` to capture its output:
+
+```bash
+# Snapshot to file
+docker logs <container-id> > runtime.log 2>&1
+
+# Stream to file in the background
+docker logs -f <container-id> > runtime.log 2>&1 &
+```
+
+Find your container ID with `docker ps`.
+
+### Where Logs Are Stored
+
+| Location | Contents |
+|----------|----------|
+| `~/.claude/` | Claude Code session data, credentials, project state |
+| `~/.lamarck/` | Skill analysis state; runtime logs at `/tmp/lamarck.log` |
+| `~/.claude-mem/` | Memory system (settings, SQLite DB, Chroma vectors, logs) |
+| `/tmp/` | Transient logs from background processes |
+
+### Diagnostic Tools
+
+Three built-in tools help analyze session behavior and errors:
+
+**ccdiag** — Session diagnostics (Go CLI):
+
+```bash
+ccdiag orphans    # find orphaned tool calls (started but never completed)
+ccdiag errors     # analyze session errors and failure patterns
+ccdiag tokens     # token usage breakdown per session/tool
+ccdiag proxy      # launch API proxy on port 9119 for traffic inspection
+```
+
+**analyze-sessions** — Session quality metrics (Python):
+
+```bash
+# Analyze sessions from a specific date
+analyze-sessions ~/.claude/projects/ --start 2026-01-01
+
+# JSON output for scripting
+analyze-sessions ~/.claude/projects/ --format json
+```
+
+Metrics include thinking depth, Read:Edit ratio, tool call patterns, and frustration indicators (repeated failures, context resets).
+
+**karma-status** — Process status and logs for Claude Code Karma.
+
 ## Reset Options
 
 Use the smallest reset that solves the problem:
 
 1. delete and redeploy runtime config in `~/.claude/`
-2. restore default source config under `.codeforge/config/`
+2. remove or fix the matching override under `.codeforge/`, then regenerate/deploy settings
 3. reset aliases in your shell config
 4. rebuild the container
 5. disable and re-enable a single feature

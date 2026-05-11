@@ -1,0 +1,41 @@
+{
+	"id": "claude-mem",
+	"version": "1.0.0",
+	"name": "Claude-Mem Memory System",
+	"description": "Persistent memory across Claude Code sessions with real-time observation capture, hybrid search (SQLite + Chroma vectors), and MCP tools",
+	"documentationURL": "https://github.com/thedotmack/claude-mem",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "npm version or git ref (use 'none' to skip)",
+			"default": "latest"
+		},
+		"workerPort": {
+			"type": "string",
+			"description": "Worker service HTTP port",
+			"default": "37777"
+		},
+		"autostart": {
+			"type": "string",
+			"description": "Auto-start worker on container start",
+			"default": "true",
+			"enum": ["true", "false"]
+		},
+		"chromaMode": {
+			"type": "string",
+			"description": "Chroma vector store mode",
+			"default": "local",
+			"enum": ["local", "disabled"]
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/node",
+		"ghcr.io/devcontainers-extra/features/uv",
+		"ghcr.io/rails/devcontainer/features/bun"
+	]
+}

@@ -1,0 +1,24 @@
+{
+	"setup": {
+		"config": true,
+		"aliases": true,
+		"auth": true,
+		"plugins": true,
+		"updateClaude": true,
+		"terminal": true,
+		"poststart": true,
+		"projects": true
+	},
+	"identity": {
+		"name": null,
+		"email": null
+	},
+	"timezone": "America/Chicago",
+	"claude": {
+		"versionLock": null
+	},
+	"plugins": {
+		"blacklist": [],
+		"official": ["frontend-design@claude-plugins-official"]
+	}
+}

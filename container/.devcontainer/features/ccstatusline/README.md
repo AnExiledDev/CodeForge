@@ -74,7 +74,7 @@ The feature will validate these are present and exit with an error if missing.
 - ✅ **Automatic Integration**: Auto-configures `~/.claude/settings.json`
 - ✅ **Idempotent**: Safe to run multiple times
 - ✅ **Multi-user**: Automatically detects container user
-- ✅ **Config-aware**: Respects `CLAUDE_CONFIG_DIR` environment variable (defaults to `~/.claude`)
+- ✅ **Config-aware**: Uses `~/.claude` for Claude Code settings
 
 ## Post-Installation Steps
 
@@ -102,7 +102,7 @@ You should see formatted output with powerline styling.
 
 **3. Check Claude Code integration:**
 ```bash
-cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" | jq '.statusLine'
+cat "$HOME/.claude/settings.json" | jq '.statusLine'
 ```
 
 Should show:
@@ -204,7 +204,7 @@ cat ~/.config/ccstatusline/settings.json | jq .
 echo '{"model":{"display_name":"Test"}}' | npx -y ccstatusline@latest
 
 # 3. Check Claude Code settings
-cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" | jq '.statusLine'
+cat "$HOME/.claude/settings.json" | jq '.statusLine'
 
 # 4. Manually run auto-config if needed
 configure-ccstatusline-auto
@@ -258,7 +258,7 @@ configure-ccstatusline-auto
 npm install -g ccstatusline@latest
 ```
 
-Then update `${CLAUDE_CONFIG_DIR:-~/.claude}/settings.json`:
+Then update `~/.claude/settings.json`:
 ```json
 {
   "statusLine": {

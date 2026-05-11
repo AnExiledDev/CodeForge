@@ -47,10 +47,196 @@ For minor and patch updates, you can usually just rebuild the container. Check t
 
 ## Version History
 
+## Unreleased
+
+### Networking
+
+- **Docker-native port forwarding** — all service ports are now mapped in `docker-compose.yml` via `ports:` bound to `127.0.0.1`. This provides reliable port forwarding independent of VS Code, and works with WSL mirrored networking out of the box. Mapped ports: Karma Dashboard (7847), Karma API (7848), Claude-Mem Worker (37777), Astro docs dev server (4321), mitmproxy (8081), ccdiag API Proxy (9119).
+- **Switch VS Code port detection to `output` mode** — `remote.autoForwardPortsSource` changed from `hybrid` to `output`. The `hybrid` mode has known reliability issues (silently stops working after detecting 20+ ports). The `output` mode is less aggressive but more reliable, and Docker Compose port mappings now handle the primary forwarding.
+- **Add missing port labels** — added `portsAttributes` entries for the Astro docs dev server (4321) and mitmproxy/codeforge proxy (8081) so VS Code shows proper labels when these ports are detected.
+
+### Status Line
+
+- **Rate limit reset times** — the 5-hour and 7-day rate limit widgets now display when limits reset (e.g., `5h: 42% (14:30)` and `7d: 15% (Mon 09:00)`). Uses custom-command scripts instead of built-in ccstatusline types.
+
+### Configuration
+
+- **Container timezone** — new `timezone` field in `.codeforge/container.json` (default: `America/Chicago`). Set to any IANA timezone (e.g., `America/New_York`, `Europe/London`). Applied via `TZ` env var on container start.
+
+### Authentication
+
+- **Browser opener for `gh auth login`** — tools that need to open a browser (like `gh auth login`) now get a friendly fallback instead of a wall of "executable not found" errors. In VS Code terminals, URLs open on the host automatically via VS Code's built-in forwarding. In external terminals (Windows Terminal, tmux, etc.), the URL is printed cleanly for manual copy. Set via `$BROWSER` env var with conditional fallback — does not override VS Code's native browser handler.
+
+### Bug Fixes
+
+- **Fix git credential helper not configured without `GH_TOKEN` secret** — `gh auth setup-git` was nested inside the `GH_TOKEN` block, so it only ran when a token secret was provided. Now runs unconditionally on every container start, enabling manual `gh auth login` to work immediately for git operations. Also detects persisted GitHub CLI credentials (from Docker named volume) and derives git identity without requiring a secret.
+- **Fix named volume ownership for all mount points** — `setup.sh` only fixed `root:root` ownership on `~/.claude`, leaving 6 other Docker named volumes unfixed. `~/.config/gh` and `~/.bun/install/cache` were actively broken (`gh auth login` would fail with `permission denied`). Now loops over all volume mount points from `docker-compose.yml`.
+
+### Developer Tooling
+
+- **Enable shfmt, dprint, shellcheck, hadolint** — previously disabled (`"version": "none"`), now set to `"latest"`. Provides shell formatting, markdown/TOML/Dockerfile formatting, shell linting, and Dockerfile linting out of the box.
+
+### Documentation
+
+- **Add AI-CONTEXT.md** — machine-readable environment reference for AI assistants. Covers toolchain, filesystem, constraints, auth, and persistence in ~700 tokens. Referenced from AGENTS.md with user guidance in README.md.
+
+### Skill Engine
+
+- **Add `/codeforge` skill** — on-demand deep container context (toolchain inventory, filesystem map, safety constraints). Complements the static AI-CONTEXT.md with detailed reference files.
+- **Remove skill auto-suggestion** — removed `skill-suggester.py` and the `UserPromptSubmit` hook. Skills are now loaded on demand via `/skill` only. The auto-suggestion system had only 2 active matchers and added latency to every prompt.
+
+### Removed
+
+- **Remove Codex AGENTS.md** — removed the single-line `@AGENTS.md` self-referencing file from packaged defaults and file-manifest. Codex config.toml is unaffected.
+
+### Secrets & Configuration
+
+- **Docker Compose secrets** — secrets now use Docker Compose file-based secrets mounted at `/run/secrets/`. Place secret files in `.codeforge/secrets/` (one file per secret, raw value only). The `generate-compose.mjs` init script auto-discovers secrets and generates the compose override. Supported secrets: `gh_token`, `npm_token`, `claude_code_oauth_token`, `openai_api_key`, `anthropic_api_key`, `deepseek_api_key`, `gemini_api_key`, `openrouter_api_key`. Env vars (Codespaces) remain supported as a fallback.
+- **`.secrets` and `.env` files removed** — replaced by `.codeforge/secrets/` (for sensitive tokens) and `.codeforge/container.json` (for setup flags, identity, plugin config). Migration warnings are shown if old files are detected.
+- **`CLAUDE_CODE_OAUTH_TOKEN` replaces `CLAUDE_AUTH_TOKEN`** — Claude Code's native OAuth env var is now used for headless auth instead of manual `.credentials.json` injection. Note: `CLAUDE_CODE_OAUTH_TOKEN` does not work when `ANTHROPIC_API_KEY` is also set.
+- **Git identity derived from `gh auth login`** — username and email are automatically set from the GitHub API after authentication. Manual `GH_USERNAME` and `GH_EMAIL` config is no longer needed. Override via `.codeforge/container.json` `identity` section if needed.
+- **`.codeforge/container.json`** — new structured JSON config replaces `.env` for setup flags (`setup.config`, `setup.aliases`, etc.), Claude version lock, plugin blacklist, and identity overrides. Deployed from packaged defaults with `overwrite: "never"`.
+- **`.claude.json` pre-populated** — `hasCompletedOnboarding` and `bypassPermissionsModeAccepted` are now seeded via the file manifest on first deploy, removing the `99-claude-onboarding.sh` post-start hook.
+- **`CLAUDE_CONFIG_DIR` removed** — this env var is no longer set or referenced anywhere. All paths use `$HOME/.claude` directly.
+- **`CLAUDECODE` env var removed** — the `CLAUDECODE=null` override in `remoteEnv` has been removed.
+- **oh-my-claude provider keys removed from default secrets** — `KIMI_API_KEY`, `ZHIPU_API_KEY`, `ALIYUN_API_KEY`, `MINIMAX_API_KEY`, `ZAI_API_KEY`, `MINIMAX_CN_API_KEY` removed from `devcontainer.json` secrets. Users who enable oh-my-claude can add their own secret files.
+- **`generate-mounts.mjs` renamed to `generate-compose.mjs`** — now generates both volume mounts and Docker secrets in the compose override.
+
+### Performance
+
+- **TMPDIR removed from remoteEnv** — previously set to `/workspaces/.tmp` (bind mount, slow on NTFS/WSL). Now unset, defaulting to the container's `/tmp` (overlay/tmpfs). Scripts using `${TMPDIR:-/tmp}` already handle this correctly. Any user scripts depending on `$TMPDIR` being a persistent location should use an explicit path instead.
+- **GH_CONFIG_DIR moved to Docker named volume** — changed from `/workspaces/.gh` (bind mount) to `/home/vscode/.config/gh` backed by a `codeforge-gh-config` named volume. Faster I/O and no gitignore hazard. One-time `gh auth login` required after first rebuild.
+- **Cache volume mounts added** — `~/.cache`, `~/.npm`, and `~/.bun/install/cache` are now backed by Docker named volumes (`codeforge-cache`, `codeforge-npm-cache`, `codeforge-bun-cache`), keeping high-churn package manager caches off the bind mount.
+- **Docker Compose migration** — devcontainer now uses `docker-compose.yml` for volume management instead of inline `mounts` in devcontainer.json. Volume names are fixed (no `${devcontainerId}` suffix), simplifying volume management. Existing `${devcontainerId}`-suffixed volumes are orphaned — run `docker volume prune` to clean up, and re-authenticate `gh auth login` on first rebuild.
+- **Dynamic volume mounts** — `initializeCommand` runs `generate-mounts.mjs` on the host before container build, reading `.codeforge/mounts.json` to generate a `docker-compose.codeforge.yml` override with project-specific volume mounts for high-churn directories.
+
+### Agent Orchestration
+
+- **New feature: `sandcastle`** — installs [@ai-hero/sandcastle](https://github.com/mattpocock/sandcastle) globally via npm for multi-agent workflow orchestration. Supports parallel agents on separate branches, implement→review→fix pipelines, and plan decomposition workflows. Uses a local-process provider model — agents run as Claude Code CLI child processes in git worktrees, inheriting all `~/.claude/` config and workspace-scope-guard confinement. Pinned to ≥0.5.4 (command injection CVE fix). Set `"version": "none"` in devcontainer.json to disable.
+
+### Context Optimization
+
+- **RTK (Rust Token Killer) integration** — new feature (`features/rtk`) installs the RTK CLI proxy that compresses Bash command output before it reaches the LLM context window (60-90% token savings). A PreToolUse hook transparently rewrites supported commands (`git`, `npm`, `cargo`, `docker`, etc.) to route through RTK. Auto-allow is disabled by default — set `RTK_AUTO_ALLOW=1` to skip permission prompts for rewritten commands. Includes Codex CLI awareness file for instruction-based prefix compliance.
+
+### CLI
+
+- **`codeforge doctor` command** — new top-level command that checks environment health: GitHub CLI auth, Git user config, workspace filesystem type (detects slow WSL/NTFS mounts), TMPDIR location, cache directory volume backing, and container memory limits. Supports `--format json` and `--no-color`.
+- **`codeforge doctor --fix`** — interactive fix mode with TUI multi-select (via @clack/prompts). Groups fixable issues by category (auth, environment, volumes, WSL), pre-selects all fixes, and applies selected fixes. Supports `--yes` for non-interactive apply, `--dry-run` for preview, and `--only <category>` for filtering.
+- **Volume candidate detection** — `codeforge doctor` now scans for high-churn directories (node_modules, .next, .nuxt, .venv, target, .turbo, etc.) on slow filesystems and recommends Docker volume mounts. Fix action writes `.codeforge/mounts.json` for automatic compose integration.
+- **WSL .wslconfig generator** — on WSL environments, `codeforge doctor` detects host RAM and generates an optimized `.wslconfig` with memory limits, swap, `autoMemoryReclaim=gradual`, and `sparseVhd=true`. Advisory-only — prints content for manual save to `%USERPROFILE%\.wslconfig`.
+- **Windows Defender exclusion guide** — on WSL environments, `codeforge doctor` provides PowerShell commands to exclude Docker and WSL processes from Windows Defender real-time scanning.
+
+### Terminal
+
+- **Alt+Enter newline keybinding** — added `alt+enter` → `chat:newline` to the default Claude Code keybindings. Windows Terminal doesn't support the Kitty keyboard protocol, so Shift+Enter and Ctrl+Enter send identical bytes to plain Enter. Alt+Enter sends ESC+CR, which is universally distinct and works reliably as a newline key.
+- **Shell terminal keybinds hardened** — disabled `Ctrl+Z` (suspend, which closes Docker-attached panes), `Ctrl+S/Q` (flow control freeze), and `Ctrl+W` (conflicts with Windows Terminal close-tab). Rebound `Ctrl+\` (SIGQUIT) to `Ctrl+]` and `Ctrl+D` (EOF) to `Ctrl+^` as emergency-only alternatives. Also unbound zsh's `Alt+W` (copy-region-as-kill) and `Alt+Q` (push-line) to free those keys for terminal use.
+
+### Security
+
+- **Git safe.directory configured on container start** — bind-mounted `/workspaces` may have a different uid than the container user, causing Git to refuse all operations with "dubious ownership" errors (CVE-2022-24765). `setup.sh` now runs `git config --global safe.directory` using `$WORKSPACE_ROOT` on every start.
+
+### Hermes Agent
+
+- **New feature: `hermes-agent`** — installs [Nous Research's Hermes Agent](https://hermes-agent.nousresearch.com/) CLI via the upstream `curl | bash` installer with `--skip-setup`. Hermes uses the plain `anthropic` / `openai` Python SDKs directly and supports any compatible provider (Anthropic, OpenAI, MiniMax, local models). Enabled by default; set `"version": "none"` in `devcontainer.json` to disable.
+- **Hermes persistence** — dedicated Docker named volume (`codeforge-hermes-config-${devcontainerId}`) for `~/.hermes/`, surviving container rebuilds so `hermes setup` is a one-time cost per devcontainer instance.
+- **No credential seeding** — the interactive `hermes setup` wizard is intentionally skipped during image build. Run `hermes setup` on first use to pick a provider and paste an API key (e.g. from `$MINIMAX_API_KEY`, which already has a slot in `.secrets.example`). Claude OAuth / Codex ChatGPT OAuth cannot be reused — Hermes needs its own provider auth.
+- **Install script now warns on unsupported `version` values** — Hermes upstream has not tagged releases yet, so anything other than `latest` or `none` silently installed HEAD of `main`. The installer now prints a clear WARNING when `version` is set to a semver or unrecognized value, making it obvious that the pin is not honored.
+- **Install script warns on volume-mount mismatch** — the Hermes config volume in `devcontainer.json` is pinned to `/home/vscode/.hermes`. If the feature's auto-detected user resolves to anything other than `vscode` (e.g. `node`, `codespace`, `root`), the installer now surfaces a WARNING that `hermes setup` state will not persist across rebuilds, instead of silently breaking.
+
+### Configuration
+
+- **Profile overlay `_meta` shorthand** — profile overlay files (`defaults/codeforge/claude/settings/profiles/*.json`) now use a `_meta: { model, contextWindow }` field instead of repeating the model string and context window across three separate keys. The generator expands `_meta` into `model`, `CLAUDE_CODE_MAX_CONTEXT_TOKENS`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, and `CLAUDE_CODE_DISABLE_1M_CONTEXT`. Profiles are now 3–7 lines each. To add a new profile, specify `_meta` plus any profile-specific fields and add an entry to the `profiles` array in `generate-settings-profiles.js`.
+- **Thinking settings moved to base** — `MAX_THINKING_TOKENS: 31999` and `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING: 1` moved from individual profile overlays into `base.json` so all profiles inherit them. Opus 4.7 inherits these settings unchanged.
+- **`ANTHROPIC_MODEL` / `ANTHROPIC_DEFAULT_OPUS_MODEL` removed** — these env vars were duplicating the top-level `model` field and are no longer set in generated profiles. Model selection is controlled by `model` in the settings JSON (set by `--settings` flag) plus any explicit `--model` CLI flag.
+- **`autoCompactWindow` top-level key removed** — context window is now set only via `CLAUDE_CODE_AUTO_COMPACT_WINDOW` env var (still present). The redundant top-level `autoCompactWindow` field has been removed from all profiles.
+- **`settings.json` is now a symlink to `settings-opus-46-200k.json`** — the default settings file is no longer a separate generated copy; it is a symlink (or identical file copy on platforms without symlink support) pointing to the opus-46-200k profile. The active default profile is controlled by the `isDefault: true` flag in the `profiles` array of `generate-settings-profiles.js`.
+
+- **Config defaults layout v3** - `.codeforge/` is now a minimal overrides/state directory with README, markers, checksums, and data. Packaged defaults stay under `.devcontainer/defaults/codeforge/`, organized by `claude/`, `codex/`, and `rtk/`.
+- **Claude settings generation moved to `.generated`** - settings are generated from `claude/settings/base.json` plus profile overlays into `.devcontainer/.generated/codeforge/claude/settings/`, then deployed to `~/.claude/settings*.json`. The default profile is now `opus-46-200k`; `settings.json` matches `settings-opus-46-200k.json`.
+- **Manifest override IDs** - default manifest entries now require stable `id` values. Optional `.codeforge/file-manifest.json` entries can override, disable, or add files by `id`; source resolution checks `.codeforge/`, generated output, then packaged defaults.
+- **v3 migration and stale marker** - setup writes `.codeforge/.markers/config-layout-v3` and a migration report, and alias launch checks `.codeforge/.markers/settings-generated-v3` so stale Claude settings regenerate before `cc` starts.
+
+- **Claude session retention increased** — default `cleanupPeriodDays` is now `90` across all generated Claude settings profiles. Extended thinking remains enabled by default.
+- **Dangerous-mode permission prompt skipped by default** — `skipDangerousModePermissionPrompt: true` is now set in `settings.base.json` and propagates to all five generated profiles. Suppresses the one-time bypass-permissions confirmation on new devcontainers.
+- **Effort level bumped to `max` on opus-4-7** — both opus-4-7 overlays (200k and 1M-400k) now set `effortLevel: "max"` and `CLAUDE_CODE_EFFORT_LEVEL: "max"`. Opus-4-5 and opus-4-6 profiles no longer carry any effort-level setting; they use `MAX_THINKING_TOKENS: 31999` with adaptive thinking disabled (token budgets, not effort levels). `CLAUDE_CODE_EFFORT_LEVEL` was removed from base settings so it no longer leaks into non-4.7 profiles.
+- **Claude settings profiles** — replaced the single hand-edited default with `settings.base.json` plus model overlays that generate five deployed settings files: opus-4-7 200k default, opus-4-7 1M bounded to 400k, opus-4-6 200k, opus-4-6 1M bounded to 400k, and opus-4-5 200k.
+- **Profile aliases** — `cc`, `claude`, `cc7`, `ccw`, `ccw7`, `cc-orc`, and `cc-orc7` now use the opus-4-7 200k settings profile. Added `cc5`, `cc6`, `cc61`, `cc71` plus matching `ccw*` and `cc-orc*` variants.
+- **Settings-based context bounds** — Claude launchers now pass `--settings` profile files instead of inline context env vars or `--model`, so model, context, and thinking controls stay in settings JSON.
+- **Router features disabled by default** — `claude-code-router` and `oh-my-claude` are both present but configured with `version: "none"` in `devcontainer.json`; CCR autostart is also false.
+- **Auto mode disabled by default** — `disableAutoMode: "disable"` added to the base settings profile, removing the `auto` permission mode from the Shift+Tab cycle and rejecting `--permission-mode auto` at startup. Users who want auto mode back can override via `~/.claude/settings.json`.
+
+### Memory & Analysis
+
+- **claude-mem memory system** — real-time observation capture with hybrid search (SQLite + Chroma vectors). Background worker on port 37777 receives hook events via HTTP POST. MCP tools (search, timeline, get_observations, smart_search) registered via poststart.d. Replaces disabled `memory-awareness`, `context-memory`, and `post-tool` hooks.
+- **lamarck skill analyzer** — periodic session analysis via cron (every 4h by default). Use `lamarck skill <name> --mode suggest` for skill-specific improvement suggestions from session history.
+- **ccdiag session diagnostics** — Go CLI for session health: `ccdiag orphans` (orphaned tool calls), `ccdiag errors` (failure patterns), `ccdiag tokens` (usage breakdown), `ccdiag proxy` (API inspection on port 9119).
+- **claude-session-analyzer** — Python quality metrics tool: thinking depth, Read:Edit ratio, frustration indicators. Usage: `analyze-sessions ~/.claude/projects/ --start 2026-01-01`.
+- **Go runtime enabled** — `ghcr.io/devcontainers/features/go:1` uncommented in devcontainer.json (required by ccdiag).
+- **Cron daemon installed** — required by lamarck for scheduled batch processing. Started via poststart.d hook.
+
+### oh-my-claude
+
+- **StatusLine protection hardened** — install.sh now explicitly resets `statusLine` to ccstatusline after `omc install` completes, since OMC lacks a `--skip-statusline` flag. This prevents OMC from overwriting CodeForge's statusline config.
+- **Feature completed as opt-in** — `features/oh-my-claude` now installs the OMC CLI with hooks/MCP skipped, preserves CodeForge-managed `settings.json`, and keeps OMC proxy lifecycle per-session via `omc cc` instead of a post-start daemon.
+- **Alias cleanup** — default CodeForge `cc` aliases no longer pass OMC MCP `--disallowedTools`; OMC helpers are exposed separately (`omc-cc`, `omc-doctor`, provider shortcuts) when OMC is installed.
+- **Provider env coverage** — added Z.AI, MiniMax CN, Ollama, and embedding provider env placeholders to `.secrets.example`.
+- **Robust agent generation** — `omc install` now retries up to 3 times with 2-second backoff if the initial install fails during container build.
+- **Post-start agent cleanup** — role agents (sisyphus, prometheus, etc.) are now filtered on every container start, ensuring provider-only mode even when `omc install` is run manually.
+- **Shell helpers ownership clarified** — install.sh no longer writes shell aliases; CodeForge's `setup-aliases.sh` owns all OMC helper aliases (`omc-cc`, `omc-deepseek`, etc.). Legacy OMC shell blocks are cleaned up on install.
+- **Install order guaranteed** — oh-my-claude added to `overrideFeatureInstallOrder` in devcontainer.json.
+- **Documentation** — added Known Limitations section covering expected `omc doctor` failures, missing slash commands (upstream issue), and role agent filtering.
+
+### Agent Browser
+
+- **Version bumped to latest** — updated from pinned 0.11.1; picks up `--auto-connect` fixes and CDP improvements through v0.26.0
+- **Host Chrome CDP documentation overhauled** — corrected Chrome version requirements (136+ needs `--user-data-dir`, 144+ has `chrome://inspect` checkbox), documented `host.docker.internal` for container-to-host networking, fixed flag naming (`--auto-connect` not `--autoConnect`), added Windows PowerShell launch commands
+
+### Claude Code Karma
+
+- **New default dashboard: `claude-code-karma`** — installs Claude Code Karma from pinned upstream commit `4067d87ee5c85eb7d2877890ba6174115f0bee2e`, starts the dashboard on port `7847`, and starts the API on port `7848`.
+- **Live tracking and titles enabled** — CodeForge now registers Karma live-session tracking hooks and the SessionEnd title generator hook in the generated Claude settings profiles.
+- **Settings protected** — Karma is patched to keep Claude settings read-only. CodeForge owns `~/.claude/settings.json`; Karma can read settings but cannot write them from its API or Settings UI.
+
+### Documentation
+
+- **New guide: Windows Networking** — comprehensive WSL 2 mirrored networking setup for Windows users; recommended approach for port forwarding, replacing `dbr` on Windows
+- **Cross-references added** — before-you-install, accessing-services, troubleshooting, and devcontainer-cli pages now link to the Windows networking guide
+- **Agent-browser CDP troubleshooting** — new troubleshooting section for host Chrome connection issues (localhost vs host.docker.internal, Chrome version requirements, port exposure)
+
+### Agent System
+
+- **All agents and skills set to `effort: max`** — active agents (claude-guide, explorer, generalist), all 14 archived agents in `agent-system/agents/_archived/`, both active skill-engine skills (`team`, `agent-browser`), all 22 archived skills across `skill-engine` and `agent-system`, and all 10 skills in currently disabled plugins (`git-workflow`, `prompt-snippets`, `spec-workflow`, `ticket-workflow`) now declare `effort: max`. This ensures any plugin re-enable in the future yields max-effort runs without further edits.
+- **Replaced automatic test hooks with `/verify-tests` skill** — removed `TaskCompleted` hook (`task-completed-check.py`), implementer Stop hook (`verify-no-regression.py`), refactorer PostToolUse hook (`verify-no-regression.py`), and test-writer Stop hook (`verify-tests-pass.py`). Test verification is now on-demand via `/verify-tests`, which detects the project's test framework and runs the suite with structured reporting.
+
+### Plugin Cleanup
+
+- **Archived 15 agents** — agent-system reduced from 19 to 4 active agents (architect, claude-guide, explorer, generalist). Archived agents preserved in `agents/_archived/` for future rewrite.
+- **Archived 21 skills** — skill-engine reduced from 23 to 2 active skills (`/team`, `/agent-browser`). Archived skills preserved in `skills/_archived/`.
+- **Archived `/debug` skill** — moved from agent-system active skills to `skills/_archived/`.
+- **Removed 2 agent redirects** — `Bash→bash-exec` and `statusline-setup→statusline-config` removed from redirect map. Built-in types now fall through to Claude Code defaults.
+- **Disabled prompt-snippets plugin** — `/ps` command no longer available.
+- **Stripped skill-suggester** — auto-suggestion now only covers `team` and `agent-browser` (was 25+ skills).
+
+### Code Quality
+
+- **Replaced auto-format/lint/test Stop hooks with `/cq` skill** — the three Stop hooks (`format-on-stop.py`, `lint-file.py`, `advisory-test-runner.py`) that ran automatically on every stop are replaced by a single `/cq` skill that Claude invokes explicitly. Eliminates race conditions with background agents, stops firing during orchestration pauses, and lets Claude act on lint/test results instead of ignoring passive context.
+- **New quality gate Stop hook** — lightweight `quality-gate.py` (~1ms) checks whether files were edited and no background tasks are running, then blocks the stop with a prompt to run `/cq`. Deletes temp files on block to prevent loops.
+- **New task tracker hooks** — `task-tracker.py` handles `TaskCreated`/`TaskCompleted` events to maintain an active-task count. The quality gate skips blocking while tasks are running, preventing format/lint conflicts with background agents.
+
+### CI
+
+- **Canary pre-release publishing** — every push to `staging` that touches `container/` now auto-publishes a canary build to npm. Install with `npm i @coredirective/cf-container@canary` to try unreleased changes. Versions use the format `{version}-staging.{sha7}`.
+- **Removed dead dashboard release workflow** — `release-dashboard.yml` referenced the extracted `dashboard/` directory and would fail on any `dashboard-v*` tag.
+- **Removed stale test-dashboard CI job** — cleaned up CI configuration for the extracted dashboard package.
+- **Fixed release.yml changelog extraction** — corrected the `sed` header pattern for extracting release notes from the changelog.
+
 ## v2.2.1 — 2026-04-16
 
 ### Configuration
 
+- **Default model changed to `claude-opus-4-5`** — `ANTHROPIC_MODEL` and `ANTHROPIC_DEFAULT_OPUS_MODEL` in default settings flipped from `claude-opus-4-7` to `claude-opus-4-5`. Subagents also run on 4.5 by default.
+- **Per-alias context windows** — `CLAUDE_CODE_MAX_CONTEXT_TOKENS` and `CLAUDE_CODE_AUTO_COMPACT_WINDOW` removed from global `settings.json env` (they pinned 250k globally, which would exceed 4.5's 200k ceiling). Context is now set inline per alias: `cc` / `claude` / `ccw` / `cc-orc` = 200k; `cc7` / `ccw7` / `cc-orc7` = 400k.
+- **New 4.7 alias variants** — `cc7`, `ccw7`, `cc-orc7` run Claude Code on `claude-opus-4-7` with a 400k context window (main / writing / orchestrator system prompts respectively). Use these for sessions that need 4.7's larger window; use `cc` / `ccw` / `cc-orc` (now on 4.5) for standard work.
 - **Thinking display set to summarized** — `cc`, `claude`, `ccw`, and `cc-orc` aliases now pass `--thinking-display summarized`, keeping the terminal tidy while still surfacing thinking. `ccraw` is unaffected (stays vanilla).
 - **View mode set to focus** — `viewMode` changed from `verbose` to `focus` in default settings for a cleaner terminal UI.
 

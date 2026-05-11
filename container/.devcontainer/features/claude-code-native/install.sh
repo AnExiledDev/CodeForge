@@ -99,41 +99,4 @@ else
 	exit 1
 fi
 
-# === POST-START HOOK ===
-# Ensures hasCompletedOnboarding is set when token auth is configured.
-# Runs as the LAST post-start hook (99- prefix) to catch overwrites from
-# Claude Code CLI/extension that may race with postStartCommand.
-HOOK_DIR="/usr/local/devcontainer-poststart.d"
-mkdir -p "$HOOK_DIR"
-cat > "$HOOK_DIR/99-claude-onboarding.sh" << 'HOOK_EOF'
-#!/bin/bash
-# Ensure hasCompletedOnboarding: true in .claude.json when token auth exists.
-# Runs after all setup scripts to catch any overwrites by Claude Code CLI/extension.
-_USERNAME="${SUDO_USER:-${USER:-vscode}}"
-_USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
-_USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
-CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
-CLAUDE_JSON="$CLAUDE_DIR/.claude.json"
-CRED_FILE="$CLAUDE_DIR/.credentials.json"
-
-# Only act when token auth is configured
-[ -f "$CRED_FILE" ] || exit 0
-
-if [ -f "$CLAUDE_JSON" ]; then
-    if ! grep -q '"hasCompletedOnboarding"' "$CLAUDE_JSON" 2>/dev/null; then
-        if command -v jq >/dev/null 2>&1; then
-            jq '. + {"hasCompletedOnboarding": true}' "$CLAUDE_JSON" > "${CLAUDE_JSON}.tmp" && \
-                mv "${CLAUDE_JSON}.tmp" "$CLAUDE_JSON"
-        else
-            sed -i '$ s/}$/,\n  "hasCompletedOnboarding": true\n}/' "$CLAUDE_JSON"
-        fi
-        echo "[claude-onboarding] Injected hasCompletedOnboarding into .claude.json"
-    fi
-else
-    printf '{\n  "hasCompletedOnboarding": true\n}\n' > "$CLAUDE_JSON"
-    echo "[claude-onboarding] Created .claude.json with hasCompletedOnboarding"
-fi
-HOOK_EOF
-chmod +x "$HOOK_DIR/99-claude-onboarding.sh"
-
 echo "[claude-code-native] Installation complete"

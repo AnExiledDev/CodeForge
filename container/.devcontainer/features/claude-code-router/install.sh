@@ -161,7 +161,7 @@ done
 
 if [ "$_HAS_KEY" = "false" ]; then
     echo "[claude-code-router] No provider API keys configured — skipping auto-start"
-    echo "[claude-code-router] Set provider keys in .devcontainer/.secrets and rebuild"
+    echo "[claude-code-router] Set provider keys in .codeforge/secrets/ and rebuild"
     exit 0
 fi
 
@@ -213,7 +213,7 @@ echo "  ccr restart            # Restart with new config"
 echo "  ccr status             # Check daemon status"
 echo "  ccr-apply              # Redeploy config + restart"
 echo ""
-echo "Config: .codeforge/config/claude-code-router.json"
+echo "Config: .devcontainer/defaults/codeforge/claude/router/config.json (override with .codeforge/claude/router/config.json)"
 echo "Docs:   https://github.com/musistudio/claude-code-router"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

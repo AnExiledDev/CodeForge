@@ -48,18 +48,37 @@ agent-browser close
 
 ### Host Chrome Connection
 
-Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol):
+Connect to Chrome running on your host machine via CDP (Chrome DevTools Protocol). Useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions or logged-in sessions needed).
 
-1. Start Chrome on host with remote debugging:
-   ```bash
-   chrome --remote-debugging-port=9222
-   # or on macOS:
-   /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
-   ```
+**Windows**: Run the helper from an Administrator PowerShell on the host. It starts Chrome on `127.0.0.1:9222` with a non-default profile, then exposes `0.0.0.0:9223 -> 127.0.0.1:9222` through Windows `netsh portproxy`:
 
-2. Connect from container:
-   ```bash
-   agent-browser connect 9222
-   ```
+```powershell
+.\.devcontainer\scripts\start-hermes-chrome.ps1
+```
 
-This is useful when the container's bundled Chromium is insufficient (e.g., specific browser extensions needed).
+Then connect from the container through the proxy port:
+
+```bash
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+curl http://$CDP_HOST:9223/json/version
+agent-browser connect $CDP_HOST:9223
+```
+
+**Chrome 144+** (recommended): No CLI launch needed. Enable remote debugging via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging" — Chrome listens on port 9222 by default
+
+**Linux / macOS Chrome 136-143**: Chrome 136+ requires `--user-data-dir` alongside `--remote-debugging-port` or the flag is silently ignored:
+
+```bash
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+```
+
+Connect from the container using the resolved IPv4 for `host.docker.internal` — not `localhost`, which refers to the container itself. Chrome CDP rejects non-IP Host headers, so use the IP address in the URL:
+
+```bash
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+agent-browser connect $CDP_HOST:9223
+```
+
+> **Security note:** CDP exposes the full browser session (cookies, storage, DOM) to anything that can reach the debug port. Use with caution on shared or networked machines.

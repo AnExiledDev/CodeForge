@@ -3,6 +3,7 @@ description: Transform requirements into EARS-formatted GitHub issue with struct
 argument-hint: [requirements description]
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Read, Grep, Glob, AskUserQuestion
+effort: max
 ---
 
 # /ticket:new - Create EARS-Formatted GitHub Issue

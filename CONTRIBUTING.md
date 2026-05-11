@@ -6,9 +6,9 @@ guidelines for contributing to the project.
 ## How to Contribute
 
 1. **Fork** the repository
-2. **Create a branch** from `main` for your change
+2. **Create a branch** from `staging` for your change
 3. **Make your changes** following the guidelines below
-4. **Submit a pull request** using the PR template
+4. **Submit a pull request** to `staging` using the PR template
 
 ## Development Setup
 
@@ -25,7 +25,7 @@ To test the devcontainer itself, open the project in VS Code and select
 
 - Fill out the [pull request template](.github/pull_request_template.md)
 - Ensure `npm test` passes
-- Add an entry to `.devcontainer/CHANGELOG.md` describing your change
+- Add an entry to the appropriate changelog: `.devcontainer/CHANGELOG.md` for container changes, `cli/CHANGELOG.md` for CLI changes
 - Update documentation if your change affects user-facing behavior
 - PRs require one approving review before merge
 

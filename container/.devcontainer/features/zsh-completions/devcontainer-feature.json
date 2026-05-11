@@ -1,0 +1,18 @@
+{
+	"id": "zsh-completions",
+	"version": "1.0.0",
+	"name": "Zsh Completion Stack",
+	"description": "Installs fzf, carapace, zsh-autosuggestions, zsh-syntax-highlighting, fzf-tab, and sets zsh as default shell",
+	"options": {
+		"version": {
+			"type": "string",
+			"default": "latest",
+			"description": "Set to 'none' to skip installation"
+		},
+		"username": {
+			"type": "string",
+			"default": "automatic",
+			"description": "Target user for shell config"
+		}
+	}
+}

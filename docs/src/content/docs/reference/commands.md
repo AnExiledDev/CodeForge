@@ -199,8 +199,8 @@ Commands come from different sources in the CodeForge setup:
 
 | Source | Commands | How Defined |
 |--------|----------|-------------|
-| Shell aliases | `cc`, `claude`, `ccw`, `ccraw`, `cc-orc`, `check-setup` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
-| Shell functions | `cc-tools` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
+| Shell aliases | `ccraw`, `check-setup`, `ccr-apply`, `omc-doctor` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
+| Shell functions | `cc`, `claude`, `cc5`, `cc6`, `cc61`, `cc7`, `cc71`, `ccw*`, `cc-orc*`, `cc-tools`, `omc-cc` | `setup-aliases.sh` writes to `.bashrc`/`.zshrc` |
 | DevContainer features | `ccusage`, `ccusage-codex`, `ccburn`, `codex`, `ruff`, `biome`, `sg`, `dbr`, etc. | `install.sh` in each feature directory |
 | CodeForge CLI | `codeforge session`, `codeforge index`, `codeforge container`, etc. | `codeforge-cli` devcontainer feature |
 | Slash commands | `/spec`, `/build`, `/ticket:new`, `/ship`, `/pr:review`, `/ps`, etc. | Skill SKILL.md files in plugin directories |

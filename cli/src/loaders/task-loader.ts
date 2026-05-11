@@ -28,7 +28,9 @@ export async function loadTasks(options?: {
 				if (options?.status && task.status !== options.status) continue;
 
 				results.push({ ...task, team });
-			} catch {}
+			} catch (err) {
+				if (process.env.DEBUG) console.error(`[task-loader] ${err}`);
+			}
 		}
 	} catch {
 		// Directory doesn't exist — return empty

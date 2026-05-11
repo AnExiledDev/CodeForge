@@ -12,6 +12,7 @@ description: >-
   (use /specs).
 version: 1.0.0
 argument-hint: "[feature-name] or [constitution]"
+effort: max
 ---
 
 # Create & Refine Spec Package

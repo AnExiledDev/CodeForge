@@ -115,25 +115,34 @@ export async function search(options: SearchOptions): Promise<SearchResult> {
 
 		try {
 			for await (const line of readLines(filePath)) {
-				let raw: SessionMessage;
+				let raw: unknown;
 				try {
-					raw = JSON.parse(line) as SessionMessage;
+					raw = JSON.parse(line);
 				} catch {
 					// Skip malformed JSON lines
 					continue;
 				}
 
+				if (!raw || typeof raw !== "object") continue;
+
+				const msg_raw = raw as SessionMessage;
+
 				// Must have required fields
-				if (!raw.type || !raw.sessionId || !raw.uuid || !raw.timestamp) {
+				if (
+					!msg_raw.type ||
+					!msg_raw.sessionId ||
+					!msg_raw.uuid ||
+					!msg_raw.timestamp
+				) {
 					continue;
 				}
 
 				// Skip non-searchable types (progress, queue-operation, etc.)
-				if (!isSearchableType(raw.type)) {
+				if (!isSearchableType(msg_raw.type)) {
 					continue;
 				}
 
-				const msg = toSearchableMessage(raw, filePath);
+				const msg = toSearchableMessage(msg_raw, filePath);
 
 				// Apply filters
 				if (!filter(msg)) continue;

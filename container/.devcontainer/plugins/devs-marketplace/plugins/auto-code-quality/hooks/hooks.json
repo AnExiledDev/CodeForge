@@ -1,5 +1,5 @@
 {
-	"description": "Self-contained code quality: file collection on edit, syntax validation, batch formatting + linting at stop",
+	"description": "Code quality: file collection on edit, syntax validation, activity tracking (subagents + background bash), and /cq quality gate on demand",
 	"hooks": {
 		"PostToolUse": [
 			{
@@ -16,25 +16,60 @@
 						"timeout": 5
 					}
 				]
+			},
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
 			}
 		],
-		"Stop": [
+		"PreToolUse": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"PostToolUseFailure": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStart": [
 			{
 				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/format-on-stop.py",
-						"timeout": 15
-					},
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
+					}
+				]
+			}
+		],
+		"SubagentStop": [
+			{
+				"hooks": [
 					{
 						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/lint-file.py",
-						"timeout": 60
-					},
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/advisory-test-runner.py",
-						"timeout": 20
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/activity-tracker.py",
+						"timeout": 3
 					}
 				]
 			}

@@ -3,6 +3,7 @@ name: ps
 description: Inject a behavioral prompt snippet by name.
 disable-model-invocation: true
 argument-hint: "[snippet-name]"
+effort: max
 ---
 
 # /ps — Prompt Snippets

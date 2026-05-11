@@ -2,6 +2,7 @@
 description: Thorough code review, verify requirements met, commit with detailed message
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, AskUserQuestion
+effort: max
 ---
 
 # /ticket:review-commit - Review and Commit Changes

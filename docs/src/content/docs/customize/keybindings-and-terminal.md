@@ -67,7 +67,7 @@ Common command IDs:
 
 ### Option 3: Custom Claude Code Keybindings
 
-Edit `.codeforge/config/keybindings.json` to remap Claude Code actions to non-conflicting shortcuts:
+Create or edit `.codeforge/claude/keybindings.json` to remap Claude Code actions to non-conflicting shortcuts:
 
 ```json
 {
@@ -89,7 +89,7 @@ Edit `.codeforge/config/keybindings.json` to remap Claude Code actions to non-co
 The keybindings file is deployed to `~/.claude/keybindings.json` on container start via `file-manifest.json`.
 
 :::note[Shipped Default]
-CodeForge ships with an empty bindings array (`"bindings": []`) in `.codeforge/config/keybindings.json`. No custom keybindings are active by default — add your own entries to the array using the format above.
+CodeForge ships with an empty bindings array (`"bindings": []`) in `.devcontainer/defaults/codeforge/claude/keybindings.json`. No custom keybindings are active by default; add your own override at `.codeforge/claude/keybindings.json` using the format above.
 :::
 
 ## Claude Code Shortcut Reference

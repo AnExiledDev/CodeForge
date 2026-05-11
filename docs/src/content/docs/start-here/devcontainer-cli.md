@@ -86,6 +86,10 @@ dbr host-daemon
 ssh -L 7847:localhost:7847 <container-user>@<container-host>
 ```
 
+:::tip[Windows users]
+On Windows, [mirrored networking](/start-here/windows-networking/) replaces `dbr` for port forwarding. Once enabled, container ports are accessible on `localhost` without any forwarding tools.
+:::
+
 See [Accessing Services](/use/accessing-services/) for the full setup guide and comparison of all forwarding mechanisms.
 
 ## Key Differences from VS Code

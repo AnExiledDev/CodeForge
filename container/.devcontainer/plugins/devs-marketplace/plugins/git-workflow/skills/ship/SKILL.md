@@ -3,6 +3,7 @@ description: Review changes, commit with detailed message, push, and optionally 
 argument-hint: [commit message hint]
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, Edit, Write, AskUserQuestion
+effort: max
 ---
 
 # /ship - Review, Commit, Push & Optional PR

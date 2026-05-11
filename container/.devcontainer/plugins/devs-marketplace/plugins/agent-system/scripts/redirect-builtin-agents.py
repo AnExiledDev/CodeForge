@@ -22,11 +22,13 @@ import sys
 from datetime import datetime, timezone
 import os
 
-# Hook gate — check .codeforge/config/disabled-hooks.json
+# Hook gate - check ~/.claude/disabled-hooks.json
 _dh = os.path.join(os.getcwd(), ".codeforge", "config", "disabled-hooks.json")
 if os.path.exists(_dh):
     with open(_dh) as _f:
-        if os.path.basename(__file__).replace(".py", "") in json.load(_f).get("disabled", []):
+        if os.path.basename(__file__).replace(".py", "") in json.load(_f).get(
+            "disabled", []
+        ):
             sys.exit(0)
 
 # Built-in agent type → custom agent name mapping
@@ -34,9 +36,7 @@ REDIRECT_MAP = {
     "Explore": "explorer",
     "Plan": "architect",
     "general-purpose": "generalist",
-    "Bash": "bash-exec",
     "claude-code-guide": "claude-guide",
-    "statusline-setup": "statusline-config",
 }
 
 # Plugin name prefix for fully-qualified agent references

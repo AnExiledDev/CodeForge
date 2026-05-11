@@ -187,29 +187,40 @@ agent-browser cookie set "auth_token=xyz789; domain=.app.example.com; path=/; se
 Connects to a Chrome instance running on the host via Chrome DevTools Protocol (CDP).
 
 ```bash
-agent-browser connect <port>
+agent-browser connect <host:port>
 ```
 
 **Arguments:**
-- `<port>` — The remote debugging port Chrome is listening on
+- `<host:port>` — The CDP endpoint. On Windows, resolve `host.docker.internal` to IPv4 and use that IP with port 9223 after running the host helper.
 
 **Prerequisites:**
-Chrome must be started on the host with remote debugging enabled:
+Chrome must have remote debugging enabled on the host before connecting.
+
+**Chrome 144+** (recommended): No CLI launch needed. Enable via a checkbox:
+1. Open `chrome://inspect/#remote-debugging` in Chrome
+2. Check "Enable remote debugging" — Chrome listens on port 9222 by default
+
+**Chrome 136–143**: Chrome 136+ requires `--user-data-dir` alongside `--remote-debugging-port` or the flag is silently ignored:
 ```bash
-chrome --remote-debugging-port=9222
-# macOS:
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+# Linux / macOS
+google-chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-debug"
+
+# Windows PowerShell, from repo root as Administrator
+.\.devcontainer\scripts\start-hermes-chrome.ps1
 ```
 
 **Examples:**
 ```bash
-agent-browser connect 9222
+CDP_HOST=$(getent ahostsv4 host.docker.internal | awk 'NR==1 {print $1}')
+curl http://$CDP_HOST:9223/json/version
+agent-browser connect $CDP_HOST:9223
 ```
 
 **When to use:**
 - When the container's bundled Chromium is insufficient
 - When specific browser extensions are needed
 - When you need to observe browser behavior visually on the host
+- When you need access to a logged-in Chrome session (cookies, extensions, saved passwords)
 
 ---
 
@@ -236,7 +247,10 @@ agent-browser close
 | Page load timeout | URL unreachable or slow response | Verify URL is correct; check network connectivity |
 | Element not found | Reference ID from stale snapshot | Run `snapshot` again to get current references |
 | Session already active | Tried to `open` without `close` | Run `close` first, then `open` |
-| Connection refused (CDP) | Host Chrome not running with debug port | Start Chrome with `--remote-debugging-port` |
+| Connection refused (CDP) | Host Chrome not running with debug port or portproxy unavailable | On Windows, run `.devcontainer\scripts\start-hermes-chrome.ps1` from Administrator PowerShell, then test with `curl http://$CDP_HOST:9223/json/version` |
+| Connection refused via localhost | Container cannot reach host on localhost | On Windows, use the resolved IPv4 for `host.docker.internal` on port 9223 instead of `localhost:9222` |
+| HTTP 500 Host header error | Chrome rejected `Host: host.docker.internal` | Resolve `host.docker.internal` to IPv4 and connect to the IP address |
+| Chrome ignores --remote-debugging-port | Chrome 136+ requires --user-data-dir | Add `--user-data-dir` flag when launching Chrome |
 
 **General recovery pattern:**
 ```bash

@@ -1,0 +1,23 @@
+{
+	"id": "hermes-agent",
+	"version": "1.0.0",
+	"name": "Hermes Agent (Nous Research)",
+	"description": "Installs Nous Research Hermes Agent — open-source autonomous AI agent CLI using anthropic/openai SDKs directly",
+	"documentationURL": "https://hermes-agent.nousresearch.com/",
+	"options": {
+		"version": {
+			"type": "string",
+			"description": "Version to install: 'latest' tracks upstream main. Use 'none' to skip. Pinned semver supported once Hermes publishes release tags.",
+			"default": "latest"
+		},
+		"username": {
+			"type": "string",
+			"description": "Container user to install for",
+			"default": "automatic"
+		}
+	},
+	"installsAfter": [
+		"ghcr.io/devcontainers/features/node",
+		"ghcr.io/devcontainers-extra/features/uv"
+	]
+}

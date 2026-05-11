@@ -3,6 +3,7 @@ description: Review an existing pull request without merging — post findings a
 argument-hint: [PR number, URL, or omit for current branch]
 disable-model-invocation: true
 allowed-tools: Bash(gh:*), Bash(git:*), Read, Grep, Glob, AskUserQuestion
+effort: max
 ---
 
 # /pr:review - Review Existing PR

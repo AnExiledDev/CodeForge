@@ -13,7 +13,7 @@ OLD_DIR="/workspaces/.claude"
 _USERNAME="${SUDO_USER:-${USER:-vscode}}"
 _USER_HOME=$(getent passwd "$_USERNAME" 2>/dev/null | cut -d: -f6)
 _USER_HOME="${_USER_HOME:-/home/$_USERNAME}"
-NEW_DIR="${CLAUDE_CONFIG_DIR:-${_USER_HOME}/.claude}"
+NEW_DIR="${_USER_HOME}/.claude"
 MARKER="$NEW_DIR/.migrated-from-workspaces"
 CODEFORGE_MARKER="${CODEFORGE_DIR:-${WORKSPACE_ROOT:-/workspaces}/.codeforge}/.markers/v2-migrated"
 

@@ -22,7 +22,7 @@ skills:
   - spec
   - build
   - specs
-effort: xhigh
+effort: max
 ---
 
 # Generalist Agent

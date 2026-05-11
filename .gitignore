@@ -46,8 +46,8 @@ container/.claude/
 container/.tmp/
 container/.codeforge/.checksums/
 container/.codeforge/.markers/
-container/.devcontainer/.env
-container/.devcontainer/.secrets
+container/.codeforge/secrets/
+container/.devcontainer/.generated/
 container/.devcontainer/state/
 container/.devcontainer/config/backups/
 container/.devcontainer/.dockercache/
@@ -64,10 +64,19 @@ container/.devcontainer/.codeforge-preserve
 # CLI-specific
 cli/.pytest_cache/
 cli/.ruff_cache/
+.codeforge/.checksums/
+.codeforge/.markers/
 .codeforge/data/
+.codeforge/secrets/
 
 # Dashboard (deprecated — migrating to CodeDirective, a separate repo)
 dashboard/
+
+# Abandoned packages
+proxy/
+
+# Stale analysis artifacts
+DELETEME/
 
 # Docs-specific
 docs/.astro/

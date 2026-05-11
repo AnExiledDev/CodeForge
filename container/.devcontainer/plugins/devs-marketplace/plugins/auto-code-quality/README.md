@@ -1,18 +1,21 @@
 # auto-code-quality
 
-Self-contained Claude Code plugin that automatically formats and lints edited files. Drop it into any Claude Code plugin marketplace and enable it — no other plugins required.
+Claude Code plugin that tracks edited files and runs code quality checks on demand via the `/cq` skill. Drop it into any Claude Code plugin marketplace and enable it — no other plugins required.
 
 ## What It Does
 
-Three-phase pipeline that runs transparently during your Claude Code session:
+Three-phase pipeline with an explicit quality gate:
 
-1. **Collect** (PostToolUse on Edit/Write) — Records which files Claude edits
-2. **Format** (Stop hook) — Batch-formats all edited files when Claude finishes responding
-3. **Lint** (Stop hook) — Batch-lints all edited files and surfaces warnings as context
+1. **Track** (PostToolUse on Edit/Write) — Records which files Claude edits, validates data file syntax instantly
+2. **Activity** (SubagentStart/Stop, PreToolUse/PostToolUse/PostToolUseFailure on Bash) — Tracks active subagents and background bash commands so the gate stays silent during orchestration
+3. **Gate** (Stop hook) — Lightweight check: if files were edited and no background work is active, blocks the stop and prompts Claude to run `/cq`
+4. **Quality** (`/cq` skill) — Claude formats, lints (with auto-fix), and runs affected tests on all edited files
 
-Additionally validates JSON, JSONC, YAML, and TOML syntax immediately after each edit.
+The `/cq` skill can also be invoked manually at any time during a session.
 
-All phases are non-blocking. Missing tools are silently skipped. The plugin always exits cleanly — it will never interrupt Claude.
+### Why a skill instead of automatic hooks?
+
+Previous versions ran formatters, linters, and test runners as Stop hooks. This caused issues with background agents (race conditions on file writes), fired too frequently during orchestration pauses, and produced lint results as passive context that was often ignored. The `/cq` skill runs explicitly — Claude can act on results, fix issues, and re-run checks.
 
 ## Required Tools
 
@@ -21,7 +24,6 @@ Install the tools for the languages you work with. Everything is optional — th
 | Language | Formatter | Linter(s) | Install |
 |----------|-----------|-----------|---------|
 | Python | [ruff](https://docs.astral.sh/ruff/) | [pyright](https://github.com/microsoft/pyright), ruff check | `pip install ruff` / `npm i -g pyright` |
-| Python (fallback) | [black](https://github.com/psf/black) | — | `pip install black` |
 | Go | gofmt (bundled with Go) | go vet (bundled with Go) | [Install Go](https://go.dev/dl/) |
 | JS/TS/CSS/GraphQL/HTML | [biome](https://biomejs.dev/) | biome lint | `npm i -D @biomejs/biome` or `npm i -g @biomejs/biome` |
 | Shell | [shfmt](https://github.com/mvdan/sh) | [shellcheck](https://github.com/koalaman/shellcheck) | `brew install shfmt shellcheck` |
@@ -47,6 +49,30 @@ The dprint formatter looks for a config file at `/usr/local/share/dprint/dprint.
 Biome is resolved in this order:
 1. Project-local: walks up from the edited file looking for `node_modules/.bin/biome`
 2. Global: checks PATH via `which biome`
+
+## Usage
+
+### Automatic (quality gate)
+
+Just work normally. When Claude stops after editing files:
+
+1. The quality gate checks for edited files and active background tasks
+2. If files were edited and no tasks are running, it blocks the stop
+3. Claude runs `/cq` automatically — formats, lints, tests, fixes issues
+4. Claude stops cleanly on the second attempt (temp files cleaned up)
+
+### Manual
+
+Type `/cq` at any point to run quality checks on all files edited so far in the session.
+
+### With background work
+
+The quality gate is background-activity-aware. It tracks two types of background work:
+
+- **Subagents** — tracked via SubagentStart/SubagentStop hooks
+- **Background bash** — tracked via PreToolUse (when `run_in_background: true`) and PostToolUse/PostToolUseFailure
+
+While any background work is active, the gate stays silent. Once all work completes and Claude stops, the gate activates. Entries older than 30 minutes are automatically pruned as stale (handles crashes/timeouts that prevent cleanup).
 
 ## Installation
 
@@ -85,22 +111,45 @@ You edit a file (Edit/Write tool)
   │
   ├─→ collect-edited-files.py    Appends path to temp files
   └─→ syntax-validator.py        Validates JSON/YAML/TOML syntax immediately
-       │
-       │  ... Claude keeps working ...
-       │
+
+Subagent starts (SubagentStart)
+  └─→ activity-tracker.py        Records agent as active
+
+Subagent stops (SubagentStop)
+  └─→ activity-tracker.py        Removes agent from active list
+
+Background bash starts (PreToolUse[Bash] with run_in_background: true)
+  └─→ activity-tracker.py        Records bash command as active
+
+Background bash ends (PostToolUse[Bash] or PostToolUseFailure[Bash])
+  └─→ activity-tracker.py        Removes bash command from active list
+
 Claude stops responding (Stop event)
-  │
-  ├─→ format-on-stop.py          Reads temp file, formats each file by extension
-  └─→ lint-file.py               Reads temp file, lints each file, injects warnings
+  └─→ quality-gate.py            Checks active work + edited files
+       │
+       ├─ Work active?   → skip (exit 0)
+       ├─ No edits?      → skip (exit 0)
+       └─ Edits found    → block stop → Claude runs /cq
+                                → /cq formats, lints, tests
+                                → cleans up temp files
+                                → Claude stops again → gate exits clean
 ```
 
 ### Temp File Convention
 
-Edited file paths are stored in session-scoped temp files:
-- `/tmp/claude-cq-edited-{session_id}` — consumed by the formatter
-- `/tmp/claude-cq-lint-{session_id}` — consumed by the linter
+Session-scoped temp files in `/tmp/`:
 
-Both are always cleaned up after processing (even on error).
+| File | Purpose | Written by | Read by |
+|------|---------|------------|---------|
+| `claude-cq-edited-{session_id}` | Edited file paths (format + test) | collect-edited-files.py | quality-gate.py, /cq skill |
+| `claude-cq-lint-{session_id}` | Edited file paths (lint) | collect-edited-files.py | /cq skill |
+| `claude-active-work-{session_id}` | Active background work (`type:id:timestamp`) | activity-tracker.py | quality-gate.py |
+
+All temp files are cleaned up after processing (by the gate and/or the skill).
+
+### Loop Prevention
+
+The quality gate deletes the edited-files temp file when it blocks. On the second stop (after `/cq` runs), the temp file is gone — the gate exits clean. The `/cq` skill also cleans up temp files as a safety net.
 
 ### Timeouts
 
@@ -108,19 +157,36 @@ Both are always cleaned up after processing (even on error).
 |------|---------|
 | File collection | 3s |
 | Syntax validation | 5s |
-| Batch formatting | 15s total |
-| Batch linting | 60s total |
-| Individual tool | 10-12s each |
+| Task tracking | 3s |
+| Quality gate | 3s |
+
+The `/cq` skill has no timeout — it runs as a normal Claude conversation turn.
+
+## Disabling
+
+### Disable the entire plugin
+
+Remove from `enabledPlugins` in your settings.
+
+### Disable individual hooks
+
+Add the script name (without `.py`) to the `disabled` array in `~/.claude/disabled-hooks.json`:
+
+```json
+{
+  "disabled": ["quality-gate"]
+}
+```
+
+Available hook names: `collect-edited-files`, `syntax-validator`, `activity-tracker`, `quality-gate`
 
 ## Conflict Warning
 
 This plugin bundles functionality that may overlap with other plugins. If you're using any of the following, **disable them** before enabling this plugin to avoid duplicate processing:
 
-- `auto-formatter` — formatting is included here
-- `auto-linter` — linting is included here
+- `auto-formatter` — formatting is included in `/cq`
+- `auto-linter` — linting is included in `/cq`
 - `code-directive` `collect-edited-files.py` hook — file collection is included here
-
-All pipelines use the `claude-cq-*` temp file prefix, so enabling both won't corrupt data — but files would be formatted and linted twice.
 
 ## Plugin Structure
 
@@ -129,16 +195,19 @@ auto-code-quality/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin metadata
 ├── hooks/
-│   └── hooks.json               # Hook registrations (PostToolUse + Stop)
+│   └── hooks.json               # Hook registrations
 ├── scripts/
 │   ├── collect-edited-files.py  # File path collector (PostToolUse)
 │   ├── syntax-validator.py      # JSON/YAML/TOML validator (PostToolUse)
-│   ├── format-on-stop.py        # Batch formatter (Stop)
-│   └── lint-file.py             # Batch linter (Stop)
+│   ├── activity-tracker.py      # Background work tracker (SubagentStart/Stop, Bash Pre/Post/Failure)
+│   └── quality-gate.py          # Stop gate — prompts /cq if needed (Stop)
+├── skills/
+│   └── cq/
+│       └── SKILL.md             # /cq skill definition
 └── README.md                    # This file
 ```
 
 ## Requirements
 
 - Python 3.11+ (for `tomllib` support in syntax validation; older Python skips TOML)
-- Claude Code with plugin hook support
+- Claude Code with plugin hook support and skill support
