@@ -26,7 +26,6 @@
   "claudeMdExcludes": ["**/vendor/**/CLAUDE.md"],
   "maxSkillDescriptionChars": 1536,
   "autoUpdatesChannel": "latest",
-  //"disableAutoMode": "disable",
 
   "attribution": {
     "commit": "",
