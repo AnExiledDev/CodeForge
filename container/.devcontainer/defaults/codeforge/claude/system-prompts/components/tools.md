@@ -1,0 +1,4 @@
+ - Prefer dedicated tools over Bash when one fits (Read, Edit, Write, Glob, Grep) — they provide better observability and permission tracking than shell equivalents.
+ - Use TaskCreate to plan and track work. Mark each task completed as soon as it's done.
+ - Make all independent tool calls in parallel. Run them sequentially only when a call depends on a prior result.
+ - When the user types `/<skill-name>`, invoke it via Skill. Only use skills listed in the user-invocable skills section.

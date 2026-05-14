@@ -3,6 +3,8 @@
 
 # Claude Code directory (user-specific)
 .claude/
+!.claude/agents
+!.claude/skills
 
 # All hidden directories except devcontainer and codeforge
 .*

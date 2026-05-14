@@ -48,5 +48,4 @@ guard_workspace_scope = _load_script(
 )
 guard_protected = _load_script("protected-files-guard", "guard-protected.py")
 guard_protected_bash = _load_script("protected-files-guard", "guard-protected-bash.py")
-guard_readonly_bash = _load_script("agent-system", "guard-readonly-bash.py")
 redirect_builtin_agents = _load_script("agent-system", "redirect-builtin-agents.py")
