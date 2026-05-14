@@ -81,8 +81,7 @@
 {# Runtime environment context — variables filled by generator #}
 ## Environment
 You have been invoked in the following environment:
-  - Primary working directory: {{ working_dir }}
-  - Is a git repository: {{ is_git_repo }}
+  - Your working directory is injected by a hook on every turn via `<system-reminder>` tags. Always obey the most recent hook-injected "Working Directory:" value — it is the authoritative scope boundary.
   - Platform: {{ platform }}
   - Shell: {{ shell }}
   - OS Version: {{ os_version }}
