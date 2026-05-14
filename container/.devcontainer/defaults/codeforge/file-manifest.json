@@ -110,13 +110,6 @@
 		"overwrite": "if-changed"
 	},
 	{
-		"id": "claude.rule.auto-memory",
-		"src": "claude/rules/auto-memory.md",
-		"dest": "${HOME}/.claude/rules",
-		"enabled": true,
-		"overwrite": "if-changed"
-	},
-	{
 		"id": "claude.rule.explicit-start",
 		"src": "claude/rules/explicit-start.md",
 		"dest": "${HOME}/.claude/rules",
@@ -147,13 +140,6 @@
 	{
 		"id": "claude.rule.zero-tolerance-bugs",
 		"src": "claude/rules/zero-tolerance-bugs.md",
-		"dest": "${HOME}/.claude/rules",
-		"enabled": true,
-		"overwrite": "if-changed"
-	},
-	{
-		"id": "claude.rule.rtk-awareness",
-		"src": "claude/rules/rtk-awareness.md",
 		"dest": "${HOME}/.claude/rules",
 		"enabled": true,
 		"overwrite": "if-changed"
