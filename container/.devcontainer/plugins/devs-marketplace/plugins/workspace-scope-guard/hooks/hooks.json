@@ -58,6 +58,18 @@
 					}
 				]
 			}
+		],
+		"CwdChanged": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/invalidate-scope-root.py",
+						"timeout": 3
+					}
+				]
+			}
 		]
 	}
 }

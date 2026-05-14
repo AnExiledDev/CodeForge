@@ -85,3 +85,9 @@ if ! bash "$SCRIPT_DIR/setup-config.sh" --only-settings; then
 	echo "[ensure-settings-generated] ERROR: Claude settings deployment failed." >&2
 	exit 1
 fi
+
+log "Generating baseline system prompt..."
+if ! WORKING_DIR="${WORKSPACE_ROOT}" node "$SCRIPT_DIR/generate-system-prompts.js" \
+    --profile "opus-46-200k" --prompt "default" --quiet 2>/dev/null; then
+    log "WARNING: Baseline system prompt generation failed (nunjucks may not be installed yet)."
+fi
