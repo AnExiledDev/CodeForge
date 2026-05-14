@@ -2,6 +2,8 @@
 
 This repository contains three packages. Each package manages its own dependencies independently.
 
+For codebase navigation, see [TOUR.md](TOUR.md).
+
 ## Packages
 
 | Package | Runtime | Package Manager |

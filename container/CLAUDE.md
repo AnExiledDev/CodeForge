@@ -2,8 +2,29 @@
 
 The `@coredirective/cf-container` npm package — a complete development container for AI-powered coding with Claude Code.
 
-See `.devcontainer/CLAUDE.md` for full devcontainer documentation.
-See the root `CLAUDE.md` for monorepo-wide development rules (branching strategy, testing).
+Entry: `setup.js` — npm package entry point; installs `.devcontainer/` into a target project, handles fresh install, checksum-based update, and `--reset` modes.
+
+## Key Files
+
+- `setup.js` — CLI installer (~22KB): copyDirectory, checksum-based preserve, mergeManifestEntries, `--force`/`--reset` flags
+- `test.js` — TAP-style Node.js tests for setup.js exports (run: `npm test`)
+- `.devcontainer/` — full devcontainer definition (features, plugins, scripts, defaults, config)
+- `.codeforge/container.json` — project-level overrides: setup flags, identity, timezone, versionLock, plugin blacklist
+- `tests/` — pytest suite testing plugin hook scripts directly via importlib
+
+## Subdirectories
+
+- `.devcontainer/` — see `.devcontainer/CLAUDE.md` for full layout
+- `.codeforge/` — project-level state/overrides only (not defaults); secrets go in `.codeforge/secrets/`
+- `tests/` — pytest tests for devs-marketplace plugin scripts
+- `logos/` — branding PNGs (not published to npm via .npmignore)
+
+## Testing
+
+Two independent test suites:
+- `npm test` → runs `test.js` (Node/TAP-style, tests setup.js logic)
+- `pytest tests/ -v` → tests plugin hook Python scripts via importlib dynamic loading
+- `npm run test:all` → runs both
 
 ## Container Development Rules
 

@@ -1,28 +1,17 @@
 {
-	"description": "Agent redirection and team orchestration hooks",
-	"hooks": {
-		"PreToolUse": [
-			{
-				"matcher": "Task",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/redirect-builtin-agents.py",
-						"timeout": 5
-					}
-				]
-			}
-		],
-		"TeammateIdle": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/teammate-idle-check.py",
-						"timeout": 10
-					}
-				]
-			}
-		]
-	}
+  "description": "Agent redirection and team orchestration hooks",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/redirect-builtin-agents.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }

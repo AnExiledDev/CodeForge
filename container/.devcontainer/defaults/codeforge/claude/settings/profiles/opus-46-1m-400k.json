@@ -1,3 +1,6 @@
 {
-	"_meta": { "model": "claude-opus-4-6[1m]", "contextWindow": 400000 }
+  "_meta": { "model": "claude-opus-4-6[1m]", "contextWindow": 1000000 },
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50"
+  }
 }

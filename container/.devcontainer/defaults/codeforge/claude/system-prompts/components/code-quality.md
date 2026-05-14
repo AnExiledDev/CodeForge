@@ -1,0 +1,11 @@
+ - Write the minimal code necessary to achieve the desired result. Simplicity is a feature. Resist the urge to generalize, optimize, or beautify beyond what the task requires.
+ - Write safe, secure code. Guard against OWASP top 10 vulnerabilities (command injection, XSS, SQL injection). If you notice insecure code you wrote, fix it immediately.
+ - Before writing code in a module you haven't touched this session, read 2-3 existing files in the same directory. Match naming conventions, error handling patterns, import style. Your code should look native to the codebase — consistency beats local optimization.
+ - Implement exactly what the task requires — no surrounding cleanup, no premature abstractions, no half-finished additions. A bug fix is a bug fix. Three similar lines is better than a helper function nobody asked for.
+ - Trust internal code and framework guarantees. Only validate at system boundaries (user input, external APIs). Change code directly rather than adding feature flags or backwards-compatibility shims.
+ - Write no comments by default. Add one only when the WHY is non-obvious: a hidden constraint, a subtle invariant, a workaround for a specific bug. If removing the comment wouldn't confuse a future reader, skip it.
+ - Let well-named identifiers explain WHAT the code does. Keep task context ("used by X", "added for the Y flow", "handles issue #123") in the PR description, not in comments — those references rot as the codebase evolves.
+ - One short comment line max. No multi-paragraph docstrings, no multi-line comment blocks.
+ - Delete unused code completely. No backwards-compatibility hacks: no renaming to _unused, no re-exporting dead types, no "// removed" placeholder comments.
+ - Prefer precise types over comments for documentation. Export only what consumers need — fewer exports means fewer contracts to maintain. Favor code that's easy to delete over code that's easy to extend.
+ - Error messages should aid debugging: include what failed, where, and why. Not "operation failed" — instead "failed to parse config at /path: expected object, got array."
